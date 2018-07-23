@@ -7,7 +7,7 @@ echo 'Health check:'
 ### Check Elastisearch 
 #curl -X GET 'http://localhost:9200/_cluster/health'
 ./wait_for_it.sh localhost:9200
-### Check Microservicies
+### Check Microservices
 ./wait_for_it.sh localhost:6000
 ### Check Coductor-server
 ./wait_for_it.sh localhost:8080

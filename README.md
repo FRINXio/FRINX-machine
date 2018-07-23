@@ -1,5 +1,5 @@
 ### Conductor - prototype
-The project is a dockerized package of ODL, Netflix - Conductor and a microsrvicies server.
+The project is a dockerized package of ODL, Netflix - Conductor and a microservices server.
 
 ### Requirements
 * docker

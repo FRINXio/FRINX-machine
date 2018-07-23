@@ -65,7 +65,7 @@ RUN set -ex \
 
 WORKDIR /home/app
  
-COPY ./microservicies/netinfra_utils ./netinfra_utils
+COPY ./microservices/netinfra_utils ./netinfra_utils
 COPY ./conductor ./conductor
 COPY ./wait_for_it.sh .
 

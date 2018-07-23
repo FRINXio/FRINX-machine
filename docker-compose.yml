@@ -10,8 +10,8 @@ services:
   micro:
     build:
       context: .
-      dockerfile: ./microservicies/Dockerfile
-    image: microservicies-img
+      dockerfile: ./microservices/Dockerfile
+    image: microservices-img
     container_name: micros
     ports:
       - 6000:6000

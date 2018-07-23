@@ -4,8 +4,8 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
 
-### Add microservicies repository
-cd microservicies
+### Add microservices repository
+cd microservices
 git submodule add -b simple https://github.com/FRINXio/netinfra_utils.git
 git submodule init 
 git submodule update --remote netinfra_utils
