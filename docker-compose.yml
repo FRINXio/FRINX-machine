@@ -1,0 +1,69 @@
+version: '3'
+services:
+  odl:
+    build: ./odl
+    image: odl-img
+    container_name: odl
+    ports:
+      - 8181:8181
+   
+  micro:
+    build:
+      context: .
+      dockerfile: ./microservicies/Dockerfile
+    image: microservicies-img
+    container_name: micros
+    ports:
+      - 6000:6000
+    depends_on:
+      - odl
+      - conductor-server
+    command: ["/home/app/wait_for_it.sh", "-t", "25",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/mount_worker.py"]
+     
+  conductor-server:
+    environment:
+      - CONFIG_PROP=config.properties
+    image: conductor:server
+    build:
+      context: ./conductor/
+      dockerfile: docker/server/Dockerfile
+    ports:
+      - 8080:8080
+      - 8000:8000
+    links:
+      - elasticsearch:es
+      - dynomite:dyno1
+    restart: on-failure
+    depends_on:
+      - dynomite
+      - elasticsearch
+      - odl
+      
+  conductor-ui:
+    environment:
+      - WF_SERVER=http://conductor-server:8080/api/
+    image: conductor:ui
+    build:
+      context: ./conductor/
+      dockerfile: docker/ui/Dockerfile
+    ports:
+      - 5000:5000
+    links:
+      - conductor-server
+      
+  dynomite:
+    image: v1r3n/dynomite
+    logging:
+      driver: none
+
+  elasticsearch:
+    image: elasticsearch:2.4
+    ports:
+      - 9200:9200
+      - 9300:9300
+    healthcheck:
+        test: ["CMD", "curl", "-IGET", "http://localhost:9200"]
+        interval: 2s
+        timeout: 6s
+        retries: 1
+
