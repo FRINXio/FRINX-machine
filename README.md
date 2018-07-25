@@ -14,18 +14,18 @@ The project is a dockerized package of ODL, Netflix - Conductor and a microservi
 
 ### Exposed ports
 * Conductor-server: 
-	- host:8080
-	- host:8000
+	* host:8080
+	* host:8000
 
 * Conductor-ui: 
-	- host:5000
+	* host:5000
 
 * ODL: 
-	-host:8181
+	* host:8181
 
-* Microcervicies: 
-	-host:6000
+* Microservices: 
+	* host:6000
 
-* Elasticsearch:
-      - host:9200
-      - host:9300
+* Elasticsearch: 
+	* host:9200
+	* host:9300
