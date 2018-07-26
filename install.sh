@@ -18,15 +18,16 @@ git submodule init
 cd conductor
 git checkout 'v1.10.10'
 
+### Create gradle properties file
+echo 'git.root=../' > gradle.properties
 
 ### Set load kitchenthin on default false
 sed -i "s/loadSample=true/loadSample=false/g"  ./docker/server/config/config-local.properties
 sed -i "s/loadSample=true/loadSample=false/g"  ./docker/server/config/config.properties
 
 
-### Build conductor server
-cd server
-../gradlew build
+### Build conductor
+./gradlew build
 
 ### Build docker containers
 cd ${DIR}
