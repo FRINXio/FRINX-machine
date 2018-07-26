@@ -52,7 +52,11 @@ services:
       - conductor-server
       
   dynomite:
-    image: v1r3n/dynomite
+    build:
+      context: .
+      dockerfile: ./dynomite/Dockerfile
+    image: dynomite
+    container_name: dynomite
     logging:
       driver: none
 
