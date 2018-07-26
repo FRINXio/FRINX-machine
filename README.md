@@ -10,7 +10,8 @@ The project is a dockerized package of ODL, Netflix - Conductor and a microservi
 ### Getting started
 * Execute install.sh script. Builds docker images.
 * To start execeute startup.sh. Starts containers and loads frinx workflows and tasks.
-* To stop containers 'docker-compose down'.
+* To stop/start containers 'docker-compose stop/start'.
+* To stop and remove containers run teardown.sh
 
 ### Exposed ports
 * Conductor-server: 
