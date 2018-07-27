@@ -3,20 +3,21 @@
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
+### Add conductor repository
+git submodule add https://github.com/FRINXio/conductor.git
 
 ### Add microservices repository
 cd microservices
 git submodule add -b simple https://github.com/FRINXio/netinfra_utils.git
-git submodule init 
-git submodule update --remote netinfra_utils
+
 
 cd ${DIR}
 
-### Add conductor repository
-git submodule add https://github.com/Netflix/conductor.git
-git submodule init
+### Update submodules
+git submodule update --remote
+
 cd conductor
-git checkout 'v1.10.10'
+
 
 ### Create gradle properties file
 echo 'git.root=../' > gradle.properties
