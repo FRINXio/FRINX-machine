@@ -30,8 +30,11 @@ sed -i "s/loadSample=true/loadSample=false/g"  ./docker/server/config/config.pro
 ### Build conductor
 ./gradlew build
 
-### Build docker containers
+### Build docker images
 cd ${DIR}
+echo 'Create external volume for redis'
+sudo docker volume create --name=data
+echo 'Build images'
 sudo docker-compose build
 
 
