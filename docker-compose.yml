@@ -6,6 +6,15 @@ services:
     container_name: odl
     ports:
       - 8181:8181
+
+  frinxit:
+    build: ./frinxit
+    image: frinxit-img
+    container_name: frinxit
+    environment:
+      - odl_target=odl
+    ports:
+      - 8888:8888
    
   micro:
     build:
