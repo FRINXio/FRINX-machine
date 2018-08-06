@@ -33,6 +33,7 @@ services:
     environment:
       - CONFIG_PROP=config.properties
     image: conductor:server
+    container_name: conductor-server
     build:
       context: ./conductor/
       dockerfile: docker/server/Dockerfile
@@ -52,6 +53,7 @@ services:
     environment:
       - WF_SERVER=http://conductor-server:8080/api/
     image: conductor:ui
+    container_name: conductor-ui
     build:
       context: ./conductor/
       dockerfile: docker/ui/Dockerfile
@@ -67,15 +69,18 @@ services:
     image: dynomite
     container_name: dynomite
     volumes:
-       - data:/var/lib/redis
+       - redis_data:/var/lib/redis
     logging:
       driver: none
 
   elasticsearch:
     image: elasticsearch:2.4
+    container_name: elasticsearch
     ports:
       - 9200:9200
       - 9300:9300
+    volumes:
+       - elastic_data:/usr/share/elasticsearch/data
     healthcheck:
         test: ["CMD", "curl", "-IGET", "http://localhost:9200"]
         interval: 2s
@@ -83,6 +88,8 @@ services:
         retries: 1
 
 volumes:
-  data:
+  redis_data:
+    external: true
+  elastic_data:
     external: true
 

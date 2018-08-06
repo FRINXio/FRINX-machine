@@ -33,7 +33,8 @@ sed -i "s/loadSample=true/loadSample=false/g"  ./docker/server/config/config.pro
 ### Build docker images
 cd ${DIR}
 echo 'Create external volume for redis'
-sudo docker volume create --name=data
+sudo docker volume create --name=redis_data
+sudo docker volume create --name=elastic_data
 echo 'Build images'
 sudo docker-compose build
 
