@@ -23,4 +23,4 @@ RUN git clone https://github.com/FRINXio/frinxit.git
 EXPOSE 8888 4545
 
 
-CMD ["/usr/src/app/gotty", "--port", "8888", "--permit-write", "--reconnect", "node", "frinxit/frinxit.js", "playground" ]
+CMD ["/usr/src/app/gotty", "--port", "8888", "--permit-write", "--reconnect", "node", "frinxit/frinxit.js"]
