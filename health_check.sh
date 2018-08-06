@@ -5,8 +5,22 @@ echo 'Health check:'
 declare -i result=0
 
 ### Check ODl
-./wait_for_it.sh localhost:8181
-result+=$?
+echo Check ODL aviability:
+
+result=1
+for i in {10..1}; do
+  response=$(curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET "http://127.0.0.1:8181/restconf/operational/installer:features")
+  HTTP_STATUS=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+  if [ $HTTP_STATUS -eq 200 ]; 
+  then
+    echo ODL is ready
+    result=0
+    break;
+  else
+    echo "Not aviable. Wait for 20 sec and retry $(($i-1)) times."
+    sleep 20
+  fi
+done
 
 ### Check Elastisearch 
 #curl -X GET 'http://localhost:9200/_cluster/health'
@@ -25,9 +39,6 @@ result+=$?
 ./wait_for_it.sh localhost:5000
 result+=$?
 
-
 ### Check dynomite
 #curl -X GET 'http://host:22222/ping'
 exit $result
-
-
