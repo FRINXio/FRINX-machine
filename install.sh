@@ -28,7 +28,7 @@ sed -i "s/loadSample=true/loadSample=false/g"  ./docker/server/config/config.pro
 
 
 ### Build conductor
-./gradlew build
+./gradlew build -x test
 
 ### Build docker images
 cd ${DIR}
