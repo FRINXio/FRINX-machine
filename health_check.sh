@@ -8,8 +8,8 @@ declare -i result=0
 echo Check ODL aviability:
 
 result=1
-for i in {10..1}; do
-  response=$(curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET "http://127.0.0.1:8181/restconf/operational/installer:features")
+for i in {20..1}; do
+  response=$(curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET "http://127.0.0.1:8181/restconf/modules")
   HTTP_STATUS=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
   if [ $HTTP_STATUS -eq 200 ]; 
   then
