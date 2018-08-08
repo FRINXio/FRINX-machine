@@ -17,7 +17,7 @@ for i in {20..1}; do
     result=0
     break;
   else
-    echo "Not aviable. Wait for 20 sec and retry $(($i-1)) times."
+    echo "Not available. Waiting for 20 seconds and retrying $(($i-1)) more times."
     sleep 20
   fi
 done
