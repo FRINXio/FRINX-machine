@@ -27,7 +27,7 @@ services:
     depends_on:
       - odl
       - conductor-server
-    command: ["/home/app/wait_for_it.sh", "-t", "25",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/mount_worker.py"]
+    command: ["/home/app/wait_for_it.sh", "-t", "25",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
      
   conductor-server:
     environment:

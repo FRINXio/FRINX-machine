@@ -77,4 +77,4 @@ WORKDIR /home/app/conductor/client/python
 RUN python setup.py install
 
 WORKDIR /home/app/netinfra_utils/workers
-CMD [ "python", "mount_worker.py" ]
+CMD [ "python", "main.py" ]
