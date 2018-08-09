@@ -8,7 +8,7 @@ declare -i result=0
 echo Check ODL aviability:
 
 result=1
-for i in {20..1}; do
+for i in {30..1}; do
   response=$(curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET "http://127.0.0.1:8181/restconf/modules")
   HTTP_STATUS=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
   if [ $HTTP_STATUS -eq 200 ]; 
@@ -17,8 +17,8 @@ for i in {20..1}; do
     result=0
     break;
   else
-    echo "Not available. Waiting for 20 seconds and retrying $(($i-1)) more times."
-    sleep 20
+    echo "Not available. Waiting for 30 seconds and retrying $(($i-1)) more times."
+    sleep 30
   fi
 done
 
