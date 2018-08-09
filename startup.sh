@@ -4,7 +4,7 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
 
-docker-compose up -d
+sudo docker-compose up -d
 
 ### Wait for containers to start
 echo 'Wait 30s for containers to start.'
