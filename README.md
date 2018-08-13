@@ -47,7 +47,7 @@ sudo docker volume create --name=elastic_data
 ```
 
 
-### Teradown
+### Teardown
 In the FRINX-machine folder execute the `teardown.sh` script.
 * Stops and removes containers.
 * Does not remove external volumes.
