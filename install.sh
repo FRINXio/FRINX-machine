@@ -22,11 +22,6 @@ cd conductor
 ### Create gradle properties file
 echo 'git.root=../' > gradle.properties
 
-### Set load kitchenthin on default false
-sed -i "s/loadSample=true/loadSample=false/g"  ./docker/server/config/config-local.properties
-sed -i "s/loadSample=true/loadSample=false/g"  ./docker/server/config/config.properties
-
-
 ### Build conductor
 ./gradlew build -x test
 
