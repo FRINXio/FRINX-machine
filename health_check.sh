@@ -5,7 +5,7 @@ echo 'Health check:'
 declare -i result=0
 
 ### Check ODl
-echo Check ODL aviability:
+echo Check ODL availability:
 
 result=1
 for i in {30..1}; do
