@@ -27,8 +27,8 @@ services:
     depends_on:
       - odl
       - conductor-server
-    command: ["/home/app/wait_for_it.sh", "-t", "25",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
-     
+    command: ["/home/app/wait_for_it.sh", "-t", "60",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
+
   conductor-server:
     environment:
       - CONFIG_PROP=config.properties
@@ -46,8 +46,8 @@ services:
     restart: on-failure
     depends_on:
       - dynomite
-      - elasticsearch
       - odl
+    command: ["/app/wait_for.sh", "-t", "40",  "elasticsearch:9300", "--", "/app/startup.sh"]
       
   conductor-ui:
     environment:
@@ -74,11 +74,14 @@ services:
       driver: none
 
   elasticsearch:
-    image: elasticsearch:2.4
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.10
     container_name: elasticsearch
     ports:
       - 9200:9200
       - 9300:9300
+    environment:
+      - "discovery.type=single-node"
+      - "xpack.security.enabled=false"
     volumes:
        - elastic_data:/usr/share/elasticsearch/data
     healthcheck:
@@ -86,6 +89,17 @@ services:
         interval: 2s
         timeout: 6s
         retries: 1
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.6.10
+    container_name: kibana
+    environment:
+      - "elasticsearch.url=http://elasticsearch:9200"
+      - "xpack.security.enabled=false"
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
 
 volumes:
   redis_data:
