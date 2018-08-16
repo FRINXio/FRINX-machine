@@ -4,4 +4,4 @@
 	branch = simple
 [submodule "conductor"]
 	path = conductor
-	url = https://github.com/Netflix/conductor.git
+	url = https://github.com/FRINXio/conductor.git
