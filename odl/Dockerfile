@@ -27,5 +27,7 @@ RUN ["sed", "-i", \
   ", \
   "/opt/distribution-frinx/etc/org.apache.karaf.features.cfg"]
 
+CMD ["./bin/karaf"]
+
 
 

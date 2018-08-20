@@ -1,0 +1,103 @@
+version: '3'
+services:
+  odl:
+    build: ./odl
+    image: odl-img
+    container_name: odl
+    environment:
+      - JAVA_MAX_MEM=2G
+    ports:
+      - 8181:8181
+   
+  micro:
+    build:
+      context: .
+      dockerfile: ./microservices/Dockerfile
+    image: microservices-img
+    container_name: micros
+    ports:
+      - 6000:6000
+    depends_on:
+      - odl
+      - conductor-server
+    command: ["/home/app/wait_for_it.sh", "-t", "60",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
+
+  conductor-server:
+    environment:
+      - CONFIG_PROP=config.properties
+    image: conductor:server
+    container_name: conductor-server
+    build:
+      context: ./conductor/
+      dockerfile: docker/server/Dockerfile
+    ports:
+      - 8080:8080
+      - 8000:8000
+    links:
+      - elasticsearch:es
+      - dynomite:dyno1
+    restart: on-failure
+    depends_on:
+      - dynomite
+      - odl
+    command: ["/app/wait_for.sh", "-t", "40",  "elasticsearch:9300", "--", "/app/startup.sh"]
+      
+  conductor-ui:
+    environment:
+      - WF_SERVER=http://conductor-server:8080/api/
+    image: conductor:ui
+    container_name: conductor-ui
+    build:
+      context: ./conductor/
+      dockerfile: docker/ui/Dockerfile
+    ports:
+      - 5000:5000
+    links:
+      - conductor-server
+      
+  dynomite:
+    build:
+      context: .
+      dockerfile: ./dynomite/Dockerfile
+    image: dynomite
+    container_name: dynomite
+    volumes:
+       - redis_data:/var/lib/redis
+    logging:
+      driver: none
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.10
+    container_name: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx1024m"
+      - "discovery.type=single-node"
+      - "xpack.security.enabled=false"
+    volumes:
+       - elastic_data:/usr/share/elasticsearch/data
+    healthcheck:
+        test: ["CMD", "curl", "-IGET", "http://localhost:9200"]
+        interval: 2s
+        timeout: 6s
+        retries: 1
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:5.6.10
+    container_name: kibana
+    environment:
+      - "elasticsearch.url=http://elasticsearch:9200"
+      - "xpack.security.enabled=false"
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+
+volumes:
+  redis_data:
+    external: true
+  elastic_data:
+    external: true
+
