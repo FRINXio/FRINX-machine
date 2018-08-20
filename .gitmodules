@@ -1,7 +1,7 @@
 [submodule "microservices/netinfra_utils"]
 	path = microservices/netinfra_utils
 	url = https://github.com/FRINXio/netinfra_utils.git
-	branch = simple
+	branch = master
 [submodule "conductor"]
 	path = conductor
 	url = https://github.com/FRINXio/conductor.git
