@@ -25,9 +25,9 @@ esac
 done
 
 if [ "$minimal" = true ]; then
-  sudo docker-compose -f docker-compose.min.yml up -d
+  sudo COMPOSE_HTTP_TIMEOUT=200 docker-compose -f docker-compose.min.yml up -d
 else
-  sudo docker-compose up -d
+  sudo COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
 fi
 
 
