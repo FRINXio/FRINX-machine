@@ -23,7 +23,9 @@ RUN ["sed", "-i", \
     unified-topology-all-units, \
     uniconfig-node-manager, \
     cli-southbound-all-units, \
-    odl-restconf/  \
+    odl-restconf, \
+    odl-netconf-connector-all, \
+    frinx-l3vpn-app/  \
   ", \
   "/opt/distribution-frinx/etc/org.apache.karaf.features.cfg"]
 
