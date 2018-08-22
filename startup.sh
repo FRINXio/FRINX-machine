@@ -22,6 +22,20 @@ function help {
   example
 }
 
+function check_success {
+  if [[ $? -ne 0 ]] 
+  then
+  RED='\033[0;31m'
+  NC='\033[0m' # No Color
+  printf "${RED}System is not healthy. Shutting down.\n${NC}"
+  echo "Removing containers."
+  ./teardown.sh
+  exit
+fi
+}
+
+
+
 # Loop arguments
 minimal=false
 while [ "$1" != "" ];
@@ -42,6 +56,7 @@ case $1 in
 esac
 done
 
+
 # Start containers
 if [ "$minimal" = true ]; then
   sudo COMPOSE_HTTP_TIMEOUT=200 docker-compose -f docker-compose.min.yml up -d
@@ -52,25 +67,17 @@ fi
 
 # Wait for containers to start
 echo 'Wait 30s for containers to start.'
-sleep 30
+#sleep 30
 
 
 ### Health check
 ./health_check.sh
-if [[ $? -ne 0 ]]
-then
-  RED='\033[0;31m'
-  NC='\033[0m' # No Color
-  printf "${RED}System is not healthy. Shutting down.\n${NC}"
-  echo "Removing containers."
-  ./teardown.sh
-  exit
-fi
-
+check_success $?
 
 
 # Import Frinx Tasks and Workflow defs
 docker exec -it micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
+check_success $?
 
 
 echo 'Startup finished!'
