@@ -67,7 +67,7 @@ fi
 
 # Wait for containers to start
 echo 'Wait 30s for containers to start.'
-#sleep 30
+sleep 30
 
 
 ### Health check
