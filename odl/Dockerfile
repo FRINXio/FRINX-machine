@@ -43,6 +43,8 @@ RUN echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | tee -
 # Update and install
 RUN apt-get update && apt-get install logstash
 
+# Remove x-pack
+RUN bin/logstash-plugin remove --purge x-pack || true
 
 # Configure
 COPY conf/org.ops4j.pax.logging.cfg /opt/distribution-frinx/etc/
