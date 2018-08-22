@@ -1,29 +1,48 @@
 #!/bin/bash
 
-usage()  
- {  
- echo "Usage: -m | --minimal   Start with minimal resource usage and frinxit disabled."  
- exit 1  
- }
-
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
+# Common functions
+script="startup.sh"
+
+function example {
+    echo -e "example: $script -m"
+}
+
+function usage {  
+ echo -e "usage: $script [OPTION]  \n"  
+}
+
+function help {
+  usage
+    echo -e "OPTION:"
+    echo -e "  -m | --minimal   Start with minimal resource usage and frinxit disabled."
+    echo -e "\n"
+  example
+}
+
+# Loop arguments
 minimal=false
-while [[ $# -gt 0 ]]
+while [ "$1" != "" ];
 do
-case "$1" in
-    -m|--minimal)
+case $1 in
+    -m | --minimal)
     minimal=true
     shift
     ;;
+    -h | --help )
+    help
+    exit
+    ;;
     *)    # unknown option
-    echoerr "Unknown argument: $1"
-    usage
+    echo "$script: illegal option $1"
+    exit 1 #error
     ;;
 esac
 done
 
+# Start containers
 if [ "$minimal" = true ]; then
   sudo COMPOSE_HTTP_TIMEOUT=200 docker-compose -f docker-compose.min.yml up -d
 else
@@ -31,7 +50,7 @@ else
 fi
 
 
-### Wait for containers to start
+# Wait for containers to start
 echo 'Wait 30s for containers to start.'
 sleep 30
 
@@ -50,7 +69,7 @@ fi
 
 
 
-### Import Frinx Tasks and Workflow defs
+# Import Frinx Tasks and Workflow defs
 docker exec -it micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
 
 
