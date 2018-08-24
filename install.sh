@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
@@ -89,13 +91,20 @@ git submodule init
 git submodule update --recursive --remote
 
 
+
 cd conductor
 
-# Create gradle properties file
-echo 'git.root=../' > gradle.properties
+# Get conductor latest tag
+version=$(git describe | grep -oP "\d+\.\d+\.\d+")
 
-# Build conductor
-./gradlew build -x test
+# Create gradle properties file
+echo 'git.root=../../' > gradle.properties
+echo "submodVersion=$version" >> gradle.properties
+
+
+# Build conductor server
+cd server
+../gradlew build -x test
 
 
 # Build docker images
