@@ -18,71 +18,91 @@ The project is a dockerized package of:
 * JDK 1.8
 * License for FRINX ODL
 
+16GB RAM with normal startup, and 5GB RAM with minimal config should be enough. 
+
+### Tested on
+* Ubuntu 16.04 / 18.04
+* docker v18.06.1-ce
+* docker-compose v1.22.0
+
 
 
 ## Getting started
- 
-#### Installation
-Go to the FRINX-machine folder and execute the `install.sh` with mandatory switch -l 
-what takes the FRINX ODL license token.
-* Builds conductor-server .jar file.
-* Creates docker images.
-* Creates external volumes for data persistence.
-
-```bash
-usage: install.sh MANDATORY 
-
-MANDATORY:
-  -l | --license  VAL     License token
+##### Trial license
+We offer a one month trial license. No signup needed!
+License token:
+```
+0e57a786f7dbd27fa77db684cf3b234d6f23ed784e52cbfb107fd4317ba2646c66f7a141b0e823946d8f9d956852c95d33dc82f945779b1c9969049e94935b2a
 ```
 
-
-Should be executed with sudo otherwise it will prompt for your password in the middle of the script.
-
+#### Get the project
+Clone the repository:
+```bash
+git clone https://github.com/FRINXio/FRINX-machine.git
+```
+Navigate into the project folder:
 ```bash
 cd FRINX-machine
-sudo ./install.sh -l 3546840658406840664648465647486779874946564789746876854068
 ```
 
+ 
+#### Installation
+The installation script `install.sh` is in the FRINX-machine folder. 
+What does installation do:
+* Updates project submodules
+* Copies license token. 
+* Pulls conductor project parts from maven repository.
+* Builds conductor-server .jar file.
+* Pulls and creates docker images.
+* Creates external volumes for data persistence.
 
-### Startup
-In the FRINX-machine folder execute the `startup.sh` script.
-```bash
-usage: startup.sh [OPTION]  
 
-OPTION:
-  -m | --minimal   Start with minimal resource usage and frinxit disabled.
+Docker needs privileged mode, so `install.sh` should be executed with sudo. Otherwise it will prompt for password while executing.
+
+Installation with the trial license token:
+```
+sudo ./install.sh -l 0e57a786f7dbd27fa77db684cf3b234d6f23ed784e52cbfb107fd4317ba2646c66f7a141b0e823946d8f9d956852c95d33dc82f945779b1c9969049e94935b2a
 ```
 
+#### Startup
+The startup script `startup.sh` can be found in the FRINX-machine folder.
+What does it do:
 * Creates the docker containers from the images and starts them.
-* Waits for containers to start.
 * Imports workflow definitions.
 
 
-Should be executed with sudo otherwise it will prompt for your password in the middle of the script.
+Docker needs privileged mode, so `startup.sh` should be executed with sudo. Otherwise it will prompt for password while executing.
 ```bash
-cd FRINX-machine
 sudo ./startup.sh
 ```
-
-Docker expects that the external volumes exist when starting the containers.  
-If they were removed, they can be created with:
+##### Minimal startup
 ```bash
-sudo docker volume create --name=redis_data
-sudo docker volume create --name=elastic_data
+sudo ./startup.sh -m
 ```
+Starts application with lower RAM usage.
 
-
-### Teardown
-In the FRINX-machine folder execute the `teardown.sh` script.
+#### Teardown
+The `teardown.sh` script in the FRINX-machine folder:
 * Stops and removes containers.
 * Does not remove external volumes.
 
-To remove the external volumes use:  
-**Caution all data will be lost!**
+Using docker, also needs privileged mode:
 ```bash
-sudo docker volume rm redis_data
-sudo docker volume rm elastic_data
+sudo ./teardown
+```
+
+## Removal of external volumes
+#### **Caution all data will be lost!**
+
+To remove the external volumes use:
+```bash
+sudo docker volume rm redis_data elastic_data
+```
+Docker expects external volumes to exist when starting the containers.
+They can be created with:
+```bash
+sudo docker volume create --name=redis_data
+sudo docker volume create --name=elastic_data
 ```
 
 ### Exposed ports
