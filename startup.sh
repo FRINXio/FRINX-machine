@@ -59,9 +59,9 @@ done
 
 # Start containers
 if [ "$minimal" = true ]; then
-  sudo COMPOSE_HTTP_TIMEOUT=200 docker-compose -f docker-compose.min.yml up -d
+  sudo docker-compose -f docker-compose.min.yml up -d
 else
-  sudo COMPOSE_HTTP_TIMEOUT=200 docker-compose up -d
+  sudo docker-compose up -d
 fi
 
 
@@ -76,7 +76,7 @@ check_success $?
 
 
 # Import Frinx Tasks and Workflow defs
-docker exec -it micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
+sudo docker exec -it micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
 check_success $?
 
 
