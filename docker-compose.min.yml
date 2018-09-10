@@ -20,7 +20,7 @@ services:
     depends_on:
       - odl
       - conductor-server
-    command: ["/home/app/wait_for_it.sh", "-t", "60",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
+    command: ["/home/app/wait_for_it.sh", "-t", "180",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
 
   conductor-server:
     environment:
@@ -40,7 +40,7 @@ services:
     depends_on:
       - dynomite
       - odl
-    command: ["/app/wait_for.sh", "-t", "40",  "elasticsearch:9300", "--", "/app/startup.sh"]
+    command: ["/app/wait_for.sh", "-t", "120",  "elasticsearch:9300", "--", "/app/startup.sh"]
       
   conductor-ui:
     environment:

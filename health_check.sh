@@ -17,8 +17,8 @@ for i in {30..1}; do
     result=0
     break;
   else
-    echo "Not available. Waiting for 30 seconds and retrying $(($i-1)) more times."
-    sleep 30
+    echo "Not available. Waiting for 60 seconds and retrying $(($i-1)) more times."
+    sleep 60
   fi
 done
 
