@@ -57,7 +57,22 @@ esac
 done
 
 
-# Start containers
+# Start odl
+if [ "$minimal" = true ]; then
+  sudo docker-compose -f docker-compose.min.yml up -d odl
+else
+  sudo docker-compose up -d odl
+fi
+
+# Wait to start
+echo 'Wait 30s to start'
+sleep 30
+
+# Wait till it responds
+./health_check.sh --odl
+check_success $?
+
+# Start other containers
 if [ "$minimal" = true ]; then
   sudo docker-compose -f docker-compose.min.yml up -d
 else
@@ -66,7 +81,7 @@ fi
 
 
 # Wait for containers to start
-echo 'Wait 30s for containers to start.'
+echo 'Wait 30s for other containers to start.'
 sleep 30
 
 
