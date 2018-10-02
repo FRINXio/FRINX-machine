@@ -29,7 +29,7 @@ min 16GB RAM & min 4 vCPUs with normal startup, and 5GB RAM & 2 vCPUs with minim
 
 
 
-## Getting started
+## Installation Guide
 ##### Trial license
 We offer a one month trial license. No signup needed!
 License token:
