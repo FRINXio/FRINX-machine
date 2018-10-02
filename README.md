@@ -11,6 +11,8 @@ The project is a dockerized package of:
 * [frinxit]
 
 
+## Documentation & Use Cases
+https://frinxio.github.io/Frinx-docs/FRINX_Machine/User_Guide/frinx-machine_userguide.html
 
 ## Requirements
 * [Docker](https://www.docker.com/)
