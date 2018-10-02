@@ -18,12 +18,12 @@ The project is a dockerized package of:
 * JDK 1.8
 * License for FRINX ODL
 
-16GB RAM with normal startup, and 5GB RAM with minimal config should be enough. 
+min 16GB RAM & min 4 vCPUs with normal startup, and 5GB RAM & 2 vCPUs with minimal config should be enough. 
 
 ### Tested on
 * Ubuntu 16.04 / 18.04
-* docker v18.06.1-ce
-* docker-compose v1.22.0
+* docker 18.03.1-ce, v18.06.1-ce 
+* docker-compose 1.21.2, v1.22.0
 
 
 
@@ -75,11 +75,13 @@ Docker needs privileged mode, so `startup.sh` should be executed with sudo. Othe
 ```bash
 sudo ./startup.sh
 ```
+Min 16GB RAM & min 4 vCPUs with normal startup are recommended.
+
 ##### Minimal startup
 ```bash
 sudo ./startup.sh -m
 ```
-Starts application with lower RAM usage.
+Starts application with lower RAM usage. Min 5GB RAM & min 2 vCPUs with minimal startup are recommended.
 
 #### Teardown
 The `teardown.sh` script in the FRINX-machine folder:
