@@ -48,7 +48,7 @@ local containers_to_start=("odl" "dynomite" "elasticsearch" "kibana" "conductor-
 for i in "${containers_to_start[@]}"; do 
 
 start_container $i
-./healthcheck.sh $i
+./health_check.sh $i
 check_success $?
 echo "################"
 done
