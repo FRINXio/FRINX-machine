@@ -17,7 +17,7 @@ function usage {
 function help {
   usage
     echo -e "OPTION:"
-    echo -e "  -m | --minimal   Start with minimal resource usage and frinxit disabled."
+    echo -e "  -m | --minimal   Start with lower resource usage."
     echo -e "\n"
   example
 }
@@ -32,6 +32,27 @@ function check_success {
   ./teardown.sh
   exit
 fi
+}
+
+function start_container {
+if [ "$minimal" = true ]; then
+  sudo docker-compose -f docker-compose.min.yml up -d "$1"
+else
+  sudo docker-compose -f docker-compose.yml up -d "$1"
+fi
+}
+
+function start_containers {
+local containers_to_start=("odl" "dynomite" "elasticsearch" "kibana" "conductor-server" "frinxit" "micro"  "conductor-ui"  )
+
+for i in "${containers_to_start[@]}"; do 
+
+start_container $i
+./healthcheck.sh $i
+check_success $?
+echo "################"
+done
+
 }
 
 
@@ -57,37 +78,8 @@ esac
 done
 
 
-# Start odl
-if [ "$minimal" = true ]; then
-  sudo docker-compose -f docker-compose.min.yml up -d odl
-else
-  sudo docker-compose up -d odl
-fi
+start_containers
 
-# Wait to start
-echo 'Wait 30s to start'
-sleep 30
-
-# Wait till it responds
-./health_check.sh --odl
-check_success $?
-
-# Start other containers
-if [ "$minimal" = true ]; then
-  sudo docker-compose -f docker-compose.min.yml up -d
-else
-  sudo docker-compose up -d
-fi
-
-
-# Wait for containers to start
-echo 'Wait 30s for other containers to start.'
-sleep 30
-
-
-### Health check
-./health_check.sh
-check_success $?
 
 
 # Import Frinx Tasks and Workflow defs
