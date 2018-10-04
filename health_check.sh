@@ -23,7 +23,7 @@ function example {
 
 
 # all container names
-valid_containers=("odl" "frinxit" "micro" "conductor-server" "conductor-ui" "dynomite" "elasticsearch" "kibana" )
+valid_containers=("odl" "frinxit" "micro" "conductor-server" "conductor-ui" "dynomite" "elasticsearch" "kibana" "sample-topology" )
 containers_to_check=()
 
 curl_odl=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET "http://127.0.0.1:8181/restconf/modules" )
@@ -165,6 +165,9 @@ for i in "${containers_to_check[@]}"; do
     kibana )
     check_container $i curl_kibana
     result+=$?
+    ;;
+    sample-topology )
+    echo "No exposed ports"
     ;;
     * )
     echo "Invalid container name: $i"

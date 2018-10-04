@@ -31,6 +31,13 @@ services:
       - conductor-server
     command: ["/home/app/wait_for_it.sh", "-t", "180",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
 
+  sample-topology:
+    build:
+      context: .
+      dockerfile: ./sample-topology/Dockerfile
+    image: sample-topology
+    container_name: sample-topology
+
   conductor-server:
     environment:
       - CONFIG_PROP=config.properties
