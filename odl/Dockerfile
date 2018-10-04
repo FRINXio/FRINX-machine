@@ -25,7 +25,8 @@ RUN ["sed", "-i", \
     cli-southbound-all-units, \
     odl-restconf, \
     odl-netconf-connector-all, \
-    frinx-l3vpn-app/  \
+    frinx-l3vpn-app,  \
+    lldp-topology feature /  \
   ", \
   "/opt/distribution-frinx/etc/org.apache.karaf.features.cfg"]
 
