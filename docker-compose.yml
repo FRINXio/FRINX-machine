@@ -55,7 +55,7 @@ services:
       - dynomite
       - odl
     command: ["/app/wait_for.sh", "-t", "120",  "elasticsearch:9300", "--", "/app/startup.sh"]
-      
+    
   conductor-ui:
     environment:
       - WF_SERVER=http://conductor-server:8080/api/

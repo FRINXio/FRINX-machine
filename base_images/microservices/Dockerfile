@@ -1,3 +1,4 @@
+# docker build -t frinx/micro_base:latest .
 FROM python:2.7.15-jessie
 
 ## Install nodejs 
