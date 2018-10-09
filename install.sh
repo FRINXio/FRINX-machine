@@ -104,7 +104,7 @@ echo "submodVersion=$version" >> gradle.properties
 
 # Build conductor server
 cd server
-../gradlew build -x test
+../gradlew build --no-daemon -x test
 
 
 # Build docker images
