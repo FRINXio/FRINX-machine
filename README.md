@@ -8,7 +8,7 @@ The project is a containerized package of:
     * [Kibana]
     * [Logstash]
 * FRINX Microservices Engine
-* FRINXit [FRINXit]
+* [FRINXit]
 
 
 ## Documentation & Use Cases
