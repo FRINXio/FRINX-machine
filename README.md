@@ -9,6 +9,7 @@ The project is a containerized package of:
     * [Logstash]
 * FRINX Microservices Engine
 * [FRINXit]
+* Device simulation container
 
 
 ## Documentation & Use Cases
