@@ -1,14 +1,14 @@
 # FRINX-machine
-The project is a dockerized package of: 
+The project is a containerized package of: 
 
 * [FRINX ODL]
-* fork of [Conductor]
+* FRINX fork of Netflix's [Conductor]
 * Elastic's
     * [Elasticsearch]
     * [Kibana]
     * [Logstash]
-* Microservices engine
-* [frinxit]
+* FRINX Microservices Engine
+* FRINXit [FRINXit]
 
 
 ## Documentation & Use Cases
@@ -20,7 +20,7 @@ https://frinxio.github.io/Frinx-docs/FRINX_Machine/User_Guide/frinx-machine_user
 * JDK 1.8
 * License for FRINX ODL
 
-min 16GB RAM & min 4 vCPUs with normal startup, and 5GB RAM & 2 vCPUs with minimal config should be enough. 
+min 16GB RAM & min 4 vCPUs with normal startup, and 5GB RAM & 2 vCPUs with minimal config has been successfully tested for POCs and demos. 
 
 ### Tested on
 * Ubuntu 16.04 / 18.04
@@ -68,7 +68,7 @@ sudo ./install.sh -l 0e57a786f7dbd27fa77db684cf3b234d6f23ed784e52cbfb107fd4317ba
 
 #### Startup
 The startup script `startup.sh` can be found in the FRINX-machine folder.
-What does it do:
+Here is what it does:
 * Creates the docker containers from the images and starts them.
 * Imports workflow definitions.
 
@@ -109,6 +109,13 @@ sudo docker volume create --name=redis_data
 sudo docker volume create --name=elastic_data
 ```
 
+### GUI
+Once started open your browser and open the following GUIs:
+* host:5000 --> FRINX workflow GUI
+* host:5601 --> Kibana (for log and inventory access)
+* host:8888 --> FRINXit (CLI for FRINX ODL)
+
+
 ### Exposed ports
 * Conductor-server: 
 	* host:8080
@@ -136,7 +143,7 @@ sudo docker volume create --name=elastic_data
 
 [FRINX ODL]: <https://frinx.io/odl_distribution>
 [Conductor]: <https://github.com/FRINXio/conductor>
-[frinxit]: <https://github.com/FRINXio/frinxit>
+[FRINXit]: <https://github.com/FRINXio/frinxit>
 [Elasticsearch]: <https://www.elastic.co/products/elasticsearch>
 [Kibana]: <https://www.elastic.co/products/kibana>
 [Logstash]: <https://www.elastic.co/products/logstash>
