@@ -1,3 +1,7 @@
+# To build:
+# cd FRINX-machine
+# docker build -f dynomite/Dockerfile -t frinx/dynomite:latest .
+
 FROM ubuntu 
  
 

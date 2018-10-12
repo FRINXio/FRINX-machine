@@ -70,10 +70,7 @@ services:
       - conductor-server
       
   dynomite:
-    build:
-      context: .
-      dockerfile: ./dynomite/Dockerfile
-    image: dynomite
+    image: frinx/dynomite:latest
     container_name: dynomite
     volumes:
        - redis_data:/var/lib/redis
