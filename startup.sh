@@ -18,6 +18,7 @@ function help {
   usage
     echo -e "OPTION:"
     echo -e "  -m | --minimal   Start with lower resource usage."
+    echo -e "  -s | --skip      Skips healthchecks and check for execution errors."
     echo -e "\n"
   example
 }
@@ -48,22 +49,38 @@ local containers_to_start=("odl" "dynomite" "elasticsearch" "kibana" "conductor-
 for i in "${containers_to_start[@]}"; do 
 
 start_container $i
-./health_check.sh $i
-check_success $?
+if [ "$skip" = false ]; then
+  ./health_check.sh $i
+  check_success $?
+fi
 echo "################"
 done
 
 }
 
+function import_workflows {
+
+sudo docker exec -it micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
+if [ "$skip" = false ]; then
+  check_success $?
+fi
+
+}
 
 
 # Loop arguments
 minimal=false
+skip=false
+import=false
 while [ "$1" != "" ];
 do
 case $1 in
     -m | --minimal)
     minimal=true
+    shift
+    ;;
+    -s | --skip)
+    skip=true
     shift
     ;;
     -h | --help )
@@ -78,13 +95,11 @@ esac
 done
 
 
+# Starts containers
 start_containers
 
-
-
-# Import Frinx Tasks and Workflow defs
-sudo docker exec -it micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
-check_success $?
+# Imports workflows
+import_workflows
 
 
 echo 'Startup finished!'
