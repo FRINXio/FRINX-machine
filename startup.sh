@@ -37,7 +37,7 @@ fi
 
 function start_container {
 if [ "$minimal" = true ]; then
-  sudo docker-compose -f docker-compose.min.yml up -d "$1"
+  sudo docker-compose -f docker-compose.yml -f docker-compose.min.yml up -d "$1"
 else
   sudo docker-compose -f docker-compose.yml up -d "$1"
 fi
