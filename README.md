@@ -13,7 +13,7 @@ The project is a containerized package of:
 
 
 ## Documentation & Use Cases
-https://frinxio.github.io/Frinx-docs/FRINX_Machine/User_Guide/frinx-machine_userguide.html
+https://frinxio.github.io/Frinx-docs/
 
 ## Requirements
 * [Docker](https://www.docker.com/)
