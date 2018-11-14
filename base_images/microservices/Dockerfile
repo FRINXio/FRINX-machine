@@ -68,3 +68,14 @@ RUN set -ex \
 ### Install newman
 RUN npm install -g newman
 
+# Install unzip
+RUN apt-get update \
+ && apt-get install unzip
+
+# Download and unpack terraform(unpacks to an executable)
+ADD https://releases.hashicorp.com/terraform/0.11.10/terraform_0.11.10_linux_amd64.zip .
+RUN unzip terraform_0.11.10_linux_amd64.zip
+
+# Add terraform executable ot path
+ENV PATH="$PATH:/home/app"
+
