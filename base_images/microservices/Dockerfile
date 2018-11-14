@@ -72,9 +72,16 @@ RUN npm install -g newman
 RUN apt-get update \
  && apt-get install unzip
 
+WORKDIR /home/app/
+
 # Download and unpack terraform(unpacks to an executable)
 ADD https://releases.hashicorp.com/terraform/0.11.10/terraform_0.11.10_linux_amd64.zip .
 RUN unzip terraform_0.11.10_linux_amd64.zip
+
+# Download and unpack terraform-aws-vpc pluigin
+ADD https://github.com/terraform-aws-modules/terraform-aws-vpc/archive/v1.46.0.zip .
+RUN unzip v1.46.0.zip \
+ && mv terraform-aws-vpc-1.46.0 terraform-aws-vpc
 
 # Add terraform executable ot path
 ENV PATH="$PATH:/home/app"
