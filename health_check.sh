@@ -13,7 +13,7 @@ function help {
     echo -e "  -s   Skip given containers"
     echo -e "\n"
     echo -e "ARGUMENTS:"
-    echo -e "odl frinxit micro conductor-server conductor-ui dynomite elasticsearch kibana"
+    echo -e "odl frinxit micros conductor-server conductor-ui dynomite elasticsearch kibana"
   example
 }
 
@@ -23,7 +23,7 @@ function example {
 
 
 # all container names
-valid_containers=("odl" "frinxit" "micro" "conductor-server" "conductor-ui" "dynomite" "elasticsearch" "kibana" "sample-topology" )
+valid_containers=("odl" "frinxit" "micros" "conductor-server" "conductor-ui" "dynomite" "elasticsearch" "kibana" "sample-topology" )
 containers_to_check=()
 
 curl_odl=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET "http://127.0.0.1:8181/restconf/modules" )
@@ -144,7 +144,7 @@ for i in "${containers_to_check[@]}"; do
     check_container $i curl_frinxit
     result+=$?
     ;;
-    micro )
+    micros )
     echo "No exposed ports"
     ;;
     conductor-server )
