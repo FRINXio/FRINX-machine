@@ -79,8 +79,6 @@ After installing `curl`, use following command to get *Docker Compose*:
 	
 _Note: You can download the latest version of Docker Composer after chceking Release Notes https://github.com/docker/compose/releases and finding the latest version, e.g. 1.23.2. Then you can edit the download link release version number to get the latest release._
 
-_Reminder: Do not install Docker Composer to the directory that contains FRINX Machine. Use `cd ..` command to left the directory._
-
 ## Installation Guide
 ##### Trial license
 We offer a one month trial license. No signup needed!
