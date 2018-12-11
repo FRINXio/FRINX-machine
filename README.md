@@ -24,11 +24,62 @@ https://frinxio.github.io/Frinx-docs/
 min 16GB RAM & min 4 vCPUs with normal startup, and 5GB RAM & 2 vCPUs with minimal config has been successfully tested for POCs and demos. 
 
 ### Tested on
-* Ubuntu 16.04 / 18.04
+* Ubuntu 16.04 / 18.04 /
 * docker 18.03.1-ce, v18.06.1-ce 
 * docker-compose 1.21.2, v1.22.0
 
+## Installation preparation
 
+### OpenJDK 8
+
+Make sure you have installed the OpenJDK 8. It is highly recommended for FRINX Machine to run correctly.
+If you don't have Java 8 installed, please, follow these instuctions:
+
+To install OpenJDK 8, execute the following command:
+
+    sudo apt install openjdk-8-jdk
+
+Verify that this is installed with
+
+    java -version
+
+You'll see output similar to this:
+
+```
+Output
+openjdk version "1.8.0_162"
+OpenJDK Runtime Environment (build 1.8.0_162-8u162-b12-1-b12)
+OpenJDK 64-Bit Server VM (build 25.162-b12, mixed mode)
+```
+### Docker
+
+To install the Ubuntu repository version, execute the following command
+
+	sudo apt-get install docker.io
+
+Check the version with
+
+	docker --version
+
+You'll see output similar to this:
+
+	Docker version 18.06.1-ce, build e68fc7a
+
+### Docker Compose
+
+To install Docker Compose, at first, install the `curl` command
+
+Type the following apt or apt-get command:
+	
+	sudo apt install curl
+	
+After installing `curl`, use following command to get *Docker Compose*:
+
+	sudo curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o 	/usr/local/bin/docker-compose
+	
+_Note: You can download the latest version of Docker Composer after chceking Release Notes https://github.com/docker/compose/releases and finding the latest version, e.g. 1.23.2. Then you can edit the download link release version number to get the latest release._
+
+_Reminder: Do not install Docker Composer to the directory that contains FRINX Machine. Use `cd ..` command to left the directory._
 
 ## Installation Guide
 ##### Trial license
