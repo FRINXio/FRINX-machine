@@ -99,8 +99,10 @@ cd FRINX-machine
 
  
 #### Installation
+
 The installation script `install.sh` is in the FRINX-machine folder. 
-What does installation do:
+
+*What does installation do:*
 * Updates project submodules
 * Copies license token. 
 * Pulls conductor project parts from maven repository.
