@@ -115,7 +115,7 @@ Docker needs privileged mode, so `install.sh` should be executed with sudo. Othe
 
 Installation with the trial license token:
 ```
-./install.sh -l 0e57a786f7dbd27fa77db684cf3b234d6f23ed784e52cbfb107fd4317ba2646c66f7a141b0e823946d8f9d956852c95d33dc82f945779b1c9969049e94935b2a
+sudo ./install.sh -l 0e57a786f7dbd27fa77db684cf3b234d6f23ed784e52cbfb107fd4317ba2646c66f7a141b0e823946d8f9d956852c95d33dc82f945779b1c9969049e94935b2a
 ```
 
 #### Startup
@@ -189,7 +189,7 @@ Once started open your browser and open the following GUIs:
 	* localhost:9200
 	* localhost:9300
 * Kibana:
-    * localhost:5601
+    	* localhost:5601
 
 
 
