@@ -161,33 +161,33 @@ sudo docker volume create --name=elastic_data
 
 ### GUI
 Once started open your browser and open the following GUIs:
-* host:5000 --> FRINX workflow GUI
-* host:5601 --> Kibana (for log and inventory access)
-* host:8888 --> FRINXit (CLI for FRINX ODL)
+* localhost:5000 --> FRINX workflow GUI
+* localhost:5601 --> Kibana (for log and inventory access)
+* localhost:8888 --> FRINXit (CLI for FRINX ODL)
 
 
 ### Exposed ports
 * Conductor-server: 
-	* host:8080
-	* host:8000
+	* localhost:8080
+	* localhost:8000
 
 * Conductor-ui: 
-	* host:5000
+	* localhost:5000
 
 * ODL: 
-	* host:8181
+	* localhost:8181
 
 * Frinxit: 
-	* host:8888
+	* localhost:8888
 
 * Microservices: 
-	* host:6000
+	* localhost:6000
 
 * Elasticsearch: 
-	* host:9200
-	* host:9300
+	* localhost:9200
+	* localhost:9300
 * Kibana:
-    * host:5601
+    * localhost:5601
 
 
 
