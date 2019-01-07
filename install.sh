@@ -92,21 +92,6 @@ git submodule update --recursive --remote
 
 
 
-cd conductor
-
-# Get conductor latest tag
-version=$(git describe | grep -oP "\d+\.\d+\.\d+")
-
-# Create gradle properties file
-echo 'git.root=../../' > gradle.properties
-echo "submodVersion=$version" >> gradle.properties
-
-
-# Build conductor server
-cd server
-../gradlew build --no-daemon -x test
-
-
 # Build docker images
 cd ${DIR}
 echo 'Create external volume for redis'
