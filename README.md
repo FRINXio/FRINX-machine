@@ -18,7 +18,6 @@ https://frinxio.github.io/Frinx-docs/
 ## Requirements
 * [Docker](https://www.docker.com/)
 * [Docker Compose](https://github.com/docker/compose)
-* JDK 1.8
 * License for FRINX ODL (you can find a trial license in the "Installation Guide" section below)
 
 min 16GB RAM & min 4 vCPUs with normal startup, and 5GB RAM & 2 vCPUs with minimal config has been successfully tested for POCs and demos. 
@@ -30,27 +29,6 @@ min 16GB RAM & min 4 vCPUs with normal startup, and 5GB RAM & 2 vCPUs with minim
 
 ## Installation preparation
 
-### OpenJDK 8
-
-Make sure you have installed the OpenJDK 8. It is highly recommended for FRINX Machine to run correctly.
-If you don't have Java 8 installed, please, follow these instuctions:
-
-To install OpenJDK 8, execute the following command:
-
-    sudo apt install openjdk-8-jdk
-
-Verify that this is installed with
-
-    java -version
-
-You'll see output similar to this:
-
-```
-Output
-openjdk version "1.8.0_162"
-OpenJDK Runtime Environment (build 1.8.0_162-8u162-b12-1-b12)
-OpenJDK 64-Bit Server VM (build 25.162-b12, mixed mode)
-```
 ### Docker
 
 To install the Ubuntu repository version, execute the following command
