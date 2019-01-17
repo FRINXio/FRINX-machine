@@ -89,7 +89,7 @@ The installation script `install.sh` is in the FRINX-machine folder.
 * Creates external volumes for data persistence.
 
 
-Docker needs privileged mode, so `install.sh` should be executed with sudo. Otherwise it will prompt for password while executing.
+We recommend to run teh install script as regular user, so all files (e.g. netinfra utils) can be edited by the regular user later. 
 
 Installation with the trial license token:
 ```
