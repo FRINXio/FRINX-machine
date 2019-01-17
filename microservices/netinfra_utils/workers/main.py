@@ -16,6 +16,7 @@ def main():
     cc = ConductorWorker(conductor_url_base, 1, 0.1)
 
     cli_worker.start(cc)
+    netconf_worker.start(cc)
     platform_worker.start(cc)
     l3vpn_worker.start(cc)
     lldp_worker.start(cc)
