@@ -1,8 +1,11 @@
 # After persistent change the image shuld be uploaded to Dcoker hub.
 
-# TO BUILD:
+# To build and publish:
 # cd .../FRINX-machine/conductor/ui
 # docker build -f ../../base_images/conductor-ui/Dockerfile -t frinx/conductor-ui_base:latest .
+# docker login
+# docker push frinx/conductor-ui_base:latest
+# docker logout
 
 
 FROM node:alpine
