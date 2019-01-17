@@ -80,16 +80,16 @@ cd FRINX-machine
 
 The installation script `install.sh` is in the FRINX-machine folder. 
 
-*What does installation do:*
-* Updates project submodules
-* Copies license token. 
-* Pulls conductor project parts from maven repository.
-* Builds conductor-server .jar file.
-* Pulls and creates docker images.
-* Creates external volumes for data persistence.
+*The installation script does the following things:*
+* Updates project submodules (e.g. conductor)
+* Copies license token
+* Pulls conductor project parts from maven repository
+* Builds conductor-server .jar file
+* Pulls and creates docker images
+* Creates external volumes for data persistence
 
 
-We recommend to run teh install script as regular user, so all files (e.g. netinfra utils) can be edited by the regular user later. 
+We recommend to run the install script as regular user and not as sudo, so all files (e.g. netinfra utils) can be edited by the regular user later. 
 
 Installation with the trial license token:
 ```
@@ -117,8 +117,8 @@ Starts application with lower RAM usage. Min 5GB RAM & min 2 vCPUs with minimal 
 
 #### Teardown
 The `teardown.sh` script in the FRINX-machine folder:
-* Stops and removes containers.
-* Does not remove external volumes.
+* Stops and removes containers
+* Does not remove external volumes
 
 Using docker, also needs privileged mode:
 ```bash
