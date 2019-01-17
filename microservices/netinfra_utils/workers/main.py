@@ -1,6 +1,7 @@
 import time
 from conductor.ConductorWorker import ConductorWorker
 import cli_worker
+import netconf_worker
 import platform_worker
 import l3vpn_worker
 import lldp_worker
