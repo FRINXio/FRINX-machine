@@ -169,7 +169,7 @@ Once started open your browser and open the following GUIs:
 * Kibana:
     	* localhost:5601
 
-## Development environment setup
+### Development environment setup
 
 To prepare the development environment on your host, go to the FRINX-machine directory and enter:
 
