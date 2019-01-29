@@ -169,19 +169,6 @@ Once started open your browser and open the following GUIs:
 * Kibana:
     	* localhost:5601
 
-### Development environment setup
-
-To prepare the development environment on your host, go to the FRINX-machine directory and enter:
-
-```
-sudo apt-get install python-setuptools
-
-cd conductor/client/python/
-
-sudo python setup.py install
-```
-Enter the new text before the sentence "Go to the folder that includes the python workers that are used for the workflow execution logic".
-
 [FRINX ODL]: <https://frinx.io/odl_distribution>
 [Conductor]: <https://github.com/FRINXio/conductor>
 [FRINXit]: <https://github.com/FRINXio/frinxit>
