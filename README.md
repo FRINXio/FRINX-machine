@@ -122,7 +122,7 @@ The `teardown.sh` script in the FRINX-machine folder:
 
 Using docker, also needs privileged mode:
 ```bash
-sudo ./teardown
+sudo ./teardown.sh
 ```
 
 ## Removal of external volumes
