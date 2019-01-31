@@ -59,11 +59,13 @@ _Note: You can download the latest version of Docker Composer after checking Rel
 
 ## Installation Guide
 ##### Trial license
-We offer a one month trial license. No signup needed!
+We offer a 30 day trial license. No signup needed!
 License token:
 ```
 0e57a786f7dbd27fa77db684cf3b234d6f23ed784e52cbfb107fd4317ba2646c66f7a141b0e823946d8f9d956852c95d33dc82f945779b1c9969049e94935b2a
 ```
+
+30 days after your first installation, your token will expire and you will see an error message during ODL startup. If you would like to continue with your evaluation, please register as a user on our homepage, where you will find another 30 day token under the section "My License Information". After the second trial period has expired, you can continue with a commercial license that has no time limitations. 
 
 #### Get the project
 Clone the repository:
