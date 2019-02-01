@@ -115,7 +115,7 @@ Min 16GB RAM & min 4 vCPUs with normal startup are recommended.
 ```bash
 sudo ./startup.sh -m
 ```
-Starts application with lower RAM usage. Min 5GB RAM & min 2 vCPUs with minimal startup are recommended.
+Starts application with lower RAM usage. Min 5GB RAM & min 4 vCPUs with minimal startup are recommended.
 
 #### Teardown
 The `teardown.sh` script in the FRINX-machine folder:
