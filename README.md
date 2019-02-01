@@ -58,7 +58,7 @@ After installing `curl`, use following command to get *Docker Compose*:
 _Note: You can download the latest version of Docker Composer after checking Release Notes https://github.com/docker/compose/releases and finding the latest version, e.g. 1.23.2. Then you can edit the download link release version number to get the latest release._
 
 ## Installation Guide
-##### Trial license
+#### Trial license
 We offer a 30 day trial license. No signup needed!
 License token:
 ```
