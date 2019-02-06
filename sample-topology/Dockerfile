@@ -8,7 +8,7 @@ COPY ./wait_for_it.sh .
 WORKDIR /home/topology/cli-testtool/topologies
 
 RUN pip install MockSSH==1.4.5
-RUN cat all.sh leafspine.sh | grep python > sample-topology.sh \
+RUN cat *.sh | grep python > sample-topology.sh \
   && printf "\nwait\n" >> sample-topology.sh \
   && chmod +x sample-topology.sh
 
