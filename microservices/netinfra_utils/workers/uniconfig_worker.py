@@ -154,11 +154,11 @@ def write_structured_data_as_tasks(task):
     template = task['inputData']['template']
     add_params = task['inputData']['task_params']
     add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
-    data_json = template if isinstance(template, basestring) else json.dumps(template if template else {})
 
     dynamic_tasks_i = {}
     dynamic_tasks = []
     for param in add_params:
+        data_json = template if isinstance(template, basestring) else json.dumps(template if template else {})
         data_json = Template(data_json).substitute(iface=param)
         escaped_param = param.replace("/", "%2F")
         url = Template(uri).substitute(iface=escaped_param)
