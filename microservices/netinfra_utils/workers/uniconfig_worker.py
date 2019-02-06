@@ -148,6 +148,33 @@ def write_structured_data(task):
                 'logs': ["Unable to update device with ID %s" % device_id]}
 
 
+def write_structured_data_as_tasks(task):
+    device_id = task['inputData']['id']
+    uri = task['inputData']['uri']
+    template = task['inputData']['template']
+    add_params = task['inputData']['task_params']
+    add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
+    data_json = template if isinstance(template, basestring) else json.dumps(template if template else {})
+
+    dynamic_tasks_i = {}
+    dynamic_tasks = []
+    for param in add_params:
+        data_json = Template(data_json).substitute(iface=param)
+        escaped_param = param.replace("/", "%2F")
+        url = Template(uri).substitute(iface=escaped_param)
+        per_iface_params = {"id": device_id, "template": data_json, "uri": url}
+        key = device_id + param
+        dynamic_tasks_i.update({key:per_iface_params})
+        task_body = task_body_template.copy()
+        task_body["taskReferenceName"] = key
+        task_body["subWorkflowParam"]["name"] = "Write_structured_device_data_in_uniconfig"
+        dynamic_tasks.append(task_body)
+
+    return {'status': 'COMPLETED', 'output': {'dynamic_tasks_i': dynamic_tasks_i,
+                                              'dynamic_tasks': dynamic_tasks},
+            'logs': []}
+
+
 def delete_structured_data(task):
     device_id = task['inputData']['id']
     uri = task['inputData']['uri']
