@@ -23,6 +23,7 @@ function help {
   usage
     echo -e "MANDATORY:"
     echo -e "  -l | --license  VAL     License token"
+    echo -e "  -p | --preserveUI      Do not delete UI images"
     echo -e "\n"
   example
 }
@@ -56,6 +57,7 @@ function margs_check {
 margs_precheck $# $1
 
 license=
+preserve=true
 
 # Args while-loop
 while [ "$1" != "" ];
@@ -64,6 +66,9 @@ case $1 in
    -l | --license )
    shift
    license=$1
+   ;;
+   -p | --preserve )
+   preserve=false
    ;;
    -h | --help )
    help
@@ -85,6 +90,11 @@ margs_check $license
 # Write license to file
 echo "token=$license" > odl/frinx.license.cfg
 
+# Removed odl ui image
+if [ "$preserve" = true ]; then
+	sudo docker rmi conductor:ui || true
+	sudo docker rmi $(sudo docker images -q frinx/conductor-ui_base) || true
+fi
 
 # Update submodules
 git submodule init
