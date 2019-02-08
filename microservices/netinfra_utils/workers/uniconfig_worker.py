@@ -14,6 +14,9 @@ odl_url_uniconfig_dryrun_commit = odl_url_base + '/operations/dryrun-manager:dry
 odl_url_uniconfig_calculate_diff = odl_url_base + '/operations/uniconfig-manager:calculate-diff'
 odl_url_uniconfig_sync_from_network = odl_url_base + '/operations/uniconfig-manager:sync-from-network'
 odl_url_uniconfig_replace_config_with_operational = odl_url_base + '/operations/uniconfig-manager:replace-config-with-operational'
+odl_url_uniconfig_create_snapshot = odl_url_base + '/operations/snapshot-manager:create-snapshot'
+odl_url_uniconfig_delete_snapshot = odl_url_base + '/operations/snapshot-manager:delete-snapshot'
+odl_url_uniconfig_replace_config_with_snapshot = odl_url_base + '/operations/snapshot-manager:replace-config-with-snapshot'
 
 
 def execute_read_uniconfig_topology_operational(task):
@@ -295,6 +298,77 @@ def replace_config_with_oper(task):
                                                'response_body': response_json},
                 'logs': ["Uniconfig replace failed"]}
 
+snapshot_template = {
+        "input": {
+            "name": ""
+        }
+    }
+
+def create_snapshot(task):
+    snapshot_body = snapshot_template.copy()
+    snapshot_body["input"]["name"] = task["inputData"]["name"]
+
+    r = requests.post(odl_url_uniconfig_create_snapshot,
+                      data=json.dumps(snapshot_body),
+                      headers=odl_headers,
+                      auth=odl_credentials)
+    response_code, response_json = parse_response(r)
+
+    if response_code == requests.codes.ok:
+        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_create_snapshot,
+                                                  'response_code': response_code,
+                                                  'response_body': response_json},
+                'logs': ["Uniconfig create snapshot successful"]}
+    else:
+        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_create_snapshot,
+                                               'response_code': response_code,
+                                               'response_body': response_json},
+                'logs': ["Uniconfig create snapshot failed"]}
+
+
+def delete_snapshot(task):
+    snapshot_body = snapshot_template.copy()
+    snapshot_body["input"]["name"] = task["inputData"]["name"]
+
+    r = requests.post(odl_url_uniconfig_delete_snapshot,
+                      data=json.dumps(snapshot_body),
+                      headers=odl_headers,
+                      auth=odl_credentials)
+    response_code, response_json = parse_response(r)
+
+    if response_code == requests.codes.ok:
+        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_delete_snapshot,
+                                                  'response_code': response_code,
+                                                  'response_body': response_json},
+                'logs': ["Uniconfig delete snapshot successful"]}
+    else:
+        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_delete_snapshot,
+                                               'response_code': response_code,
+                                               'response_body': response_json},
+                'logs': ["Uniconfig delete snapshot failed"]}
+
+
+def replace_config_with_snapshot(task):
+    snapshot_body = snapshot_template.copy()
+    snapshot_body["input"]["name"] = task["inputData"]["name"]
+
+    r = requests.post(odl_url_uniconfig_replace_config_with_snapshot,
+                      data=json.dumps(snapshot_body),
+                      headers=odl_headers,
+                      auth=odl_credentials)
+    response_code, response_json = parse_response(r)
+
+    if response_code == requests.codes.ok:
+        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_replace_config_with_snapshot,
+                                                  'response_code': response_code,
+                                                  'response_body': response_json},
+                'logs': ["Uniconfig replace config with snapshot was successful"]}
+    else:
+        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_replace_config_with_snapshot,
+                                               'response_code': response_code,
+                                               'response_body': response_json},
+                'logs': ["Uniconfig replace config with snapshot failed"]}
+
 
 def start(cc):
     print('Starting Uniconfig workers')
@@ -310,3 +384,6 @@ def start(cc):
     cc.start('UNICONFIG_calculate_diff', calc_diff, False)
     cc.start('UNICONFIG_sync_from_network', sync_from_network, False)
     cc.start('UNICONFIG_replace_config_with_oper', replace_config_with_oper, False)
+    cc.start('UNICONFIG_create_snapshot', create_snapshot, False)
+    cc.start('UNICONFIG_delete_snapshot', delete_snapshot, False)
+    cc.start('UNICONFIG_replace_config_with_snapshot', replace_config_with_snapshot, False)
