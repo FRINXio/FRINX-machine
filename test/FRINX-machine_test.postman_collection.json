@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "4642f8f5-ba5e-43d1-be52-04c372034564",
+		"_postman_id": "fdf4fe1a-6a26-4d26-a9c4-92ecfa67ead6",
 		"name": "FRINX-machine _test",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -261,7 +261,7 @@
 					"raw": "{\n    \"network-topology:node\" :\n    {\n      \"network-topology:node-id\" : \"IOS2\",\n      \n      \"cli-topology:host\" : \"{{classic_ip}}\",\n      \"cli-topology:port\" : \"22\",\n      \"cli-topology:transport-type\" : \"ssh\",\n      \n      \"cli-topology:device-type\" : \"ios\",\n      \"cli-topology:device-version\" : \"*\",\n      \n      \"cli-topology:username\" : \"cisco\",\n      \"cli-topology:password\" : \"cisco\",\n      \n      \"cli-topology:journal-size\": 150\n    }\n  }"
 				},
 				"url": {
-					"raw": "http://{{odl_ip}}:8181/restconf/operational/network-topology:network-topology/topology/{{topology_id}}/node/{{node_id}}/yang-ext:mount",
+					"raw": "http://{{odl_ip}}:8181/restconf/operational/network-topology:network-topology/topology/{{topology_id}}/node/{{node_id}}",
 					"protocol": "http",
 					"host": [
 						"{{odl_ip}}"
@@ -274,8 +274,7 @@
 						"topology",
 						"{{topology_id}}",
 						"node",
-						"{{node_id}}",
-						"yang-ext:mount"
+						"{{node_id}}"
 					]
 				}
 			},
