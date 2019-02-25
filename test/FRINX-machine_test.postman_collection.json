@@ -125,7 +125,7 @@
 					"raw": "{\n  \"id\": \"XR1\",\n  \"type\": \"ios\",\n  \"version\": \"6\",\n  \"host\": \"{{sample_topology_ip}}\",\n  \"protocol\": \"ssh\",\n  \"port\": \"10001\",\n  \"username\": \"cisco\",\n  \"password\": \"cisco\"\n}"
 				},
 				"url": {
-					"raw": "http://{{conductor_ip}}:8080/api/workflow/SOUTHBOUND_mount_and_check",
+					"raw": "http://{{conductor_ip}}:8080/api/workflow/Mount_cli_device",
 					"protocol": "http",
 					"host": [
 						"{{conductor_ip}}"
@@ -134,7 +134,7 @@
 					"path": [
 						"api",
 						"workflow",
-						"SOUTHBOUND_mount_and_check"
+						"Mount_cli_device"
 					]
 				}
 			},
@@ -286,11 +286,11 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "6cd7ab3e-1b72-4667-a402-6d4011de795d",
+						"id": "8bb08f17-0399-458d-894b-da24e9eaf1d8",
 						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Success\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([200,201]);",
+							"    pm.expect(pm.response.code).to.be.oneOf([404]);",
 							"});",
 							"",
 							"pm.environment.set(\"workflowId\", responseBody);",
