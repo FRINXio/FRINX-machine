@@ -286,11 +286,11 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "8bb08f17-0399-458d-894b-da24e9eaf1d8",
+						"id": "9c84c6e6-08ad-47cc-9945-9bcfe64c918b",
 						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Success\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([404]);",
+							"    pm.expect(pm.response.code).to.be.oneOf([200]);",
 							"});",
 							"",
 							"pm.environment.set(\"workflowId\", responseBody);",

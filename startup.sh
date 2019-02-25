@@ -60,7 +60,7 @@ done
 
 function import_workflows {
 
-sudo docker exec -it micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
+docker exec -it micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
 if [ "$skip" = false ]; then
   check_success $?
 fi
