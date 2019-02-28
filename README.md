@@ -7,7 +7,7 @@ The project is a containerized package of:
     * [Elasticsearch]
     * [Kibana]
     * [Logstash]
-* FRINX Microservices Engine
+* FRINX microservices to execute conductor tasks
 * [FRINXit]
 * Device simulation container
 
