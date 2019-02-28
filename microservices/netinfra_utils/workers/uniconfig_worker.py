@@ -378,6 +378,7 @@ def start(cc):
     cc.start('UNICONFIG_get_all_devices_as_tasks', get_all_devices_as_tasks, False)
     cc.start('UNICONFIG_read_structured_device_data', read_structured_data, False)
     cc.start('UNICONFIG_write_structured_device_data', write_structured_data, False)
+    cc.start('UNICONFIG_write_structured_data_as_tasks', write_structured_data_as_tasks, False)
     cc.start('UNICONFIG_delete_structured_device_data', delete_structured_data, False)
     cc.start('UNICONFIG_commit', commit, False)
     cc.start('UNICONFIG_dryrun_commit', dryrun_commit, False)
