@@ -286,11 +286,11 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "9c84c6e6-08ad-47cc-9945-9bcfe64c918b",
+						"id": "86bde727-53f4-4e47-99ab-d1a6a997d20f",
 						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Success\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201]);",
 							"});",
 							"",
 							"pm.environment.set(\"workflowId\", responseBody);",
@@ -313,7 +313,7 @@
 					"raw": "{\n  \"id\": \"XR1\"\n}"
 				},
 				"url": {
-					"raw": "http://{{conductor_ip}}:8080/api/workflow/SOUTHBOUND_unmount_cli_device",
+					"raw": "http://{{conductor_ip}}:8080/api/workflow/Unmount_cli_device",
 					"protocol": "http",
 					"host": [
 						"{{conductor_ip}}"
@@ -322,7 +322,7 @@
 					"path": [
 						"api",
 						"workflow",
-						"SOUTHBOUND_unmount_cli_device"
+						"Unmount_cli_device"
 					]
 				}
 			},
