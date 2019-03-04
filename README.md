@@ -170,6 +170,53 @@ Once started open your browser and open the following GUIs:
 	* localhost:9300
 * Kibana:
     	* localhost:5601
+	
+### Running live development server
+
+#### Only UI
+To start live server providing only FRINX-Machine UI outside
+docker environment, run following commands:
+```bash
+cd conductor/ui && sudo npm install
+```
+Run following script in conductor/ui folder:
+```bash
+sudo gulp watch
+```
+
+#### UI + all services 
+To start live server providing FRINX-Machine UI outside 
+docker environment including all other services, run following commands:
+```bash
+cd conductor/ui && sudo npm install
+```
+```bash
+sudo ./startup.sh
+```
+After successful startup, stop the UI container in order to free the port:
+```bash
+sudo docker stop conductor-ui
+```
+Finally run following script in conductor/ui folder:
+```bash
+sudo gulp watch
+```
+Server should be online. 
+
+If you issue ENOSPC type error, run following command to increase amount of watched files:
+```bash
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+```
+
+#### Access URLs:
+	Local: http://localhost:3000
+	External: http://<yourIPaddress>:3000
+
+BrowserSync interface providing useful test and debugging tools:
+
+	UI: http://localhost:3001
+	UI External: http://localhost:3001
+	
 
 [FRINX ODL]: <https://frinx.io/odl_distribution>
 [Conductor]: <https://github.com/FRINXio/conductor>
