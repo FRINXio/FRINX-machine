@@ -1,5 +1,5 @@
 #!/bin/bash
-00
+
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
@@ -60,7 +60,7 @@ done
 
 function import_workflows {
 
-docker exec micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
+sudo docker exec micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
 if [ "$skip" = false ]; then
   check_success $?
 fi
