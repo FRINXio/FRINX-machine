@@ -1,0 +1,11 @@
+
+{
+  "name": "frinx-machine-ui-style",
+  "version": "0.1.0",
+  "main": "index.js",
+  "kibana": {
+    "version": "5.6.10"
+  },
+  "author": "Ladislav Moravek <lmoravek@frinx.io>",
+  "website": "http://www.frinx.io"
+}
