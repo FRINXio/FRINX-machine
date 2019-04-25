@@ -1,4 +1,4 @@
-version: '3'
+version: "3.7"
 services:
   odl:
     environment:
@@ -7,6 +7,3 @@ services:
   elasticsearch:
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx1024m"
-
-
-
