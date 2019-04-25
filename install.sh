@@ -67,14 +67,11 @@ case $1 in
    shift
    license=$1
    ;;
-   -p | --preserve )
-   preserve=false
-   ;;
    -h | --help )
    help
    exit
    ;;
-   *)             
+   *)
    echo "$script: illegal option $1"
    help
    exit 1 # error
@@ -90,11 +87,6 @@ margs_check $license
 # Write license to file
 echo "token=$license" > odl/frinx.license.cfg
 
-# Removed odl ui image
-if [ "$preserve" = true ]; then
-	sudo docker rmi conductor:ui || true
-	sudo docker rmi $(sudo docker images -q frinx/conductor-ui_base) || true
-fi
 
 # Update submodules
 git submodule init
@@ -104,17 +96,5 @@ git submodule update --recursive --remote
 
 # Build docker images
 cd ${DIR}
-echo 'Create external volume for redis'
-sudo docker volume create --name=redis_data
-sudo docker volume create --name=elastic_data
 echo 'Build images'
 sudo docker-compose build
-
-
-
-
-
-
-
-
-

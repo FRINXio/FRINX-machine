@@ -1,26 +1,30 @@
-version: '3'
+version: "3.7"
 services:
   odl:
-    build: ./odl
-    image: odl-img
+    build:
+      context: ./odl
+      dockerfile: Dockerfile
+    image: frinx/fm-odl
     container_name: odl
     ports:
       - 8181:8181
 
   frinxit:
-    build: ./frinxit
-    image: frinxit-img
+    build:
+      context: ./frinxit
+      dockerfile: Dockerfile
+    image: frinx/fm-frinxit
     container_name: frinxit
     environment:
       - odl_target=odl
     ports:
       - 8888:8888
-   
+
   micros:
     build:
-      context: .
+      context: ./
       dockerfile: ./microservices/Dockerfile
-    image: microservices-img
+    image: frinx/fm-micros
     container_name: micros
     ports:
       - 6000:6000
@@ -31,46 +35,50 @@ services:
 
   sample-topology:
     build:
-      context: .
+      context: ./
       dockerfile: ./sample-topology/Dockerfile
-    image: sample-topology
+    image: frinx/fm-sample-topology
     container_name: sample-topology
 
   conductor-server:
-    environment:
-      - CONFIG_PROP=config.properties
-    image: conductor:server
-    container_name: conductor-server
     build:
       context: ./conductor/
       dockerfile: docker/server/Dockerfile
-    ports:
-      - 8080:8080
-      - 8000:8000
+    environment:
+      - CONFIG_PROP=config.properties
+    image: frinx/fm-conductor-server
+    container_name: conductor-server
     links:
       - elasticsearch:es
       - dynomite:dyno1
+    ports:
+      - 8080:8080
+      - 8000:8000
     restart: on-failure
     depends_on:
       - dynomite
       - odl
     command: ["/app/wait_for.sh", "-t", "120",  "elasticsearch:9300", "--", "/app/startup.sh"]
-    
+
   conductor-ui:
-    environment:
-      - WF_SERVER=http://conductor-server:8080/api/
-    image: conductor:ui
-    container_name: conductor-ui
     build:
       context: ./conductor/
       dockerfile: docker/ui/Dockerfile
-    ports:
-      - 5000:5000
+    environment:
+      - WF_SERVER=http://conductor-server:8080/api/
+    image: frinx/fm-conductor-ui
+    container_name: conductor-ui
     links:
       - conductor-server
-      
+    ports:
+      - 5000:5000
+
+
   dynomite:
-    image: frinx/dynomite:latest
+    build:
+      context: ./
+      dockerfile: ./dynomite/Dockerfile
+    image: frinx/fm-dynomite
     container_name: dynomite
     volumes:
        - redis_data:/var/lib/redis
@@ -78,8 +86,10 @@ services:
       driver: none
 
   elasticsearch:
-    build: ./elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.10
+    build:
+      context: ./
+      dockerfile: ./elasticsearch/Dockerfile
+    image: frinx/fm-elasticsearch
     container_name: elasticsearch
     ports:
       - 9200:9200
@@ -95,8 +105,10 @@ services:
         retries: 1
 
   kibana:
-    build: ./kibana
-    image: docker.elastic.co/kibana/kibana:5.6.10
+    build:
+      context: ./kibana
+      dockerfile: Dockerfile
+    image: frinx/fm-kibana
     container_name: kibana
     environment:
       - "elasticsearch.url=http://elasticsearch:9200"
@@ -107,7 +119,6 @@ services:
 
 volumes:
   redis_data:
-    external: true
+    name: redis_data
   elastic_data:
-    external: true
-
+    name: elastic_data
