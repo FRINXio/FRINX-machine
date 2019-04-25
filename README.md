@@ -130,15 +130,9 @@ sudo ./teardown.sh
 ## Removal of external volumes
 #### **Caution all data will be lost!**
 
-To remove the external volumes use:
+To remove the volumes use:
 ```bash
 sudo docker volume rm redis_data elastic_data
-```
-Docker expects external volumes to exist when starting the containers.
-They can be created with:
-```bash
-sudo docker volume create --name=redis_data
-sudo docker volume create --name=elastic_data
 ```
 
 ### GUI
