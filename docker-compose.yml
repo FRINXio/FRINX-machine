@@ -3,6 +3,11 @@ services:
   odl:
     build: ./odl
     image: odl-img
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"    
     container_name: odl
     ports:
       - 8181:8181
@@ -10,6 +15,11 @@ services:
   frinxit:
     build: ./frinxit
     image: frinxit-img
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"    
     container_name: frinxit
     environment:
       - odl_target=odl
@@ -21,6 +31,11 @@ services:
       context: .
       dockerfile: ./microservices/Dockerfile
     image: microservices-img
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     container_name: micros
     ports:
       - 6000:6000
@@ -34,12 +49,22 @@ services:
       context: .
       dockerfile: ./sample-topology/Dockerfile
     image: sample-topology
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     container_name: sample-topology
 
   conductor-server:
     environment:
       - CONFIG_PROP=config.properties
     image: conductor:server
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     container_name: conductor-server
     build:
       context: ./conductor/
@@ -60,6 +85,11 @@ services:
     environment:
       - WF_SERVER=http://conductor-server:8080/api/
     image: conductor:ui
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     container_name: conductor-ui
     build:
       context: ./conductor/
@@ -71,6 +101,11 @@ services:
       
   dynomite:
     image: frinx/dynomite:latest
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     container_name: dynomite
     volumes:
        - redis_data:/var/lib/redis
@@ -80,6 +115,11 @@ services:
   elasticsearch:
     build: ./elasticsearch
     image: docker.elastic.co/elasticsearch/elasticsearch:5.6.10
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     container_name: elasticsearch
     ports:
       - 9200:9200
@@ -97,6 +137,11 @@ services:
   kibana:
     build: ./kibana
     image: docker.elastic.co/kibana/kibana:5.6.10
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     container_name: kibana
     environment:
       - "elasticsearch.url=http://elasticsearch:9200"
