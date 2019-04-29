@@ -5,6 +5,11 @@ services:
       context: ./odl
       dockerfile: Dockerfile
     image: frinx/fm-odl
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"    
     container_name: odl
     ports:
       - 8181:8181
@@ -14,6 +19,11 @@ services:
       context: ./frinxit
       dockerfile: Dockerfile
     image: frinx/fm-frinxit
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"    
     container_name: frinxit
     environment:
       - odl_target=odl
@@ -25,6 +35,11 @@ services:
       context: ./
       dockerfile: ./microservices/Dockerfile
     image: frinx/fm-micros
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     container_name: micros
     ports:
       - 6000:6000
@@ -39,6 +54,11 @@ services:
       dockerfile: ./sample-topology/Dockerfile
     image: frinx/fm-sample-topology
     container_name: sample-topology
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
 
   conductor-server:
     build:
@@ -51,6 +71,11 @@ services:
     links:
       - elasticsearch:es
       - dynomite:dyno1
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     ports:
       - 8080:8080
       - 8000:8000
@@ -70,6 +95,11 @@ services:
     container_name: conductor-ui
     links:
       - conductor-server
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     ports:
       - 5000:5000
 
@@ -79,6 +109,11 @@ services:
       context: ./
       dockerfile: ./dynomite/Dockerfile
     image: frinx/fm-dynomite
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     container_name: dynomite
     volumes:
        - redis_data:/var/lib/redis
@@ -90,6 +125,11 @@ services:
       context: ./
       dockerfile: ./elasticsearch/Dockerfile
     image: frinx/fm-elasticsearch
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     container_name: elasticsearch
     ports:
       - 9200:9200
@@ -109,6 +149,11 @@ services:
       context: ./kibana
       dockerfile: Dockerfile
     image: frinx/fm-kibana
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     container_name: kibana
     environment:
       - "elasticsearch.url=http://elasticsearch:9200"
