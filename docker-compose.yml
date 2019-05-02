@@ -117,8 +117,6 @@ services:
     container_name: dynomite
     volumes:
        - redis_data:/var/lib/redis
-    logging:
-      driver: none
 
   elasticsearch:
     build:
