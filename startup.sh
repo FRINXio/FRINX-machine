@@ -10,8 +10,8 @@ function example {
     echo -e "example: $script -m"
 }
 
-function usage {  
- echo -e "usage: $script [OPTION]  \n"  
+function usage {
+ echo -e "usage: $script [OPTION]  \n"
 }
 
 function help {
@@ -25,7 +25,7 @@ function help {
 }
 
 function check_success {
-  if [[ $? -ne 0 ]] 
+  if [[ $? -ne 0 ]]
   then
   RED='\033[0;31m'
   NC='\033[0m' # No Color
@@ -50,7 +50,7 @@ if [ "$development" = false ]; then
     containers_to_start+=("conductor-ui")
 fi
 
-for i in "${containers_to_start[@]}"; do 
+for i in "${containers_to_start[@]}"; do
 
 start_container $i
 if [ "$skip" = false ]; then
@@ -103,6 +103,8 @@ case $1 in
 esac
 done
 
+# Clean up docker
+sudo docker system prune -f
 
 # Starts containers
 start_containers
@@ -118,6 +120,3 @@ if [ "$development" = true ]; then
   sudo npm install
   sudo gulp watch
 fi
-
-
-
