@@ -9,8 +9,10 @@ services:
         driver: "json-file"
         options:
             max-file: "3"
-            max-size: "10m"    
+            max-size: "10m"
     container_name: odl
+    volumes:
+       - odl_logs:/opt/distribution-frinx/data/log
     ports:
       - 8181:8181
 
@@ -23,7 +25,7 @@ services:
         driver: "json-file"
         options:
             max-file: "3"
-            max-size: "10m"    
+            max-size: "10m"
     container_name: frinxit
     environment:
       - odl_target=odl
@@ -82,7 +84,6 @@ services:
     restart: on-failure
     depends_on:
       - dynomite
-      - odl
     command: ["/app/wait_for.sh", "-t", "120",  "elasticsearch:9300", "--", "/app/startup.sh"]
 
   conductor-ui:
@@ -160,8 +161,24 @@ services:
     depends_on:
       - elasticsearch
 
+  logstash:
+    build:
+      context: ./logstash
+      dockerfile: Dockerfile
+    image: frinx/fm-logstash
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+    container_name: logstash
+    volumes:
+       - odl_logs:/odl-logs:ro
+
 volumes:
   redis_data:
     name: redis_data
   elastic_data:
     name: elastic_data
+  odl_logs:
+    name: odl_logs

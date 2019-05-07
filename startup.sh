@@ -10,8 +10,8 @@ function example {
     echo -e "example: $script -m"
 }
 
-function usage {  
- echo -e "usage: $script [OPTION]  \n"  
+function usage {
+ echo -e "usage: $script [OPTION]  \n"
 }
 
 function help {
@@ -25,7 +25,7 @@ function help {
 }
 
 function check_success {
-  if [[ $? -ne 0 ]] 
+  if [[ $? -ne 0 ]]
   then
   RED='\033[0;31m'
   NC='\033[0m' # No Color
@@ -45,12 +45,12 @@ fi
 }
 
 function start_containers {
-local containers_to_start=("odl" "dynomite" "elasticsearch" "kibana" "conductor-server" "frinxit" "micros" "sample-topology" )
+local containers_to_start=("odl" "dynomite" "elasticsearch" "kibana" "conductor-server" "frinxit" "micros" "sample-topology" "logstash")
 if [ "$development" = false ]; then
     containers_to_start+=("conductor-ui")
 fi
 
-for i in "${containers_to_start[@]}"; do 
+for i in "${containers_to_start[@]}"; do
 
 start_container $i
 if [ "$skip" = false ]; then
@@ -118,6 +118,3 @@ if [ "$development" = true ]; then
   sudo npm install
   sudo gulp watch
 fi
-
-
-
