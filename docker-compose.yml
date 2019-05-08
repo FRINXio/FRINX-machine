@@ -56,19 +56,14 @@ services:
       context: ./
       dockerfile: ./sample-topology/Dockerfile
     image: frinx/fm-sample-topology
+    container_name: sample-topology
     logging:
         driver: "json-file"
         options:
             max-file: "3"
             max-size: "10m"
-    container_name: sample-topology
 
   conductor-server:
-    logging:
-        driver: "json-file"
-        options:
-            max-file: "3"
-            max-size: "10m"
     build:
       context: ./conductor/
       dockerfile: docker/server/Dockerfile
@@ -79,6 +74,11 @@ services:
     links:
       - elasticsearch:es
       - dynomite:dyno1
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
     ports:
       - 8080:8080
       - 8000:8000
@@ -93,15 +93,15 @@ services:
       dockerfile: docker/ui/Dockerfile
     environment:
       - WF_SERVER=http://conductor-server:8080/api/
+    image: frinx/fm-conductor-ui
+    container_name: conductor-ui
+    links:
+      - conductor-server
     logging:
         driver: "json-file"
         options:
             max-file: "3"
             max-size: "10m"
-    image: frinx/fm-conductor-ui
-    container_name: conductor-ui
-    links:
-      - conductor-server
     ports:
       - 5000:5000
 
