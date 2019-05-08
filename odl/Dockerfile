@@ -34,10 +34,5 @@ RUN ["sed", "-i", \
 # Configure
 COPY conf/org.ops4j.pax.logging.cfg /opt/distribution-frinx/etc/
 
-
-
-RUN mkdir /app
-COPY start.sh /app
-
 ENTRYPOINT ["/bin/bash"]
-CMD ["/app/start.sh"]
+CMD ["/opt/distribution-frinx/bin/karaf"]

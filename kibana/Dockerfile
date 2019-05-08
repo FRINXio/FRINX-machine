@@ -1,10 +1,5 @@
 FROM docker.elastic.co/kibana/kibana:6.7.1
 
-# Remove x-pack
-#RUN bin/kibana-plugin remove x-pack || true
-
-
-
 #RUN bin/kibana-plugin remove frinx-machine-ui-style || true
 
 COPY frinx-machine-ui-style.zip /
