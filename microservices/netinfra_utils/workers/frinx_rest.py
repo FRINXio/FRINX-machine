@@ -6,7 +6,7 @@ conductor_url_base = "http://conductor-server:8080/api"
 
 odl_credentials = ("admin", "admin")
 odl_headers = {"Content-Type": "application/json"}
-
+elastic_headers = {"Content-Type": "application/json"}
 
 def parse_response(r):
     decode = r.content.decode('utf8')
