@@ -31,31 +31,9 @@ RUN ["sed", "-i", \
   "/opt/distribution-frinx/etc/org.apache.karaf.features.cfg"]
 
 
-# Install Logstash
-
-# Download and install the Public Signing Key
-#RUN wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
-
-# Dependency
-RUN apt-get update && apt-get install apt-transport-https
-
-# Save the repository definition
-RUN echo "deb https://artifacts.elastic.co/packages/5.x/apt stable main" | tee -a /etc/apt/sources.list.d/elastic-5.x.list
-
-# Update and install
-#RUN apt-get update && apt-get install logstash
-RUN apt-get update && apt-get install --allow-unauthenticated logstash
-
-# Remove x-pack
-RUN bin/logstash-plugin remove --purge x-pack || true
-
 # Configure
 COPY conf/org.ops4j.pax.logging.cfg /opt/distribution-frinx/etc/
 
-RUN mkdir /mnt/patterns
-COPY conf/odl /mnt/patterns/
-
-COPY conf/logstash.conf /etc/logstash/
 
 
 RUN mkdir /app
@@ -63,6 +41,3 @@ COPY start.sh /app
 
 ENTRYPOINT ["/bin/bash"]
 CMD ["/app/start.sh"]
-
-
-
