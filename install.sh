@@ -25,7 +25,8 @@ function help {
   usage
     echo -e "OPTIONS:"
     echo -e "  -l | --license  <VALUE>    Specify custom license.
-            Saves license token to [PATH to git repo]/odl/frinx.license.cfg"
+            Saves license token to [PATH to git repo]/odl/frinx.license.cfg.
+            If license file exists, custom odl license is applied after each pull"
     echo -e "  -b | --build               Build specified services locally"
     echo -e "\n"
   example
