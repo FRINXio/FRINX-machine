@@ -12,18 +12,21 @@ margs=1
 
 # Common functions
 function example {
-    echo -e "example: $script -l VAL"
+    echo -e "example: $script -l license_token -b odl kibana"
 }
 
 function usage {
-    echo -e "usage: $script MANDATORY \n"
+    echo -e "usage: $script OPTIONS [services] \n"
+    echo -e "If no services are specified all are pulled or built."
+    echo -e "Services: odl frinxit micros conductor-server conductor-ui dynomite elasticsearch kibana sample-topology logstash"
 }
 
 function help {
   usage
-    echo -e "MANDATORY:"
-    echo -e "  -l | --license  VAL     License token"
-    echo -e "  -p | --preserveUI      Do not delete UI images"
+    echo -e "OPTIONS:"
+    echo -e "  -l | --license  <VALUE>    Specify custom license.
+            Saves license token to [PATH to git repo]/odl/frinx.license.cfg"
+    echo -e "  -b | --build               Build specified services locally"
     echo -e "\n"
   example
 }
@@ -52,12 +55,19 @@ function margs_check {
 }
 
 
+# function to check if array contains argument
+#valid element array
+function valid {
+  local e match="$1"
+  shift
+  for e; do [[ "$e" == "$match" ]] && return 0; done
+  return 1
+}
 
-# Main
-margs_precheck $# $1
-
+file=odl/frinx.license.cfg
+valid_images=("odl" "frinxit" "micros" "conductor-server" "conductor-ui" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash")
 license=
-preserve=true
+build=false
 
 # Args while-loop
 while [ "$1" != "" ];
@@ -67,34 +77,54 @@ case $1 in
    shift
    license=$1
    ;;
+   -b | --build )
+   build=true
+   ;;
    -h | --help )
    help
    exit
    ;;
    *)
-   echo "$script: illegal option $1"
-   help
-   exit 1 # error
+   valid "$1" "${valid_images[@]}"
+    if [[ $? -eq 0 ]];
+    then
+        input_containers+=( "$1" )
+    else
+    echo "$script: container '$1' not known"
+        exit 1
+    fi
    ;;
 esac
 shift
 done
 
-# Pass here your mandatory args for check
-margs_check $license
-
-
-# Write license to file
-echo "token=$license" > odl/frinx.license.cfg
-
+# Save license to file
+if [ -z "license" ]
+then
+      echo "No license specified"
+      exit 1
+else
+      echo "token=$license" > $file
+fi
 
 # Update submodules
 git submodule init
-git submodule update --recursive --remote
+git submodule update --recursive
 
-
-
-# Build docker images
 cd ${DIR}
-echo 'Build images'
-sudo docker-compose build
+if [ "$build" = false ]; then
+  echo 'Pull images'
+  sudo docker-compose pull "${input_containers[@]}"
+
+  # Copy custom license if file exists
+  if [[ -f "$file" ]]; then
+    echo "Apply license from file $file"
+    sudo docker-compose build odl
+  fi
+else
+  echo 'Build images'
+  sudo docker-compose build "${input_containers[@]}"
+fi
+
+# Clean up
+sudo docker system prune -f
