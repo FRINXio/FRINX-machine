@@ -110,7 +110,7 @@ fi
 
 # Update submodules
 git submodule init
-git submodule update --recursive
+git submodule update --recursive --remote
 
 cd ${DIR}
 if [ "$build" = false ]; then
