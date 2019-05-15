@@ -16,7 +16,7 @@ conductor_ip=$(docker inspect -f "{{with index .NetworkSettings.Networks \"frinx
 sample_topology_ip=$(docker inspect -f "{{with index .NetworkSettings.Networks \"frinx-machine_default\"}}{{.IPAddress}}{{end}}"  sample-topology)
 
 # Copy environment file, so original is not changed
-cp FRINX-machine_test_env.postman_environment.json FRINX-machine_test_env.postman_environment_tmp.json
+cp ${DIR}/FRINX-machine_test_env.postman_environment.json FRINX-machine_test_env.postman_environment_tmp.json
 
 # Modiy tmp env file, with actual container ips
 sed -i -- "s/var_conductor_ip/${conductor_ip}/g" FRINX-machine_test_env.postman_environment_tmp.json
