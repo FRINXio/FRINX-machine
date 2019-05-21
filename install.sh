@@ -112,6 +112,10 @@ fi
 git submodule init
 git submodule update --recursive --remote
 
+cd conductor
+echo 'git.root=../../' > gradle.properties
+echo "submodVersion=$(git for-each-ref refs/tags --sort=-taggerdate --format='%(tag)' | grep -v -m 1 'frinx' | cut -d "v" -f 2)" >> gradle.properties
+
 cd ${DIR}
 if [ "$build" = false ]; then
   echo 'Pull images'
