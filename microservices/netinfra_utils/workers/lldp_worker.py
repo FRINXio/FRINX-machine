@@ -10,7 +10,7 @@ from frinx_rest import elastic_url_base, odl_url_base, odl_headers, odl_credenti
 build_lldp_url = odl_url_base + "/operations/lldptopo:build"
 export_lldp_url = odl_url_base + "/operations/lldptopo:export"
 read_lldp_url = odl_url_base + "/operational/network-topology:network-topology/topology/"
-inventory_lldp_url = elastic_url_base + "/inventory/lldp/$id"
+inventory_lldp_url = elastic_url_base + "/inventory-lldp/lldp/$id"
 
 
 lldp_build_template = {

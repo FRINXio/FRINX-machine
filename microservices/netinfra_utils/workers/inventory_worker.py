@@ -7,10 +7,10 @@ import requests
 
 from frinx_rest import elastic_url_base, parse_response, elastic_headers
 
-inventory_device_url = elastic_url_base + "/inventory/device/$id"
-inventory_device_get_url = elastic_url_base + "/inventory/device/$id/_source"
-inventory_device_update_url = elastic_url_base + "/inventory/device/$id/_update"
-inventory_all_devices_url = elastic_url_base + "/inventory/device/_search"
+inventory_device_url = elastic_url_base + "/inventory-device/device/$id"
+inventory_device_get_url = elastic_url_base + "/inventory-device/device/$id/_source"
+inventory_device_update_url = elastic_url_base + "/inventory-device/device/$id/_update"
+inventory_all_devices_url = elastic_url_base + "/inventory-device/device/_search"
 
 add_template = {
     "id": "",
@@ -237,8 +237,8 @@ def get_all_devices_as_tasks(task):
                 'logs': []}
 
 
-inventory_show_command_url = elastic_url_base + "/inventory/show_command/$id"
-inventory_show_command_get_url = elastic_url_base + "/inventory/show_command/$id/_source"
+inventory_show_command_url = elastic_url_base + "/inventory-show_cmd/show_command/$id"
+inventory_show_command_get_url = elastic_url_base + "/inventory-show_cmd/show_command/$id/_source"
 
 add_show_command_template = {
     "command": "",
