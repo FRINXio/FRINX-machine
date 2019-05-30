@@ -45,7 +45,7 @@ fi
 }
 
 function start_containers {
-local containers_to_start=("odl" "dynomite" "elasticsearch" "kibana" "conductor-server" "frinxit" "micros" "sample-topology" )
+local containers_to_start=("odl" "dynomite" "elasticsearch" "kibana" "conductor-server" "frinxit" "micros" "sample-topology" "logstash")
 if [ "$development" = false ]; then
     containers_to_start+=("conductor-ui")
 fi
@@ -63,6 +63,10 @@ done
 }
 
 function import_workflows {
+sudo docker exec micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'TASKS' -e netinfra_utils/postman_environment.json"
+if [ "$skip" = false ]; then
+  check_success $?
+fi
 
 sudo docker exec micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
 if [ "$skip" = false ]; then

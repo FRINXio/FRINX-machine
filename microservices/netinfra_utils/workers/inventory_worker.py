@@ -5,12 +5,12 @@ from string import Template
 
 import requests
 
-from frinx_rest import elastic_url_base, parse_response
+from frinx_rest import elastic_url_base, parse_response, elastic_headers
 
-inventory_device_url = elastic_url_base + "/inventory/device/$id"
-inventory_device_get_url = elastic_url_base + "/inventory/device/$id/_source"
-inventory_device_update_url = elastic_url_base + "/inventory/device/$id/_update"
-inventory_all_devices_url = elastic_url_base + "/inventory/device/_search"
+inventory_device_url = elastic_url_base + "/inventory-device/device/$id"
+inventory_device_get_url = elastic_url_base + "/inventory-device/device/$id/_source"
+inventory_device_update_url = elastic_url_base + "/inventory-device/device/$id/_update"
+inventory_all_devices_url = elastic_url_base + "/inventory-device/device/_search"
 
 add_template = {
     "id": "",
@@ -40,7 +40,7 @@ def add_device(task):
     add_body["username"] = task['inputData']['username']
     add_body["password"] = task['inputData']['password']
 
-    r = requests.post(id_url, data=json.dumps(add_body))
+    r = requests.post(id_url, data=json.dumps(add_body), headers=elastic_headers)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok or response_code == requests.codes.created:
@@ -74,7 +74,7 @@ def add_field_to_device(task):
 
     update_body["script"] = data
 
-    r = requests.post(id_url, data=json.dumps(update_body))
+    r = requests.post(id_url, data=json.dumps(update_body), headers=elastic_headers)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -105,7 +105,7 @@ def add_nested_field_to_device(task):
 
     update_body["doc"][field] = value
 
-    r = requests.post(id_url, data=json.dumps(update_body))
+    r = requests.post(id_url, data=json.dumps(update_body), headers=elastic_headers)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -125,7 +125,7 @@ def remove_device(task):
 
     id_url = Template(inventory_device_url).substitute({"id": device_id})
 
-    r = requests.delete(id_url)
+    r = requests.delete(id_url, headers=elastic_headers)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -145,7 +145,7 @@ def get_device(task):
 
     id_url = Template(inventory_device_get_url).substitute({"id": device_id})
 
-    r = requests.get(id_url)
+    r = requests.get(id_url, headers=elastic_headers)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -188,9 +188,9 @@ def read_all_devices(device_type):
     if device_type is not None and device_type is not "":
         device_query_body = device_query_template.copy()
         device_query_body["query"]["term"]["device_type"] = device_type
-        r = requests.get(inventory_all_devices_url, data=json.dumps(device_query_body))
+        r = requests.get(inventory_all_devices_url, data=json.dumps(device_query_body), headers=elastic_headers)
     else:
-        r = requests.get(inventory_all_devices_url)
+        r = requests.get(inventory_all_devices_url, headers=elastic_headers)
 
     return parse_response(r)
 
@@ -237,8 +237,8 @@ def get_all_devices_as_tasks(task):
                 'logs': []}
 
 
-inventory_show_command_url = elastic_url_base + "/inventory/show_command/$id"
-inventory_show_command_get_url = elastic_url_base + "/inventory/show_command/$id/_source"
+inventory_show_command_url = elastic_url_base + "/inventory-show_cmd/show_command/$id"
+inventory_show_command_get_url = elastic_url_base + "/inventory-show_cmd/show_command/$id/_source"
 
 add_show_command_template = {
     "command": "",
@@ -255,7 +255,7 @@ def add_show_command(task):
     add_body["command"] = task['inputData']['command']
     add_body["id"] = command_id
 
-    r = requests.post(id_url, data=json.dumps(add_body))
+    r = requests.post(id_url, data=json.dumps(add_body), headers=elastic_headers)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok or response_code == requests.codes.created:
@@ -275,7 +275,7 @@ def get_show_command(task):
 
     id_url = Template(inventory_show_command_get_url).substitute({"id": command_id})
 
-    r = requests.get(id_url)
+    r = requests.get(id_url, headers=elastic_headers)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -303,4 +303,3 @@ def start(cc):
 
     cc.start('INVENTORY_add_show_command', add_show_command, False)
     cc.start('INVENTORY_get_show_command', get_show_command, False)
-

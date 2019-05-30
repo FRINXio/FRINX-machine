@@ -91,12 +91,23 @@ The installation script `install.sh` is in the FRINX-machine folder.
 * Creates external volumes for data persistence
 
 
-We recommend to run the install script as regular user and not as sudo, so all files (e.g. netinfra utils) can be edited by the regular user later. 
-
+We recommend to run the install script as regular user and not as sudo, so all files can be edited by the regular user later.
 Installation with the trial license token:
 ```
 ./install.sh -l 0e57a786f7dbd27fa77db684cf3b234d6f23ed784e52cbfb107fd4317ba2646c66f7a141b0e823946d8f9d956852c95d33dc82f945779b1c9969049e94935b2a
 ```
+After the first run the license token is saved to a <git directory>/odl/frinx.license.cfg and will be copied to image after each update.
+
+To update images from Docker Hub:
+```
+./install.sh [containers]
+```
+
+To build images locally:
+```
+./install.sh -b [containers]
+```
+If no container is specified all are updated.
 
 #### Startup
 The startup script `startup.sh` can be found in the FRINX-machine folder.
@@ -130,15 +141,9 @@ sudo ./teardown.sh
 ## Removal of external volumes
 #### **Caution all data will be lost!**
 
-To remove the external volumes use:
+To remove the volumes use:
 ```bash
-sudo docker volume rm redis_data elastic_data
-```
-Docker expects external volumes to exist when starting the containers.
-They can be created with:
-```bash
-sudo docker volume create --name=redis_data
-sudo docker volume create --name=elastic_data
+sudo docker volume rm redis_data elastic_data odl_logs
 ```
 
 ### GUI
@@ -169,7 +174,7 @@ Once started open your browser and open the following GUIs:
 	* localhost:9200
 	* localhost:9300
 * Kibana:
-    	* localhost:5601
+    * localhost:5601
 	
 ### Running live development server
 

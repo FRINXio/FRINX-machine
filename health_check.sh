@@ -3,8 +3,8 @@
 # Common functions
 script="health_check.sh"
 
-function usage {  
- echo -e "usage: $script [OPTION] [ARGUMENTS]  \n"  
+function usage {
+ echo -e "usage: $script [OPTION] [ARGUMENTS]  \n"
 }
 
 function help {
@@ -23,7 +23,7 @@ function example {
 
 
 # all container names
-valid_containers=("odl" "frinxit" "micros" "conductor-server" "conductor-ui" "dynomite" "elasticsearch" "kibana" "sample-topology" )
+valid_containers=("odl" "frinxit" "micros" "conductor-server" "conductor-ui" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash")
 containers_to_check=()
 
 curl_odl=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET "http://127.0.0.1:8181/restconf/modules" )
@@ -31,14 +31,14 @@ curl_frinxit=( curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http:
 curl_conductor_server=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/api/metadata/workflow')
 curl_conductor_ui=( curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:5000' )
 curl_elasticsearch=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:9200/_cluster/health' )
-curl_kibana=( curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:5601' )
+curl_kibana=( curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:5601/api/status' )
 
 
 # skip test bool
 skip=false
 
-# function to check if array contains argument 
-#valid element array 
+# function to check if array contains argument
+#valid element array
 function valid {
   local e match="$1"
   shift
@@ -54,11 +54,11 @@ local cmd=$2[@]
 
 for i in {500..1}; do
 
-  response=$(${!cmd})                
+  response=$(${!cmd})
   echo -ne "Waiting for $1 to respond. For $i seconds\033[0K\r"
 
   HTTP_STATUS=$(echo $response | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
-  if [ $HTTP_STATUS -eq 200 ]; 
+  if [ $HTTP_STATUS -eq 200 ];
   then
     echo
     echo "$1 is ready"
@@ -119,7 +119,7 @@ case "$skip" in
   ;;
   false )                                    # add given containers to list, adds all if not specified
     if [ ${#input_containers[@]} -eq 0 ];
-    then 
+    then
        containers_to_check=("${valid_containers[@]}")
     else
        containers_to_check=("${input_containers[@]}")
@@ -169,17 +169,15 @@ for i in "${containers_to_check[@]}"; do
     sample-topology )
     echo "No exposed ports"
     ;;
+    logstash )
+    echo "No exposed ports"
+    ;;
     * )
     echo "Invalid container name: $i"
-    exit 1 
+    exit 1
     ;;
   esac
 done
 
 
 exit $result
-
-
-
-
-

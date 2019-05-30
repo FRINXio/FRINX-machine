@@ -5,22 +5,22 @@ import json
 import requests
 from string import Template
 
-from frinx_rest import elastic_url_base, odl_url_base, odl_headers, odl_credentials, parse_response
+from frinx_rest import elastic_url_base, odl_url_base, odl_headers, odl_credentials, parse_response, elastic_headers
 
 build_lldp_url = odl_url_base + "/operations/lldptopo:build"
 export_lldp_url = odl_url_base + "/operations/lldptopo:export"
 read_lldp_url = odl_url_base + "/operational/network-topology:network-topology/topology/"
-inventory_lldp_url = elastic_url_base + "/inventory/lldp/$id"
+inventory_lldp_url = elastic_url_base + "/inventory-lldp/lldp/$id"
 
 
 lldp_build_template = {
   "input": {
     "node-aggregation": "",
     "link-aggregation": "",
-    
+
     "per-node-read-timeout": 0,
     "concurrent-read-nodes": 0,
-    
+
     "destination-topology": ""
   }
 }
@@ -111,7 +111,7 @@ def store_lldp(task):
     add_body = {}
     add_body["lldp"] = task['inputData']['content']
 
-    r = requests.post(id_url, data=json.dumps(add_body))
+    r = requests.post(id_url, data=json.dumps(add_body), headers=elastic_headers)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok or response_code == requests.codes.created:
@@ -133,4 +133,3 @@ def start(cc):
     cc.start('LLDP_export_topology', export_lldp, False)
     cc.start('LLDP_read_topology', read_lldp, False)
     cc.start('LLDP_store_topology', store_lldp, False)
-
