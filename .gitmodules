@@ -1,7 +1,7 @@
 [submodule "conductor"]
 	path = conductor
 	url = https://github.com/FRINXio/conductor.git
-	branch = es6
+	branch = master
 [submodule "sample-topology/cli-testtool"]
 	path = sample-topology/cli-testtool
 	url = https://github.com/marosmars/cli-testtool.git
