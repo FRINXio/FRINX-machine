@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "main": "index.js",
   "kibana": {
-    "version": "5.6.10"
+    "version": "6.7.1"
   },
-  "author": "Ladislav Moravek <lmoravek@frinx.io>",
+  "author": "FRINXio <support@frinx.io>",
   "website": "http://www.frinx.io"
 }
