@@ -68,6 +68,7 @@ function valid {
 file=odl/frinx.license.cfg
 valid_images=("odl" "frinxit" "micros" "conductor-server" "conductor-ui" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash")
 license=
+license_flag=false
 build=false
 
 # Args while-loop
@@ -75,6 +76,7 @@ while [ "$1" != "" ];
 do
 case $1 in
    -l | --license )
+   license_flag=true
    shift
    license=$1
    ;;
@@ -100,11 +102,8 @@ shift
 done
 
 # Save license to file
-if [ -z "license" ]
+if [ "$license_flag" = true ]
 then
-      echo "No license specified"
-      exit 1
-else
       echo "token=$license" > $file
 fi
 
