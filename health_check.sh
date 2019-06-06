@@ -23,7 +23,7 @@ function example {
 
 
 # all container names
-valid_containers=("odl" "frinxit" "micros" "conductor-server" "conductor-ui" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash")
+valid_containers=("odl" "frinxit" "micros" "conductor-server" "conductor-ui" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui")
 containers_to_check=()
 
 curl_odl=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET "http://127.0.0.1:8181/restconf/modules" )
@@ -32,7 +32,7 @@ curl_conductor_server=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GE
 curl_conductor_ui=( curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:5000' )
 curl_elasticsearch=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:9200/_cluster/health' )
 curl_kibana=( curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:5601/api/status' )
-
+curl_uniconfig_ui=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:3000')
 
 # skip test bool
 skip=false
@@ -171,6 +171,9 @@ for i in "${containers_to_check[@]}"; do
     ;;
     logstash )
     echo "No exposed ports"
+    ;;
+    uniconfig-ui )
+    check_container $i curl_uniconfig_ui
     ;;
     * )
     echo "Invalid container name: $i"
