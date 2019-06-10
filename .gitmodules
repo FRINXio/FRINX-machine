@@ -9,4 +9,4 @@
 [submodule "frinx-uniconfig-ui"]
 	path = frinx-uniconfig-ui
 	url = https://github.com/FRINXio/frinx-uniconfig-ui.git
-	branch = docker-refactor
+	branch = master
