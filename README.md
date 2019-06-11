@@ -10,6 +10,7 @@ The project is a containerized package of:
 * FRINX microservices to execute conductor tasks
 * [FRINXit]
 * Device simulation container
+* [Uniconfig-ui]
 
 
 ## Documentation & Use Cases
@@ -151,7 +152,7 @@ Once started open your browser and open the following GUIs:
 * localhost:5000 --> FRINX workflow GUI
 * localhost:5601 --> Kibana (for log and inventory access)
 * localhost:8888 --> FRINXit (CLI for FRINX ODL)
-
+* localhost:3000 --> Uniconfig-ui
 
 ### Exposed ports
 * Conductor-server: 
@@ -175,6 +176,9 @@ Once started open your browser and open the following GUIs:
 	* localhost:9300
 * Kibana:
     * localhost:5601
+    
+* Uniconfig-ui:
+    * localhost:3000
 	
 ### Running live development server
 
@@ -229,3 +233,4 @@ BrowserSync interface providing useful test and debugging tools:
 [Elasticsearch]: <https://www.elastic.co/products/elasticsearch>
 [Kibana]: <https://www.elastic.co/products/kibana>
 [Logstash]: <https://www.elastic.co/products/logstash>
+[Uniconfig-ui]: <https://github.com/FRINXio/frinx-uniconfig-ui>
