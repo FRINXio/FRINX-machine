@@ -183,6 +183,7 @@ services:
      args:
        - ODL=odl:8080
    image: frinx/fm-uniconfig-ui
+   container_name: uniconfig-ui
    command: npm run dev
    logging:
      driver: "json-file"
