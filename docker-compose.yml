@@ -181,10 +181,10 @@ services:
      context: ./frinx-uniconfig-ui
      dockerfile: Dockerfile
      args:
-       - ODL=odl:8080
+       - ODL=odl:8181
+       - WF_SERVER=conductor-server:8080
    image: frinx/fm-uniconfig-ui
    container_name: uniconfig-ui
-   command: npm run dev
    logging:
      driver: "json-file"
      options:
