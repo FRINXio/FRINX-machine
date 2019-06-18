@@ -25,7 +25,7 @@ min 16GB RAM & min 4 vCPUs with normal startup, and 5GB RAM & 4 vCPUs with minim
 ### Tested on
 * Ubuntu 16.04 / 18.04 /
 * docker 18.03.1-ce, v18.06.1-ce, 18.09.5
-* docker-compose 1.21.2, v1.22.0, 1.17.1
+* docker-compose 1.21.2, v1.22.0
 
 ## Installation preparation
 
