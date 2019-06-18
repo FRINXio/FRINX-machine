@@ -54,6 +54,7 @@ Type the following apt or apt-get command:
 After installing `curl`, use following command to get *Docker Compose*:
 
 	sudo curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o 	/usr/local/bin/docker-compose
+	sudo chmod 755 /usr/local/bin/docker-compose
 	
 _Note: You can download the latest version of Docker Composer after checking Release Notes https://github.com/docker/compose/releases and finding the latest version, e.g. 1.23.2. Then you can edit the download link release version number to get the latest release._
 
