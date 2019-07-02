@@ -45,7 +45,7 @@ fi
 }
 
 function start_containers {
-local containers_to_start=("odl" "dynomite" "elasticsearch" "kibana" "conductor-server" "frinxit" "micros" "sample-topology" "logstash")
+local containers_to_start=("odl" "dynomite" "elasticsearch" "kibana" "conductor-server" "frinxit" "micros" "sample-topology" "logstash" "uniconfig-ui")
 if [ "$development" = false ]; then
     containers_to_start+=("conductor-ui")
 fi
