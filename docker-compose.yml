@@ -14,7 +14,7 @@ services:
     container_name: odl
     tty: true
     volumes:
-       - odl_logs:/opt/distribution-frinx/data/log
+      - odl_logs:/opt/distribution-frinx/data/log
     ports:
       - 8181:8181
 

@@ -10,20 +10,18 @@ COPY frinx.license.cfg /opt/distribution-frinx/etc
 
 # add karaf features which to run at container startup
 RUN ["sed", "-i", \
-"s/#odlFeaturesBoot.*/odlFeaturesBoot= \
- odl-restconf-all, \
- odl-netconf-topology, \
- frinx-cli-all-units, \
- frinx-unified-topology-all-units, \
- frinx-uniconfig-node-manager, \
- frinx-uniconfig-native, \
- frinx-lldp-topology /  \
+ "s/#odlFeaturesBoot.*/odlFeaturesBoot= \
+  odl-restconf-all, \
+  odl-netconf-topology, \
+  frinx-cli-all-units, \
+  frinx-unified-topology-all-units, \
+  frinx-uniconfig-node-manager, \
+  frinx-uniconfig-native, \
+  frinx-lldp-topology /  \
 ", \
 "/opt/distribution-frinx/etc/org.apache.karaf.features.cfg"]
 
 
-# Configure
-COPY conf/org.ops4j.pax.logging.cfg /opt/distribution-frinx/etc/
 
 ENTRYPOINT ["/bin/bash"]
 CMD ["/opt/distribution-frinx/bin/karaf"]
