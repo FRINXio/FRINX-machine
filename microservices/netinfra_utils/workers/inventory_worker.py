@@ -10,7 +10,7 @@ from frinx_rest import elastic_url_base, parse_response, elastic_headers
 inventory_device_url = elastic_url_base + "/inventory-device/device/$id"
 inventory_device_get_url = elastic_url_base + "/inventory-device/device/$id/_source"
 inventory_device_update_url = elastic_url_base + "/inventory-device/device/$id/_update"
-inventory_all_devices_url = elastic_url_base + "/inventory-device/device/_search"
+inventory_all_devices_url = elastic_url_base + "/inventory-device/device/_search?size=10000"
 
 add_template = {
     "id": "",
