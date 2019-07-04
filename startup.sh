@@ -75,6 +75,14 @@ fi
 
 }
 
+function import_devices {
+sudo docker exec micros bash -c "cd /home/app && newman run netinfra_utils/devices/device_import.postman_collection.json -d netinfra_utils/devices/device_data.csv"
+if [ "$skip" = false ]; then
+  check_success $?
+fi
+
+}
+
 
 # Loop arguments
 minimal=false
@@ -116,6 +124,8 @@ start_containers
 # Imports workflows
 import_workflows
 
+# Import devices
+import_devices
 
 echo 'Startup finished!'
 
