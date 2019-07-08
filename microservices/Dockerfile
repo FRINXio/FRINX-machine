@@ -1,6 +1,6 @@
 FROM python:2.7.16-jessie
 
-## Install nodejs 
+## Install nodejs
 
 ### /nodejs
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs
@@ -27,7 +27,7 @@ RUN unzip v1.46.0.zip \
 ENV PATH="$PATH:/home/app"
 
 WORKDIR /home/app
- 
+
 COPY ./microservices/netinfra_utils ./netinfra_utils
 COPY ./conductor ./conductor
 COPY ./wait_for_it.sh .
