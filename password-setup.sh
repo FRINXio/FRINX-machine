@@ -13,5 +13,5 @@ TMP="$(cd / ; find . -iname "${FILE_TO_UPDATE}")"
 PATH_OF_FILE_TO_UPDATE="$(echo "${TMP:1}")"
 
 
-sed -i "s/USERNAME=\"\"/USERNAME=\"${USERNAME}\"/" "${PATH_OF_FILE_TO_UPDATE}"
-sed -i "s/PASSWORD=\"\"/PASSWORD=\"${PASSWORD}\"/" "${PATH_OF_FILE_TO_UPDATE}"
+sed -i "s/USERNAME=\"admin\"/USERNAME=\"${USERNAME}\"/" "${PATH_OF_FILE_TO_UPDATE}"
+sed -i "s/PASSWORD=\"admin\"/PASSWORD=\"${PASSWORD}\"/" "${PATH_OF_FILE_TO_UPDATE}"
