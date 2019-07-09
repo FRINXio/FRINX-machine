@@ -22,6 +22,10 @@ RUN ["sed", "-i", \
 "/opt/distribution-frinx/etc/org.apache.karaf.features.cfg"]
 
 
+# Configure
+COPY conf/org.ops4j.pax.logging.cfg /opt/distribution-frinx/etc/
+COPY ./odl-wrapper.sh /opt/distribution-frinx/bin
+
 
 ENTRYPOINT ["/bin/bash"]
-CMD ["/opt/distribution-frinx/bin/karaf"]
+CMD ["/opt/distribution-frinx/bin/odl-wrapper.sh"]

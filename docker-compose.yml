@@ -2,6 +2,7 @@ version: "3.7"
 
 services:
   odl:
+    tty: true
     build:
       context: ./odl
       dockerfile: Dockerfile
@@ -14,7 +15,9 @@ services:
     container_name: odl
     tty: true
     volumes:
-      - odl_logs:/opt/distribution-frinx/data/log
+       - odl_logs:/opt/distribution-frinx/data/log
+       - odl_pass:/opt/distribution-frinx/bin/db-credentials
+       - odl_data:/opt/distribution-frinx/data
     ports:
       - 8181:8181
 
@@ -51,6 +54,8 @@ services:
       - odl
       - conductor-server
     command: ["/home/app/wait_for_it.sh", "-t", "180",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
+    volumes:
+        - odl_pass:/opt/odl_pass:ro
 
   sample-topology:
     build:
@@ -58,6 +63,8 @@ services:
       dockerfile: ./sample-topology/Dockerfile
     image: frinx/fm-sample-topology
     container_name: sample-topology
+    volumes:
+        - odl_pass:/opt/odl_pass:ro
     logging:
         driver: "json-file"
         options:
@@ -201,3 +208,8 @@ volumes:
     name: elastic_data
   odl_logs:
     name: odl_logs
+  odl_pass:
+      name: odl_pass
+  odl_data:
+      name: odl_data
+
