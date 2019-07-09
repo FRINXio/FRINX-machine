@@ -2,7 +2,7 @@ version: "3.7"
 services:
   odl:
     environment:
-      - JAVA_MAX_MEM=2G
+      - JAVA_MAX_MEM=6G
 
   elasticsearch:
     environment:

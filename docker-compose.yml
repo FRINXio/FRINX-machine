@@ -13,6 +13,7 @@ services:
             max-file: "3"
             max-size: "10m"
     container_name: odl
+    tty: true
     volumes:
        - odl_logs:/opt/distribution-frinx/data/log
        - odl_pass:/opt/distribution-frinx/bin/db-credentials
@@ -182,6 +183,23 @@ services:
     container_name: logstash
     volumes:
        - odl_logs:/odl-logs:ro
+
+  uniconfig-ui:
+   build:
+     context: ./frinx-uniconfig-ui
+     dockerfile: Dockerfile
+     args:
+       - ODL=odl:8181
+       - WF_SERVER=conductor-server:8080
+   image: frinx/fm-uniconfig-ui
+   container_name: uniconfig-ui
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
+     - 3000:3000
 
 volumes:
   redis_data:
