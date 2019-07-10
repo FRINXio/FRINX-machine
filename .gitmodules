@@ -4,7 +4,7 @@
 	branch = master
 [submodule "sample-topology/cli-testtool"]
 	path = sample-topology/cli-testtool
-	url = https://github.com/marosmars/cli-testtool.git
+	url = https://github.com/FRINXio/cli-testtool.git
 	branch = master
 [submodule "frinx-uniconfig-ui"]
 	path = frinx-uniconfig-ui
