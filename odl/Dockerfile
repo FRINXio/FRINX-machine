@@ -24,7 +24,7 @@ RUN ["sed", "-i", \
 
 # Configure
 COPY conf/org.ops4j.pax.logging.cfg /opt/distribution-frinx/etc/
-COPY ./odl-wrapper.sh /opt/distribution-frinx/bin
+COPY odl-wrapper.sh /opt/distribution-frinx/bin/
 
 
 ENTRYPOINT ["/bin/bash"]
