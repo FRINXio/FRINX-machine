@@ -1,13 +1,13 @@
 import time
-from conductor.ConductorWorker import ConductorWorker
+import worker_wrapper
 from frinx_rest import conductor_url_base
 import standalone_main
 
 
 def main():
     print('Starting FRINX workers')
-    cc = ConductorWorker(conductor_url_base, 1, 0.1)
-    standalone_main.register_workers(cc)
+    cc = worker_wrapper.WorkerWrapper(conductor_url_base, 1, 0.1)
+    worker_wrapper.register_workers(cc)
 
     # block
     while 1:
