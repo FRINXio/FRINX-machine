@@ -1,4 +1,4 @@
-FROM frinx/frinx_odl:4.2.0.frinx
+FROM frinx/frinx_odl:4.2.1.frinx
 
 # copy updated distribution into container (if any available)
 RUN mkdir /opt/distribution-frinx-override || true
