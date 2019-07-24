@@ -29,7 +29,7 @@ def execute_read_unified_topology_operational(task):
 
 
 def read_all_devices(url):
-    r = requests.get(url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     actual_nodes = response_json['topology'][0]['node']
@@ -100,7 +100,7 @@ def read_structured_data(task):
 
     id_url = Template(odl_url_unified_mount).substitute({"id": device_id}) + "/yang-ext:mount" + (uri if uri else "") + "?content=config"
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -129,7 +129,7 @@ def write_structured_data(task):
     id_url = Template(odl_url_unified_mount).substitute({"id": device_id}) + "/yang-ext:mount" + (uri if uri else "")
     id_url = Template(id_url).substitute(params)
 
-    r = requests.put(id_url, data=data_json, headers=odl_headers, auth=odl_credentials)
+    r = requests.put(id_url, data=data_json, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.no_content or response_code == requests.codes.created:
@@ -153,7 +153,7 @@ def delete_structured_data(task):
 
     id_url = Template(odl_url_unified_mount).substitute({"id": device_id}) + "/yang-ext:mount" + (uri if uri else "")
 
-    r = requests.delete(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.delete(id_url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.no_content:

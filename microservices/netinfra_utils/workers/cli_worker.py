@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+
 import json
 import copy
 from string import Template
@@ -52,7 +53,7 @@ def execute_mount_cli(task):
 
     id_url = Template(odl_url_cli_mount).substitute({"id": device_id})
 
-    r = requests.put(id_url, data=json.dumps(mount_body), headers=odl_headers, auth=odl_credentials)
+    r = requests.put(id_url, data=json.dumps(mount_body), headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.created or response_code == requests.codes.no_content:
@@ -90,7 +91,7 @@ def execute_and_read_rpc_cli(task):
 
     id_url = Template(odl_url_cli_mount_rpc).substitute({"id": device_id}) + "/yang-ext:mount/cli-unit-generic:execute-and-read"
 
-    r = requests.post(id_url, data=json.dumps(exec_body), headers=odl_headers, auth=odl_credentials)
+    r = requests.post(id_url, data=json.dumps(exec_body), headers=odl_headers, auth=odl_credentials,verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -112,7 +113,7 @@ def execute_unmount_cli(task):
 
     id_url = Template(odl_url_cli_mount).substitute({"id": device_id})
 
-    r = requests.delete(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.delete(id_url, headers=odl_headers, auth=odl_credentials,verify=False)
     response_code, response_json = parse_response(r)
 
     return {'status': 'COMPLETED', 'output': {'url': id_url,
@@ -126,7 +127,7 @@ def execute_check_cli_id_available(task):
 
     id_url = Template(odl_url_cli_mount).substitute({"id": device_id})
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code != requests.codes.not_found:
@@ -147,7 +148,7 @@ def execute_check_connected_cli(task):
 
     id_url = Template(odl_url_cli_mount_oper).substitute({"id": device_id})
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["node"][0]["cli-topology:connection-status"] == "connected":
@@ -163,7 +164,7 @@ def execute_check_connected_cli(task):
 
 
 def execute_read_cli_topology_operational(task):
-    r = requests.get(odl_url_cli_oper, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(odl_url_cli_oper, headers=odl_headers, auth=odl_credentials,verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -179,7 +180,7 @@ def execute_read_cli_topology_operational(task):
 
 
 def read_all_devices(url):
-    r = requests.get(url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(url, headers=odl_headers, auth=odl_credentials,verify=False)
     response_code, response_json = parse_response(r)
 
     actual_nodes = response_json['topology'][0]['node']
@@ -248,7 +249,7 @@ def execute_get_cli_journal(task):
 
     id_url = Template(odl_url_cli_read_journal).substitute({"id": device_id})
 
-    r = requests.post(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.post(id_url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:

@@ -13,7 +13,7 @@ def read_components(task):
 
     id_url = Template(odl_url_components).substitute({"id": device_id})
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:

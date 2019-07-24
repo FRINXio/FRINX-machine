@@ -1,6 +1,6 @@
 import json
 
-odl_url_base = "http://uniconfig:8181/rests"
+odl_url_base = "https://uniconfig:8181/rests"
 elastic_url_base = "http://elasticsearch:9200"
 conductor_url_base = "http://conductor-server:8080/api"
 

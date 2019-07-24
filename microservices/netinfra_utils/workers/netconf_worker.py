@@ -50,7 +50,7 @@ def execute_mount_netconf(task):
 
     id_url = Template(odl_url_netconf_mount).substitute({"id": device_id})
 
-    r = requests.put(id_url, data=json.dumps(mount_body), headers=odl_headers, auth=odl_credentials)
+    r = requests.put(id_url, data=json.dumps(mount_body), headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.created or response_code == requests.codes.no_content:
@@ -72,7 +72,7 @@ def execute_unmount_netconf(task):
 
     id_url = Template(odl_url_netconf_mount).substitute({"id": device_id})
 
-    r = requests.delete(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.delete(id_url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     return {'status': 'COMPLETED', 'output': {'url': id_url,
@@ -86,7 +86,7 @@ def execute_check_netconf_id_available(task):
 
     id_url = Template(odl_url_netconf_mount).substitute({"id": device_id}) + "?content=config"
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code != requests.codes.not_found:
@@ -107,7 +107,7 @@ def execute_check_connected_netconf(task):
 
     id_url = Template(odl_url_netconf_mount_oper).substitute({"id": device_id})
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["node"][0]["netconf-node-topology:connection-status"] == "connected":
