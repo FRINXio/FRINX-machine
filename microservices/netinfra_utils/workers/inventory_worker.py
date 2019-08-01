@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import json
+import copy
 from string import Template
 
 import requests
@@ -29,7 +30,7 @@ def add_device(task):
 
     id_url = Template(inventory_device_url).substitute({"id": device_id})
 
-    add_body = add_template.copy()
+    add_body = copy.deepcopy(add_template)
 
     add_body["id"] = task['inputData']['id']
     add_body["host"] = task['inputData']['host']
@@ -70,7 +71,7 @@ def add_field_to_device(task):
     id_url = Template(inventory_device_update_url).substitute({"id": device_id})
     data = Template(add_field_command).substitute({"field": field, "value": value})
 
-    update_body = add_field_template.copy()
+    update_body = copy.deepcopy(add_field_template)
 
     update_body["script"] = data
 
@@ -101,7 +102,7 @@ def add_nested_field_to_device(task):
     value = task['inputData']['value']
 
     id_url = Template(inventory_device_update_url).substitute({"id": device_id})
-    update_body = add_nested_field_template.copy()
+    update_body = copy.deepcopy(add_nested_field_template)
 
     update_body["doc"][field] = value
 
@@ -186,7 +187,7 @@ def get_all_devices(task):
 
 def read_all_devices(device_type):
     if device_type is not None and device_type is not "":
-        device_query_body = device_query_template.copy()
+        device_query_body = copy.deepcopy(device_query_template)
         device_query_body["query"]["term"]["device_type"] = device_type
         r = requests.get(inventory_all_devices_url, data=json.dumps(device_query_body), headers=elastic_headers)
     else:
@@ -221,7 +222,7 @@ def get_all_devices_as_tasks(task):
 
         dynamic_tasks = []
         for device_id in ids:
-            task_body = task_body_template.copy()
+            task_body = copy.deepcopy(task_body_template)
             task_body["taskReferenceName"] = device_id
             task_body["subWorkflowParam"]["name"] = task
             dynamic_tasks.append(task_body)
@@ -250,7 +251,7 @@ def add_show_command(task):
 
     id_url = Template(inventory_show_command_url).substitute({"id": command_id})
 
-    add_body = add_show_command_template.copy()
+    add_body = copy.deepcopy(add_show_command_template)
 
     add_body["command"] = task['inputData']['command']
     add_body["id"] = command_id

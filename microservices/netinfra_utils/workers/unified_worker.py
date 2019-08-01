@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import requests
 import json
+import copy
 from string import Template
 from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_response
 
@@ -73,7 +74,7 @@ def get_all_devices_as_tasks(task):
 
         dynamic_tasks = []
         for device_id in ids:
-            task_body = task_body_template.copy()
+            task_body = copy.deepcopy(task_body_template)
             task_body["taskReferenceName"] = device_id
             task_body["subWorkflowParam"]["name"] = subworkflow
             dynamic_tasks.append(task_body)

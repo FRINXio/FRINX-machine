@@ -6,7 +6,7 @@ import standalone_main
 
 def main():
     print('Starting FRINX workers')
-    cc = worker_wrapper.WorkerWrapper(conductor_url_base, 1, 0.1)
+    cc = worker_wrapper.ExceptionHandlingConductorWrapper(conductor_url_base, 1, 0.1)
     standalone_main.register_workers(cc)
 
     # block
