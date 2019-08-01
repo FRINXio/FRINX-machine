@@ -1,8 +1,13 @@
 from __future__ import print_function
 
-import requests
+import copy
 import json
+import re
+import urllib
 from string import Template
+
+import requests
+
 from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_response
 
 odl_url_uniconfig_config_shallow = odl_url_base + "/config/network-topology:network-topology/topology/uniconfig?depth=3"
@@ -86,7 +91,7 @@ def get_all_devices_as_tasks(task):
 
         dynamic_tasks = []
         for device_id in ids:
-            task_body = task_body_template.copy()
+            task_body = copy.deepcopy(task_body_template)
             task_body["taskReferenceName"] = device_id
             task_body["subWorkflowParam"]["name"] = subworkflow
             dynamic_tasks.append(task_body)
@@ -102,9 +107,18 @@ def get_all_devices_as_tasks(task):
                 'logs': []}
 
 
+def apply_functions(uri):
+    if not uri:
+        return uri
+    escape_regex = r"escape\(([^\)]*)\)"
+    uri = re.sub(escape_regex, lambda match: urllib.quote(match.group(1), safe=''), uri)
+    return uri
+
+
 def read_structured_data(task):
     device_id = task['inputData']['id']
     uri = task['inputData']['uri']
+    uri = apply_functions(uri)
 
     id_url = odl_url_uniconfig_mount + device_id + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
 
@@ -126,6 +140,7 @@ def read_structured_data(task):
 def write_structured_data(task):
     device_id = task['inputData']['id']
     uri = task['inputData']['uri']
+    uri = apply_functions(uri)
     template = task['inputData']['template']
     params = task['inputData']['params']
     params = json.loads(params) if isinstance(params, basestring) else (params if params else {})
@@ -154,6 +169,7 @@ def write_structured_data(task):
 def write_structured_data_as_tasks(task):
     device_id = task['inputData']['id']
     uri = task['inputData']['uri']
+    uri = apply_functions(uri)
     template = task['inputData']['template']
     add_params = task['inputData']['task_params']
     add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
@@ -168,7 +184,7 @@ def write_structured_data_as_tasks(task):
         per_iface_params = {"id": device_id, "template": data_json, "uri": url}
         key = device_id + param
         dynamic_tasks_i.update({key:per_iface_params})
-        task_body = task_body_template.copy()
+        task_body = copy.deepcopy(task_body_template)
         task_body["taskReferenceName"] = key
         task_body["subWorkflowParam"]["name"] = "Write_structured_device_data_in_uniconfig"
         dynamic_tasks.append(task_body)
@@ -181,6 +197,7 @@ def write_structured_data_as_tasks(task):
 def delete_structured_data(task):
     device_id = task['inputData']['id']
     uri = task['inputData']['uri']
+    uri = apply_functions(uri)
 
     id_url = odl_url_uniconfig_mount + device_id + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
 
@@ -200,13 +217,17 @@ def delete_structured_data(task):
 
 
 commit_input = {
-    "input": {}
+    "input": {
+        "target-nodes": {
+
+        }
+    }
 }
 
 
 def commit(task):
     r = requests.post(odl_url_uniconfig_commit,
-                      data=json.dumps(commit_input),
+                      data=json.dumps(create_commit_request(task)),
                       headers=odl_headers,
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
@@ -225,7 +246,7 @@ def commit(task):
 
 def dryrun_commit(task):
     r = requests.post(odl_url_uniconfig_dryrun_commit,
-                      data=json.dumps(commit_input),
+                      data=json.dumps(create_commit_request(task)),
                       headers=odl_headers,
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
@@ -244,7 +265,7 @@ def dryrun_commit(task):
 
 def calc_diff(task):
     r = requests.post(odl_url_uniconfig_calculate_diff,
-                      data=json.dumps(commit_input),
+                      data=json.dumps(create_commit_request(task)),
                       headers=odl_headers,
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
@@ -263,7 +284,7 @@ def calc_diff(task):
 
 def sync_from_network(task):
     r = requests.post(odl_url_uniconfig_sync_from_network,
-                      data=json.dumps(commit_input),
+                      data=json.dumps(create_commit_request(task)),
                       headers=odl_headers,
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
@@ -282,7 +303,7 @@ def sync_from_network(task):
 
 def replace_config_with_oper(task):
     r = requests.post(odl_url_uniconfig_replace_config_with_operational,
-                      data=json.dumps(commit_input),
+                      data=json.dumps(create_commit_request(task)),
                       headers=odl_headers,
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
@@ -298,16 +319,19 @@ def replace_config_with_oper(task):
                                                'response_body': response_json},
                 'logs': ["Uniconfig replace failed"]}
 
+
 snapshot_template = {
         "input": {
-            "name": ""
+            "name": "",
+            "target-nodes": {
+
+            }
         }
     }
 
-def create_snapshot(task):
-    snapshot_body = snapshot_template.copy()
-    snapshot_body["input"]["name"] = task["inputData"]["name"]
 
+def create_snapshot(task):
+    snapshot_body = create_snapshot_request(task)
     r = requests.post(odl_url_uniconfig_create_snapshot,
                       data=json.dumps(snapshot_body),
                       headers=odl_headers,
@@ -326,8 +350,38 @@ def create_snapshot(task):
                 'logs': ["Uniconfig create snapshot failed"]}
 
 
+def create_snapshot_request(task):
+    snapshot_body = copy.deepcopy(snapshot_template)
+    snapshot_body["input"]["name"] = task["inputData"]["name"]
+    device_list = parse_devices(task)
+    if device_list:
+        snapshot_body["input"]["target-nodes"]["node"] = device_list
+    return snapshot_body
+
+
+def create_commit_request(task):
+    commit_body = copy.deepcopy(commit_input)
+    device_list = parse_devices(task)
+    if device_list:
+        commit_body["input"]["target-nodes"]["node"] = device_list
+    return commit_body
+
+
+def parse_devices(task):
+    devices = task['inputData'].get('devices', [])
+    if type(devices) is list:
+        extracted_devices = devices
+    else:
+        extracted_devices = [x.strip() for x in devices.split(",") if x is not ""] if devices else []
+
+    if len(extracted_devices) is 0:
+        raise ("For Uniconfig RPCs, a list of devices needs to be specified. "
+               "Global RPCs (involving all devices in topology) are not allowed for your own safety.")
+    return extracted_devices
+
+
 def delete_snapshot(task):
-    snapshot_body = snapshot_template.copy()
+    snapshot_body = copy.deepcopy(snapshot_template)
     snapshot_body["input"]["name"] = task["inputData"]["name"]
 
     r = requests.post(odl_url_uniconfig_delete_snapshot,
@@ -349,9 +403,7 @@ def delete_snapshot(task):
 
 
 def replace_config_with_snapshot(task):
-    snapshot_body = snapshot_template.copy()
-    snapshot_body["input"]["name"] = task["inputData"]["name"]
-
+    snapshot_body = create_snapshot_request(task)
     r = requests.post(odl_url_uniconfig_replace_config_with_snapshot,
                       data=json.dumps(snapshot_body),
                       headers=odl_headers,

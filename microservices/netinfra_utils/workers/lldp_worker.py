@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import json
+import copy
 
 import requests
 from string import Template
@@ -29,7 +30,7 @@ lldp_build_template = {
 def build_lldp(task):
     topo_id = task['inputData']['destination-topology']
 
-    lldp_body = lldp_build_template.copy()
+    lldp_body = copy.deepcopy(lldp_build_template)
 
     lldp_body["input"]["node-aggregation"] = task['inputData']['node-aggregation']
     lldp_body["input"]["link-aggregation"] = task['inputData']['link-aggregation']
@@ -62,7 +63,7 @@ lldp_export_template = {
 
 def export_lldp(task):
 
-    lldp_body = lldp_export_template.copy()
+    lldp_body = copy.deepcopy(lldp_export_template)
 
     r = requests.post(export_lldp_url, data=json.dumps(lldp_body), headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
@@ -99,7 +100,6 @@ def read_lldp(task):
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Failed to read LLDP topology: %s" % topo_id]}
-
 
 
 def store_lldp(task):
