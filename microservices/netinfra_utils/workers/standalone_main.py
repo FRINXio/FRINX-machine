@@ -17,6 +17,7 @@ import terraform_worker
 import uniconfig_worker
 import unified_worker
 import vll_worker
+import vll_service_worker
 
 
 class StandaloneWorker:
@@ -96,6 +97,7 @@ def register_workers(cc):
     uniconfig_worker.start(cc)
     terraform_worker.start(cc)
     vll_worker.start(cc)
+    vll_service_worker.start(cc)
 
 
 if __name__ == '__main__':

@@ -356,9 +356,13 @@ def create_commit_request(task):
 def parse_devices(task):
     devices = task['inputData'].get('devices', [])
     if type(devices) is list:
-        return devices
-    device_list = [x.strip() for x in devices.split(",") if x is not ""] if devices else []
-    return device_list
+        extracted_devices = devices
+    else:
+        extracted_devices = [x.strip() for x in devices.split(",") if x is not ""] if devices else []
+
+    assert len(extracted_devices) is not 0, "For Uniconfig RPCs, a list of devices needs to be specified. " \
+                                            "Global RPCs (involving all devices in topology) are not allowed for your own safety."
+    return extracted_devices
 
 
 def delete_snapshot(task):
