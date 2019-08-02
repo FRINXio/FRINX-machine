@@ -6,17 +6,16 @@ services:
     build:
       context: ./odl
       dockerfile: Dockerfile
-    image: frinx/fm-odl
+    image: frinx/fm-odl-lighty
     logging:
         driver: "json-file"
         options:
             max-file: "3"
             max-size: "10m"
-    container_name: odl
-    tty: true
+    container_name: odl-lighty
     volumes:
        - odl_logs:/opt/distribution-frinx/data/log
-       - odl_pass:/opt/distribution-frinx/bin/db-credentials
+       - odl_pass:/opt/distribution-frinx/db-credentials
        - odl_data:/opt/distribution-frinx/data
     ports:
       - 8181:8181

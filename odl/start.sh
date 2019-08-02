@@ -1,3 +1,3 @@
-#! bin/bash
+#! /bin/bash
 
-/opt/distribution-frinx/bin/karaf
+/opt/distribution-frinx/run-lighty-uniconfig-distribution.sh

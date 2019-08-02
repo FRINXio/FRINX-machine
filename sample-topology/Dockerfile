@@ -1,11 +1,11 @@
-FROM python:2
+FROM python:2.7-stretch
 
 WORKDIR /home/topology
  
 COPY ./sample-topology/cli-testtool ./cli-testtool
 COPY ./wait_for_it.sh .
-COPY ./password-setup.sh .
-COPY ./sample-topology-wrapper.sh ./cli-testtool/topologies
+COPY ./sample-topology/password-setup.sh .
+COPY ./sample-topology/sample-topology-wrapper.sh .
 
 
 WORKDIR /home/topology/cli-testtool/topologies

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-/opt/distribution-frinx/bin/create-user.sh
-/opt/distribution-frinx/bin/karaf
+/opt/distribution-frinx/create-user.sh
+/opt/distribution-frinx/run-lighty-uniconfig-distribution.sh

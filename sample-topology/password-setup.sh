@@ -9,9 +9,7 @@ USERNAME=$(cat "${PASSWORD_FILE_PATH}" | grep "username" | cut -d ":" -f 2 )
 PASSWORD=$(cat "${PASSWORD_FILE_PATH}" | grep "password" | cut -d ":" -f 2 )
 
 FILE_TO_UPDATE="generateMount.sh"
-TMP="$(cd / ; find . -iname "${FILE_TO_UPDATE}")"
-PATH_OF_FILE_TO_UPDATE="$(echo "${TMP:1}")"
-
+PATH_OF_FILE_TO_UPDATE="cli-testtool/util/${FILE_TO_UPDATE}"
 
 sed -i "s/USERNAME=\"admin\"/USERNAME=\"${USERNAME}\"/" "${PATH_OF_FILE_TO_UPDATE}"
 sed -i "s/PASSWORD=\"admin\"/PASSWORD=\"${PASSWORD}\"/" "${PATH_OF_FILE_TO_UPDATE}"
