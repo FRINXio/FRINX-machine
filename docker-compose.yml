@@ -14,7 +14,7 @@ services:
             max-size: "10m"
     container_name: odl-lighty
     volumes:
-       - odl_logs:/opt/distribution-frinx/data/log
+       - odl_logs:/opt/distribution-frinx/log
        - odl_pass:/opt/distribution-frinx/db-credentials
        - odl_data:/opt/distribution-frinx/data
     ports:
@@ -173,7 +173,7 @@ services:
     build:
       context: ./logstash
       dockerfile: Dockerfile
-    image: frinx/fm-logstash
+    image: frinx/fm-logstash-lighty
     logging:
         driver: "json-file"
         options:
