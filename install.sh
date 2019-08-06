@@ -18,7 +18,7 @@ function example {
 function usage {
     echo -e "usage: $script OPTIONS [services] \n"
     echo -e "If no services are specified all are pulled or built."
-    echo -e "Services: odl frinxit micros conductor-server conductor-ui dynomite elasticsearch kibana sample-topology logstash"
+    echo -e "Services: odl micros conductor-server dynomite elasticsearch kibana sample-topology logstash uniconfig-ui"
 }
 
 function help {
@@ -66,7 +66,7 @@ function valid {
 }
 
 file=odl/frinx.license.cfg
-valid_images=("odl" "frinxit" "micros" "conductor-server" "conductor-ui" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui")
+valid_images=("odl" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui")
 license=
 license_flag=false
 build=false
