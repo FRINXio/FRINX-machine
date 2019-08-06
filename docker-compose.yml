@@ -78,25 +78,6 @@ services:
       - dynomite
     command: ["/app/wait_for.sh", "-t", "120",  "elasticsearch:9300", "--", "/app/startup.sh"]
 
-  conductor-ui:
-    build:
-      context: ./conductor/
-      dockerfile: docker/ui/Dockerfile
-    environment:
-      - WF_SERVER=http://conductor-server:8080/api/
-    image: frinx/fm-conductor-ui
-    container_name: conductor-ui
-    links:
-      - conductor-server
-    logging:
-        driver: "json-file"
-        options:
-            max-file: "3"
-            max-size: "10m"
-    ports:
-      - 5000:5000
-
-
   dynomite:
     logging:
         driver: "json-file"
