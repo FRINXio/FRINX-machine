@@ -173,7 +173,7 @@ services:
     build:
       context: ./logstash
       dockerfile: Dockerfile
-    image: frinx/fm-logstash-lighty
+    image: frinx/fm-logstash
     logging:
         driver: "json-file"
         options:
