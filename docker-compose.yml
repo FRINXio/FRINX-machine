@@ -155,6 +155,7 @@ services:
      args:
        - ODL=odl:8181
        - WF_SERVER=conductor-server:8080
+       - REACT_APP_LOGIN_ENABLED=true
    image: frinx/fm-uniconfig-ui
    container_name: uniconfig-ui
    logging:
