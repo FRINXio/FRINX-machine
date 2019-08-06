@@ -1,9 +1,0 @@
-// Gotty preferences file
-// To see further options, visit:
-// https://github.com/yudai/gotty/blob/master/.gotty
-
-preferences {
-    background_color = "rgb(6,47,79)"
-    environment = {"TERM" = "xterm-256color"}
-    font_smoothing = "antialiased"
-}

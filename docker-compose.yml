@@ -20,22 +20,6 @@ services:
     ports:
       - 8181:8181
 
-  frinxit:
-    build:
-      context: ./frinxit
-      dockerfile: Dockerfile
-    image: frinx/fm-frinxit
-    logging:
-        driver: "json-file"
-        options:
-            max-file: "3"
-            max-size: "10m"
-    container_name: frinxit
-    environment:
-      - odl_target=odl
-    ports:
-      - 8888:8888
-
   micros:
     build:
       context: ./
