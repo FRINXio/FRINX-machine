@@ -1,4 +1,4 @@
-FROM frinx/frinx_lighty-snapshot:latest
+FROM frinx/uniconfig:4.2.3-rc2
 
 # copy updated distribution into container (if any available)
 RUN mkdir /opt/distribution-frinx-override || true
