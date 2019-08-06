@@ -11,6 +11,9 @@ COPY frinx.license.cfg /opt/distribution-frinx/config
 # Configure
 COPY odl-wrapper.sh /opt/distribution-frinx/
 
+# Replace schema folder
+COPY schema /opt/distribution-frinx/cache/schema
+
 
 ENTRYPOINT ["/bin/bash"]
 CMD ["/opt/distribution-frinx/odl-wrapper.sh"]
