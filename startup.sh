@@ -46,9 +46,7 @@ fi
 
 function start_containers {
 local containers_to_start=("odl" "dynomite" "elasticsearch" "kibana" "conductor-server" "micros" "sample-topology" "logstash" "uniconfig-ui")
-if [ "$development" = false ]; then
-    containers_to_start+=("conductor-ui")
-fi
+
 
 for i in "${containers_to_start[@]}"; do
 
@@ -88,7 +86,6 @@ fi
 minimal=false
 skip=false
 import=false
-development=false
 while [ "$1" != "" ];
 do
 case $1 in
@@ -98,10 +95,6 @@ case $1 in
     ;;
     -s | --skip)
     skip=true
-    shift
-    ;;
-    --uidev)
-    development=true
     shift
     ;;
     -h | --help )
@@ -128,9 +121,3 @@ import_workflows
 import_devices
 
 echo 'Startup finished!'
-
-if [ "$development" = true ]; then
-  cd conductor/ui
-  sudo npm install
-  sudo gulp watch
-fi
