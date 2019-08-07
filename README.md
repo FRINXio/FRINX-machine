@@ -20,12 +20,13 @@ https://frinxio.github.io/Frinx-docs/
 * [Docker Compose](https://github.com/docker/compose)
 * License for FRINX ODL (you can find a trial license in the "Installation Guide" section below)
 
-min 16GB RAM & min 4 vCPUs with normal startup, and 5GB RAM & 4 vCPUs with minimal config has been successfully tested for POCs and demos. 
+min 16GB RAM & min 4 vCPUs with normal startup, and 8GB RAM & 4 vCPUs with minimal config has been successfully tested for POCs and demos. 
 
 ### Tested on
 * Ubuntu 16.04 / 18.04 /
 * docker 18.03.1-ce, v18.06.1-ce, 18.09.5
 * docker-compose 1.21.2, v1.22.0
+* Chrome browser
 
 ## Installation preparation
 
@@ -137,14 +138,14 @@ Docker needs privileged mode, so `startup.sh` should be executed with sudo. Othe
 ```bash
 sudo ./startup.sh
 ```
-Min 16GB RAM & min 4 vCPUs with normal startup are recommended.
+Min 16GB RAM & min 4 vCPUs with normal startup and 8GB RAM with 4 vCPUs for minimal startup are recommended.
 
 #### Web interface
 Open web page:
  http://localhost:3000
 
 
-###Shutdown
+### Teardown
 The `teardown.sh` script in the FRINX-machine folder:
 * Stops and removes containers
 * Does not remove external volumes

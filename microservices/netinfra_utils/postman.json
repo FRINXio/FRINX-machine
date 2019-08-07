@@ -1,17 +1,15 @@
 {
 	"info": {
-		"_postman_id": "81c6929b-f177-4679-9a6f-845d07a22bfa",
+		"_postman_id": "24143e50-f5b8-4b63-8d80-46190a03add7",
 		"name": "CONDUCTOR latest",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "SETUP",
-			"description": null,
 			"item": [
 				{
 					"name": "OC_INTERFACE",
-					"description": null,
 					"item": [
 						{
 							"name": "Create loopback",
@@ -258,7 +256,6 @@
 				},
 				{
 					"name": "SOUTHBOUND",
-					"description": null,
 					"item": [
 						{
 							"name": "Mount cli",
@@ -272,7 +269,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Mount_cli_device\",\n  \"description\": \"mount a CLI device - CLI, SOUTHBOUND\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"CLI_check_cli_id_available\",\n      \"taskReferenceName\": \"CLI_check_cli_id_available\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\"\n      }\n    },\n    {\n      \"name\": \"CLI_mount_cli\",\n      \"taskReferenceName\": \"CLI_mount_cli\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"type\": \"${workflow.input.type}\",\n        \"version\": \"${workflow.input.version}\",\n        \"host\": \"${workflow.input.host}\",\n        \"protocol\": \"${workflow.input.protocol}\",\n        \"port\": \"${workflow.input.port}\",\n        \"username\": \"${workflow.input.username}\",\n        \"password\": \"${workflow.input.password}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Mount_cli_device\",\n  \"description\": \"mount a CLI device - CLI, SOUTHBOUND\",\n  \"version\": 1,\n  \"tasks\": [\n    {\n      \"name\": \"CLI_mount_cli\",\n      \"taskReferenceName\": \"CLI_mount_cli\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"type\": \"${workflow.input.type}\",\n        \"version\": \"${workflow.input.version}\",\n        \"host\": \"${workflow.input.host}\",\n        \"protocol\": \"${workflow.input.protocol}\",\n        \"port\": \"${workflow.input.port}\",\n        \"username\": \"${workflow.input.username}\",\n        \"password\": \"${workflow.input.password}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -747,7 +744,6 @@
 				},
 				{
 					"name": "OC-PLATFORM",
-					"description": null,
 					"item": [
 						{
 							"name": "Get openconfig components",
@@ -904,7 +900,6 @@
 				},
 				{
 					"name": "INVENTORY",
-					"description": null,
 					"item": [
 						{
 							"name": "Add cli device",
@@ -1190,7 +1185,6 @@
 				},
 				{
 					"name": "L3VPN",
-					"description": null,
 					"item": [
 						{
 							"name": "Add L3VPN instance create",
@@ -1347,7 +1341,6 @@
 				},
 				{
 					"name": "L2VPN",
-					"description": null,
 					"item": [
 						{
 							"name": "L2VPN P2P OC Create",
@@ -1414,7 +1407,6 @@
 				},
 				{
 					"name": "UTILS",
-					"description": null,
 					"item": [
 						{
 							"name": "Dynamic fork",
@@ -1451,7 +1443,6 @@
 				},
 				{
 					"name": "UNIFIED",
-					"description": null,
 					"item": [
 						{
 							"name": "Read unified topology oper",
@@ -1609,7 +1600,6 @@
 				},
 				{
 					"name": "UNICONFIG",
-					"description": null,
 					"item": [
 						{
 							"name": "Read uniconfig topology oper",
@@ -2037,7 +2027,6 @@
 				},
 				{
 					"name": "LLDP",
-					"description": null,
 					"item": [
 						{
 							"name": "Add LLDP build",
@@ -2224,11 +2213,9 @@
 				},
 				{
 					"name": "Terraform",
-					"description": null,
 					"item": [
 						{
 							"name": "AWS",
-							"description": null,
 							"item": [
 								{
 									"name": "Terraform plan VPC",
@@ -2448,7 +2435,6 @@
 				},
 				{
 					"name": "LACP",
-					"description": null,
 					"item": [
 						{
 							"name": "LCAP demo",
@@ -2488,7 +2474,6 @@
 				},
 				{
 					"name": "TASKS",
-					"description": "",
 					"item": [
 						{
 							"name": "Add tasks",
@@ -2549,7 +2534,6 @@
 		},
 		{
 			"name": "Test",
-			"description": null,
 			"item": [
 				{
 					"name": "List All Tasks",
