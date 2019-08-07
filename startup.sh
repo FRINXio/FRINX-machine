@@ -7,7 +7,7 @@ cd ${DIR}
 script="startup.sh"
 
 function example {
-    echo -e "example: $script -m"
+    echo -e "example: $script"
 }
 
 function usage {
@@ -17,9 +17,7 @@ function usage {
 function help {
   usage
     echo -e "OPTION:"
-    echo -e "  -m | --minimal   Start with lower resource usage."
-    echo -e "  -s | --skip      Skips healthchecks and check for execution errors."
-    echo -e "  --uidev          Start conductor-ui in development mode."
+    echo -e "  -s | --skip      Skips health check."
     echo -e "\n"
   example
 }
@@ -37,11 +35,7 @@ fi
 }
 
 function start_container {
-if [ "$minimal" = true ]; then
-  sudo docker-compose -f docker-compose.yml -f docker-compose.min.yml up -d "$1"
-else
-  sudo docker-compose -f docker-compose.yml up -d "$1"
-fi
+  sudo docker-compose up -d "$1"
 }
 
 function start_containers {
@@ -83,16 +77,11 @@ fi
 
 
 # Loop arguments
-minimal=false
 skip=false
 import=false
 while [ "$1" != "" ];
 do
 case $1 in
-    -m | --minimal)
-    minimal=true
-    shift
-    ;;
     -s | --skip)
     skip=true
     shift

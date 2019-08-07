@@ -8,7 +8,6 @@ The project is a containerized package of:
     * [Kibana]
     * [Logstash]
 * FRINX microservices to execute conductor tasks
-* [FRINXit]
 * Device simulation container
 * [Uniconfig-ui]
 
@@ -79,8 +78,17 @@ Navigate into the project folder:
 cd FRINX-machine
 ```
 
+#### Services used in the project
+* odl
+* conductor-server
+* elasticsearch
+* kibana
+* logstash
+* micros
+* uniconfig-ui
+* sample-topology
  
-#### Installation
+### Installation
 
 The installation script `install.sh` is in the FRINX-machine folder. 
 
@@ -100,18 +108,25 @@ Installation with the trial license token:
 ```
 After the first run the license token is saved to a <git directory>/odl/frinx.license.cfg and will be copied to image after each update.
 
-To update images from Docker Hub:
+Once images were downloaded, to update images from Docker Hub:
 ```
-./install.sh [containers]
+./install.sh [service]
 ```
 
-To build images locally:
+To build image from cloned repository:
 ```
-./install.sh -b [containers]
+./install.sh -b [service]
 ```
 If no container is specified all are updated.
 
-#### Startup
+To replace running service with new one run after updating the image:
+```
+sudo docker stop [service]
+sudo docker rm [service]
+sudo docker-compose up -d [service]
+```
+
+### Startup
 The startup script `startup.sh` can be found in the FRINX-machine folder.
 Here is what it does:
 * Creates the docker containers from the images and starts them.
@@ -124,13 +139,12 @@ sudo ./startup.sh
 ```
 Min 16GB RAM & min 4 vCPUs with normal startup are recommended.
 
-##### Minimal startup
-```bash
-sudo ./startup.sh -m
-```
-Starts application with lower RAM usage. Min 5GB RAM & min 4 vCPUs with minimal startup are recommended.
+#### Web interface
+Open web page:
+ http://localhost:3000
 
-#### Teardown
+
+###Shutdown
 The `teardown.sh` script in the FRINX-machine folder:
 * Stops and removes containers
 * Does not remove external volumes
@@ -140,7 +154,7 @@ Using docker, also needs privileged mode:
 sudo ./teardown.sh
 ```
 
-## Removal of external volumes
+### Removal of external volumes
 #### **Caution all data will be lost!**
 
 To remove the volumes use:
@@ -148,26 +162,13 @@ To remove the volumes use:
 sudo docker volume rm redis_data elastic_data odl_logs
 ```
 
-### GUI
-Once started open your browser and open the following GUIs:
-* localhost:5000 --> FRINX workflow GUI
-* localhost:5601 --> Kibana (for log and inventory access)
-* localhost:8888 --> FRINXit (CLI for FRINX ODL)
-* localhost:3000 --> Uniconfig-ui
-
 ### Exposed ports
 * Conductor-server: 
 	* localhost:8080
 	* localhost:8000
 
-* Conductor-ui: 
-	* localhost:5000
-
 * ODL: 
 	* localhost:8181
-
-* Frinxit: 
-	* localhost:8888
 
 * Microservices: 
 	* localhost:6000
@@ -180,57 +181,11 @@ Once started open your browser and open the following GUIs:
     
 * Uniconfig-ui:
     * localhost:3000
-	
-### Running live development server
 
-#### Only UI
-To start live server providing only FRINX-Machine UI outside
-docker environment, run following commands:
-```bash
-cd conductor/ui && sudo npm install
-```
-Run following script in conductor/ui folder:
-```bash
-sudo gulp watch
-```
-
-#### UI + all services 
-To start live server providing FRINX-Machine UI outside 
-docker environment including all other services, run following commands:
-```bash
-cd conductor/ui && sudo npm install
-```
-```bash
-sudo ./startup.sh
-```
-After successful startup, stop the UI container in order to free the port:
-```bash
-sudo docker stop conductor-ui
-```
-Finally run following script in conductor/ui folder:
-```bash
-sudo gulp watch
-```
-Server should be online. 
-
-If you issue ENOSPC type error, run following command to increase amount of watched files:
-```bash
-echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
-```
-
-#### Access URLs:
-	Local: http://localhost:3000
-	External: http://<yourIPaddress>:3000
-
-BrowserSync interface providing useful test and debugging tools:
-
-	UI: http://localhost:3001
-	UI External: http://localhost:3001
 	
 
 [FRINX ODL]: <https://frinx.io/odl_distribution>
 [Conductor]: <https://github.com/FRINXio/conductor>
-[FRINXit]: <https://github.com/FRINXio/frinxit>
 [Elasticsearch]: <https://www.elastic.co/products/elasticsearch>
 [Kibana]: <https://www.elastic.co/products/kibana>
 [Logstash]: <https://www.elastic.co/products/logstash>
