@@ -144,7 +144,7 @@ Open web page:
  http://localhost:3000
 
 
-###Shutdown
+### Teardown
 The `teardown.sh` script in the FRINX-machine folder:
 * Stops and removes containers
 * Does not remove external volumes
