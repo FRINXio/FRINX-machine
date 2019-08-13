@@ -16,6 +16,20 @@ RUN cat *.sh | grep python > sample-topology.sh \
   && chmod +x sample-topology.sh
 
 
+## Install java
+RUN apt-get update -y && apt-get install -y default-jre
+
+## Change workdir
+RUN mkdir -p /home/topology/netconf-testtool/schemas
+
+## Get testtool jar
+ADD  https://license.frinx.io/download/netconf-testtool-1.4.2-Oxygen-SR2.4_2_3_rc2-frinxodl-executable.jar /home/topology/netconf-testtool
+
+## copy schemas
+COPY ./sample-topology/netconf-testtol/schemas /home/topology/netconf-testtool/schemas
+##
+
+
 ENTRYPOINT ["/bin/bash"]
 # the wrapper contains "password-setup.sh" and "sample-topology.sh"
-CMD ["./sample-topology-wrapper.sh"]
+CMD ["/home/topology/sample-topology-wrapper.sh"]

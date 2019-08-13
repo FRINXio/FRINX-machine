@@ -1,9 +1,0 @@
-version: "3.7"
-services:
-  odl:
-    environment:
-      - JAVA_MAX_MEM=4G
-
-  elasticsearch:
-    environment:
-      - "ES_JAVA_OPTS=-Xms512m -Xmx1024m"

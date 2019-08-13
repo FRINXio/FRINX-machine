@@ -1,12 +1,3 @@
 - pipeline.id: odl_logs
-  path.config: "/usr/share/logstash/pipeline/lighty_logs.conf"
-  pipeline.workers: 1
-- pipeline.id: uniconfig_logs
-  path.config: "/usr/share/logstash/pipeline/uniconfig_logs.conf"
-  pipeline.workers: 1
-- pipeline.id: controller_logs
-  path.config: "/usr/share/logstash/pipeline/controller_logs.conf"
-  pipeline.workers: 1
-- pipeline.id: southbound_logs
-  path.config: "/usr/share/logstash/pipeline/southbound_logs.conf"
-  pipeline.workers: 1
+  path.config: "/usr/share/logstash/pipeline/logstash.conf"
+  pipeline.workers: 2

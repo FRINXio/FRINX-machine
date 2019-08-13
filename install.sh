@@ -109,7 +109,7 @@ fi
 
 # Update submodules
 git submodule init
-git submodule update --recursive --remote
+git submodule update --recursive
 
 cd conductor
 echo 'git.root=../../' > gradle.properties
