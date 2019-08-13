@@ -6,7 +6,7 @@ services:
     build:
       context: ./odl
       dockerfile: Dockerfile
-    image: frinx/fm-odl:0.9
+    image: frinx/fm-odl
     logging:
         driver: "json-file"
         options:
@@ -26,7 +26,7 @@ services:
     build:
       context: ./
       dockerfile: ./microservices/Dockerfile
-    image: frinx/fm-micros:0.9
+    image: frinx/fm-micros
     logging:
         driver: "json-file"
         options:
@@ -46,7 +46,7 @@ services:
     build:
       context: ./
       dockerfile: ./sample-topology/Dockerfile
-    image: frinx/fm-sample-topology:0.9
+    image: frinx/fm-sample-topology
     container_name: sample-topology
     volumes:
         - odl_pass:/opt/odl_pass:ro
@@ -62,7 +62,7 @@ services:
       dockerfile: docker/server/Dockerfile
     environment:
       - CONFIG_PROP=config.properties
-    image: frinx/fm-conductor-server:0.9
+    image: frinx/fm-conductor-server
     container_name: conductor-server
     links:
       - elasticsearch:es
@@ -88,7 +88,7 @@ services:
     build:
       context: ./
       dockerfile: ./dynomite/Dockerfile
-    image: frinx/fm-dynomite:0.9
+    image: frinx/fm-dynomite
     container_name: dynomite
     volumes:
        - redis_data:/var/lib/redis
@@ -97,7 +97,7 @@ services:
     build:
       context: ./
       dockerfile: ./elasticsearch/Dockerfile
-    image: frinx/fm-elasticsearch:0.9
+    image: frinx/fm-elasticsearch
     container_name: elasticsearch
     logging:
         driver: "json-file"
@@ -127,7 +127,7 @@ services:
     build:
       context: ./kibana
       dockerfile: Dockerfile
-    image: frinx/fm-kibana:0.9
+    image: frinx/fm-kibana
     container_name: kibana
     environment:
       - "elasticsearch.url=http://elasticsearch:9200"
@@ -140,7 +140,7 @@ services:
     build:
       context: ./logstash
       dockerfile: Dockerfile
-    image: frinx/fm-logstash:0.9
+    image: frinx/fm-logstash
     logging:
         driver: "json-file"
         options:
@@ -158,7 +158,7 @@ services:
        - ODL=odl:8181
        - WF_SERVER=conductor-server:8080
        - REACT_APP_LOGIN_ENABLED=false
-   image: frinx/fm-uniconfig-ui:0.9
+   image: frinx/fm-uniconfig-ui
    container_name: uniconfig-ui
    logging:
      driver: "json-file"
