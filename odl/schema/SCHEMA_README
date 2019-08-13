@@ -1,0 +1,5 @@
+This is a placeholder folder, which can be left empty or contain yang schemas to import before startup.
+
+The directory is always copied.
+
+This folder can be used to upload schemas to odl before start.
