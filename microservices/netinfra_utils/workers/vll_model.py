@@ -72,11 +72,19 @@ class RemoteDevice(Device):
 
 class Service:
 
+    @property
+    def devices(self):
+        return self._devices
+
+    @devices.setter
+    def devices(self, value):
+        self._devices = value
+
     def __init__(self, service):
         try:
             self.id = service['id']
             self.mtu = service.get('mtu', 0)
-            assert len(service.devices) is 2, 'For VLL service, 2 devices are expected. Received: %s' % len(service.devices)
+            assert len(service['devices']) is 2, 'For VLL service, 2 devices are expected. Received: %s' % len(service['devices'])
             self.devices = self.parse_devices(service['devices'])
         except BaseException as e:
             raise Exception("Unable to parse service: %s due to: %s" % (service, e.message))
@@ -183,7 +191,8 @@ class RemoteService(Service):
                 },
                 {
                     'id': "UNKNOWN",
-                    'interface': "UNKNOWN"
+                    'interface': "UNKNOWN",
+                    'remote_ip' : "UNKNOWN"
                 }
             ]
         }
@@ -192,7 +201,7 @@ class RemoteService(Service):
         if vlan1:
             service['devices'][0]['vlan'] = vlan1
 
-        return RemoteService
+        return RemoteService(service)
 
     def merge(self, other):
         # type: (RemoteService, RemoteService) -> RemoteService
