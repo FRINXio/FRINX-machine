@@ -52,7 +52,7 @@ def put_interface(service, device):
         ifc_config['frinx-openconfig-interfaces:interface'][0]['config']["frinx-openconfig-vlan:tpid"] = device.tpid
 
     ifc_response = uniconfig_worker.write_structured_data({'inputData': {
-        'id': device,
+        'id': device.id,
         'uri': url,
         "template": ifc_config,
         'params': {}
@@ -363,8 +363,19 @@ def service_read_all(task):
         else aggregate_l2p2p_remote(remote_services, lambda service: service['vccid'])
 
     services = local_services + remote_services
+    services = map(lambda service: to_dict(service), services)
     return {'status': 'COMPLETED', 'output': {'services': services,
                                               'logs': ['VLL instances found successfully: %s' % len(services)]}}
+
+
+def to_dict(service):
+    devs = []
+    for dev in service.devices:
+        devs.append(vars(dev))
+
+    serv = vars(service)
+    serv['devices'] = devs
+    return serv
 
 
 def aggregate_l2p2p_remote(remote_services, by_key=lambda remote_service: remote_service.id):
