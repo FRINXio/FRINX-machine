@@ -80,6 +80,15 @@ vll_local_template = {
     ]
 }
 
+vlan_template = {
+    "vlans": {
+        "vlan": [
+            {
+                "vlan-id": 0
+            }
+        ]
+    }
+}
 
 vll_remote_template = {
     'network-instance': [
@@ -194,6 +203,9 @@ def create_vll_remote_request(task):
     cp1['endpoints']['endpoint'][0]['local']['config']['interface'] = task['inputData']['interface']
     if task['inputData'].get('vlan') is not None:
         cp1['endpoints']['endpoint'][0]['local']['config']['subinterface'] = task['inputData']['vlan']
+        vlans = copy.deepcopy(vlan_template)
+        vlans['vlans']['vlan'][0]['vlan-id'] = task['inputData']['vlan']
+        instance.update(vlans)
 
     cp2 = instance['connection-points']['connection-point'][1]
     cp2['endpoints']['endpoint'][0]['remote']['config']['remote-system'] = task['inputData']['remote_ip']
@@ -221,6 +233,9 @@ def create_vll_local_request(task):
     cp1['endpoints']['endpoint'][0]['local']['config']['interface'] = task['inputData']['interface_1']
     if task['inputData'].get('vlan_1') is not None:
         cp1['endpoints']['endpoint'][0]['local']['config']['subinterface'] = task['inputData']['vlan_1']
+        vlans = copy.deepcopy(vlan_template)
+        vlans['vlans']['vlan'][0]['vlan-id'] = task['inputData']['vlan_1']
+        instance.update(vlans)
 
     cp2 = instance['connection-points']['connection-point'][1]
 
@@ -232,6 +247,10 @@ def create_vll_local_request(task):
     cp2['endpoints']['endpoint'][0]['local']['config']['interface'] = task['inputData']['interface_2']
     if task['inputData'].get('vlan_2') is not None:
         cp2['endpoints']['endpoint'][0]['local']['config']['subinterface'] = task['inputData']['vlan_2']
+        vlans = copy.deepcopy(vlan_template)
+        vlans['vlans']['vlan'][0]['vlan-id'] = task['inputData']['vlan_2']
+        instance.update(vlans)
+
     return vll_body
 
 

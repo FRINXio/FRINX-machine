@@ -8,6 +8,7 @@ class Device:
     def __init__(self, device):
         self.id = device['id']
         self.interface = device['interface']
+        self.interface_reset = device.get('interface_reset', False)
         self.description = device.get("description", None)
         self.auto_negotiate = device.get('auto_negotiate', None)
         self.vlan = device.get('vlan', None)
@@ -87,7 +88,7 @@ class Service:
             self.id = service['id']
             self.mtu = service.get('mtu', 0)
             if not len(service['devices']) == 2:
-                raise ('For VLL service, 2 devices are expected. Received: %s' % len(service.devices))
+                raise Exception('For VLL service, 2 devices are expected. Received: %s' % len(service['devices']))
             self.devices = self.parse_devices(service['devices'])
         except BaseException as e:
             raise Exception("Unable to parse service: %s due to: %s" % (service, e.message))
@@ -211,3 +212,18 @@ class RemoteService(Service):
         self.devices = filter(lambda device: device.id != "UNKNOWN", self.devices) \
                        + filter(lambda device: device.id != "UNKNOWN", other.devices)
         return self
+
+
+class ServiceDeletion(Service):
+
+    def __init__(self, service):
+        Service.__init__(self, service)
+
+    def parse_devices(self, devices):
+        # type: (Service, list) -> list[LocalDevice]
+        for d in devices: d.update({"interface": "UNKNOWN"})
+        return [LocalDevice.parse(d, i) for i, d in enumerate(devices)]
+
+    @staticmethod
+    def parse_from_task(task):
+        return ServiceDeletion(Service.extract_from_task(task))
