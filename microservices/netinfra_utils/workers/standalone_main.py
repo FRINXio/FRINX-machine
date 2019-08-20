@@ -1,6 +1,10 @@
 import frinx_rest
 frinx_rest.odl_url_base = "http://localhost:8181/restconf"
 
+import netconf_worker, platform_worker, l3vpn_worker, lldp_worker, \
+    inventory_worker, unified_worker, uniconfig_worker, terraform_worker, vll_worker, vll_service_worker, vpls_worker, \
+    vpls_service_worker, cli_worker
+
 import json
 import time
 
@@ -8,6 +12,7 @@ from flask import Flask, request
 from flask_restful import Resource, Api
 
 from main import register_workers
+
 
 class StandaloneWorker:
 
@@ -74,7 +79,7 @@ def main():
     while 1:
         time.sleep(1)
 
-
+        
 def register_workers(cc):
     cli_worker.start(cc)
     netconf_worker.start(cc)
@@ -90,6 +95,6 @@ def register_workers(cc):
     vpls_worker.start(cc)
     vpls_service_worker.start(cc)
 
-
+    
 if __name__ == '__main__':
     main()
