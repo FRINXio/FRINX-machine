@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "24143e50-f5b8-4b63-8d80-46190a03add7",
+		"_postman_id": "b93f482c-e5e4-4a2c-8927-80a186a06b87",
 		"name": "CONDUCTOR latest",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1401,6 +1401,246 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "Vll create local",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Create_vll_local_network_instance\",\n  \"description\": \"Create vll local network instance on a single device - OPENCONFIG, UNICONFIG, VLL, L2VPN\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"VLL_device_create_local\",\n      \"taskReferenceName\": \"VLL_device_create_local\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n        \"service_id\": \"${workflow.input.service_id}\",\n\t\t\"mtu\": \"${workflow.input.mtu}\",\n        \"interface_1\": \"${workflow.input.interface_1}\",\n        \"vlan_1\": \"${workflow.input.vlan_1}\",\n        \"interface_2\": \"${workflow.input.interface_2}\",\n        \"vlan_2\": \"${workflow.input.vlan_2}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${VLL_device_create_local.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Vll create remote",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Create_vll_remote_network_instance\",\n  \"description\": \"Create vll remote network instance on a single device - OPENCONFIG, UNICONFIG, VLL, L2VPN\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"VLL_device_create_remote\",\n      \"taskReferenceName\": \"VLL_device_create_remote\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n        \"service_id\": \"${workflow.input.service_id}\",\n\t\t\"mtu\": \"${workflow.input.mtu}\",\n\t\t\"vccid\": \"${workflow.input.vccid}\",\n        \"interface\": \"${workflow.input.interface}\",\n\t\t\"remote_ip\": \"${workflow.input.remote_ip}\",\n        \"vlan\": \"${workflow.input.vlan}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${VLL_device_create_remote.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Vll read",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Read_vll_network_instance\",\n  \"description\": \"Read vll network instance for a single device - OPENCONFIG, UNICONFIG, VLL, L2VPN\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"VLL_device_read\",\n      \"taskReferenceName\": \"VLL_device_read\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n        \"service_id\": \"${workflow.input.service_id}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${VLL_device_read.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Vll delete",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Delete_vll_network_instance\",\n  \"description\": \"Delete vll network instance from a single device - OPENCONFIG, UNICONFIG, VLL, L2VPN\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"VLL_device_delete\",\n      \"taskReferenceName\": \"VLL_device_delete\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n        \"service_id\": \"${workflow.input.service_id}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${VLL_device_delete.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Vll service create",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Create_vll_service\",\n  \"description\": \"Create vll service spanning 2 devices - OPENCONFIG, UNICONFIG, VLL, L2VPN\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"VLL_service_create\",\n      \"taskReferenceName\": \"VLL_service_create\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"service\": \"${workflow.input.service}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${VLL_service_create.output}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Vll service create dryrun",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Create_vll_service_dryrun\",\n  \"description\": \"Create vll service spanning 2 devices also invoking dryrun - OPENCONFIG, UNICONFIG, VLL, L2VPN\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"VLL_service_dryrun\",\n      \"taskReferenceName\": \"VLL_service_dryrun\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"service\": \"${workflow.input.service}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${VLL_service_dryrun.output}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Vll service create template",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Create_vll_service_from_template\",\n  \"description\": \"Create vll service spanning 2 devices from template - OPENCONFIG, UNICONFIG, VLL, L2VPN\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"VLL_service_create\",\n      \"taskReferenceName\": \"VLL_service_create\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t        \"service\": { \n\t\t\t\t\"id\": \"${workflow.input.service_id}\", \n\t\t\t\t\"vccid\": \"${workflow.input.vccid}\",\n\t\t\t\t\"mtu\": \"${workflow.input.mtu}\",\n\t\t\t\t\"debug\": false,\n\t\t\t\t\"devices\": [\n\t\t\t        {\n\t\t\t        \t\"id\": \"${workflow.input.device_1}\", \n\t\t\t        \t\"interface\": \"${workflow.input.interface_1}\", \n\t\t\t        \t\"interface_reset\": false,\n\t\t\t        \t\"remote_ip\": \"${workflow.input.remote_ip_1}\"\n\t\t\t        },\n\t\t\t        {\n\t\t\t        \t\"id\": \"${workflow.input.device_2}\", \n\t\t\t        \t\"interface\": \"${workflow.input.interface_2}\", \n\t\t\t        \t\"interface_reset\": false,\n\t\t\t        \t\"remote_ip\": \"${workflow.input.remote_ip_2}\"\n\t\t\t        }\n\t\t\t    ]\n\t\t\t}\t\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${VLL_service_create.output}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Vll service create template dryrun",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Create_vll_service_dryrun_from_template\",\n  \"description\": \"Create vll service spanning 2 devices from template also invoking dryrun - OPENCONFIG, UNICONFIG, VLL, L2VPN\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"VLL_service_dryrun\",\n      \"taskReferenceName\": \"VLL_service_dryrun\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t        \"service\": { \n\t\t\t\"id\": \"${workflow.input.service_id}\", \n\t\t\t\"vccid\": \"${workflow.input.vccid}\",\n\t\t\t\"mtu\": \"${workflow.input.mtu}\",\n\t\t\t\"debug\": false,\n\t\t\t\"devices\": [\n\t\t        {\n\t\t        \t\"id\": \"${workflow.input.device_1}\", \n\t\t        \t\"interface\": \"${workflow.input.interface_1}\", \n\t\t        \t\"interface_reset\": false,\n\t\t        \t\"remote_ip\": \"${workflow.input.remote_ip_1}\"\n\t\t        },\n\t\t        {\n\t\t        \t\"id\": \"${workflow.input.device_2}\", \n\t\t        \t\"interface\": \"${workflow.input.interface_2}\", \n\t\t        \t\"interface_reset\": false,\n\t\t        \t\"remote_ip\": \"${workflow.input.remote_ip_2}\"\n\t\t        }\n\t\t    ]\n\t\t}\t\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${VLL_service_dryrun.output}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
 						}
 					],
 					"_postman_isSubFolder": true
@@ -1794,7 +2034,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"UNICONFIG_commit\",\n  \"description\": \"Commit uniconfig - UNICONFIG\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_commit\",\n      \"taskReferenceName\": \"UNICONFIG_commit\",\n      \"type\": \"SIMPLE\"\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_commit.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"UNICONFIG_commit\",\n  \"description\": \"Commit uniconfig - UNICONFIG\",\n  \"version\": 1,\n  \"inputParameters\": [\n    \"devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_commit\",\n      \"taskReferenceName\": \"UNICONFIG_commit\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"devices\": \"${workflow.input.devices}\"\n\t  }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_commit.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1824,7 +2064,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"UNICONFIG_calculate_diff\",\n  \"description\": \"Calculate uniconfig diff - UNICONFIG\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_calculate_diff\",\n      \"taskReferenceName\": \"UNICONFIG_calculate_diff\",\n      \"type\": \"SIMPLE\"\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_calculate_diff.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"UNICONFIG_calculate_diff\",\n  \"description\": \"Calculate uniconfig diff - UNICONFIG\",\n  \"version\": 1,  \n  \"inputParameters\": [\n    \"devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_calculate_diff\",\n      \"taskReferenceName\": \"UNICONFIG_calculate_diff\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"devices\": \"${workflow.input.devices}\"\n\t  }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_calculate_diff.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1854,7 +2094,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"UNICONFIG_sync_from_network\",\n  \"description\": \"Sync uniconfig from network - UNICONFIG\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_sync_from_network\",\n      \"taskReferenceName\": \"UNICONFIG_sync_from_network\",\n      \"type\": \"SIMPLE\"\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_sync_from_network.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"UNICONFIG_sync_from_network\",\n  \"description\": \"Sync uniconfig from network - UNICONFIG\",\n  \"version\": 1,  \n  \"inputParameters\": [\n    \"devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_sync_from_network\",\n      \"taskReferenceName\": \"UNICONFIG_sync_from_network\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"devices\": \"${workflow.input.devices}\"\n\t  }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_sync_from_network.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1884,7 +2124,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"UNICONFIG_dryrun_commit\",\n  \"description\": \"Dryrun Commit uniconfig - UNICONFIG\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_dryrun_commit\",\n      \"taskReferenceName\": \"UNICONFIG_dryrun_commit\",\n      \"type\": \"SIMPLE\"\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_dryrun_commit.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"UNICONFIG_dryrun_commit\",\n  \"description\": \"Dryrun Commit uniconfig - UNICONFIG\",\n  \"version\": 1,  \n  \"inputParameters\": [\n    \"devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_dryrun_commit\",\n      \"taskReferenceName\": \"UNICONFIG_dryrun_commit\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"devices\": \"${workflow.input.devices}\"\n\t  }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_dryrun_commit.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1914,7 +2154,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"UNICONFIG_replace_config_with_oper\",\n  \"description\": \"Replace config with oper in uniconfig - UNICONFIG\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_replace_config_with_oper\",\n      \"taskReferenceName\": \"UNICONFIG_replace_config_with_oper\",\n      \"type\": \"SIMPLE\"\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_replace_config_with_oper.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"UNICONFIG_replace_config_with_oper\",\n  \"description\": \"Replace config with oper in uniconfig - UNICONFIG\",\n  \"version\": 1,  \n  \"inputParameters\": [\n    \"devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_replace_config_with_oper\",\n      \"taskReferenceName\": \"UNICONFIG_replace_config_with_oper\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"devices\": \"${workflow.input.devices}\"\n\t  }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_replace_config_with_oper.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1944,7 +2184,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"UNICONFIG_create_snapshot\",\n  \"description\": \"Create snapshot in uniconfig - UNICONFIG, SNAP\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_create_snapshot\",\n      \"taskReferenceName\": \"UNICONFIG_create_snapshot\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n      \t\"name\": \"${workflow.input.name}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_create_snapshot.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"UNICONFIG_create_snapshot\",\n  \"description\": \"Create snapshot in uniconfig - UNICONFIG, SNAP\",\n  \"version\": 1,  \n  \"inputParameters\": [\n    \"devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_create_snapshot\",\n      \"taskReferenceName\": \"UNICONFIG_create_snapshot\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n      \t\"name\": \"${workflow.input.name}\",\n        \"devices\": \"${workflow.input.devices}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_create_snapshot.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1974,7 +2214,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"UNICONFIG_delete_snapshot\",\n  \"description\": \"Delete snapshot in uniconfig - UNICONFIG, SNAP\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_delete_snapshot\",\n      \"taskReferenceName\": \"UNICONFIG_delete_snapshot\",\n      \"type\": \"SIMPLE\"\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_delete_snapshot.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"UNICONFIG_delete_snapshot\",\n  \"description\": \"Delete snapshot in uniconfig - UNICONFIG, SNAP\",\n  \"version\": 1,  \n  \"inputParameters\": [\n    \"devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_delete_snapshot\",\n      \"taskReferenceName\": \"UNICONFIG_delete_snapshot\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n      \t\"name\": \"${workflow.input.name}\",\n        \"devices\": \"${workflow.input.devices}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_delete_snapshot.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -2004,7 +2244,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"UNICONFIG_delete_snapshot\",\n  \"description\": \"Delete snapshot in uniconfig - UNICONFIG, SNAP\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_delete_snapshot\",\n      \"taskReferenceName\": \"UNICONFIG_delete_snapshot\",\n      \"type\": \"SIMPLE\"\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_delete_snapshot.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"UNICONFIG_delete_snapshot\",\n  \"description\": \"Delete snapshot in uniconfig - UNICONFIG, SNAP\",\n  \"version\": 1,  \n  \"inputParameters\": [\n    \"devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_delete_snapshot\",\n      \"taskReferenceName\": \"UNICONFIG_delete_snapshot\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n      \t\"name\": \"${workflow.input.name}\",\n        \"devices\": \"${workflow.input.devices}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_delete_snapshot.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
