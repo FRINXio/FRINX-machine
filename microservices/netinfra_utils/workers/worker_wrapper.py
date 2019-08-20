@@ -5,8 +5,8 @@ import time
 import requests
 from conductor.ConductorWorker import ConductorWorker
 
-from workers import standalone_main
-from workers.frinx_rest import conductor_url_base, odl_headers
+import standalone_main
+from frinx_rest import conductor_url_base, odl_headers
 
 DEFAULT_TASK_DEFINITION = {
     "name": "",
@@ -23,7 +23,7 @@ conductor_task_url = conductor_url_base + "/metadata/taskdefs"
 
 class ExceptionHandlingConductorWrapper(ConductorWorker):
 
-    # submit
+    # register task metadata into conductor
     def register(self, task_type, task_definition):
         if task_definition is None:
             task_definition = DEFAULT_TASK_DEFINITION

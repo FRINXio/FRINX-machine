@@ -2,6 +2,8 @@ class Device:
 
     switch_tpid = {
         "0x8100": "frinx-openconfig-vlan-types:TPID_0X8100",
+        "0x8A88": "frinx-openconfig-vlan-types:TPID_0X8A88",
+        "0X9200": "frinx-openconfig-vlan-types:TPID_0X9200",
         "0x9100": "frinx-openconfig-vlan-types:TPID_0X9100"
     }
 
@@ -112,6 +114,15 @@ class Service:
     def device_ids(self):
         return [device.id for device in self.devices]
 
+    def to_dict(self):
+        devs = []
+        for dev in self.devices:
+            devs.append(dict(filter(lambda x: x[1], vars(dev).items())))
+
+        serv = dict(filter(lambda x: x[1], vars(self).items()))
+        serv['devices'] = devs
+        return serv
+
 
 class LocalService(Service):
 
@@ -192,11 +203,13 @@ class RemoteService(Service):
                     'id': node_id,
                     'interface': local['endpoints']['endpoint'][0]['local']['config']['interface'],
                     'remote_ip': remote['endpoints']['endpoint'][0]['remote']['config']['remote-system'],
+                    # TODO also fill in other (optional) device params
                 },
                 {
+                    # Placeholder for the other end of connection
                     'id': "UNKNOWN",
                     'interface': "UNKNOWN",
-                    'remote_ip' : "UNKNOWN"
+                    'remote_ip': "UNKNOWN"
                 }
             ]
         }
@@ -205,12 +218,24 @@ class RemoteService(Service):
         if vlan1:
             service['devices'][0]['vlan'] = vlan1
 
+        mtu = l2p2p['config'].get('mtu', None)
+        if mtu:
+            service['mtu'] = mtu
+
         return RemoteService(service)
 
     def merge(self, other):
         # type: (RemoteService, RemoteService) -> RemoteService
         self.devices = filter(lambda device: device.id != "UNKNOWN", self.devices) \
                        + filter(lambda device: device.id != "UNKNOWN", other.devices)
+
+        # Turn the remote IPs around
+        if len(self.devices) == 2:
+            ip1 = self.devices[0].remote_ip
+            ip2 = self.devices[1].remote_ip
+            self.devices[0].remote_ip = ip2
+            self.devices[1].remote_ip = ip1
+
         return self
 
 
