@@ -19,7 +19,7 @@ class Device:
         self.out_policy = device.get('out_policy', None)
         if self.tpid is not None:
             if Device.switch_tpid.get(self.tpid) is  None:
-                raise ("Invalid tpid value: %s, expected one of: %s" % (self.tpid, Device.switch_tpid))
+                raise Exception("Invalid tpid value: %s, expected one of: %s" % (self.tpid, Device.switch_tpid))
             self.tpid = Device.switch_tpid.get(self.tpid)
 
     @staticmethod

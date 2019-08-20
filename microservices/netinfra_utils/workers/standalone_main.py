@@ -7,18 +7,7 @@ import time
 from flask import Flask, request
 from flask_restful import Resource, Api
 
-import cli_worker
-import inventory_worker
-import l3vpn_worker
-import lldp_worker
-import netconf_worker
-import platform_worker
-import terraform_worker
-import uniconfig_worker
-import unified_worker
-import vll_worker
-import vll_service_worker
-
+from main import register_workers
 
 class StandaloneWorker:
 
@@ -98,6 +87,8 @@ def register_workers(cc):
     terraform_worker.start(cc)
     vll_worker.start(cc)
     vll_service_worker.start(cc)
+    vpls_worker.start(cc)
+    vpls_service_worker.start(cc)
 
 
 if __name__ == '__main__':

@@ -5,7 +5,6 @@ import time
 import requests
 from conductor.ConductorWorker import ConductorWorker
 
-import standalone_main
 from frinx_rest import conductor_url_base, odl_headers
 
 DEFAULT_TASK_DEFINITION = {
@@ -24,7 +23,7 @@ conductor_task_url = conductor_url_base + "/metadata/taskdefs"
 class ExceptionHandlingConductorWrapper(ConductorWorker):
 
     # register task metadata into conductor
-    def register(self, task_type, task_definition):
+    def register(self, task_type, task_definition=None):
         if task_definition is None:
             task_definition = DEFAULT_TASK_DEFINITION
         task_meta = copy.deepcopy(task_definition)
@@ -42,8 +41,8 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
                 raise Exception(
                     'Task execution function MUST return a response as a dict with status and output fields')
             task['status'] = resp['status']
-            task['outputData'] = resp['output']
-            task['logs'] = resp['logs']
+            task['outputData'] = resp.get('output', {})
+            task['logs'] = resp.get('logs', "")
             self.taskClient.updateTask(task)
         except Exception as err:
             print('Error executing task: ' + str(err))
@@ -52,16 +51,6 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
                                   'exec_function': str(exec_function), }
             task['logs'] = ["Logs: %s" % str(err)]
             self.taskClient.updateTask(task)
-
-
-def main():
-    print('Starting FRINX workers with wrapper')
-    cc = ExceptionHandlingConductorWrapper()
-    standalone_main.register_workers(cc)
-
-    # block
-    while 1:
-        time.sleep(1)
 
 
 if __name__ == '__main__':
