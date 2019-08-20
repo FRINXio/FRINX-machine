@@ -11,6 +11,9 @@ odl_url_uniconfig_ifc_policy_config = '/frinx-openconfig-network-instance:networ
 odl_url_uniconfig_ifc_stp_config = '/frinx-stp:stp/interfaces/interface/escape($ifc)'
 
 
+# Interface updates
+
+
 def read_interface(device):
     url = Template(odl_url_uniconfig_ifc_config).substitute({'ifc': device.interface})
     ifc_response = uniconfig_worker.read_structured_data({'inputData': {
@@ -110,6 +113,61 @@ def disable_interface_stp(device):
     return ifc_response
 
 
+# Uniconfig RPCs
+
+
+def replace_cfg_with_oper(device_1, device_2):
+    return uniconfig_worker.replace_config_with_oper({'inputData': {
+        'devices': [device_1.id, device_2.id],
+    }})
+
+
+def sync_from_net(device_1, device_2):
+    return uniconfig_worker.sync_from_network({'inputData': {
+        'devices': [device_1.id, device_2.id],
+    }})
+
+
+def dryrun_commit(device_1, device_2):
+    return uniconfig_worker.dryrun_commit({'inputData': {
+        'devices': [device_1.id, device_2.id],
+    }})
+
+
+def commit(device_1, device_2):
+    return uniconfig_worker.commit({'inputData': {
+        'devices': [device_1.id, device_2.id],
+    }})
+
+
+# Retval Macros
+
+
+def fail(log, **kwargs):
+    output = {'logs': [log]}
+    output.update(kwargs)
+    return {'status': 'FAILED', 'output': output}
+
+
+def complete(log, **kwargs):
+    output = {'logs': [log]}
+    output.update(kwargs)
+    return {'status': 'COMPLETED', 'output': output}
+
+
+def task_failed(task_response):
+    return task_response['status'] is not 'COMPLETED'
+
+
+def uniconfig_task_failed(task_response):
+    config_status = task_response.get('output', {}).get('response_body', {}).get('output', {}).get('overall-configuration-status', 'fail')
+    sync_status = task_response.get('output', {}).get('response_body', {}).get('output', {}).get('overall-sync-status', 'fail')
+    return config_status == "fail" and sync_status == "fail"
+
+
+# Workers
+
+
 def service_create_vll_local(task):
     service = LocalService.parse_from_task(task)
     device_1 = service.devices[0]
@@ -155,9 +213,7 @@ def service_delete_vll_dryrun(task):
         replace_cfg_with_oper(device_1, device_2)
         return fail('VLL instance deletion: %s configuration in uniconfig FAIL' % service.id, response=response)
 
-    response_dryrun = uniconfig_worker.dryrun_commit({'inputData': {
-        'devices': [device_1.id, device_2.id],
-    }})
+    response_dryrun = dryrun_commit(device_1, device_2)
 
     if task_failed(response_dryrun) or uniconfig_task_failed(response_dryrun):
         return fail('VLL instance deletion: %s dryrun FAIL' % service.id,
@@ -248,9 +304,7 @@ def service_create_vll_dryrun(task):
         replace_cfg_with_oper(device_1, device_2)
         return fail('VLL instance: %s configuration in uniconfig FAIL' % service.id, response=response)
 
-    response_dryrun = uniconfig_worker.dryrun_commit({'inputData': {
-        'devices': [device_1.id, device_2.id],
-    }})
+    response_dryrun = dryrun_commit(device_1, device_2)
 
     replace_cfg_with_oper(device_1, device_2)
 
@@ -284,12 +338,6 @@ def service_create_vll_dryrun(task):
     else:
         return complete('VLL instance: %s dryrun SUCCESS' % service.id,
                         response_dryrun=response_dryrun)
-
-
-def replace_cfg_with_oper(device_1, device_2):
-    uniconfig_worker.replace_config_with_oper({'inputData': {
-        'devices': [device_1.id, device_2.id],
-    }})
 
 
 def service_create_vll_commit(task):
@@ -327,9 +375,7 @@ def service_create_vll_commit(task):
                         response=ifc_response)
 
     if device_1.interface_reset or device_2.interface_reset:
-        response_commit = uniconfig_worker.commit({'inputData': {
-            'devices': [device_1.id, device_2.id],
-        }})
+        response_commit = commit(device_1, device_2)
 
         # Check response from commit RPC. The RPC always succeeds but the status field needs to be checked
         if task_failed(response_commit) or uniconfig_task_failed(response_commit):
@@ -337,9 +383,7 @@ def service_create_vll_commit(task):
             return fail('VLL instance: %s commit for interface reset FAIL' % service.id,
                         response_commit=response_commit)
 
-        response_sync_from_net = uniconfig_worker.sync_from_network({'inputData': {
-            'devices': [device_1.id, device_2.id],
-        }})
+        response_sync_from_net = sync_from_net(device_1, device_2)
 
         # Check response from commit RPC. The RPC always succeeds but the status field needs to be checked
         if task_failed(response_sync_from_net) or uniconfig_task_failed(response_sync_from_net):
@@ -388,9 +432,7 @@ def service_create_vll_commit(task):
         replace_cfg_with_oper(device_1, device_2)
         return fail('VLL instance: %s configuration in uniconfig FAIL' % service.id, response=response)
     
-    response_commit = uniconfig_worker.commit({'inputData': {
-        'devices': [device_1.id, device_2.id],
-    }})
+    response_commit = commit(device_1, device_2)
 
     # COMMIT FAIL
     if task_failed(response_commit) or uniconfig_task_failed(response_commit):
@@ -429,28 +471,6 @@ def service_create_vll_commit(task):
     else:
         return complete('VLL instance: %s commit SUCCESS' % service.id,
                         response_commit=response_commit)
-
-
-def fail(log, **kwargs):
-    output = {'logs': [log]}
-    output.update(kwargs)
-    return {'status': 'FAILED', 'output': output}
-
-
-def complete(log, **kwargs):
-    output = {'logs': [log]}
-    output.update(kwargs)
-    return {'status': 'COMPLETED', 'output': output}
-
-
-def task_failed(task_response):
-    return task_response['status'] is not 'COMPLETED'
-
-
-def uniconfig_task_failed(task_response):
-    config_status = task_response.get('output', {}).get('response_body', {}).get('output', {}).get('overall-configuration-status', 'fail')
-    sync_status = task_response.get('output', {}).get('response_body', {}).get('output', {}).get('overall-sync-status', 'fail')
-    return config_status == "fail" and sync_status == "fail"
 
 
 def service_create_vll_remote(task):
@@ -585,19 +605,9 @@ def service_read_all(task):
         else aggregate_l2p2p_remote(remote_services, lambda service: service['vccid'])
 
     services = local_services + remote_services
-    services = map(lambda service: to_dict(service), services)
+    services = map(lambda service: service.to_dict(), services)
     return {'status': 'COMPLETED', 'output': {'services': services,
                                               'logs': ['VLL instances found successfully: %s' % len(services)]}}
-
-
-def to_dict(service):
-    devs = []
-    for dev in service.devices:
-        devs.append(vars(dev))
-
-    serv = vars(service)
-    serv['devices'] = devs
-    return serv
 
 
 def aggregate_l2p2p_remote(remote_services, by_key=lambda remote_service: remote_service.id):
