@@ -375,7 +375,7 @@ def parse_devices(task):
         extracted_devices = [x.strip() for x in devices.split(",") if x is not ""] if devices else []
 
     if len(extracted_devices) is 0:
-        raise ("For Uniconfig RPCs, a list of devices needs to be specified. "
+        raise Exception("For Uniconfig RPCs, a list of devices needs to be specified. "
                "Global RPCs (involving all devices in topology) are not allowed for your own safety.")
     return extracted_devices
 

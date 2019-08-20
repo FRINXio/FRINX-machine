@@ -144,15 +144,15 @@ def commit(device_1, device_2):
 
 
 def fail(log, **kwargs):
-    output = {'logs': [log]}
+    output = {}
     output.update(kwargs)
-    return {'status': 'FAILED', 'output': output}
+    return {'status': 'FAILED', 'output': output, 'logs': [log]}
 
 
 def complete(log, **kwargs):
-    output = {'logs': [log]}
+    output = {}
     output.update(kwargs)
-    return {'status': 'COMPLETED', 'output': output}
+    return {'status': 'COMPLETED', 'output': output, 'logs': [log]}
 
 
 def task_failed(task_response):
@@ -186,11 +186,11 @@ def service_create_vll_local(task):
         'mtu': service.mtu if service.mtu is not None else 0
     }})
     if response1['status'] is not 'COMPLETED':
-        return {'status': 'FAILED', 'output': {'response': response1,
-                                               'logs': ['VLL instance: %s configuration in uniconfig FAIL' % service.id]}}
+        return {'status': 'FAILED', 'output': {'response': response1},
+                'logs': ['VLL instance: %s configuration in uniconfig FAIL' % service.id]}
 
-    return {'status': 'COMPLETED', 'output': {'response': response1,
-                                              'logs': ['VLL instance: %s configured in uniconfig successfully' % service.id]}}
+    return {'status': 'COMPLETED', 'output': {'response': response1},
+            'logs': ['VLL instance: %s configured in uniconfig successfully' % service.id]}
 
 
 def service_create_vll(task):
@@ -479,7 +479,7 @@ def service_create_vll_remote(task):
     device_2 = service.devices[1]
 
     if service.is_local():
-        raise ('For remote VLL service, 2 different devices are expected. Received: %s' % (service.device_ids()))
+        raise Exception('For remote VLL service, 2 different devices are expected. Received: %s' % (service.device_ids()))
 
     response1 = vll_worker.device_create_vll_remote({'inputData': {
         'id': device_1.id,
@@ -491,8 +491,8 @@ def service_create_vll_remote(task):
         'mtu': service.mtu if service.mtu is not None else 0
     }})
     if response1['status'] is not 'COMPLETED':
-        return {'status': 'FAILED', 'output': {'response': response1,
-                                               'logs': ['VLL instance: %s configuration in uniconfig FAIL' % service.id]}}
+        return {'status': 'FAILED', 'output': {'response': response1},
+                'logs': ['VLL instance: %s configuration in uniconfig FAIL' % service.id]}
 
     response2 = vll_worker.device_create_vll_remote({'inputData': {
         'id': device_2.id,
@@ -505,48 +505,48 @@ def service_create_vll_remote(task):
     }})
     if response2['status'] is not 'COMPLETED':
         return {'status': 'FAILED', 'output': {'response_1': response1,
-                                               'response_2': response2,
-                                               'logs': ['VLL instance: %s configuration in uniconfig FAIL' % service.id]}}
+                                               'response_2': response2},
+                'logs': ['VLL instance: %s configuration in uniconfig FAIL' % service.id]}
 
     return {'status': 'COMPLETED', 'output': {'response_1': response1,
-                                              'response_2': response2,
-            'logs': ['VLL instance: %s configured in uniconfig successfully' % service.id]}}
+                                              'response_2': response2},
+            'logs': ['VLL instance: %s configured in uniconfig successfully' % service.id]}
 
 
 def service_delete_vll_remote(task):
     service = Service.parse_from_task(task)
 
     if service.is_local():
-        raise ('For remote VLL service, 2 different devices are expected. Received: %s' % (service.device_ids()))
+        raise Exception('For remote VLL service, 2 different devices are expected. Received: %s' % (service.device_ids()))
 
     response1 = remove_device_vll(service.devices[0].id, service.id)
     if response1['status'] is not 'COMPLETED':
-        return {'status': 'FAILED', 'output': {'response': response1,
-                                               'logs': ['VLL instance: %s removal in uniconfig FAIL' % service.id]}}
+        return {'status': 'FAILED', 'output': {'response': response1},
+                'logs': ['VLL instance: %s removal in uniconfig FAIL' % service.id]}
 
     response2 = remove_device_vll(service.devices[1].id, service.id)
     if response2['status'] is not 'COMPLETED':
-        return {'status': 'FAILED', 'output': {'response': response2,
-                                               'logs': ['VLL instance: %s removal in uniconfig FAIL' % service.id]}}
+        return {'status': 'FAILED', 'output': {'response': response2},
+                'logs': ['VLL instance: %s removal in uniconfig FAIL' % service.id]}
 
     return {'status': 'COMPLETED', 'output': {'response_1': response1,
-                                              'response_2': response2,
-                                              'logs': ['VLL instance: %s removed in uniconfig successfully' % service.id]}}
+                                              'response_2': response2},
+            'logs': ['VLL instance: %s removed in uniconfig successfully' % service.id]}
 
 
 def service_delete_vll_local(task):
     service = Service.parse_from_task(task)
 
     if not service.is_local():
-        raise ('For remote VLL service, 1 device are expected. Received: %s' % service.device_ids())
+        raise Exception('For remote VLL service, 1 device are expected. Received: %s' % service.device_ids())
 
     response = remove_device_vll(service.devices[0].id, service.id)
     if response['status'] is not 'COMPLETED':
-        return {'status': 'FAILED', 'output': {'response': response,
-                                               'logs': ['VLL instance: %s removal in uniconfig FAIL' % service.id]}}
+        return {'status': 'FAILED', 'output': {'response': response},
+                'logs': ['VLL instance: %s removal in uniconfig FAIL' % service.id]}
 
-    return {'status': 'COMPLETED', 'output': {'response': response,
-                                              'logs': ['VLL instance: %s removed in uniconfig successfully' % service.id]}}
+    return {'status': 'COMPLETED', 'output': {'response': response},
+            'logs': ['VLL instance: %s removed in uniconfig successfully' % service.id]}
 
 
 def remove_device_vll(device_id, service_id):
@@ -564,18 +564,18 @@ def service_read_all(task):
 
     datastore = task['inputData'].get('datastore', 'actual')
     if datastore not in ['intent', 'actual']:
-        return {'status': 'FAILED', 'output': {'logs': ['Unable to read uniconfig datastore: %s' % datastore]}}
+        return {'status': 'FAILED', 'output': {}, 'logs': ['Unable to read uniconfig datastore: %s' % datastore]}
 
     response = uniconfig_worker.execute_read_uniconfig_topology_operational(task) if datastore == 'actual' \
         else uniconfig_worker.execute_read_uniconfig_topology_config(task)
 
     if response['status'] is not 'COMPLETED':
-        return {'status': 'FAILED', 'output': {'response': response,
-                                               'logs': ['Unable to read uniconfig']}}
+        return {'status': 'FAILED', 'output': {'response': response},
+                                               'logs': ['Unable to read uniconfig']}
 
     reconciliation = task['inputData'].get('reconciliation', 'name')
     if reconciliation not in ['name', 'vccid']:
-        return {'status': 'FAILED', 'output': {'logs': ['Unable to reconcile with strategy: %s' % reconciliation]}}
+        return {'status': 'FAILED', 'output': {}, 'logs': ['Unable to reconcile with strategy: %s' % reconciliation]}
 
     uniconfig_nodes = response['output']['response_body']['topology'][0]['node']
 
@@ -606,8 +606,8 @@ def service_read_all(task):
 
     services = local_services + remote_services
     services = map(lambda service: service.to_dict(), services)
-    return {'status': 'COMPLETED', 'output': {'services': services,
-                                              'logs': ['VLL instances found successfully: %s' % len(services)]}}
+    return {'status': 'COMPLETED', 'output': {'services': services},
+            'logs': ['VLL instances found successfully: %s' % len(services)]}
 
 
 def aggregate_l2p2p_remote(remote_services, by_key=lambda remote_service: remote_service.id):
