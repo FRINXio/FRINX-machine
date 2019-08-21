@@ -71,7 +71,7 @@ The installation script does the following things:
 We recommend to run the install script as regular user and not as sudo, so all files can be edited by the regular user later.
 Installation with the trial license token:
 ```
-./install.sh -l 0e57a786f7dbd27fa77db684cf3b234d6f23ed784e52cbfb107fd4317ba2646c66f7a141b0e823946d8f9d956852c95d33dc82f945779b1c9969049e94935b2a
+./install.sh -l e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643100ccd31052430de1955540cf5ae1e510d657bd2af8ef2fc
 ```
 After the first run the license token is saved to a <git directory>/odl/frinx.license.cfg and will be copied to image after each update.
 
