@@ -1583,6 +1583,36 @@
 							"response": []
 						},
 						{
+							"name": "Vll service create commit",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Create_vll_service_commit\",\n  \"description\": \"Create vll service spanning 2 devices also invoking commit - OPENCONFIG, UNICONFIG, VLL, L2VPN\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"VLL_service_commit\",\n      \"taskReferenceName\": \"VLL_service_commit\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"service\": \"${workflow.input.service}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${VLL_service_commit.output}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Vll service create template",
 							"request": {
 								"method": "PUT",
@@ -1625,6 +1655,36 @@
 								"body": {
 									"mode": "raw",
 									"raw": "[{\n  \"name\": \"Create_vll_service_dryrun_from_template\",\n  \"description\": \"Create vll service spanning 2 devices from template also invoking dryrun - OPENCONFIG, UNICONFIG, VLL, L2VPN\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"VLL_service_dryrun\",\n      \"taskReferenceName\": \"VLL_service_dryrun\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t        \"service\": { \n\t\t\t\"id\": \"${workflow.input.service_id}\", \n\t\t\t\"vccid\": \"${workflow.input.vccid}\",\n\t\t\t\"mtu\": \"${workflow.input.mtu}\",\n\t\t\t\"debug\": false,\n\t\t\t\"devices\": [\n\t\t        {\n\t\t        \t\"id\": \"${workflow.input.device_1}\", \n\t\t        \t\"interface\": \"${workflow.input.interface_1}\", \n\t\t        \t\"interface_reset\": false,\n\t\t        \t\"remote_ip\": \"${workflow.input.remote_ip_1}\"\n\t\t        },\n\t\t        {\n\t\t        \t\"id\": \"${workflow.input.device_2}\", \n\t\t        \t\"interface\": \"${workflow.input.interface_2}\", \n\t\t        \t\"interface_reset\": false,\n\t\t        \t\"remote_ip\": \"${workflow.input.remote_ip_2}\"\n\t\t        }\n\t\t    ]\n\t\t}\t\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${VLL_service_dryrun.output}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Vll service create template commit",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Create_vll_service_commit_from_template\",\n  \"description\": \"Create vll service spanning 2 devices from template also invoking commit - OPENCONFIG, UNICONFIG, VLL, L2VPN\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"VLL_service_commit\",\n      \"taskReferenceName\": \"VLL_service_commit\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t        \"service\": { \n\t\t\t\"id\": \"${workflow.input.service_id}\", \n\t\t\t\"vccid\": \"${workflow.input.vccid}\",\n\t\t\t\"mtu\": \"${workflow.input.mtu}\",\n\t\t\t\"debug\": false,\n\t\t\t\"devices\": [\n\t\t        {\n\t\t        \t\"id\": \"${workflow.input.device_1}\", \n\t\t        \t\"interface\": \"${workflow.input.interface_1}\", \n\t\t        \t\"interface_reset\": false,\n\t\t        \t\"remote_ip\": \"${workflow.input.remote_ip_1}\"\n\t\t        },\n\t\t        {\n\t\t        \t\"id\": \"${workflow.input.device_2}\", \n\t\t        \t\"interface\": \"${workflow.input.interface_2}\", \n\t\t        \t\"interface_reset\": false,\n\t\t        \t\"remote_ip\": \"${workflow.input.remote_ip_2}\"\n\t\t        }\n\t\t    ]\n\t\t}\t\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${VLL_service_commit.output}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
