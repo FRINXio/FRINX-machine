@@ -3,7 +3,7 @@ IOS01,ios,15.4,cisco,cisco,10000
 IOS02,ios,15.4,cisco,cisco,10000
 XR01,ios xr,6.x,cisco,cisco,10001
 XR02,ios xr,6.x,cisco,cisco,10001
-VPR01,vrp,*,huawei,huawei,10002
+VRP01,vrp,*,huawei,huawei,10002
 Leaf01,ios,15.4,cisco,cisco,11000
 Leaf02,ios,15.4,cisco,cisco,11001
 Leaf03,ios,15.4,cisco,cisco,11002
