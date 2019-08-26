@@ -5,10 +5,23 @@ from string import Template
 from vll_model import Service, LocalService, RemoteService, ServiceDeletion
 import uniconfig_worker
 import vll_worker
+import common_worker
 
 odl_url_uniconfig_ifc_config = '/frinx-openconfig-interfaces:interfaces/interface/escape($ifc)'
 odl_url_uniconfig_ifc_policy_config = '/frinx-openconfig-network-instance:network-instances/network-instance/default/policy-forwarding/interfaces/interface/escape($ifc)'
 odl_url_uniconfig_ifc_stp_config = '/frinx-stp:stp/interfaces/interface/escape($ifc)'
+
+
+def default_filter_strategy():
+    return common_worker.default_filter_strategy('frinx-openconfig-network-instance-types:L2P2P')
+
+
+def name_filter_strategy(name):
+    return common_worker.name_filter_strategy('frinx-openconfig-network-instance-types:L2P2P', name)
+
+
+def vccid_filter_strategy(vccid):
+    return common_worker.vccid_filter_strategy('frinx-openconfig-network-instance-types:L2P2P', vccid)
 
 
 # Interface updates
@@ -113,58 +126,6 @@ def disable_interface_stp(device):
     return ifc_response
 
 
-# Uniconfig RPCs
-
-
-def replace_cfg_with_oper(device_1, device_2):
-    return uniconfig_worker.replace_config_with_oper({'inputData': {
-        'devices': [device_1.id, device_2.id],
-    }})
-
-
-def sync_from_net(device_1, device_2):
-    return uniconfig_worker.sync_from_network({'inputData': {
-        'devices': [device_1.id, device_2.id],
-    }})
-
-
-def dryrun_commit(device_1, device_2):
-    return uniconfig_worker.dryrun_commit({'inputData': {
-        'devices': [device_1.id, device_2.id],
-    }})
-
-
-def commit(device_1, device_2):
-    return uniconfig_worker.commit({'inputData': {
-        'devices': [device_1.id, device_2.id],
-    }})
-
-
-# Retval Macros
-
-
-def fail(log, **kwargs):
-    output = {}
-    output.update(kwargs)
-    return {'status': 'FAILED', 'output': output, 'logs': [log]}
-
-
-def complete(log, **kwargs):
-    output = {}
-    output.update(kwargs)
-    return {'status': 'COMPLETED', 'output': output, 'logs': [log]}
-
-
-def task_failed(task_response):
-    return task_response['status'] is not 'COMPLETED'
-
-
-def uniconfig_task_failed(task_response):
-    config_status = task_response.get('output', {}).get('response_body', {}).get('output', {}).get('overall-configuration-status', 'fail')
-    sync_status = task_response.get('output', {}).get('response_body', {}).get('output', {}).get('overall-sync-status', 'fail')
-    return config_status == "fail" and sync_status == "fail"
-
-
 # Workers
 
 
@@ -209,18 +170,19 @@ def service_delete_vll_dryrun(task):
     device_2 = service.devices[1]
 
     response = service_delete_vll(task)
-    if task_failed(response):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance deletion: %s configuration in uniconfig FAIL' % service.id, response=response)
+    if common_worker.task_failed(response):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance deletion: %s configuration in uniconfig FAIL' % service.id, response=response)
 
-    response_dryrun = dryrun_commit(device_1, device_2)
+    response_dryrun = common_worker.dryrun_commit([device_1.id, device_2.id])
+    common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
 
-    if task_failed(response_dryrun) or uniconfig_task_failed(response_dryrun):
-        return fail('VLL instance deletion: %s dryrun FAIL' % service.id,
+    if common_worker.task_failed(response_dryrun) or common_worker.uniconfig_task_failed(response_dryrun):
+        return common_worker.fail('VLL instance deletion: %s dryrun FAIL' % service.id,
                     response_create_vpn=response,
                     response_dryrun=response_dryrun)
 
-    return complete('VLL instance deletion: %s dryrun SUCCESS' % service.id,
+    return common_worker.complete('VLL instance deletion: %s dryrun SUCCESS' % service.id,
                     response_dryrun=response_dryrun)
 
 
@@ -230,20 +192,21 @@ def service_delete_vll_commit(task):
     device_2 = service.devices[1]
 
     response = service_delete_vll(task)
-    if task_failed(response):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance deletion: %s configuration in uniconfig FAIL' % service.id, response=response)
+    if common_worker.task_failed(response):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance deletion: %s configuration in uniconfig FAIL' % service.id, response=response)
 
     response_commit = uniconfig_worker.commit({'inputData': {
         'devices': [device_1.id, device_2.id],
     }})
 
-    if task_failed(response_commit) or uniconfig_task_failed(response_commit):
-        return fail('VLL instance deletion: %s commit FAIL' % service.id,
+    if common_worker.task_failed(response_commit) or common_worker.uniconfig_task_failed(response_commit):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance deletion: %s commit FAIL' % service.id,
                     response_create_vpn=response,
                     response_commit=response_commit)
 
-    return complete('VLL instance deletion: %s commit SUCCESS' % service.id,
+    return common_worker.complete('VLL instance deletion: %s commit SUCCESS' % service.id,
                     response_commit=response_commit)
 
 
@@ -256,27 +219,27 @@ def service_create_vll_dryrun(task):
     # Check interfaces exist
 
     ifc_response = read_interface(device_1)
-    if task_failed(ifc_response):
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s does not exist' % (service.id, device_1.id, device_1.interface),
+    if common_worker.task_failed(ifc_response):
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s does not exist' % (service.id, device_1.id, device_1.interface),
                     response=ifc_response)
 
     ifc_response = read_interface(device_2)
-    if task_failed(ifc_response):
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s does not exist' % (service.id, device_2.id, device_2.interface),
+    if common_worker.task_failed(ifc_response):
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s does not exist' % (service.id, device_2.id, device_2.interface),
                     response=ifc_response)
 
     # Configure interface #1
 
     ifc_put_response1 = put_interface(service, device_1)
-    if task_failed(ifc_put_response1):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be configured' % (service.id, device_1.id, device_1.interface),
+    if common_worker.task_failed(ifc_put_response1):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be configured' % (service.id, device_1.id, device_1.interface),
                     response=ifc_put_response1)
 
     ifc_policy_put_response1 = put_interface_policy(device_1)
-    if ifc_policy_put_response1 is not None and task_failed(ifc_policy_put_response1):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface policies %s cannot be configured' % (service.id, device_1.id, device_1.interface),
+    if ifc_policy_put_response1 is not None and common_worker.task_failed(ifc_policy_put_response1):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface policies %s cannot be configured' % (service.id, device_1.id, device_1.interface),
                     response=ifc_policy_put_response1)
 
     ifc_stp_delete_response1 = disable_interface_stp(device_1)
@@ -284,15 +247,15 @@ def service_create_vll_dryrun(task):
     # Configure interface #2
 
     ifc_put_response2 = put_interface(service, device_2)
-    if task_failed(ifc_put_response2):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be configured' % (service.id, device_2.id, device_2.interface),
+    if common_worker.task_failed(ifc_put_response2):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be configured' % (service.id, device_2.id, device_2.interface),
                     response=ifc_put_response2)
 
     ifc_policy_put_response2 = put_interface_policy(device_2)
-    if ifc_policy_put_response2 is not None and task_failed(ifc_policy_put_response2):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface policies %s cannot be configured' % (service.id, device_2.id, device_2.interface),
+    if ifc_policy_put_response2 is not None and common_worker.task_failed(ifc_policy_put_response2):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface policies %s cannot be configured' % (service.id, device_2.id, device_2.interface),
                     response=ifc_policy_put_response2)
 
     ifc_stp_delete_response2 = disable_interface_stp(device_2)
@@ -300,18 +263,18 @@ def service_create_vll_dryrun(task):
     # Configure service
 
     response = service_create_vll(task)
-    if task_failed(response):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance: %s configuration in uniconfig FAIL' % service.id, response=response)
+    if common_worker.task_failed(response):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL' % service.id, response=response)
 
-    response_dryrun = dryrun_commit(device_1, device_2)
+    response_dryrun = common_worker.dryrun_commit([device_1.id, device_2.id])
 
-    replace_cfg_with_oper(device_1, device_2)
+    common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
 
     # dryrun FAIL
-    if task_failed(response_dryrun) or uniconfig_task_failed(response_dryrun):
+    if common_worker.task_failed(response_dryrun) or common_worker.uniconfig_task_failed(response_dryrun):
         if add_debug_info:
-            return fail('VLL instance: %s dryrun FAIL' % service.id,
+            return common_worker.fail('VLL instance: %s dryrun FAIL' % service.id,
                         response_device1_interface=ifc_put_response1,
                         response_device1_interface_policy=ifc_policy_put_response1,
                         response_device1_stp_interface=ifc_stp_delete_response1,
@@ -321,12 +284,12 @@ def service_create_vll_dryrun(task):
                         response_create_vpn=response,
                         response_dryrun=response_dryrun)
         else:
-            return fail('VLL instance: %s dryrun FAIL' % service.id,
+            return common_worker.fail('VLL instance: %s dryrun FAIL' % service.id,
                         response_dryrun=response_dryrun)
 
     if add_debug_info:
         # TODO attach journal
-        return complete('VLL instance: %s dryrun SUCCESS' % service.id,
+        return common_worker.complete('VLL instance: %s dryrun SUCCESS' % service.id,
                         response_device1_interface=ifc_put_response1,
                         response_device1_interface_policy=ifc_policy_put_response1,
                         response_device1_stp_interface=ifc_stp_delete_response1,
@@ -336,7 +299,7 @@ def service_create_vll_dryrun(task):
                         response_create_vpn=response,
                         response_dryrun=response_dryrun)
     else:
-        return complete('VLL instance: %s dryrun SUCCESS' % service.id,
+        return common_worker.complete('VLL instance: %s dryrun SUCCESS' % service.id,
                         response_dryrun=response_dryrun)
 
 
@@ -349,60 +312,60 @@ def service_create_vll_commit(task):
     # Check interfaces exist
 
     ifc_response = read_interface(device_1)
-    if task_failed(ifc_response):
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s does not exist' % (service.id, device_1.id, device_1.interface),
+    if common_worker.task_failed(ifc_response):
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s does not exist' % (service.id, device_1.id, device_1.interface),
                     response=ifc_response)
 
     ifc_response = read_interface(device_2)
-    if task_failed(ifc_response):
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s does not exist' % (service.id, device_2.id, device_2.interface),
+    if common_worker.task_failed(ifc_response):
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s does not exist' % (service.id, device_2.id, device_2.interface),
                     response=ifc_response)
 
     # Reset interfaces if necessary
 
     if device_1.interface_reset:
         ifc_delete_response_1 = delete_interface(device_1)
-        if task_failed(ifc_response):
-            replace_cfg_with_oper(device_1, device_2)
-            return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be reset' % (service.id, device_1.id, device_1.interface),
-                        response=ifc_response)
+        if common_worker.task_failed(ifc_delete_response_1):
+            common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+            return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be reset' % (service.id, device_1.id, device_1.interface),
+                        response=ifc_delete_response_1)
 
     if device_2.interface_reset:
         ifc_delete_response_2 = delete_interface(device_2)
-        if task_failed(ifc_response):
-            replace_cfg_with_oper(device_1, device_2)
-            return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be reset' % (service.id, device_2.id, device_2.interface),
-                        response=ifc_response)
+        if common_worker.task_failed(ifc_delete_response_2):
+            common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+            return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be reset' % (service.id, device_2.id, device_2.interface),
+                        response=ifc_delete_response_2)
 
     if device_1.interface_reset or device_2.interface_reset:
-        response_commit = commit(device_1, device_2)
+        response_commit = common_worker.commit([device_1.id, device_2.id])
 
         # Check response from commit RPC. The RPC always succeeds but the status field needs to be checked
-        if task_failed(response_commit) or uniconfig_task_failed(response_commit):
-            replace_cfg_with_oper(device_1, device_2)
-            return fail('VLL instance: %s commit for interface reset FAIL' % service.id,
+        if common_worker.task_failed(response_commit) or common_worker.uniconfig_task_failed(response_commit):
+            common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+            return common_worker.fail('VLL instance: %s commit for interface reset FAIL' % service.id,
                         response_commit=response_commit)
 
-        response_sync_from_net = sync_from_net(device_1, device_2)
+        response_sync_from_net = common_worker.sync_from_net([device_1.id, device_2.id])
 
         # Check response from commit RPC. The RPC always succeeds but the status field needs to be checked
-        if task_failed(response_sync_from_net) or uniconfig_task_failed(response_sync_from_net):
-            replace_cfg_with_oper(device_1, device_2)
-            return fail('VLL instance: %s sync_from_network after interface reset FAIL' % service.id,
+        if common_worker.task_failed(response_sync_from_net) or common_worker.uniconfig_task_failed(response_sync_from_net):
+            common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+            return common_worker.fail('VLL instance: %s sync_from_network after interface reset FAIL' % service.id,
                         response_sync_from_net=response_sync_from_net)
 
     # Configure interface #1
 
     ifc_put_response1 = put_interface(service, device_1)
-    if task_failed(ifc_put_response1):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be configured' % (service.id, device_1.id, device_1.interface),
+    if common_worker.task_failed(ifc_put_response1):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be configured' % (service.id, device_1.id, device_1.interface),
                     response=ifc_put_response1)
 
     ifc_policy_put_response1 = put_interface_policy(device_1)
-    if ifc_policy_put_response1 is not None and task_failed(ifc_policy_put_response1):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface policies %s cannot be configured' % (service.id, device_1.id, device_1.interface),
+    if ifc_policy_put_response1 is not None and common_worker.task_failed(ifc_policy_put_response1):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface policies %s cannot be configured' % (service.id, device_1.id, device_1.interface),
                     response=ifc_policy_put_response1)
     
     ifc_stp_delete_response1 = disable_interface_stp(device_1)
@@ -410,15 +373,15 @@ def service_create_vll_commit(task):
     # Configure interface #2
 
     ifc_put_response2 = put_interface(service, device_2)
-    if task_failed(ifc_put_response2):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be configured' % (service.id, device_2.id, device_2.interface),
+    if common_worker.task_failed(ifc_put_response2):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be configured' % (service.id, device_2.id, device_2.interface),
                     response=ifc_put_response2)
 
     ifc_policy_put_response2 = put_interface_policy(device_2)
-    if ifc_policy_put_response2 is not None and task_failed(ifc_policy_put_response2):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface policies %s cannot be configured' % (service.id, device_2.id, device_2.interface),
+    if ifc_policy_put_response2 is not None and common_worker.task_failed(ifc_policy_put_response2):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL. Device: %s interface policies %s cannot be configured' % (service.id, device_2.id, device_2.interface),
                     response=ifc_policy_put_response2)
 
     ifc_stp_delete_response2 = disable_interface_stp(device_2)
@@ -428,18 +391,18 @@ def service_create_vll_commit(task):
     # Configure service
 
     response = service_create_vll(task)
-    if task_failed(response):
-        replace_cfg_with_oper(device_1, device_2)
-        return fail('VLL instance: %s configuration in uniconfig FAIL' % service.id, response=response)
-    
-    response_commit = commit(device_1, device_2)
+    if common_worker.task_failed(response):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
+        return common_worker.fail('VLL instance: %s configuration in uniconfig FAIL' % service.id, response=response)
+
+    response_commit = common_worker.commit([device_1.id, device_2.id])
 
     # COMMIT FAIL
-    if task_failed(response_commit) or uniconfig_task_failed(response_commit):
-        replace_cfg_with_oper(device_1, device_2)
+    if common_worker.task_failed(response_commit) or common_worker.uniconfig_task_failed(response_commit):
+        common_worker.replace_cfg_with_oper([device_1.id, device_2.id])
 
         if add_debug_info:
-            return fail('VLL instance: %s commit FAIL' % service.id,
+            return common_worker.fail('VLL instance: %s commit FAIL' % service.id,
                         response_device1_interface=ifc_put_response1,
                         response_device1_interface_policy=ifc_policy_put_response1,
                         response_device1_interface_reset=ifc_delete_response_1,
@@ -451,13 +414,13 @@ def service_create_vll_commit(task):
                         response_create_vpn=response,
                         response_commit=response_commit)
         else:
-            return fail('VLL instance: %s commit FAIL' % service.id,
+            return common_worker.fail('VLL instance: %s commit FAIL' % service.id,
                         response_commit=response_commit)
 
     # COMMIT SUCCESS
     if add_debug_info:
         # TODO attach journal
-        return complete('VLL instance: %s commit SUCCESS' % service.id,
+        return common_worker.complete('VLL instance: %s commit SUCCESS' % service.id,
                         response_device1_interface=ifc_put_response1,
                         response_device1_interface_policy=ifc_policy_put_response1,
                         response_device1_interface_reset=ifc_delete_response_1,
@@ -469,7 +432,7 @@ def service_create_vll_commit(task):
                         response_create_vpn=response,
                         response_commit=response_commit)
     else:
-        return complete('VLL instance: %s commit SUCCESS' % service.id,
+        return common_worker.complete('VLL instance: %s commit SUCCESS' % service.id,
                         response_commit=response_commit)
 
 
@@ -557,12 +520,10 @@ def remove_device_vll(device_id, service_id):
 
 
 def service_read_all(task):
-    # TODO add device filtering
     # TODO add vll-local vs vll selections
-    # TODO (low prio) add service name filtering
-    # TODO (low prio) add service vccid filtering
 
     datastore = task['inputData'].get('datastore', 'actual')
+    strategy, reconciliation = get_filter_strategy(task)
     if datastore not in ['intent', 'actual']:
         return {'status': 'FAILED', 'output': {}, 'logs': ['Unable to read uniconfig datastore: %s' % datastore]}
 
@@ -580,7 +541,7 @@ def service_read_all(task):
     uniconfig_nodes = response['output']['response_body']['topology'][0]['node']
 
     node_2_l2p2p = map(
-        lambda n: (n['node-id'], extract_network_instances(n, 'frinx-openconfig-network-instance-types:L2P2P')),
+        lambda n: (n['node-id'], extract_network_instances(n, strategy)),
         uniconfig_nodes)
 
     local_services = []
@@ -602,12 +563,19 @@ def service_read_all(task):
                 continue
 
     remote_services = aggregate_l2p2p_remote(remote_services) if reconciliation == 'name' \
-        else aggregate_l2p2p_remote(remote_services, lambda service: service['vccid'])
+        else aggregate_l2p2p_remote(remote_services, lambda service: service.vccid)
 
     services = local_services + remote_services
     services = map(lambda service: service.to_dict(), services)
     return {'status': 'COMPLETED', 'output': {'services': services},
             'logs': ['VLL instances found successfully: %s' % len(services)]}
+
+
+def get_filter_strategy(task):
+    reconciliation = task['inputData'].get('reconciliation', 'name')
+    filter_by = task['inputData'].get(reconciliation, '')
+    strategy = default_filter_strategy() if filter_by == '' else (name_filter_strategy(filter_by) if reconciliation == 'name' else vccid_filter_strategy(filter_by))
+    return strategy, reconciliation
 
 
 def aggregate_l2p2p_remote(remote_services, by_key=lambda remote_service: remote_service.id):
@@ -645,9 +613,9 @@ def vll_type(l2p2p):
         return 'UNKNOWN'
 
 
-def extract_network_instances(node, network_type):
+def extract_network_instances(node, strategy):
     networks = node['frinx-uniconfig-topology:configuration']['frinx-openconfig-network-instance:network-instances']['network-instance']
-    l2p2p = filter(lambda ni: ni['config']['type'] == network_type, networks)
+    l2p2p = filter(strategy, networks)
     return l2p2p
 
 
