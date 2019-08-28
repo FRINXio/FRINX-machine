@@ -2,8 +2,10 @@ from __future__ import print_function
 
 import requests
 import json
+import copy
 from string import Template
 from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_response
+import uniconfig_worker
 
 odl_url_unified_oper_shallow = odl_url_base + "/operational/network-topology:network-topology/topology/unified?depth=3"
 odl_url_unified_oper = odl_url_base + "/operational/network-topology:network-topology/topology/unified"
@@ -73,7 +75,7 @@ def get_all_devices_as_tasks(task):
 
         dynamic_tasks = []
         for device_id in ids:
-            task_body = task_body_template.copy()
+            task_body = copy.deepcopy(task_body_template)
             task_body["taskReferenceName"] = device_id
             task_body["subWorkflowParam"]["name"] = subworkflow
             dynamic_tasks.append(task_body)
@@ -92,6 +94,7 @@ def get_all_devices_as_tasks(task):
 def read_structured_data(task):
     device_id = task['inputData']['id']
     uri = task['inputData']['uri']
+    uri = uniconfig_worker.apply_functions(uri)
 
     id_url = odl_url_unified_mount + device_id + "/yang-ext:mount" + (uri if uri else "")
 
@@ -113,6 +116,8 @@ def read_structured_data(task):
 def write_structured_data(task):
     device_id = task['inputData']['id']
     uri = task['inputData']['uri']
+    uri = uniconfig_worker.apply_functions(uri)
+
     template = task['inputData']['template']
     params = task['inputData']['params'] if task['inputData']['params'] else {}
 
@@ -142,6 +147,7 @@ def write_structured_data(task):
 def delete_structured_data(task):
     device_id = task['inputData']['id']
     uri = task['inputData']['uri']
+    uri = uniconfig_worker.apply_functions(uri)
 
     id_url = odl_url_unified_mount + device_id + "/yang-ext:mount" + (uri if uri else "")
 

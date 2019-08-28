@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import json
+import copy
 from string import Template
 
 import requests
@@ -38,7 +39,7 @@ mount_template = {
 def execute_mount_cli(task):
     device_id = task['inputData']['id']
 
-    mount_body = mount_template.copy()
+    mount_body = copy.deepcopy(mount_template)
 
     mount_body["network-topology:node"]["network-topology:node-id"] = task['inputData']['id']
     mount_body["network-topology:node"]["cli-topology:host"] = task['inputData']['host']
@@ -83,7 +84,7 @@ def execute_execute_and_read_rpc_cli(task):
     params = params if isinstance(params, dict) else eval(params)
 
     commands = Template(template).substitute(params)
-    exec_body = execute_and_read_template.copy()
+    exec_body = copy.deepcopy(execute_and_read_template)
 
     exec_body["input"]["ios-cli:command"] = commands
 
@@ -224,7 +225,7 @@ def get_all_devices_as_tasks(task):
 
         dynamic_tasks = []
         for device_id in ids:
-            task_body = task_body_template.copy()
+            task_body = copy.deepcopy(task_body_template)
             task_body["taskReferenceName"] = device_id
             task_body["subWorkflowParam"]["name"] = task_name
             dynamic_tasks.append(task_body)

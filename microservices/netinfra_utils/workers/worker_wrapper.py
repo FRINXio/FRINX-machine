@@ -1,55 +1,56 @@
-import cli_worker
-import inventory_worker
-import l3vpn_worker
-import lldp_worker
-import netconf_worker
-import platform_worker
-import terraform_worker
-import uniconfig_worker
-import unified_worker
+import copy
+import json
 import time
+
+import requests
 from conductor.ConductorWorker import ConductorWorker
 
+from frinx_rest import conductor_url_base, odl_headers
 
-class WorkerWrapper(ConductorWorker):
+DEFAULT_TASK_DEFINITION = {
+    "name": "",
+    "retryCount": 0,
+    "timeoutSeconds": 60,
+    "timeoutPolicy": "TIME_OUT_WF",
+    "retryLogic": "FIXED",
+    "retryDelaySeconds": 0,
+    "responseTimeoutSeconds": 10
+}
+
+conductor_task_url = conductor_url_base + "/metadata/taskdefs"
+
+
+class ExceptionHandlingConductorWrapper(ConductorWorker):
+
+    # register task metadata into conductor
+    def register(self, task_type, task_definition=None):
+        if task_definition is None:
+            task_definition = DEFAULT_TASK_DEFINITION
+        task_meta = copy.deepcopy(task_definition)
+        task_meta["name"] = task_type
+        r = requests.post(conductor_task_url,
+                          data=json.dumps([task_meta]),
+                          headers=odl_headers)
+
+        response_code = r.status_code
 
     def execute(self, task, exec_function):
         try:
             resp = exec_function(task)
             if resp is None:
-                raise Exception('Task execution function MUST return a response as a dict with status and output fields')
+                raise Exception(
+                    'Task execution function MUST return a response as a dict with status and output fields')
             task['status'] = resp['status']
-            task['outputData'] = resp['output']
-            task['logs'] = resp['logs']
+            task['outputData'] = resp.get('output', {})
+            task['logs'] = resp.get('logs', "")
             self.taskClient.updateTask(task)
         except Exception as err:
             print('Error executing task: ' + str(err))
             task['status'] = 'FAILED'
             task['outputData'] = {'Error executing task:': str(task),
-                                                   'exec_function': str(exec_function), }
+                                  'exec_function': str(exec_function), }
             task['logs'] = ["Logs: %s" % str(err)]
             self.taskClient.updateTask(task)
-
-def main():
-    print('Starting FRINX workers with wrapper')
-    cc = WorkerWrapper()
-    register_workers(cc)
-
-    # block
-    while 1:
-        time.sleep(1)
-
-
-def register_workers(cc):
-    cli_worker.start(cc)
-    netconf_worker.start(cc)
-    platform_worker.start(cc)
-    l3vpn_worker.start(cc)
-    lldp_worker.start(cc)
-    inventory_worker.start(cc)
-    unified_worker.start(cc)
-    uniconfig_worker.start(cc)
-    terraform_worker.start(cc)
 
 
 if __name__ == '__main__':

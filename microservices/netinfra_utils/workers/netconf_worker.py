@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import copy
 import json
 from string import Template
 
@@ -29,7 +30,7 @@ mount_template = {
 def execute_mount_netconf(task):
     device_id = task['inputData']['id']
 
-    mount_body = mount_template.copy()
+    mount_body = copy.deepcopy(mount_template)
 
     mount_body["node"]["node-id"] = task['inputData']['id']
     mount_body["node"]["netconf-node-topology:host"] = task['inputData']['host']
