@@ -16,4 +16,4 @@ COPY schema /opt/distribution-frinx/cache/schema
 
 
 ENTRYPOINT ["/bin/bash"]
-CMD ["/opt/distribution-frinx/run-lighty-uniconfig-distribution.sh"]
+CMD ["/opt/distribution-frinx/odl-wrapper.sh"]
