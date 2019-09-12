@@ -33,8 +33,6 @@ services:
             max-file: "3"
             max-size: "10m"
     container_name: micros
-    ports:
-      - 6000:6000
     depends_on:
       - odl
       - conductor-server
