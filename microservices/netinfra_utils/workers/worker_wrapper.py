@@ -1,6 +1,7 @@
 import copy
 import json
 import time
+from random import randint
 
 import requests
 from conductor.ConductorWorker import ConductorWorker
@@ -21,6 +22,11 @@ conductor_task_url = conductor_url_base + "/metadata/taskdefs"
 
 
 class ExceptionHandlingConductorWrapper(ConductorWorker):
+
+    def start(self, taskType, exec_function, wait, domain=None):
+        # Random small sleep in order to NOT start all the workers at the same time
+        time.sleep(randint(25, 100) * 0.001)
+        ConductorWorker.start(self, taskType, exec_function, wait, domain)
 
     # register task metadata into conductor
     def register(self, task_type, task_definition=None):
