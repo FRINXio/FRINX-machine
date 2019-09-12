@@ -68,7 +68,14 @@ fi
 }
 
 function import_devices {
-sudo docker exec micros bash -c "cd /home/app && newman run netinfra_utils/devices/device_import.postman_collection.json -d netinfra_utils/devices/device_data.csv"
+# Import cli devices
+sudo docker exec micros bash -c "cd /home/app && newman run netinfra_utils/devices/device_import.postman_collection.json --folder 'cli' -d netinfra_utils/devices/device_data.csv"
+if [ "$skip" = false ]; then
+  check_success $?
+fi
+
+#Import netconf devices
+sudo docker exec micros bash -c "cd /home/app && newman run netinfra_utils/devices/device_import.postman_collection.json --folder 'netconf' -d netinfra_utils/devices/netconf_device_data.csv"
 if [ "$skip" = false ]; then
   check_success $?
 fi
