@@ -20,7 +20,7 @@ services:
        - odl_pass:/opt/distribution-frinx/db-credentials
        - odl_data:/opt/distribution-frinx/data
     ports:
-      - 8182:8181
+      - 8181:8181
 
   micros:
     build:
