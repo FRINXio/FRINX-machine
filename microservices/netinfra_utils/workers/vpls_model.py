@@ -1,4 +1,5 @@
 from vll_model import RemoteDevice
+import vll_model
 
 
 class Device(RemoteDevice):
@@ -63,7 +64,7 @@ class Service:
         return serv
 
     @staticmethod
-    def parse_from_openconfig_network(node_id, l2vsi):
+    def parse_from_openconfig_network(node_id, l2vsi, default_ni, ifcs):
         cps = l2vsi.get('connection-points', {}).get('connection-point')
         if cps is None:
             return
@@ -90,6 +91,7 @@ class Service:
                 'untagged': l['endpoints']['endpoint'][0]['local']['config'].get('frinx-brocade-cp-extension:subinterface-untagged', None),
                 'remote_ip': "UNKNOWN"
             }
+            vll_model.Service.set_attributes(default_ni, ifcs, tmp_conn)
             service['devices'].append(tmp_conn)
 
         for r in remote:
@@ -147,19 +149,3 @@ class Service:
         for d in remotes:
             if d.remote_ip == remote_ip:
                 service.devices.remove(d)
-
-
-class ServiceDeletion(Service):
-
-    def __init__(self, service):
-        service.update({"vccid": "UNKNOWN"})
-        Service.__init__(self, service)
-
-    def parse_devices(self, devices):
-        # type: (Service, list) -> list[Device]
-        for d in devices: d.update({"remote_ip": "UNKNOWN", "interface": "UNKNOWN", "vlan": "UNKNOWN"})
-        return [Device.parse(d, i) for i, d in enumerate(devices)]
-
-    @staticmethod
-    def parse_from_task(task):
-        return ServiceDeletion(Service.extract_from_task(task))

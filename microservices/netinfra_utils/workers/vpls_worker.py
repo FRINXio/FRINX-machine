@@ -121,7 +121,7 @@ def create_vpls_request(task):
         vlan_cfg = {
             'vlan-id': ifc['vlan']
         }
-        if not instance['vlans']['vlan'].__contains__(vlan_cfg):
+        if vlan_cfg not in instance['vlans']['vlan']:
             instance['vlans']['vlan'].append(vlan_cfg)
 
         cp1['endpoints']['endpoint'][0]['local']['config']['interface'] = ifc['interface']

@@ -2,15 +2,11 @@ from __future__ import print_function
 
 import itertools
 
-from vpls_model import Service, ServiceDeletion
+from vpls_model import Service
 import uniconfig_worker
 import vpls_worker
 import common_worker
 import vll_service_worker
-
-odl_url_uniconfig_ifc_config = '/frinx-openconfig-interfaces:interfaces/interface/escape($ifc)'
-odl_url_uniconfig_ifc_policy_config = '/frinx-openconfig-network-instance:network-instances/network-instance/default/policy-forwarding/interfaces/interface/escape($ifc)'
-odl_url_uniconfig_ifc_stp_config = '/frinx-stp:stp/interfaces/interface/escape($ifc)'
 
 
 def default_filter_strategy():
@@ -23,37 +19,6 @@ def name_filter_strategy(name):
 
 def vccid_filter_strategy(vccid):
     return common_worker.vccid_filter_strategy('frinx-openconfig-network-instance-types:L2VSI', vccid)
-
-
-def service_delete_vpls_commit(task):
-    return service_delete_vpls(task, "commit")
-
-
-def service_delete_vpls_dryrun(task):
-    return service_delete_vpls(task, "dry-run")
-
-
-def service_delete_vpls(task, commit_type):
-    dryrun = bool("dry-run" == commit_type)
-    add_debug_info = task['inputData']['service'].get('debug', False)
-    service = ServiceDeletion.parse_from_task(task)
-
-    device_ids = list(set(service.device_ids()))
-    response_del = service_delete_vpls_instance(task)
-    if common_worker.task_failed(response_del):
-        common_worker.replace_cfg_with_oper(device_ids)
-        return common_worker.fail('VPLS instance deletion: %s configuration in uniconfig FAIL' % service.id, response=response_del)
-
-    if dryrun:
-        response = common_worker.dryrun_commit(device_ids)
-        return common_worker.dryrun_response('VPLS instance deletion: %s dry-run FAIL' % service.id, add_debug_info,
-                                      response_delete=response_del,
-                                      response_dryrun=response)
-    else:
-        response = common_worker.commit(device_ids)
-        return common_worker.commit_response(device_ids, 'VPLS instance deletion: %s commit FAIL' % service.id, add_debug_info,
-                                      response_delete=response_del,
-                                      response_commit=response)
 
 
 def service_create_vpls_commit(task):
@@ -87,10 +52,20 @@ def service_create_vpls(task, commit_type):
         ifc_responses.append(ifc_response)
 
         if not dryrun and device.interface_reset:
+            policy = vll_service_worker.read_interface_policy(device)
+            if not common_worker.task_failed(policy):
+                ifc_delete_policy = vll_service_worker.delete_interface_policy(device)
+                if ifc_delete_policy is not None and common_worker.task_failed(ifc_delete_policy):
+                    common_worker.replace_cfg_with_oper([device.id])
+                    return common_worker.fail('VPLS instance: %s configuration in uniconfig FAIL. Device: %s interface policy %s cannot be reset'
+                                              % (service.id, device.id, device.interface),
+                                              response=ifc_delete_policy)
+
             ifc_delete_response = vll_service_worker.delete_interface(device)
             if common_worker.task_failed(ifc_delete_response):
                 common_worker.replace_cfg_with_oper([device.id])
-                return common_worker.fail('VPLS instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be reset' % (service.id, device.id, device.interface),
+                return common_worker.fail('VPLS instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be reset'
+                                          % (service.id, device.id, device.interface),
                                           response=ifc_delete_response)
 
             response_commit = common_worker.commit([device.id])
@@ -190,6 +165,59 @@ def service_create_vpls_instance(task):
     return common_worker.complete('VPLS instance: %s configured in uniconfig successfully' % service.id, responses=responses)
 
 
+def remove_device_vpls(device_id, service_id):
+    return vpls_worker.device_delete_vpls({'inputData': {
+        'id': device_id,
+        'service_id': service_id
+    }})
+
+
+def service_delete_vpls_commit(task):
+    return service_delete_vpls(task, "commit")
+
+
+def service_delete_vpls_dryrun(task):
+    return service_delete_vpls(task, "dry-run")
+
+
+def service_delete_vpls(task, commit_type):
+    dryrun = bool("dry-run" == commit_type)
+    add_debug_info = task['inputData']['service'].get('debug', False)
+
+    service_id = task['inputData']['service']['id']
+    services = read_remote_services({'inputData': {
+        'datastore': 'actual',
+        'reconciliation': 'name',
+        'name': service_id
+    }})
+
+    number_of_services = len(services)
+    if number_of_services < 1:
+        return common_worker.fail("VPLS instance: %s does not exists" % service_id)
+    if number_of_services > 1:
+        return common_worker.fail("VPLS instance: %s is not unique. It occurs %s times." % (service_id, number_of_services))
+
+    service = services[0]
+    device_ids = list(set(service.device_ids()))
+    response_del = service_delete_vpls_instance({'inputData': {
+        'service': service.to_dict()
+    }})
+    if common_worker.task_failed(response_del):
+        common_worker.replace_cfg_with_oper(device_ids)
+        return common_worker.fail('VPLS instance deletion: %s configuration in uniconfig FAIL' % service.id, response=response_del)
+
+    if dryrun:
+        response = common_worker.dryrun_commit(device_ids)
+        return common_worker.dryrun_response('VPLS instance deletion: %s dry-run FAIL' % service.id, add_debug_info,
+                                             response_delete=response_del,
+                                             response_dryrun=response)
+    else:
+        response = common_worker.commit(device_ids)
+        return common_worker.commit_response(device_ids, 'VPLS instance deletion: %s commit FAIL' % service.id, add_debug_info,
+                                             response_delete=response_del,
+                                             response_commit=response)
+
+
 def service_delete_vpls_instance(task):
     service = Service.parse_from_task(task)
 
@@ -203,81 +231,6 @@ def service_delete_vpls_instance(task):
     return common_worker.complete('VPLS instance: %s removed in uniconfig successfully' % service.id, responses=responses)
 
 
-def remove_device_vpls(device_id, service_id):
-    return vpls_worker.device_delete_vpls({'inputData': {
-        'id': device_id,
-        'service_id': service_id
-    }})
-
-
-def service_read_all(task):
-    remote_services = read_remote_services(task)
-    if remote_services is dict and 'status' in remote_services:
-        return remote_services
-
-    services = map(lambda service: service.to_dict(), remote_services)
-    return common_worker.complete('VPLS instances found successfully: %s' % len(services), services=services)
-
-
-def read_remote_services(task):
-    datastore = task['inputData'].get('datastore', 'actual')
-    strategy, reconciliation = get_filter_strategy(task)
-    if datastore not in ['intent', 'actual']:
-        return common_worker.fail('Unable to read uniconfig datastore: %s' % datastore)
-
-    response = uniconfig_worker.execute_read_uniconfig_topology_operational(task) if datastore == 'actual' \
-        else uniconfig_worker.execute_read_uniconfig_topology_config(task)
-
-    if common_worker.task_failed(response):
-        return common_worker.fail('Unable to read uniconfig', response=response)
-    if reconciliation not in ['name', 'vccid']:
-        return common_worker.fail('Unable to reconcile with strategy: %s' % reconciliation)
-
-    if 'node' not in response['output']['response_body']['topology'][0]:
-        raise Exception("Uniconfig topology is empty.")
-
-    uniconfig_nodes = response['output']['response_body']['topology'][0]['node']
-
-    remote_services = []
-    for node in map(lambda n: (n['node-id'], extract_network_instances(n, strategy)), uniconfig_nodes):
-
-        node_id = node[0]
-        l2vsis = node[1]
-        if len(l2vsis) is 0:
-            continue
-
-        for l2vsi in l2vsis:
-            service = Service.parse_from_openconfig_network(node_id, l2vsi)
-            if service is not None:
-                remote_services.append(service)
-
-    remote_services = aggregate_l2vsi_remote(remote_services) if reconciliation == 'name' \
-        else aggregate_l2vsi_remote(remote_services, lambda s: s.vccid)
-
-    return remote_services
-
-
-def get_filter_strategy(task):
-    reconciliation = task['inputData'].get('reconciliation', 'name')
-    filter_by = task['inputData'].get(reconciliation, '')
-    strategy = default_filter_strategy() if filter_by == '' else (name_filter_strategy(filter_by) if reconciliation == 'name' else vccid_filter_strategy(filter_by))
-    return strategy, reconciliation
-
-
-def aggregate_l2vsi_remote(remote_services, by_key=lambda remote_service: remote_service.id):
-    remote_services.sort(key=by_key)
-    grouped_by_name = itertools.groupby(remote_services, by_key)
-    grouped_by_name_as_list = map(lambda g: list(g[1]), grouped_by_name)
-    remote_services_aggregated = map(lambda l: reduce(lambda l1, l2: l1.merge(l2), l), grouped_by_name_as_list)
-    return remote_services_aggregated
-
-
-def extract_network_instances(node, strategy):
-    networks = node['frinx-uniconfig-topology:configuration']['frinx-openconfig-network-instance:network-instances']['network-instance']
-    l2vsi = filter(strategy, networks)
-    return l2vsi
-
-
 def device_add_to_vpls_commit(task):
     return device_add_to_vpls(task, "commit")
 
@@ -288,12 +241,8 @@ def device_add_to_vpls_dryrun(task):
 
 def device_add_to_vpls(task, commit_type):
     vpls_config = read_remote_services(task)
-    if vpls_config is dict and common_worker.task_failed(vpls_config):
-        return vpls_config
 
     service = create_device_add_to_vpls(task, vpls_config)
-    if service is dict and common_worker.task_failed(service):
-        return service
 
     add_debug_info = task['inputData']['service'].get('debug', False)
 
@@ -320,7 +269,7 @@ def device_add_to_vpls(task, commit_type):
 def create_device_add_to_vpls(task, vpls_config):
     service = filter(lambda s: s.id == task['inputData']['service']['id'], vpls_config)
     if len(service) < 1:
-        raise Exception("L2VSI network instance '%s' does not exist." % task['inputData']['service']['id'])
+        raise Exception("VPLS '%s' does not exist." % task['inputData']['service']['id'])
     service = service[0]
     service.devices.extend(Service.parse_devices(task['inputData']['service']['devices']))
 
@@ -337,12 +286,8 @@ def device_delete_from_vpls_dryrun(task):
 
 def device_delete_from_vpls(task, commit_type):
     vpls_config = read_remote_services(task)
-    if vpls_config is dict and common_worker.task_failed(vpls_config):
-        return vpls_config
 
     service = create_device_delete_from_vpls(task, vpls_config)
-    if service is dict and common_worker.task_failed(service):
-        return service
 
     responses_remove = []
     remove_ids = list(set(dev['id'] for dev in task['inputData']['service']['devices']))
@@ -378,7 +323,7 @@ def device_delete_from_vpls(task, commit_type):
 def create_device_delete_from_vpls(task, vpls_config):
     service = filter(lambda s: s.id == task['inputData']['service']['id'], vpls_config)
     if len(service) < 1:
-        raise Exception("L2VSI network instance '%s' does not exist." % task['inputData']['service']['id'])
+        raise Exception("VPLS '%s' does not exist." % task['inputData']['service']['id'])
     service = service[0]
 
     ids = set(d['id'] for d in task['inputData']['service']['devices'])
@@ -387,6 +332,76 @@ def create_device_delete_from_vpls(task, vpls_config):
         raise Exception('VPLS must have at least 2 devices left')
 
     return service
+
+
+def service_read_all(task):
+    remote_services = read_remote_services(task)
+
+    services = map(lambda service: service.to_dict(), remote_services)
+    return common_worker.complete('VPLS instances found successfully: %s' % len(services), services=services)
+
+
+def read_remote_services(task):
+    datastore = task['inputData'].get('datastore', 'actual')
+    strategy, reconciliation = get_filter_strategy(task)
+    if datastore not in ['intent', 'actual']:
+        raise Exception('Unable to read uniconfig datastore: %s' % datastore)
+
+    response = uniconfig_worker.execute_read_uniconfig_topology_operational(task) if datastore == 'actual' \
+        else uniconfig_worker.execute_read_uniconfig_topology_config(task)
+
+    if common_worker.task_failed(response):
+        raise Exception('Unable to read uniconfig', response=response)
+    if reconciliation not in ['name', 'vccid']:
+        raise Exception('Unable to reconcile with strategy: %s' % reconciliation)
+
+    if 'node' not in response['output']['response_body']['topology'][0]:
+        raise Exception("Uniconfig topology is empty.")
+
+    uniconfig_nodes = response['output']['response_body']['topology'][0]['node']
+
+    remote_services = []
+    for node in map(lambda n: (n['node-id'], extract_network_instances(n, strategy)), uniconfig_nodes):
+
+        node_id = node[0]
+        l2vsis = node[1][0]
+        default_ni = node[1][1]
+        ifcs = node[1][2]
+        if len(l2vsis) is 0:
+            continue
+
+        for l2vsi in l2vsis:
+            service = Service.parse_from_openconfig_network(node_id, l2vsi, default_ni, ifcs)
+            if service is not None:
+                remote_services.append(service)
+
+    remote_services = aggregate_l2vsi_remote(remote_services) if reconciliation == 'name' \
+        else aggregate_l2vsi_remote(remote_services, lambda s: s.vccid)
+
+    return remote_services
+
+
+def get_filter_strategy(task):
+    reconciliation = task['inputData'].get('reconciliation', 'name')
+    filter_by = task['inputData'].get(reconciliation, '')
+    strategy = default_filter_strategy() if filter_by == '' else (name_filter_strategy(filter_by) if reconciliation == 'name' else vccid_filter_strategy(filter_by))
+    return strategy, reconciliation
+
+
+def aggregate_l2vsi_remote(remote_services, by_key=lambda remote_service: remote_service.id):
+    remote_services.sort(key=by_key)
+    grouped_by_name = itertools.groupby(remote_services, by_key)
+    grouped_by_name_as_list = map(lambda g: list(g[1]), grouped_by_name)
+    remote_services_aggregated = map(lambda l: reduce(lambda l1, l2: l1.merge(l2), l), grouped_by_name_as_list)
+    return remote_services_aggregated
+
+
+def extract_network_instances(node, strategy):
+    networks = node['frinx-uniconfig-topology:configuration']['frinx-openconfig-network-instance:network-instances']['network-instance']
+    l2vsi = filter(strategy, networks)
+    default_ni = filter(lambda ni: ni['name'] == 'default', networks)[0]
+    interfaces = filter(lambda i: i['config']['type'] == 'iana-if-type:ethernetCsmacd', node['frinx-uniconfig-topology:configuration']['frinx-openconfig-interfaces:interfaces']['interface'])
+    return l2vsi, default_ni, interfaces
 
 
 def start(cc):
