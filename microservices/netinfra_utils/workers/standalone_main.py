@@ -1,11 +1,11 @@
 import frinx_rest
 frinx_rest.odl_url_base = "http://localhost:8181/restconf"
-
 import json
 import time
 
 from flask import Flask, request
 from flask_restful import Resource, Api
+from flask_basicauth import BasicAuth
 
 from main import register_workers
 
@@ -61,9 +61,20 @@ class TaskInvocation(Resource):
         return input_dict
 
 
+DEFAULT_USERNAME = 'admin'
+DEFAULT_PASSWD = 'admin'
+
+
 def main():
     print('Starting FRINX STANDALONE workers')
     app = Flask(__name__)
+
+    app.config['BASIC_AUTH_USERNAME'] = DEFAULT_USERNAME
+    app.config['BASIC_AUTH_PASSWORD'] = DEFAULT_PASSWD
+    app.config['BASIC_AUTH_FORCE'] = True
+
+    basic_auth = BasicAuth(app)
+
     api = Api(app)
     cc = StandaloneWorker(api)
     register_workers(cc)
