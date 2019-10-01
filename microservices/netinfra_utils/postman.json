@@ -2807,6 +2807,132 @@
 						}
 					],
 					"_postman_isSubFolder": true
+				},
+				{
+					"name": "HTTP",
+					"item": [
+						{
+							"name": "HTTP Get",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n      \"name\": \"HTTP_GET_generic\",\n      \"description\": \"GENERIC HTTP GET workflow\",\n      \"version\": 1,\n      \"tasks\": [\n           {\n              \"name\": \"http_get_generic\",\n              \"taskReferenceName\": \"http_get_generic_instance\",\n              \"inputParameters\": {\n                \"http_request\": {\n                  \"uri\": \"${workflow.input.uri}\",\n                  \"method\": \"GET\",\n                  \"contentType\": \"application/json\",\n                  \"accept\": \"application/json\",\n                  \"connectionTimeOut\":\"3600\",\n                 \"readTimeOut\":\"3600\"\n                }\n              },\n              \"type\": \"HTTP\",\n              \"startDelay\": 0\n          }\n      ],\n      \"inputParameters\": [\n          \"uri[URI of HTTP request e.g. http://ip.jsontest.com/][http://ip.jsontest.com/]\"\n      ],\n      \"outputParameters\": {\n        \"response_body\": \"${http_get_generic_instance.output.response.body}\"\n      },\n      \"schemaVersion\": 2\n    }]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "HTTP Delete",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n      \"name\": \"HTTP_DELETE_generic\",\n      \"description\": \"GENERIC HTTP DELETE workflow\",\n      \"version\": 1,\n      \"tasks\": [\n           {\n              \"name\": \"http_get_generic\",\n              \"taskReferenceName\": \"http_get_generic_instance\",\n              \"inputParameters\": {\n                \"http_request\": {\n                  \"uri\": \"${workflow.input.uri}\",\n                  \"method\": \"DELETE\",\n                  \"contentType\": \"application/json\",\n                  \"accept\": \"application/json\",\n                  \"connectionTimeOut\":\"3600\",\n                 \"readTimeOut\":\"3600\"\n                }\n              },\n              \"type\": \"HTTP\",\n              \"startDelay\": 0\n          }\n      ],\n      \"inputParameters\": [\n          \"uri[URI of HTTP request e.g. http://ip.jsontest.com/][http://ip.jsontest.com/]\"\n      ],\n      \"outputParameters\": {\n        \"response_body\": \"${http_get_generic_instance.output.response.body}\"\n      },\n      \"schemaVersion\": 2\n    }]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "HTTP Post",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n      \"name\": \"HTTP_POST_generic\",\n      \"description\": \"GENERIC HTTP POST workflow\",\n      \"version\": 1,\n      \"tasks\": [ \n         {\n              \"name\": \"http_get_generic\",\n              \"taskReferenceName\": \"http_get_generic_instance\",\n              \"inputParameters\": {\n                \"http_request\": {\n                  \"uri\": \"${workflow.input.uri}\",\n                  \"method\": \"POST\",\n                  \"contentType\": \"application/json\",\n                  \"body\": \"${workflow.input.template}\",\n                  \"connectionTimeOut\":\"3600\",\n                  \"readTimeOut\":\"3600\"\n                }\n              },\n              \"type\": \"HTTP\",\n              \"startDelay\": 0\n          }\n      ],\n      \"inputParameters\": [\n        \"uri[URI of HTTP request][https://hooks.slack.com/services/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]\",\n        \"template[Body of HTTP request][{\\\"text\\\":\\\"sample POST message from http get workflow.\\\"}]\"\n      ],\n      \"outputParameters\": {\n        \"response_body\": \"${http_get_generic_instance.output.response.body}\"\n      },\n      \"schemaVersion\": 2\n    }]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "HTTP Put",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n      \"name\": \"HTTP_PUT_generic\",\n      \"description\": \"GENERIC HTTP PUT workflow\",\n      \"version\": 1,\n      \"tasks\": [\n           {\n              \"name\": \"http_get_generic\",\n              \"taskReferenceName\": \"http_get_generic_instance\",\n              \"inputParameters\": {\n                \"http_request\": {\n                  \"uri\": \"${workflow.input.uri}\",\n                  \"method\": \"PUT\",\n                  \"contentType\": \"application/json\",\n                  \"body\": \"${workflow.input.template}\",\n                  \"connectionTimeOut\":\"3600\",\n                 \"readTimeOut\":\"3600\"\n                }\n              },\n              \"type\": \"HTTP\",\n              \"startDelay\": 0\n          }\n      ],\n      \"inputParameters\": [\n        \"template[Body of HTTP request][{\\\"text\\\":\\\"sample PUT message from http get workflow.\\\"}]\",\n        \"uri[URI of HTTP request][https://hooks.slack.com/services/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]\"\n      ],\n      \"outputParameters\": {\n        \"response_body\": \"${http_get_generic_instance.output.response.body}\"\n      },\n      \"schemaVersion\": 2\n    }]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
 				}
 			],
 			"event": [
