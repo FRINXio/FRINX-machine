@@ -12,6 +12,9 @@ import uniconfig_worker
 import unified_worker
 import vll_worker
 import vll_service_worker
+import vpls_worker
+import vpls_service_worker
+import bi_service_worker
 
 def main():
     print('Starting FRINX workers')
@@ -35,6 +38,9 @@ def register_workers(cc):
     terraform_worker.start(cc)
     vll_worker.start(cc)
     vll_service_worker.start(cc)
+    vpls_worker.start(cc)
+    vpls_service_worker.start(cc)
+    bi_service_worker.start(cc)
 
 
 if __name__ == '__main__':

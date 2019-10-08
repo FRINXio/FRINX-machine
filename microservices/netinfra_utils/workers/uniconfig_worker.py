@@ -25,7 +25,8 @@ odl_url_uniconfig_replace_config_with_snapshot = odl_url_base + '/operations/sna
 
 
 def execute_read_uniconfig_topology_operational(task):
-    response_code, response_json = read_all_devices(odl_url_uniconfig_oper)
+    devices = task['inputData']['device'] if 'device' in task['inputData'] else []
+    response_code, response_json = read_all_devices(odl_url_uniconfig_oper) if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_oper, devices)
 
     if response_code == requests.codes.ok:
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_oper,
@@ -40,7 +41,8 @@ def execute_read_uniconfig_topology_operational(task):
 
 
 def execute_read_uniconfig_topology_config(task):
-    response_code, response_json = read_all_devices(odl_url_uniconfig_config)
+    devices = task['inputData']['device'] if 'device' in task['inputData'] else []
+    response_code, response_json = read_all_devices(odl_url_uniconfig_config) if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_config, devices)
 
     if response_code == requests.codes.ok:
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_config,
@@ -57,6 +59,28 @@ def execute_read_uniconfig_topology_config(task):
 def read_all_devices(url):
     r = requests.get(url, headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
+    return response_code, response_json
+
+
+def read_selected_devices(url, devices):
+    response_code = requests.codes.ok
+    response_json = {
+        'topology': [
+            {
+                'node': []
+            }
+        ],
+        'topology-id': 'uniconfig',
+        'topology-types': {
+            'frinx-uniconfig-topology:uniconfig': {}
+        }
+    }
+    for d in devices:
+        r = requests.get(url + "/node/" + d + "/", headers=odl_headers, auth=odl_credentials)
+        response_code, response_json_tmp = parse_response(r)
+        response_json['topology'][0]['node'].append(response_json_tmp['node'][0])
+        if response_code != requests.codes.ok:
+            raise "Cannot read device '" + d + "' from uniconfig topology"
     return response_code, response_json
 
 
