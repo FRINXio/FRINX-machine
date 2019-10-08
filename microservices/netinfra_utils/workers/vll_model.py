@@ -3,7 +3,7 @@ class Device:
     switch_tpid = {
         "0x8100": "frinx-openconfig-vlan-types:TPID_0X8100",
         "0x8A88": "frinx-openconfig-vlan-types:TPID_0X8A88",
-        "0X9200": "frinx-openconfig-vlan-types:TPID_0X9200",
+        "0x9200": "frinx-openconfig-vlan-types:TPID_0X9200",
         "0x9100": "frinx-openconfig-vlan-types:TPID_0X9100"
     }
 
@@ -18,9 +18,15 @@ class Device:
         self.in_policy = device.get('in_policy', None)
         self.out_policy = device.get('out_policy', None)
         if self.tpid is not None:
-            if Device.switch_tpid.get(self.tpid) is  None:
+            if self.tpid not in Device.switch_tpid.keys() and self.tpid not in Device.switch_tpid.values():
                 raise Exception("Invalid tpid value: %s, expected one of: %s" % (self.tpid, Device.switch_tpid))
-            self.tpid = Device.switch_tpid.get(self.tpid)
+            for tp in Device.switch_tpid.items():
+                if tp[0] == self.tpid:
+                    break
+                if tp[1] == self.tpid:
+                    self.tpid = tp[0]
+                    break
+
 
     @staticmethod
     def parse(device, index):
@@ -123,6 +129,29 @@ class Service:
         serv['devices'] = devs
         return serv
 
+    @staticmethod
+    def set_attributes(default_ni, ifcs, device):
+        if 'policy-forwarding' in default_ni:
+            pf = filter(lambda p: p['interface-id'] == device['interface'],
+                        default_ni['policy-forwarding']['interfaces']['interface'])
+            if len(pf) > 0:
+                device['in_policy'] = pf[0]['config']['frinx-brocade-pf-interfaces-extension:input-service-policy']
+                device['out_policy'] = pf[0]['config']['frinx-brocade-pf-interfaces-extension:output-service-policy']
+        ifc = filter(lambda i: i['name'] == device['interface'], ifcs)[0]
+        device['tpid'] = ifc['config'].get('frinx-openconfig-vlan:tpid', None)
+        device['auto_negotiate'] = ifc.get('frinx-openconfig-if-ethernet:ethernet', {}).get('config', {}).get('auto-negotiate', None)
+
+    @staticmethod
+    def set_attributes(default_ni, ifcs, device):
+        pf = filter(lambda p: p['interface-id'] == device['interface'],
+                    default_ni.get('policy-forwarding', {}).get('interfaces', {}).get('interface', []))
+        if len(pf) > 0:
+            device['in_policy'] = pf[0]['config']['frinx-brocade-pf-interfaces-extension:input-service-policy']
+            device['out_policy'] = pf[0]['config']['frinx-brocade-pf-interfaces-extension:output-service-policy']
+        ifc = filter(lambda i: i['name'] == device['interface'], ifcs)[0]
+        device['tpid'] = ifc['config'].get('frinx-openconfig-vlan:tpid', None)
+        device['auto_negotiate'] = ifc.get('frinx-openconfig-if-ethernet:ethernet', {}).get('config', {}).get('auto-negotiate', None)
+
 
 class LocalService(Service):
 
@@ -139,7 +168,7 @@ class LocalService(Service):
         return LocalService(Service.extract_from_task(task))
 
     @staticmethod
-    def parse_from_openconfig_network(node_id, l2p2p):
+    def parse_from_openconfig_network(node_id, l2p2p, default_ni, ifcs):
         service = {
             'id': l2p2p.get('name', 'Unable to find name'),
             'devices': [
@@ -155,6 +184,9 @@ class LocalService(Service):
                 }
             ]
         }
+
+        Service.set_attributes(default_ni, ifcs, service['devices'][0])
+        Service.set_attributes(default_ni, ifcs, service['devices'][1])
 
         vlan1 = l2p2p['connection-points']['connection-point'][0]['endpoints']['endpoint'][0]['local']['config'].get('subinterface', None)
         if vlan1:
@@ -190,7 +222,7 @@ class RemoteService(Service):
         return RemoteService(Service.extract_from_task(task))
 
     @staticmethod
-    def parse_from_openconfig_network(node_id, l2p2p):
+    def parse_from_openconfig_network(node_id, l2p2p, default_ni, ifcs):
         cps = l2p2p.get('connection-points', {}).get('connection-point')
         local = filter(lambda cp: cp['endpoints']['endpoint'][0]['config']['type'] == 'frinx-openconfig-network-instance-types:LOCAL', cps)[0]
         remote = filter(lambda cp: cp['endpoints']['endpoint'][0]['config']['type'] == 'frinx-openconfig-network-instance-types:REMOTE', cps)[0]
@@ -203,7 +235,6 @@ class RemoteService(Service):
                     'id': node_id,
                     'interface': local['endpoints']['endpoint'][0]['local']['config']['interface'],
                     'remote_ip': remote['endpoints']['endpoint'][0]['remote']['config']['remote-system'],
-                    # TODO also fill in other (optional) device params
                 },
                 {
                     # Placeholder for the other end of connection
@@ -213,6 +244,8 @@ class RemoteService(Service):
                 }
             ]
         }
+
+        Service.set_attributes(default_ni, ifcs, service['devices'][0])
 
         vlan1 = local['endpoints']['endpoint'][0]['local']['config'].get('subinterface', None)
         if vlan1:
