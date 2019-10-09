@@ -131,18 +131,6 @@ class Service:
 
     @staticmethod
     def set_attributes(default_ni, ifcs, device):
-        if 'policy-forwarding' in default_ni:
-            pf = filter(lambda p: p['interface-id'] == device['interface'],
-                        default_ni['policy-forwarding']['interfaces']['interface'])
-            if len(pf) > 0:
-                device['in_policy'] = pf[0]['config']['frinx-brocade-pf-interfaces-extension:input-service-policy']
-                device['out_policy'] = pf[0]['config']['frinx-brocade-pf-interfaces-extension:output-service-policy']
-        ifc = filter(lambda i: i['name'] == device['interface'], ifcs)[0]
-        device['tpid'] = ifc['config'].get('frinx-openconfig-vlan:tpid', None)
-        device['auto_negotiate'] = ifc.get('frinx-openconfig-if-ethernet:ethernet', {}).get('config', {}).get('auto-negotiate', None)
-
-    @staticmethod
-    def set_attributes(default_ni, ifcs, device):
         pf = filter(lambda p: p['interface-id'] == device['interface'],
                     default_ni.get('policy-forwarding', {}).get('interfaces', {}).get('interface', []))
         if len(pf) > 0:
