@@ -129,7 +129,14 @@ def store_lldp(task):
 def start(cc):
     print('Starting LLDP topology workers')
 
+    cc.register('LLDP_build_topology')
     cc.start('LLDP_build_topology', build_lldp, False)
+
+    cc.register('LLDP_export_topology')
     cc.start('LLDP_export_topology', export_lldp, False)
+
+    cc.register('LLDP_read_topology')
     cc.start('LLDP_read_topology', read_lldp, False)
+
+    cc.register('LLDP_store_topology')
     cc.start('LLDP_store_topology', store_lldp, False)
