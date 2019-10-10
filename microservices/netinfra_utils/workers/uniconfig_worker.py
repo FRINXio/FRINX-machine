@@ -449,18 +449,47 @@ def replace_config_with_snapshot(task):
 def start(cc):
     print('Starting Uniconfig workers')
 
+    cc.register('UNICONFIG_read_unified_topology_operational')
     cc.start('UNICONFIG_read_unified_topology_operational', execute_read_uniconfig_topology_operational, False)
+
+    cc.register('UNICONFIG_read_unified_topology_config')
     cc.start('UNICONFIG_read_unified_topology_config', execute_read_uniconfig_topology_config, False)
+
+    cc.register('UNICONFIG_get_all_devices_as_tasks')
     cc.start('UNICONFIG_get_all_devices_as_tasks', get_all_devices_as_tasks, False)
+
+    cc.register('UNICONFIG_read_structured_device_data')
     cc.start('UNICONFIG_read_structured_device_data', read_structured_data, False)
+
+    cc.register('UNICONFIG_write_structured_device_data')
     cc.start('UNICONFIG_write_structured_device_data', write_structured_data, False)
+
+    cc.register('UNICONFIG_write_structured_data_as_tasks')
     cc.start('UNICONFIG_write_structured_data_as_tasks', write_structured_data_as_tasks, False)
+
+    cc.register('UNICONFIG_delete_structured_device_data')
     cc.start('UNICONFIG_delete_structured_device_data', delete_structured_data, False)
+
+    cc.register('UNICONFIG_commit')
     cc.start('UNICONFIG_commit', commit, False)
+
+    cc.register('UNICONFIG_dryrun_commit')
     cc.start('UNICONFIG_dryrun_commit', dryrun_commit, False)
+
+    cc.register('UNICONFIG_calculate_diff')
     cc.start('UNICONFIG_calculate_diff', calc_diff, False)
+
+    cc.register('UNICONFIG_sync_from_network')
     cc.start('UNICONFIG_sync_from_network', sync_from_network, False)
+
+    cc.register('UNICONFIG_replace_config_with_oper')
     cc.start('UNICONFIG_replace_config_with_oper', replace_config_with_oper, False)
+
+    cc.register('UNICONFIG_create_snapshot')
     cc.start('UNICONFIG_create_snapshot', create_snapshot, False)
+
+    cc.register('UNICONFIG_delete_snapshot')
     cc.start('UNICONFIG_delete_snapshot', delete_snapshot, False)
+
+    cc.register('UNICONFIG_replace_config_with_snapshot')
     cc.start('UNICONFIG_replace_config_with_snapshot', replace_config_with_snapshot, False)

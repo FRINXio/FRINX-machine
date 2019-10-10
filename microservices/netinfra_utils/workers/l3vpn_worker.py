@@ -215,9 +215,18 @@ def commit_l3vpn(task):
 def start(cc):
     print('Starting L3VPN workers')
 
+    cc.register('L3VPN_create_l3vpn_instance')
     cc.start('L3VPN_create_l3vpn_instance', create_l3vpn_instance, False)
+
+    cc.register('L3VPN_delete_l3vpn_instance')
     cc.start('L3VPN_delete_l3vpn_instance', delete_l3vpn_instance, False)
+
+    cc.register('L3VPN_create_l3vpn_site')
     cc.start('L3VPN_create_l3vpn_site', create_l3vpn_site, False)
+
+    cc.register('L3VPN_delete_l3vpn_site')
     cc.start('L3VPN_delete_l3vpn_site', delete_l3vpn_site, False)
+
+    cc.register('L3VPN_commit_l3vpn')
     cc.start('L3VPN_commit_l3vpn', commit_l3vpn, False)
 
