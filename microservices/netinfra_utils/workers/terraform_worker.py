@@ -169,6 +169,35 @@ def execute_terraform_destroy(task):
 def start(cc):
     print('Starting Terraform workers')
 
+    cc.register('TERRAFORM_apply', {
+        "name": "TERRAFORM_apply",
+        "retryCount": 0,
+        "timeoutSeconds": 240,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 30
+    })
     cc.start('TERRAFORM_apply', execute_terraform_apply, False)
+
+    cc.register('TERRAFORM_plan', {
+        "name": "TERRAFORM_plan",
+        "retryCount": 0,
+        "timeoutSeconds": 180,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 30
+    })
     cc.start('TERRAFORM_plan', execute_terraform_plan, False)
+
+    cc.register('TERRAFORM_destroy', {
+        "name": "TERRAFORM_destroy",
+        "retryCount": 0,
+        "timeoutSeconds": 120,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 30
+    })
     cc.start('TERRAFORM_destroy', execute_terraform_destroy, False)

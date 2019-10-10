@@ -15,6 +15,7 @@ import vll_service_worker
 import vpls_worker
 import vpls_service_worker
 import bi_service_worker
+import common_worker
 
 
 def main():
@@ -42,6 +43,7 @@ def register_workers(cc):
     vpls_worker.start(cc)
     vpls_service_worker.start(cc)
     bi_service_worker.start(cc)
+    common_worker.start(cc)
 
 
 if __name__ == '__main__':

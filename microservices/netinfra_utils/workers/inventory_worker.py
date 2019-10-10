@@ -294,13 +294,29 @@ def get_show_command(task):
 def start(cc):
     print('Starting Inventory workers')
 
+    cc.register('INVENTORY_add_device')
     cc.start('INVENTORY_add_device', add_device, False)
+
+    cc.register('INVENTORY_add_field_to_device')
     cc.start('INVENTORY_add_field_to_device', add_field_to_device, False)
+
+    cc.register('INVENTORY_add_nested_field_to_device')
     cc.start('INVENTORY_add_nested_field_to_device', add_nested_field_to_device, False)
+
+    cc.register('INVENTORY_remove_device')
     cc.start('INVENTORY_remove_device', remove_device, False)
+
+    cc.register('INVENTORY_get_device')
     cc.start('INVENTORY_get_device', get_device, False)
+
+    cc.register('INVENTORY_get_all_devices')
     cc.start('INVENTORY_get_all_devices', get_all_devices, False)
+
+    cc.register('INVENTORY_get_all_devices_as_tasks')
     cc.start('INVENTORY_get_all_devices_as_tasks', get_all_devices_as_tasks, False)
 
+    cc.register('INVENTORY_add_show_command')
     cc.start('INVENTORY_add_show_command', add_show_command, False)
+
+    cc.register('INVENTORY_get_show_command')
     cc.start('INVENTORY_get_show_command', get_show_command, False)

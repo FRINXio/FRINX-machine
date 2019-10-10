@@ -101,3 +101,27 @@ def vccid_filter_strategy(type, vccid):
     return lambda ni: ni['config']['type'] == type and 'connection-points' in ni \
                       and vccid in [cp['endpoints']['endpoint'][0]['remote']['config']['virtual-circuit-identifier'] for cp in
                                     filter(lambda cp: 'frinx-openconfig-network-instance-types:REMOTE' == cp['endpoints']['endpoint'][0]['config']['type'], ni['connection-points']['connection-point'])]
+
+
+def start(cc):
+    print('Starting common workers')
+
+    cc.register('http_get_generic', {
+        "name": "http_get_generic",
+        "retryCount": 3,
+        "timeoutSeconds": 10,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 5,
+        "responseTimeoutSeconds": 10
+    })
+
+    cc.register('fork_generic', {
+        "name": "fork_generic",
+        "retryCount": 0,
+        "timeoutSeconds": 50,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 5,
+        "responseTimeoutSeconds": 10
+    })
