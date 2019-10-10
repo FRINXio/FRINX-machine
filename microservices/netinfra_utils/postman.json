@@ -2721,7 +2721,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Post_to_Slack\",\n  \"version\": 1,\n  \"tasks\": [\n    {\n      \"name\": \"HTTP_POST_generic\",\n      \"taskReferenceName\": \"http_post_generic_ref_6EHC\",\n      \"inputParameters\": {\n        \"uri\": \"https://hooks.slack.com/services/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\",\n        \"template\": {\n          \"text\": \"Message from http POST workflow.\"\n        }\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"startDelay\": 0,\n      \"subWorkflowParam\": {\n        \"name\": \"HTTP_POST_generic\",\n        \"version\": 1\n      },\n      \"optional\": false\n    }\n  ],\n  \"schemaVersion\": 2,\n  \"restartable\": true,\n  \"workflowStatusListenerEnabled\": false\n}]"
+									"raw": "[{\n  \"name\": \"Post_to_Slack\",\n  \"version\": 1,\n  \"tasks\": [\n    {\n      \"name\": \"HTTP_POST_generic\",\n      \"taskReferenceName\": \"http_post_generic_ref_6EHC\",\n      \"inputParameters\": {\n        \"uri\": \"https://hooks.slack.com/services/${workflow.input.uri}\",\n        \"template\": {\n          \"text\": \"Message from http POST workflow.\"\n        }\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"startDelay\": 0,\n      \"subWorkflowParam\": {\n        \"name\": \"HTTP_POST_generic\",\n        \"version\": 1\n      },\n      \"optional\": false\n    }\n  ],\n  \"inputParameters\": [\n    \"uri[URI hook][T7UQ7KATX/BP8M0S3EH/W3YpmbUr2fQDEA7WIoWcJIXX]\"\n  ],\n  \"schemaVersion\": 2,\n  \"restartable\": true,\n  \"workflowStatusListenerEnabled\": false\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
