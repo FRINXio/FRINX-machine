@@ -21,7 +21,8 @@ add_template = {
     "device_type": "",
     "device_version": "",
     "username": "",
-    "password": ""
+    "password": "",
+    "labels": []
 }
 
 
@@ -40,6 +41,10 @@ def add_device(task):
     add_body["device_version"] = task['inputData']['version']
     add_body["username"] = task['inputData']['username']
     add_body["password"] = task['inputData']['password']
+
+    device_labels = task['inputData']['labels'].replace(",", "").split()
+    for label in device_labels:
+        add_body["labels"].append(label)
 
     r = requests.post(id_url, data=json.dumps(add_body), headers=elastic_headers)
     response_code, response_json = parse_response(r)
@@ -162,16 +167,23 @@ def get_device(task):
 
 
 device_query_template = {
-    "query": {
-        "term": {"device_type": ""}
+  "query": {
+    "bool": {
+      "must": []
     }
+  }
 }
+
+device_query_labels_template = {"term": {"labels.keyword": ""}}
+
+device_query_type_template = {"term": {"device_type.keyword": ""}}
 
 
 def get_all_devices(task):
     device_type = task['inputData']['type']
+    device_labels = task['inputData']['labels']
 
-    response_code, response_json = read_all_devices(device_type)
+    response_code, response_json = read_all_devices(device_type, device_labels)
 
     if response_code == requests.codes.ok:
         return {'status': 'COMPLETED', 'output': {'url': inventory_all_devices_url,
@@ -185,10 +197,25 @@ def get_all_devices(task):
                 'logs': []}
 
 
-def read_all_devices(device_type):
+def read_all_devices(device_type, device_labels):
+    device_query_body = ""
+    if device_labels is not None and device_labels is not "":
+        if device_query_body is "":
+            device_query_body = copy.deepcopy(device_query_template)
+        device_labels = device_labels.replace(",", "").split()
+        for label in device_labels:
+            labels_template = copy.deepcopy(device_query_labels_template)
+            labels_template["term"]["labels.keyword"] = label
+            device_query_body["query"]["bool"]["must"].append(labels_template)
+
     if device_type is not None and device_type is not "":
-        device_query_body = copy.deepcopy(device_query_template)
-        device_query_body["query"]["term"]["device_type"] = device_type
+        if device_query_body is "":
+            device_query_body = copy.deepcopy(device_query_template)
+        type_template = copy.deepcopy(device_query_type_template)
+        type_template["term"]["device_type.keyword"] = device_type
+        device_query_body["query"]["bool"]["must"].append(type_template)
+
+    if device_query_body is not "":
         r = requests.get(inventory_all_devices_url, data=json.dumps(device_query_body), headers=elastic_headers)
     else:
         r = requests.get(inventory_all_devices_url, headers=elastic_headers)
@@ -209,12 +236,13 @@ task_body_template = {
 
 def get_all_devices_as_tasks(task):
     device_type = task['inputData']['type']
+    device_labels = task['inputData']['labels']
     task = task['inputData']['task']
 
-    response_code, response_json = read_all_devices(device_type)
+    response_code, response_json = read_all_devices(device_type, device_labels)
 
     if response_code == requests.codes.ok:
-        ids = map(lambda x: x["_id"], response_json["hits"]["hits"])
+        ids = [hits["_id"] for hits in response_json["hits"]["hits"]]
 
         dynamic_tasks_i = {}
         for device_id in ids:

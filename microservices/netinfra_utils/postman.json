@@ -449,7 +449,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Mount_all_cli_from_inventory\",\n  \"description\": \"mount and check all CLI devices from inventory - CLI, SOUTHBOUND, INVENTORY\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"sub_read_inventory\",\n      \"taskReferenceName\": \"read_inventory\",\n\t  \"inputParameters\": {\n        \"type\": \"${workflow.input.type}\",\n        \"task\": \"Mount_cli_from_inventory\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Get_all_devices_as_tasks_from_inventory\",\n        \"version\": 1\n      }\n    },\n  \t{\n      \"name\": \"sub_mount\",\n      \"taskReferenceName\": \"mount\",\n\t  \"inputParameters\": {\n        \"dynamic_tasks\": \"${read_inventory.output.dynamic_tasks}\",\n        \"dynamic_tasks_i\": \"${read_inventory.output.dynamic_tasks_i}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Dynamic_fork\",\n        \"version\": 1\n      }\n    }\n  ],\n  \"outputParameters\": {\n  \t\"ids\": \"${mount.output.forkedTasks}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Mount_all_cli_from_inventory\",\n  \"description\": \"mount and check all CLI devices from inventory - CLI, SOUTHBOUND, INVENTORY\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"sub_read_inventory\",\n      \"taskReferenceName\": \"read_inventory\",\n\t  \"inputParameters\": {\n        \"type\": \"${workflow.input.type}\",\n        \"labels\": \"${workflow.input.labels}\",\n        \"task\": \"Mount_cli_from_inventory\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Get_all_devices_as_tasks_from_inventory\",\n        \"version\": 1\n      }\n    },\n  \t{\n      \"name\": \"sub_mount\",\n      \"taskReferenceName\": \"mount\",\n\t  \"inputParameters\": {\n        \"dynamic_tasks\": \"${read_inventory.output.dynamic_tasks}\",\n        \"dynamic_tasks_i\": \"${read_inventory.output.dynamic_tasks_i}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Dynamic_fork\",\n        \"version\": 1\n      }\n    }\n  ],\n  \"outputParameters\": {\n  \t\"ids\": \"${mount.output.forkedTasks}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -913,7 +913,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Add_cli_device_to_inventory\",\n  \"description\": \"add a CLI device to inventory database - INVENTORY, CLI\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Unique identifier of device across all systems]\",\n\t\"type[Type of device or device IOS e.g. ios, ios xr]\",\n\t\"version[Version of device or device OS e.g. 15.2]\",\n\t\"host[IP or hostname of the management endpoint on a device]\",\n\t\"protocol[CLI management transport protocol e.g. tcp or ssh][ssh]\",\n\t\"port[TCP port of the management endpoint of a device][22]\",\n\t\"username[Username credential]\",\n\t\"password[Password credential]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_device\",\n      \"taskReferenceName\": \"INVENTORY_add_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"type\": \"${workflow.input.type}\",\n        \"version\": \"${workflow.input.version}\",\n        \"host\": \"${workflow.input.host}\",\n        \"protocol\": \"${workflow.input.protocol}\",\n        \"port\": \"${workflow.input.port}\",\n        \"username\": \"${workflow.input.username}\",\n        \"password\": \"${workflow.input.password}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Add_cli_device_to_inventory\",\n  \"description\": \"add a CLI device to inventory database - INVENTORY, CLI\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Unique identifier of device across all systems]\",\n\t\"type[Type of device or device IOS e.g. ios, ios xr]\",\n\t\"version[Version of device or device OS e.g. 15.2]\",\n\t\"host[IP or hostname of the management endpoint on a device]\",\n\t\"protocol[CLI management transport protocol e.g. tcp or ssh][ssh]\",\n\t\"port[TCP port of the management endpoint of a device][22]\",\n\t\"username[Username credential]\",\n\t\"password[Password credential]\",\n\t\"labels[Device labels]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_device\",\n      \"taskReferenceName\": \"INVENTORY_add_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"type\": \"${workflow.input.type}\",\n        \"version\": \"${workflow.input.version}\",\n        \"host\": \"${workflow.input.host}\",\n        \"protocol\": \"${workflow.input.protocol}\",\n        \"port\": \"${workflow.input.port}\",\n        \"username\": \"${workflow.input.username}\",\n        \"password\": \"${workflow.input.password}\",\n        \"labels\": \"${workflow.input.labels}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1037,7 +1037,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Get_all_devices_in_inventory\",\n  \"description\": \"get all devices in inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"type[Optional filtering parameter which selects devices from inventory based on their type field]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_all_devices\",\n      \"taskReferenceName\": \"INVENTORY_get_all_devices\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t\t\"type\": \"${workflow.input.type}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"devices\": \"${INVENTORY_get_all_devices.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Get_all_devices_in_inventory\",\n  \"description\": \"get all devices in inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"type[Optional filtering parameter which selects devices from inventory based on their type field]\",\n\t\"labels[Optional filtering parameter which selects devices from inventory based on their labels]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_all_devices\",\n      \"taskReferenceName\": \"INVENTORY_get_all_devices\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t\t\"type\": \"${workflow.input.type}\",\n\t\t\"labels\": \"${workflow.input.labels}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"devices\": \"${INVENTORY_get_all_devices.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1099,7 +1099,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Get_all_devices_as_tasks_from_inventory\",\n  \"description\": \"get all devices in inventory database as workflow tasks - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"type[Optional filtering parameter which selects devices from inventory based on their type field]\",\n\t\"task[Name of a task to schedule for subsequent execution in the output]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_all_devices_as_tasks\",\n      \"taskReferenceName\": \"INVENTORY_get_all_devices_as_tasks\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t\t\"type\": \"${workflow.input.type}\",\n\t\t\"task\": \"${workflow.input.task}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"dynamic_tasks_i\": \"${INVENTORY_get_all_devices_as_tasks.output.dynamic_tasks_i}\",\n    \"dynamic_tasks\": \"${INVENTORY_get_all_devices_as_tasks.output.dynamic_tasks}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Get_all_devices_as_tasks_from_inventory\",\n  \"description\": \"get all devices in inventory database as workflow tasks - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"type[Optional filtering parameter which selects devices from inventory based on their type field]\",\n\t\"labels[Optional filtering parameter which selects devices from inventory based on their labels]\",\n\t\"task[Name of a task to schedule for subsequent execution in the output]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_all_devices_as_tasks\",\n      \"taskReferenceName\": \"INVENTORY_get_all_devices_as_tasks\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t\t\"type\": \"${workflow.input.type}\",\n\t\t\"labels\": \"${workflow.input.labels}\",\n\t\t\"task\": \"${workflow.input.task}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"dynamic_tasks_i\": \"${INVENTORY_get_all_devices_as_tasks.output.dynamic_tasks_i}\",\n    \"dynamic_tasks\": \"${INVENTORY_get_all_devices_as_tasks.output.dynamic_tasks}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -2305,228 +2305,6 @@
 								"body": {
 									"mode": "raw",
 									"raw": "[{\n  \"name\": \"Add_leafspine_device\",\n  \"description\": \"add a router from sample leaf spine topology - EXAMPLE\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Device ID][L1]\",\n\t\"type[All devices in sample-topology are IOS][ios]\",\n\t\"version[All devices in sample-topology are version 15.2][15.2]\",\n\t\"host[Sample topology fixed hostname][sample-topology]\",\n\t\"protocol[Only ssh available in sample-topology][ssh]\",\n\t\"port[11000 - L1, 11001 - L2, 11002 - L3, 11003 - L4, 11004 - L5, 12000 - S1, 12001 - S2][11000]\",\n\t\"username[Username credential][cisco]\",\n\t\"password[Password credential][cisco]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"sub_add\",\n      \"taskReferenceName\": \"add\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"type\": \"${workflow.input.type}\",\n        \"version\": \"${workflow.input.version}\",\n        \"host\": \"${workflow.input.host}\",\n        \"protocol\": \"${workflow.input.protocol}\",\n        \"port\": \"${workflow.input.port}\",\n        \"username\": \"${workflow.input.username}\",\n        \"password\": \"${workflow.input.password}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Add_cli_device_to_inventory\",\n        \"version\": 1\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${add.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
-								},
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"metadata",
-										"workflow"
-									]
-								}
-							},
-							"response": []
-						}
-					],
-					"_postman_isSubFolder": true
-				},
-				{
-					"name": "Terraform",
-					"item": [
-						{
-							"name": "AWS",
-							"item": [
-								{
-									"name": "Terraform plan VPC",
-									"request": {
-										"method": "PUT",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "[{\n  \"name\": \"Terraform_plan_AWS_VPC\",\n  \"description\": \"Execute terraform AWS VPC in plan mode - TERRAFORM, AWS\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"vpc_name[Unique name of VPC instance][vpc_1]\",\n\t\"vpc_aws_region[Region on AWS to deploy VPC][eu-west-1]\",\n\t\"vpc_aws_availability_zones[Region on AWS to deploy VPC][eu-west-1a]\",\n\t\"vpc_private_subnets[Private subnets][10.0.1.0/24]\",\n\t\"vpc_public_subnets[Public subnets][10.0.101.0/24]\",\n\t\"vpc_cidr[Primary CIDR block for your VPC][10.0.0.0/16]\",\n\t\"vpc_nat_gateway[Enable public NAT][false]\",\n\t\"vpc_single_nat_gateway[Single NAT][false]\",\n\t\"vpc_tag_owner[Owner tag][Admin]\",\n\t\"vpc_tag_env[Environment tag][Dev]\",\n\t\"vpc_tag_descr[Description tag][VPC for testing purposes only]\",\n\t\"aws_access_key_id[AWS credentials]\",\n\t\"aws_secret_access_key[AWS credentials]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"TERRAFORM_plan\",\n      \"taskReferenceName\": \"TERRAFORM_plan\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"main_template\": \"provider \\\"aws\\\" {   region = \\\"${workflow.input.vpc_aws_region}\\\" }  module \\\"vpc\\\" {   source = \\\"\\/home\\/app\\/terraform-aws-vpc\\/\\\"    name = \\\"frinx-aws-vpc-automation\\\"    cidr = \\\"${workflow.input.vpc_cidr}\\\"    azs             = [\\\"${workflow.input.vpc_aws_availability_zones}\\\"]   private_subnets = [\\\"${workflow.input.vpc_private_subnets}\\\"]   public_subnets  = [\\\"${workflow.input.vpc_public_subnets}\\\"]    assign_generated_ipv6_cidr_block = true    enable_nat_gateway = ${workflow.input.vpc_nat_gateway}   single_nat_gateway = ${workflow.input.vpc_single_nat_gateway}    public_subnet_tags = {     Name = \\\"overridden-name-public\\\"   }    tags = {     Owner       = \\\"${workflow.input.vpc_tag_owner}\\\"     Environment = \\\"${workflow.input.vpc_tag_env}\\\"   Description=\\\"${workflow.input.vpc_tag_descr}\\\"   }    vpc_tags = {     Name = \\\"${workflow.input.vpc_name}\\\"   } }\",\n        \"params\": \"{}\",\n        \"env_vars\": \"{\\\"AWS_ACCESS_KEY_ID\\\": \\\"${workflow.input.aws_access_key_id}\\\", \\\"AWS_SECRET_ACCESS_KEY\\\": \\\"${workflow.input.aws_secret_access_key}\\\"}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"plan\": \"${TERRAFORM_plan.output.apply}\",\n    \"init\": \"${TERRAFORM_plan.output.init}\",\n\t\"main_tf\": \"${TERRAFORM_plan.output.main_tf}\"\n\n  },\n  \"schemaVersion\": 2\n}]"
-										},
-										"url": {
-											"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
-											"protocol": "http",
-											"host": [
-												"{{host}}"
-											],
-											"port": "{{port}}",
-											"path": [
-												"api",
-												"metadata",
-												"workflow"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Terraform destroy",
-									"request": {
-										"method": "PUT",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "[{\n  \"name\": \"Terraform_destroy_AWS\",\n  \"description\": \"Execute terraform AWS destroy - TERRAFORM, AWS\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"main_template[Terraform code executed previously by apply]\",\n\t\"tf_state[Terraform state produced previously by apply]\",\n\t\"aws_access_key_id[AWS credentials]\",\n\t\"aws_secret_access_key[AWS credentials]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"TERRAFORM_destroy\",\n      \"taskReferenceName\": \"TERRAFORM_destroy\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"main_template\": \"${workflow.input.main_template}\",\n        \"tf_state\": \"${workflow.input.tf_state}\",\n        \"env_vars\": \"{\\\"AWS_ACCESS_KEY_ID\\\": \\\"${workflow.input.aws_access_key_id}\\\", \\\"AWS_SECRET_ACCESS_KEY\\\": \\\"${workflow.input.aws_secret_access_key}\\\"}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"destroy\": \"${TERRAFORM_destroy.output.destroy}\",\n\t\"main_tf\": \"${TERRAFORM_destroy.output.main_tf}\"\n  },\n  \"schemaVersion\": 2\n}]"
-										},
-										"url": {
-											"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
-											"protocol": "http",
-											"host": [
-												"{{host}}"
-											],
-											"port": "{{port}}",
-											"path": [
-												"api",
-												"metadata",
-												"workflow"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Terraform apply VPC",
-									"request": {
-										"method": "PUT",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "[{\n  \"name\": \"Terraform_apply_AWS_VPC\",\n  \"description\": \"Execute terraform AWS VPC - TERRAFORM, AWS\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"vpc_name[Unique name of VPC instance][vpc_1]\",\n\t\"vpc_aws_region[Region on AWS to deploy VPC][eu-west-1]\",\n\t\"vpc_aws_availability_zones[Region on AWS to deploy VPC][eu-west-1a]\",\n\t\"vpc_private_subnets[Private subnets][10.0.1.0/24]\",\n\t\"vpc_public_subnets[Public subnets][10.0.101.0/24]\",\n\t\"vpc_cidr[Primary CIDR block for your VPC][10.0.0.0/16]\",\n\t\"vpc_nat_gateway[Enable public NAT][false]\",\n\t\"vpc_single_nat_gateway[Single NAT][false]\",\n\t\"vpc_tag_owner[Owner tag][Admin]\",\n\t\"vpc_tag_env[Environment tag][Dev]\",\n\t\"vpc_tag_descr[Description tag][VPC for testing purposes only]\",\n\t\"aws_access_key_id[AWS credentials]\",\n\t\"aws_secret_access_key[AWS credentials]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"TERRAFORM_apply\",\n      \"taskReferenceName\": \"TERRAFORM_apply\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"main_template\": \"provider \\\"aws\\\" {   region = \\\"${workflow.input.vpc_aws_region}\\\" }  module \\\"vpc\\\" {   source = \\\"\\/home\\/app\\/terraform-aws-vpc\\/\\\"    name = \\\"frinx-aws-vpc-automation\\\"    cidr = \\\"${workflow.input.vpc_cidr}\\\"    azs             = [\\\"${workflow.input.vpc_aws_availability_zones}\\\"]   private_subnets = [\\\"${workflow.input.vpc_private_subnets}\\\"]   public_subnets  = [\\\"${workflow.input.vpc_public_subnets}\\\"]    assign_generated_ipv6_cidr_block = true    enable_nat_gateway = ${workflow.input.vpc_nat_gateway}   single_nat_gateway = ${workflow.input.vpc_single_nat_gateway}    public_subnet_tags = {     Name = \\\"overridden-name-public\\\"   }    tags = {     Owner       = \\\"${workflow.input.vpc_tag_owner}\\\"     Environment = \\\"${workflow.input.vpc_tag_env}\\\"   Description=\\\"${workflow.input.vpc_tag_descr}\\\"   }    vpc_tags = {     Name = \\\"${workflow.input.vpc_name}\\\"   } }\",\n        \"params\": \"{}\",\n        \"output_template\": \"# VPC\\r\\noutput \\\"vpc_id\\\" {\\r\\n  description = \\\"The ID of the VPC\\\"\\r\\n  value       = \\\"$#{module.vpc.vpc_id}\\\"\\r\\n}\\r\\n\\r\\n# CIDR blocks\\r\\noutput \\\"vpc_cidr_block\\\" {\\r\\n  description = \\\"The CIDR block of the VPC\\\"\\r\\n  value       = [\\\"$#{module.vpc.vpc_cidr_block}\\\"]\\r\\n}\\r\\n\\r\\n\\/\\/output \\\"vpc_ipv6_cidr_block\\\" {\\r\\n\\/\\/  description = \\\"The IPv6 CIDR block\\\"\\r\\n\\/\\/  value       = [\\\"$#{module.vpc.vpc_ipv6_cidr_block}\\\"]\\r\\n\\/\\/}\\r\\n\\r\\n# Subnets\\r\\noutput \\\"private_subnets\\\" {\\r\\n  description = \\\"List of IDs of private subnets\\\"\\r\\n  value       = [\\\"$#{module.vpc.private_subnets}\\\"]\\r\\n}\\r\\n\\r\\noutput \\\"public_subnets\\\" {\\r\\n  description = \\\"List of IDs of public subnets\\\"\\r\\n  value       = [\\\"$#{module.vpc.public_subnets}\\\"]\\r\\n}\\r\\n\\r\\n# NAT gateways\\r\\noutput \\\"nat_public_ips\\\" {\\r\\n  description = \\\"List of public Elastic IPs created for AWS NAT Gateway\\\"\\r\\n  value       = [\\\"$#{module.vpc.nat_public_ips}\\\"]\\r\\n}\\r\\n\",\n        \"env_vars\": \"{\\\"AWS_ACCESS_KEY_ID\\\": \\\"${workflow.input.aws_access_key_id}\\\", \\\"AWS_SECRET_ACCESS_KEY\\\": \\\"${workflow.input.aws_secret_access_key}\\\"}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"apply\": \"${TERRAFORM_apply.output.apply}\",\n    \"init\": \"${TERRAFORM_apply.output.init}\",\n    \"output\": \"${TERRAFORM_apply.output.output}\",\n    \"main_tf\": \"${TERRAFORM_apply.output.main_tf}\",\n    \"tf_state\": \"${TERRAFORM_apply.output.tf_state}\"\n   },\n  \"schemaVersion\": 2\n}]"
-										},
-										"url": {
-											"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
-											"protocol": "http",
-											"host": [
-												"{{host}}"
-											],
-											"port": "{{port}}",
-											"path": [
-												"api",
-												"metadata",
-												"workflow"
-											]
-										}
-									},
-									"response": []
-								},
-								{
-									"name": "Example, terraform plus switch",
-									"request": {
-										"method": "PUT",
-										"header": [
-											{
-												"key": "Content-Type",
-												"value": "application/json"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "[{\n  \"name\": \"Terraform_plus_switch\",\n  \"description\": \"Create terraform AWS VPC and then configure access switch - EXAMPLE, TERRAFORM, AWS\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"vpc_name[Unique name of VPC instance][vpc_1]\",\n\t\"vpc_aws_region[Region on AWS to deploy VPC][eu-west-1]\",\n\t\"vpc_aws_availability_zones[Region on AWS to deploy VPC][eu-west-1a]\",\n\t\"vpc_private_subnets[Private subnets][10.0.1.0/24]\",\n\t\"vpc_public_subnets[Public subnets][10.0.101.0/24]\",\n\t\"vpc_cidr[Primary CIDR block for your VPC][10.0.0.0/16]\",\n\t\"vpc_nat_gateway[Enable public NAT][false]\",\n\t\"vpc_single_nat_gateway[Single NAT][false]\",\n\t\"vpc_tag_owner[Owner tag][Admin]\",\n\t\"vpc_tag_env[Environment tag][Dev]\",\n\t\"vpc_tag_descr[Description tag][VPC for testing purposes only]\",\n\t\n\t\"aws_access_key_id[AWS credentials]\",\n\t\"aws_secret_access_key[AWS credentials]\",\n\t\n\t\"access_switch_host[IP or hostname of access switch][sample-topology]\",\n\t\"access_switch_port[SSH or telnet port of access switch][10000]\",\n\t\"access_switch_credentials_uname[Access switch CLI username][cisco]\",\n\t\"access_switch_credentials_passwd[Access switch CLI password][cisco]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"sub_terraform_plan\",\n      \"taskReferenceName\": \"terraform_plan\",\n\t  \"inputParameters\": {\n\t  \t\"vpc_name\": \"${workflow.input.vpc_name}\",\n\t  \t\"vpc_aws_region\": \"${workflow.input.vpc_aws_region}\",\n\t    \"vpc_aws_availability_zones\": \"${workflow.input.vpc_aws_availability_zones}\",\n\t  \t\"vpc_private_subnets\": \"${workflow.input.vpc_private_subnets}\",\n\t  \t\"vpc_public_subnets\": \"${workflow.input.vpc_public_subnets}\",\n\t  \t\"vpc_cidr\": \"${workflow.input.vpc_cidr}\",\n\t  \t\"vpc_nat_gateway\": \"${workflow.input.vpc_nat_gateway}\",\n\t  \t\"vpc_single_nat_gateway\": \"${workflow.input.vpc_single_nat_gateway}\",\n\t  \t\"vpc_tag_owner\": \"${workflow.input.vpc_tag_owner}\",\n\t  \t\"vpc_tag_env\": \"${workflow.input.vpc_tag_env}\",\n\t  \t\"vpc_tag_descr\": \"${workflow.input.vpc_tag_descr}\",\n\t  \t\"aws_access_key_id\": \"${workflow.input.aws_access_key_id}\",\n\t  \t\"aws_secret_access_key\": \"${workflow.input.aws_secret_access_key}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Terraform_plan_AWS_VPC\",\n        \"version\": 1\n      }\n    },\n    {\n      \"name\": \"sub_terraform_apply\",\n      \"taskReferenceName\": \"terraform_apply\",\n\t  \"inputParameters\": {\n\t  \t\"vpc_name\": \"${workflow.input.vpc_name}\",\n\t  \t\"vpc_aws_region\": \"${workflow.input.vpc_aws_region}\",\n\t    \"vpc_aws_availability_zones\": \"${workflow.input.vpc_aws_availability_zones}\",\n\t  \t\"vpc_private_subnets\": \"${workflow.input.vpc_private_subnets}\",\n\t  \t\"vpc_public_subnets\": \"${workflow.input.vpc_public_subnets}\",\n\t  \t\"vpc_cidr\": \"${workflow.input.vpc_cidr}\",\n\t  \t\"vpc_nat_gateway\": \"${workflow.input.vpc_nat_gateway}\",\n\t  \t\"vpc_single_nat_gateway\": \"${workflow.input.vpc_single_nat_gateway}\",\n\t  \t\"vpc_tag_owner\": \"${workflow.input.vpc_tag_owner}\",\n\t  \t\"vpc_tag_env\": \"${workflow.input.vpc_tag_env}\",\n\t  \t\"vpc_tag_descr\": \"${workflow.input.vpc_tag_descr}\",\n\t  \t\"aws_access_key_id\": \"${workflow.input.aws_access_key_id}\",\n\t  \t\"aws_secret_access_key\": \"${workflow.input.aws_secret_access_key}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Terraform_apply_AWS_VPC\",\n        \"version\": 1\n      }\n    },\n    {\n      \"name\": \"sub_switch_mount\",\n      \"taskReferenceName\": \"switch_mount\",\n\t  \"inputParameters\": {\n\t  \t\"id\": \"ACCESS_SWITCH\",\n\t  \t\"type\": \"ios\",\n\t    \"version\": \"15.2\",\n\t  \t\"host\": \"${workflow.input.access_switch_host}\",\n\t  \t\"protocol\": \"ssh\",\n\t  \t\"port\": \"${workflow.input.access_switch_port}\",\n\t  \t\"username\": \"${workflow.input.access_switch_credentials_uname}\",\n\t  \t\"password\": \"${workflow.input.access_switch_credentials_passwd}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Mount_and_check\",\n        \"version\": 1\n      }\n    },\n    {\n      \"name\": \"sub_switch_cfg_vlan\",\n      \"taskReferenceName\": \"switch_cfg_vlan\",\n\t  \"inputParameters\": {\n\t  \t\"id\": \"ACCESS_SWITCH\",\n\t  \t\"template\": \"configure terminal\\n vlan $vlan\\n!\\n vlan configuration $vlan\\n!\\n end\\n\",\n\t    \"params\": \"{\\\"vlan\\\": \\\"1111\\\"}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Execute_and_read_rpc_cli_device\",\n        \"version\": 1\n      }\n    },\n    {\n      \"name\": \"sub_switch_cfg_vlan_ifc\",\n      \"taskReferenceName\": \"switch_cfg_vlan_ifc\",\n\t  \"inputParameters\": {\n\t  \t\"id\": \"ACCESS_SWITCH\",\n\t  \t\"template\": \"configure terminal\\r\\n interface Vlan$vlan\\r\\n  description routed vlan $vlan interface for vpc ${terraform_apply.output.output.vpc_id.value}\\r\\n  no shutdown\\r\\n  mtu $mtu\\r\\n  no bfd echo\\r\\n  no ip redirects\\r\\n  ip address $ip\\r\\n  ip unreachables\\r\\n!\\r\\n end\\r\\n\",\n\t    \"params\": \"{\\\"vlan\\\": \\\"1111\\\", \\\"ip\\\": \\\"10.30.32.54\\/31\\\", \\\"mtu\\\": \\\"9000\\\"}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Execute_and_read_rpc_cli_device\",\n        \"version\": 1\n      }\n    },\n    {\n      \"name\": \"sub_switch_cfg_access_ifc\",\n      \"taskReferenceName\": \"switch_cfg_access_ifc\",\n\t  \"inputParameters\": {\n\t  \t\"id\": \"ACCESS_SWITCH\",\n\t  \t\"template\": \"configure terminal\\r\\n interface $access_ifc\\r\\n  switchport trunk allowed vlan add $vlan\\r\\n!\\r\\n end\\r\\n\",\n\t    \"params\": \"{\\\"vlan\\\": \\\"1111\\\", \\\"access_ifc\\\": \\\"Ethernet1\\/3\\\"}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Execute_and_read_rpc_cli_device\",\n        \"version\": 1\n      }\n    },\n    {\n      \"name\": \"sub_sync_from_network\",\n      \"taskReferenceName\": \"sync_from_network\",\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"UNICONFIG_sync_from_network\",\n        \"version\": 1\n      }\n    },\n    {\n      \"name\": \"sub_switch_cfg_bgp_neighbor\",\n      \"taskReferenceName\": \"switch_cfg_bgp_neighbor\",\n\t  \"inputParameters\": {\n\t  \t\"id\": \"ACCESS_SWITCH\",\n\t  \t\"uri\": \"/frinx-openconfig-network-instance:network-instances/network-instance/default/protocols/protocol/frinx-openconfig-policy-types:BGP/default/bgp/neighbors/neighbor/$neighbor\",\n\t  \t\"template\": \"{\\n\\t\\\"neighbor\\\": [\\n\\t\\t{\\n\\t\\t\\\"neighbor-address\\\"  : \\\"$neighbor\\\",\\n\\t\\t  \\\"config\\\": {\\n\\t\\t    \\\"neighbor-address\\\": \\\"$neighbor\\\",\\n \\t\\t    \\\"description\\\": \\\"^:tier2:bgp:int:uplink:vlan::rusgtdc-ccx01:eth1/1:$vlan:trusted:vif-fgtbvmlf\\\",\\n\\t\\t    \\\"enabled\\\": true,\\n\\t\\t    \\\"peer-as\\\": \\\"$as\\\"\\n\\t\\t  },\\n\\t\\t  \\\"transport\\\": {\\n\\t\\t    \\\"config\\\": {\\n\\t\\t     \\\"local-address\\\": \\\"Vlan$vlan\\\"\\n\\t\\t   }\\n\\t\\t  },\\n\\t\\t  \\\"afi-safis\\\": {\\n\\t\\t\\t\\\"afi-safi\\\": [\\n                {\\n                    \\\"afi-safi-name\\\": \\\"frinx-openconfig-bgp-types:IPV4_UNICAST\\\",\\n                    \\\"config\\\": {\\n                        \\\"afi-safi-name\\\": \\\"frinx-openconfig-bgp-types:IPV4_UNICAST\\\"\\n                    }\\n                }\\n            ]\\n\\t\\t  },\\n\\t\\t  \\\"apply-policy\\\": {\\n\\t\\t  \\t\\\"config\\\": {\\n\\t\\t  \\t\\t\\\"export-policy\\\": [\\\"NRP_DEFAULT_ONLY\\\"] \\n\\t\\t  \\t}\\n\\t\\t  }\\n\\t\\t}\\n\\t]\\n}\",\n\t    \"params\": \"{\\\"vlan\\\": \\\"1111\\\", \\\"as\\\": \\\"65071\\\", \\\"neighbor\\\":\\\"${terraform_apply.output.output.nat_public_ips.value[0]}\\\", \\\"rpol\\\":\\\"NRP_DEFAULT_ONLY\\\"}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Write_structured_device_data_in_uniconfig\",\n        \"version\": 1\n      }\n    },\n     {\n      \"name\": \"sub_commit\",\n      \"taskReferenceName\": \"commit\",\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"UNICONFIG_commit\",\n        \"version\": 1\n      }\n    },\n    {\n      \"name\": \"sub_switch_read_journal\",\n      \"taskReferenceName\": \"switch_read_journal\",\n\t  \"inputParameters\": {\n\t  \t\"id\": \"ACCESS_SWITCH\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Read_journal_cli_device\",\n        \"version\": 1\n      }\n    },\n    {\n      \"name\": \"sub_switch_unmount\",\n      \"taskReferenceName\": \"switch_unmount\",\n\t  \"inputParameters\": {\n\t  \t\"id\": \"ACCESS_SWITCH\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Unmount_cli_device\",\n        \"version\": 1\n      }\n    }\n    \n  ],\n  \"outputParameters\": {\n    \"aws_vpc_id\": \"${terraform_apply.output.output.vpc_id.value}\",\n    \"aws_vpc_public_ips\": \"${terraform_apply.output.output.nat_public_ips.value}\",\n    \"access_switch_config_log\": \"${switch_read_journal.output.journal}\",\n    \"terraform_apply_log\": \"${terraform_apply.output.apply}\",\n    \"access_switch_journal\": \"${switch_read_journal.output.journal}\"\n  },\n  \"schemaVersion\": 2\n}]"
-										},
-										"url": {
-											"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
-											"protocol": "http",
-											"host": [
-												"{{host}}"
-											],
-											"port": "{{port}}",
-											"path": [
-												"api",
-												"metadata",
-												"workflow"
-											]
-										}
-									},
-									"response": []
-								}
-							],
-							"_postman_isSubFolder": true
-						},
-						{
-							"name": "Terraform plan",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Terraform_plan\",\n  \"description\": \"Execute terraform in plan mode - TERRAFORM, AWS\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"TERRAFORM_plan\",\n      \"taskReferenceName\": \"TERRAFORM_plan\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"main_template\": \"${workflow.input.main_template}\",\n        \"params\": \"${workflow.input.params}\",\n        \"env_vars\": \"${workflow.input.env_vars}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"plan\": \"${TERRAFORM_plan.output.apply}\",\n    \"init\": \"${TERRAFORM_plan.output.init}\",\n\t\"main_tf\": \"${TERRAFORM_plan.output.main_tf}\"\n  },\n  \"schemaVersion\": 2\n}]"
-								},
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"metadata",
-										"workflow"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Terraform destroy",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Terraform_destroy\",\n  \"description\": \"Execute terraform destroy - TERRAFORM, AWS\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"TERRAFORM_destroy\",\n      \"taskReferenceName\": \"TERRAFORM_destroy\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"main_template\": \"${workflow.input.main_template}\",\n        \"tf_state\": \"${workflow.input.tf_state}\",\n        \"env_vars\": \"${workflow.input.env_vars}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"destroy\": \"${TERRAFORM_plan.output.destroy}\",\n\t\"main_tf\": \"${TERRAFORM_plan.output.main_tf}\"\n  },\n  \"schemaVersion\": 2\n}]"
-								},
-								"url": {
-									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
-									"protocol": "http",
-									"host": [
-										"{{host}}"
-									],
-									"port": "{{port}}",
-									"path": [
-										"api",
-										"metadata",
-										"workflow"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Terraform apply",
-							"request": {
-								"method": "PUT",
-								"header": [
-									{
-										"key": "Content-Type",
-										"value": "application/json"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Terraform_apply\",\n  \"description\": \"Execute terraform - TERRAFORM, AWS\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"TERRAFORM_apply\",\n      \"taskReferenceName\": \"TERRAFORM_apply\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"main_template\": \"${workflow.input.main_template}\",\n\t\t\"output_template\": \"${workflow.input.output_template}\",\n        \"params\": \"${workflow.input.params}\",\n        \"env_vars\": \"${workflow.input.env_vars}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"apply\": \"${TERRAFORM_apply.output.apply}\",\n    \"init\": \"${TERRAFORM_apply.output.init}\",\n    \"output\": \"${TERRAFORM_apply.output.output}\",\n    \"main_tf\": \"${TERRAFORM_apply.output.main_tf}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
