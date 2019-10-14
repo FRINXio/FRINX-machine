@@ -16,6 +16,7 @@ odl_url_uniconfig_config = odl_url_base + "/config/network-topology:network-topo
 odl_url_uniconfig_mount = odl_url_base + "/config/network-topology:network-topology/topology/uniconfig/node/"
 odl_url_uniconfig_commit = odl_url_base + '/operations/uniconfig-manager:commit'
 odl_url_uniconfig_dryrun_commit = odl_url_base + '/operations/dryrun-manager:dryrun-commit'
+odl_url_uniconfig_checked_commit = odl_url_base + '/operations/uniconfig-manager:checked-commit'
 odl_url_uniconfig_calculate_diff = odl_url_base + '/operations/uniconfig-manager:calculate-diff'
 odl_url_uniconfig_sync_from_network = odl_url_base + '/operations/uniconfig-manager:sync-from-network'
 odl_url_uniconfig_replace_config_with_operational = odl_url_base + '/operations/uniconfig-manager:replace-config-with-operational'
@@ -256,7 +257,7 @@ def commit(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.ok and response_json["output"]["overall-configuration-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_commit,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -275,7 +276,7 @@ def dryrun_commit(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.ok and response_json["output"]["overall-configuration-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_dryrun_commit,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -285,6 +286,25 @@ def dryrun_commit(task):
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Uniconfig dryrun commit failed"]}
+
+
+def checked_commit(task):
+    r = requests.post(odl_url_uniconfig_checked_commit,
+                      data=json.dumps(create_commit_request(task)),
+                      headers=odl_headers,
+                      auth=odl_credentials)
+    response_code, response_json = parse_response(r)
+
+    if response_code == requests.codes.ok and response_json["output"]["overall-configuration-status"] == "complete":
+        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_checked_commit,
+                                                  'response_code': response_code,
+                                                  'response_body': response_json},
+                'logs': ["Uniconfig checked commit successfully"]}
+    else:
+        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_checked_commit,
+                                               'response_code': response_code,
+                                               'response_body': response_json},
+                'logs': ["Unable checked commit failed"]}
 
 
 def calc_diff(task):
@@ -313,7 +333,7 @@ def sync_from_network(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.ok and response_json["output"]["overall-sync-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_sync_from_network,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -332,7 +352,7 @@ def replace_config_with_oper(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.ok and response_json["output"]["result"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_replace_config_with_operational,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -362,7 +382,7 @@ def create_snapshot(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.ok and response_json["output"]["result"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_create_snapshot,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -434,7 +454,7 @@ def replace_config_with_snapshot(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.ok and response_json["output"]["result"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_replace_config_with_snapshot,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -475,6 +495,9 @@ def start(cc):
 
     cc.register('UNICONFIG_dryrun_commit')
     cc.start('UNICONFIG_dryrun_commit', dryrun_commit, False)
+
+    cc.register('UNICONFIG_checked_commit')
+    cc.start('UNICONFIG_checked_commit', checked_commit, False)
 
     cc.register('UNICONFIG_calculate_diff')
     cc.start('UNICONFIG_calculate_diff', calc_diff, False)

@@ -1119,7 +1119,7 @@
 							"response": []
 						},
 						{
-							"name": "Add cli show command",
+							"name": "Add cli command template",
 							"request": {
 								"method": "PUT",
 								"header": [
@@ -1130,7 +1130,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Add_cli_show_command_to_inventory\",\n  \"description\": \"add a CLI show command to inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Unique identifier of a command in DB]\",\n\t\"command[Actual show command e.g. show running-config]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_show_command\",\n      \"taskReferenceName\": \"INVENTORY_add_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"command\": \"${workflow.input.command}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Add_cli_command_template_to_inventory\",\n  \"description\": \"add a CLI command template to inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Unique identifier of a command in DB]\",\n\t\"template[command template e.g. show running-config #template]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_show_command\",\n      \"taskReferenceName\": \"INVENTORY_add_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"template\": \"${workflow.input.command}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1150,7 +1150,7 @@
 							"response": []
 						},
 						{
-							"name": "Get cli show command",
+							"name": "Get cli command template",
 							"request": {
 								"method": "PUT",
 								"header": [
@@ -1161,7 +1161,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Get_cli_show_command_from_inventory\",\n  \"description\": \"get 1 show command from inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Unique identifier of a command in DB]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_show_command\",\n      \"taskReferenceName\": \"INVENTORY_get_show_command\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"command\": \"${INVENTORY_get_show_command.output.response_body.command}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Get_cli_command_template_from_inventory\",\n  \"description\": \"get 1 command template from inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Unique identifier of a command in DB]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_show_command\",\n      \"taskReferenceName\": \"INVENTORY_get_show_command\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"command\": \"${INVENTORY_get_show_command.output.response_body.command}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1999,6 +1999,36 @@
 								"body": {
 									"mode": "raw",
 									"raw": "[{\n  \"name\": \"UNICONFIG_dryrun_commit\",\n  \"description\": \"Dryrun Commit uniconfig - UNICONFIG\",\n  \"version\": 1,  \n  \"inputParameters\": [\n    \"devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02 #node_ids]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_dryrun_commit\",\n      \"taskReferenceName\": \"UNICONFIG_dryrun_commit\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"devices\": \"${workflow.input.devices}\"\n\t  }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_dryrun_commit.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Checked commit",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"UNICONFIG_checked_commit\",\n  \"description\": \"Checked Commit uniconfig - UNICONFIG\",\n  \"version\": 1,  \n  \"inputParameters\": [\n    \"devices[List of devices to be checked committed. This is a mandatory parameter. Example: IOS01, IOS02 #node_ids]\"\n  ],\n  \"tasks\": [\n  \t{\n      \"name\": \"UNICONFIG_checked_commit\",\n      \"taskReferenceName\": \"UNICONFIG_checked_commit\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"devices\": \"${workflow.input.devices}\"\n\t  }\n    }\n  ],\n  \"outputParameters\": {\n    \"response_body\": \"${UNICONFIG_checked_commit.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
