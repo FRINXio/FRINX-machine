@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "c07abf15-092d-410e-b664-d4c2ec6f5fe1",
+		"_postman_id": "61b3fa35-4f7d-4424-bdd8-c76e76533a22",
 		"name": "CONDUCTOR latest",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1037,7 +1037,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Get_all_devices_in_inventory\",\n  \"description\": \"get all devices in inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"type[Optional filtering parameter which selects devices from inventory based on their type field]\",\n\t\"labels[Optional filtering parameter which selects devices from inventory based on their labels]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_all_devices\",\n      \"taskReferenceName\": \"INVENTORY_get_all_devices\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t\t\"type\": \"${workflow.input.type}\",\n\t\t\"labels\": \"${workflow.input.labels}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"devices\": \"${INVENTORY_get_all_devices.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Get_all_devices_in_inventory\",\n  \"description\": \"get all devices in inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"labels[Enter one or multiple labels to select devices. Match type is ALL.]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_all_devices\",\n      \"taskReferenceName\": \"INVENTORY_get_all_devices\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t\t\"labels\": \"${workflow.input.labels}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"devices\": \"${INVENTORY_get_all_devices.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1099,7 +1099,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Get_all_devices_as_tasks_from_inventory\",\n  \"description\": \"get all devices in inventory database as workflow tasks - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"type[Optional filtering parameter which selects devices from inventory based on their type field]\",\n\t\"labels[Optional filtering parameter which selects devices from inventory based on their labels]\",\n\t\"task[Name of a task to schedule for subsequent execution in the output]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_all_devices_as_tasks\",\n      \"taskReferenceName\": \"INVENTORY_get_all_devices_as_tasks\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t\t\"type\": \"${workflow.input.type}\",\n\t\t\"labels\": \"${workflow.input.labels}\",\n\t\t\"task\": \"${workflow.input.task}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"dynamic_tasks_i\": \"${INVENTORY_get_all_devices_as_tasks.output.dynamic_tasks_i}\",\n    \"dynamic_tasks\": \"${INVENTORY_get_all_devices_as_tasks.output.dynamic_tasks}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Get_all_devices_as_tasks_from_inventory\",\n  \"description\": \"get all devices in inventory database as workflow tasks - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"labels[Enter one or multiple labels to select devices. Match type is ALL.]\",\n\t\"task[Name of a task to schedule for subsequent execution in the output]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_all_devices_as_tasks\",\n      \"taskReferenceName\": \"INVENTORY_get_all_devices_as_tasks\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n\t\t\"labels\": \"${workflow.input.labels}\",\n\t\t\"task\": \"${workflow.input.task}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"dynamic_tasks_i\": \"${INVENTORY_get_all_devices_as_tasks.output.dynamic_tasks_i}\",\n    \"dynamic_tasks\": \"${INVENTORY_get_all_devices_as_tasks.output.dynamic_tasks}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1130,7 +1130,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Add_cli_command_template_to_inventory\",\n  \"description\": \"add a CLI command template to inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Unique identifier of a command in DB]\",\n\t\"template[command template e.g. show running-config #template]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_show_command\",\n      \"taskReferenceName\": \"INVENTORY_add_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"template\": \"${workflow.input.command}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Add_cli_command_template_to_inventory\",\n  \"description\": \"add a CLI command template to inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Unique identifier of a command in DB]\",\n\t\"command[command template e.g. show running-config #template]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_show_command\",\n      \"taskReferenceName\": \"INVENTORY_add_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"command\": \"${workflow.input.command}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
