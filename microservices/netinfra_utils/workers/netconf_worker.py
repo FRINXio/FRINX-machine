@@ -198,9 +198,16 @@ def get_netconf_device(task):
 def start(cc):
     print('Starting Netconf workers')
 
+    cc.register('Netconf_mount_netconf')
     cc.start('Netconf_mount_netconf', execute_mount_netconf, False)
+
+    cc.register('Netconf_unmount_netconf')
     cc.start('Netconf_unmount_netconf', execute_unmount_netconf, False)
+
+    cc.register('Netconf_check_netconf_connected')
     cc.start('Netconf_check_netconf_connected', execute_check_connected_netconf, False)
+
+    cc.register('Netconf_check_netconf_id_available')
     cc.start('Netconf_check_netconf_id_available', execute_check_netconf_id_available, False)
 
     cc.start('INVENTORY_add_netconf_device', add_netconf_device, False)

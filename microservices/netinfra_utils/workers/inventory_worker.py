@@ -163,7 +163,7 @@ def get_device(task):
 
 device_query_template = {
     "query": {
-        "term": {"device_type": ""}
+        "term": {"device_type.keyword": ""}
     }
 }
 
@@ -188,7 +188,7 @@ def get_all_devices(task):
 def read_all_devices(device_type):
     if device_type is not None and device_type is not "":
         device_query_body = copy.deepcopy(device_query_template)
-        device_query_body["query"]["term"]["device_type"] = device_type
+        device_query_body["query"]["term"]["device_type.keyword"] = device_type
         r = requests.get(inventory_all_devices_url, data=json.dumps(device_query_body), headers=elastic_headers)
     else:
         r = requests.get(inventory_all_devices_url, headers=elastic_headers)
@@ -214,7 +214,7 @@ def get_all_devices_as_tasks(task):
     response_code, response_json = read_all_devices(device_type)
 
     if response_code == requests.codes.ok:
-        ids = map(lambda x: x["_id"], response_json["hits"]["hits"])
+        ids = [hits["_id"] for hits in response_json["hits"]["hits"]]
 
         dynamic_tasks_i = {}
         for device_id in ids:
@@ -294,13 +294,29 @@ def get_show_command(task):
 def start(cc):
     print('Starting Inventory workers')
 
+    cc.register('INVENTORY_add_device')
     cc.start('INVENTORY_add_device', add_device, False)
+
+    cc.register('INVENTORY_add_field_to_device')
     cc.start('INVENTORY_add_field_to_device', add_field_to_device, False)
+
+    cc.register('INVENTORY_add_nested_field_to_device')
     cc.start('INVENTORY_add_nested_field_to_device', add_nested_field_to_device, False)
+
+    cc.register('INVENTORY_remove_device')
     cc.start('INVENTORY_remove_device', remove_device, False)
+
+    cc.register('INVENTORY_get_device')
     cc.start('INVENTORY_get_device', get_device, False)
+
+    cc.register('INVENTORY_get_all_devices')
     cc.start('INVENTORY_get_all_devices', get_all_devices, False)
+
+    cc.register('INVENTORY_get_all_devices_as_tasks')
     cc.start('INVENTORY_get_all_devices_as_tasks', get_all_devices_as_tasks, False)
 
+    cc.register('INVENTORY_add_show_command')
     cc.start('INVENTORY_add_show_command', add_show_command, False)
+
+    cc.register('INVENTORY_get_show_command')
     cc.start('INVENTORY_get_show_command', get_show_command, False)

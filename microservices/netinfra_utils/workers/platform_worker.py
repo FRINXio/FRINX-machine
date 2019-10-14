@@ -31,4 +31,5 @@ def read_components(task):
 def start(cc):
     print('Starting Platform workers')
 
+    cc.register('OC-PLATFORM_read_components')
     cc.start('OC-PLATFORM_read_components', read_components, False)

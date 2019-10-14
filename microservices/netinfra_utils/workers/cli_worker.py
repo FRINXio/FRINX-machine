@@ -264,13 +264,51 @@ def execute_get_cli_journal(task):
 def start(cc):
     print('Starting CLI workers')
 
+    cc.register('CLI_mount_cli')
     cc.start('CLI_mount_cli', execute_mount_cli, False)
+
+    cc.register('CLI_unmount_cli')
     cc.start('CLI_unmount_cli', execute_unmount_cli, False)
+
+    cc.register('CLI_check_cli_connected', {
+        "name": "CLI_check_cli_connected",
+        "retryCount": 20,
+        "timeoutSeconds": 10,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 5,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "id"
+        ]
+    })
     cc.start('CLI_check_cli_connected', execute_check_connected_cli, False)
+
+    cc.register('CLI_execute_and_read_rpc_cli', {
+        "name": "CLI_execute_and_read_rpc_cli",
+        "retryCount": 0,
+        "timeoutSeconds": 30,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 30,
+        "inputKeys": [
+            "template",
+            "params"
+        ]
+    })
     cc.start('CLI_execute_and_read_rpc_cli', execute_execute_and_read_rpc_cli, False)
+
+    cc.register('CLI_check_cli_id_available')
     cc.start('CLI_check_cli_id_available', execute_check_cli_id_available, False)
+
+    cc.register('CLI_read_cli_topology_operational')
     cc.start('CLI_read_cli_topology_operational', execute_read_cli_topology_operational, False)
+
+    cc.register('CLI_get_all_devices_as_tasks')
     cc.start('CLI_get_all_devices_as_tasks', get_all_devices_as_tasks, False)
+
+    cc.register('CLI_get_cli_journal')
     cc.start('CLI_get_cli_journal', execute_get_cli_journal, False)
 
 
