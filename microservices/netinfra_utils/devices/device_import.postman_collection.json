@@ -22,7 +22,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"device_type\": \"{{device_type}}\",\n\t\"device_version\": \"{{device_version}}\",\n\t\"host\": \"sample-topology\",\n\t\"id\": \"{{device_id}}\",\n\t\"password\": \"{{password}}\",\n\t\"username\": \"{{username}}\",\n\t\"port\": \"{{port}}\",\n\t\"transport_type\": \"ssh\"\n}"
+							"raw": "{\n\t\"device_type\": \"{{device_type}}\",\n\t\"device_version\": \"{{device_version}}\",\n\t\"host\": \"sample-topology\",\n\t\"id\": \"{{device_id}}\",\n\t\"password\": \"{{password}}\",\n\t\"username\": \"{{username}}\",\n\t\"port\": \"{{port}}\",\n\t\"transport_type\": \"ssh\"\n\t\"labels\" : [\"{{labels}}\"]\n}"
 						},
 						"url": {
 							"raw": "http://elasticsearch:9200/inventory-device/device/{{device_id}}",
