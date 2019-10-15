@@ -944,8 +944,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Add_field_to_device_in_inventory\",\n  \"description\": \"add a field key/value to device in inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Unique identifier of a command in DB]\",\n\t\"field[Key (identifier) of a new field]\",\n\t\"value[Value (content) of a new field]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_field_to_device\",\n      \"taskReferenceName\": \"INVENTORY_add_field_to_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"field\": \"${workflow.input.field}\",\n        \"value\": \"${workflow.input.value}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
-								},
+									"raw": "[{\n  \"name\": \"Add_field_to_device_in_inventory\",\n  \"description\": \"add a field key/value to device in inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[The id of the device in the inventory.]\",\n\t\"field[Key of the new entry (e.g. labels)]\",\n\t\"value[Value of the new entry (e.g. EDGE or a list like EDGE, PRODUCTION, ACTIVE)]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_field_to_device\",\n      \"taskReferenceName\": \"INVENTORY_add_field_to_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"field\": \"${workflow.input.field}\",\n        \"value\": \"${workflow.input.value}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
 									"protocol": "http",
