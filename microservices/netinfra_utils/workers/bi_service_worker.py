@@ -88,9 +88,9 @@ def put_interface(service, device):
                     "type": "iana-if-type:ethernetCsmacd",
                     "enabled": True,
                     "name": device.interface,
-                    "description": "IUP-" + device.description if device.description else "IUP-phys-" + service.id,
-                    "frinx-brocade-if-extension:priority": 3,
-                    "frinx-brocade-if-extension:priority-force": True
+                    "description": common_worker.INTERFACE_PREFIX + device.description if device.description else common_worker.INTERFACE_PREFIX_2 + service.id,
+                    "frinx-brocade-if-extension:priority": common_worker.INTERFACE_PRIORITY,
+                    "frinx-brocade-if-extension:priority-force": common_worker.INTERFACE_PRIORITY_FORCE
 
                 },
                 "frinx-openconfig-if-ethernet:ethernet": {
@@ -139,7 +139,7 @@ def put_ve_interface(service, device):
                     "type": "iana-if-type:l3ipvlan",
                     "enabled": True,
                     "name": device.ve_interface,
-                    "description": "IUP-" + service.id,
+                    "description": common_worker.INTERFACE_PREFIX + service.id,
                 }
             }
         ]
@@ -195,7 +195,7 @@ def put_isis(device):
                 "interface-id": device.ve_interface,
                 "config": {
                     "interface-id": device.ve_interface,
-                    "passive": True
+                    "passive": common_worker.INTERFACE_ISIS_PASSIVE
                 }
             }
         ]
@@ -366,10 +366,16 @@ def device_delete_bi_instance(task):
             return common_worker.fail('BI interface %s removal in uniconfig FAIL' % device.ve_interface, response=response)
         ve_ifc_responses.append(response)
 
-        response = vll_service_worker.put_minimal_interface(device)
-        if common_worker.task_failed(response):
-            return common_worker.fail('BI interface %s removal in uniconfig FAIL' % device.interface, response=response)
-        ifc_responses.append(response)
+        if device.interface_reset:
+            response = vll_service_worker.put_minimal_interface(device)
+            if common_worker.task_failed(response):
+                return common_worker.fail('BI interface %s removal in uniconfig FAIL' % device.interface, response=response)
+            ifc_responses.append(response)
+        else:
+            response = vll_service_worker.delete_interface(device)
+            if common_worker.task_failed(response):
+                return common_worker.fail('BI interface %s removal in uniconfig FAIL' % device.interface, response=response)
+            ifc_responses.append(response)
 
         response = delete_vlan(device)
         if common_worker.task_failed(response):

@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import itertools
 
-from vpls_model import Service
+from vpls_model import Service, ServiceDeletion
 import uniconfig_worker
 import vpls_worker
 import common_worker
@@ -48,7 +48,7 @@ def service_create_vpls(task, commit_type):
         if common_worker.task_failed(ifc_response):
             common_worker.replace_cfg_with_oper(device_ids)
             return common_worker.fail('VPLS instance: %s configuration in uniconfig FAIL. Device: %s interface %s does not exist'
-                                                            % (service.id, device.id, device.interface), response=ifc_response)
+                                      % (service.id, device.id, device.interface), response=ifc_response)
         ifc_responses.append(ifc_response)
 
         if not dryrun and device.interface_reset:
@@ -88,14 +88,14 @@ def service_create_vpls(task, commit_type):
         if common_worker.task_failed(ifc_put_response1):
             common_worker.replace_cfg_with_oper(device_ids)
             return common_worker.fail('VPLS instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be configured'
-                                                            % (service.id, device.id, device.interface), response=ifc_put_response1)
+                                      % (service.id, device.id, device.interface), response=ifc_put_response1)
         ifc_put_responses.append(ifc_put_response1)
 
         ifc_policy_put_response1 = vll_service_worker.put_interface_policy(device)
         if ifc_policy_put_response1 is not None and common_worker.task_failed(ifc_policy_put_response1):
             common_worker.replace_cfg_with_oper(device_ids)
             return common_worker.fail('VPLS instance: %s configuration in uniconfig FAIL. Device: %s interface policies %s cannot be configured'
-                                                            % (service.id, device.id, device.interface), response=ifc_policy_put_response1)
+                                      % (service.id, device.id, device.interface), response=ifc_policy_put_response1)
         if ifc_policy_put_response1 is not None:
             ifc_policy_put_responses.append(ifc_policy_put_response1)
 
@@ -113,19 +113,19 @@ def service_create_vpls(task, commit_type):
     if dryrun:
         response = common_worker.dryrun_commit(device_ids)
         return common_worker.dryrun_response('VPLS instance: %s dry-run FAIL' % service.id, add_debug_info,
-                                      response_interface=ifc_put_responses,
-                                      response_interface_policy=ifc_policy_put_responses,
-                                      response_stp_interface_policy=ifc_disable_stp_responses,
-                                      response_network_instance=response_create,
-                                      response_dryrun=response)
+                                             response_interface=ifc_put_responses,
+                                             response_interface_policy=ifc_policy_put_responses,
+                                             response_stp_interface_policy=ifc_disable_stp_responses,
+                                             response_network_instance=response_create,
+                                             response_dryrun=response)
     else:
         response = common_worker.commit(device_ids)
         return common_worker.commit_response(device_ids, 'VPLS instance: %s commit FAIL' % service.id, add_debug_info,
-                                      response_interface=ifc_put_responses,
-                                      response_interface_policy=ifc_policy_put_responses,
-                                      response_stp_interface_policy=ifc_disable_stp_responses,
-                                      response_network_instance=response_create,
-                                      response_commit=response)
+                                             response_interface=ifc_put_responses,
+                                             response_interface_policy=ifc_policy_put_responses,
+                                             response_stp_interface_policy=ifc_disable_stp_responses,
+                                             response_network_instance=response_create,
+                                             response_commit=response)
 
 
 def service_create_vpls_instance(task):
@@ -154,7 +154,8 @@ def service_create_vpls_instance(task):
             else:
                 if device.remote_ip == "UNKNOWN":
                     continue
-                task['inputData']['remote_ip'].append(device.remote_ip)
+                if device.remote_ip not in task['inputData']['remote_ip']:
+                    task['inputData']['remote_ip'].append(device.remote_ip)
 
         response1 = vpls_worker.device_create_vpls(task)
         if common_worker.task_failed(response1):
@@ -196,6 +197,12 @@ def service_delete_vpls(task, commit_type):
         return common_worker.fail("VPLS instance: %s does not exists" % service_id)
     if number_of_services > 1:
         return common_worker.fail("VPLS instance: %s is not unique. It occurs %s times." % (service_id, number_of_services))
+
+    if task["inputData"]["service"].get("devices") is not None:
+        service_to_delete = ServiceDeletion.parse_from_task(task)
+        for dev in service_to_delete.devices:
+            if dev.interface_reset:
+                vll_service_worker.put_minimal_interface(dev)
 
     service = services[0]
     device_ids = list(set(service.device_ids()))
@@ -240,9 +247,66 @@ def device_add_to_vpls_dryrun(task):
 
 
 def device_add_to_vpls(task, commit_type):
+    dryrun = bool("dry-run" == commit_type)
     vpls_config = read_remote_services(task)
+    service_to_add = Service.parse_from_task(task)
 
-    service = create_device_add_to_vpls(task, vpls_config)
+    ifc_put_responses = []
+    ifc_policy_put_responses = []
+    device_ids = set(service_to_add.device_ids())
+    for device in service_to_add.devices:
+
+        if not dryrun and device.interface_reset:
+            policy = vll_service_worker.read_interface_policy(device)
+            if not common_worker.task_failed(policy):
+                ifc_delete_policy = vll_service_worker.delete_interface_policy(device)
+                if ifc_delete_policy is not None and common_worker.task_failed(ifc_delete_policy):
+                    common_worker.replace_cfg_with_oper([device.id])
+                    return common_worker.fail('VPLS instance: %s configuration in uniconfig FAIL. Device: %s interface policy %s cannot be reset'
+                                              % (service_to_add.id, device.id, device.interface),
+                                              response=ifc_delete_policy)
+
+            ifc_delete_response = vll_service_worker.delete_interface(device)
+            if common_worker.task_failed(ifc_delete_response):
+                common_worker.replace_cfg_with_oper([device.id])
+                return common_worker.fail('VPLS instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be reset'
+                                          % (service_to_add.id, device.id, device.interface),
+                                          response=ifc_delete_response)
+
+            response_commit = common_worker.commit([device.id])
+
+            # Check response from commit RPC. The RPC always succeeds but the status field needs to be checked
+            if common_worker.task_failed(response_commit) or common_worker.uniconfig_task_failed(response_commit):
+                common_worker.replace_cfg_with_oper([device.id])
+                return common_worker.fail('VPLS instance: %s commit for interface reset FAIL' % service_to_add.id,
+                                          response_commit=response_commit)
+
+            response_sync_from_net = common_worker.sync_from_net([device.id])
+
+            # Check response from commit RPC. The RPC always succeeds but the status field needs to be checked
+            if common_worker.task_failed(response_sync_from_net) or common_worker.uniconfig_task_failed(response_sync_from_net):
+                common_worker.replace_cfg_with_oper([device.id])
+                return common_worker.fail('VPLS instance: %s sync_from_network after interface reset FAIL' % service_to_add.id,
+                                          response_sync_from_net=response_sync_from_net)
+
+        ifc_put_response1 = vll_service_worker.put_interface(service_to_add, device)
+        if common_worker.task_failed(ifc_put_response1):
+            common_worker.replace_cfg_with_oper(device_ids)
+            return common_worker.fail('VPLS instance: %s configuration in uniconfig FAIL. Device: %s interface %s cannot be configured'
+                                      % (service_to_add.id, device.id, device.interface), response=ifc_put_response1)
+        ifc_put_responses.append(ifc_put_response1)
+
+        ifc_policy_put_response1 = vll_service_worker.put_interface_policy(device)
+        if ifc_policy_put_response1 is not None and common_worker.task_failed(ifc_policy_put_response1):
+            common_worker.replace_cfg_with_oper(device_ids)
+            return common_worker.fail('VPLS instance: %s configuration in uniconfig FAIL. Device: %s interface policies %s cannot be configured'
+                                      % (service_to_add.id, device.id, device.interface), response=ifc_policy_put_response1)
+        if ifc_policy_put_response1 is not None:
+            ifc_policy_put_responses.append(ifc_policy_put_response1)
+
+        ifc_stp_delete_response1 = vll_service_worker.disable_interface_stp(device)
+
+    service = create_device_add_to_vpls(service_to_add, vpls_config)
 
     add_debug_info = task['inputData']['service'].get('debug', False)
 
@@ -253,25 +317,28 @@ def device_add_to_vpls(task, commit_type):
     }
 
     response_vpls = service_create_vpls_instance(task)
-    dryrun = bool("dry-run" == commit_type)
 
     device_ids = list(set(service.device_ids()))
     if dryrun:
         response = common_worker.dryrun_commit(device_ids)
         return common_worker.dryrun_response('VPLS instance: %s dry-run FAIL' % service.id, add_debug_info,
+                                             interface_response=ifc_put_responses,
+                                             interface_policy_response=ifc_policy_put_responses,
                                              response_vpls=response_vpls, response_dryrun=response)
     else:
         response = common_worker.commit(device_ids)
         return common_worker.commit_response(device_ids, 'VPLS instance: %s commit FAIL' % service.id, add_debug_info,
+                                             interface_response=ifc_put_responses,
+                                             interface_policy_response=ifc_policy_put_responses,
                                              response_vpls=response_vpls, response_commit=response)
 
 
-def create_device_add_to_vpls(task, vpls_config):
-    service = filter(lambda s: s.id == task['inputData']['service']['id'], vpls_config)
+def create_device_add_to_vpls(service_to_add, vpls_config):
+    service = filter(lambda s: s.id == service_to_add.id, vpls_config)
     if len(service) < 1:
-        raise Exception("VPLS '%s' does not exist." % task['inputData']['service']['id'])
+        raise Exception("VPLS '%s' does not exist." % service_to_add.id)
     service = service[0]
-    service.devices.extend(Service.parse_devices(task['inputData']['service']['devices']))
+    service.devices.extend(service_to_add.devices)
 
     return service
 
@@ -289,15 +356,24 @@ def device_delete_from_vpls(task, commit_type):
 
     service = create_device_delete_from_vpls(task, vpls_config)
 
+    delete_service = ServiceDeletion.parse_from_task(task)
     responses_remove = []
-    remove_ids = list(set(dev['id'] for dev in task['inputData']['service']['devices']))
+    for dev in delete_service.devices:
+        if dev.interface is not None and dev.interface_reset:
+            response_minimal = vll_service_worker.put_minimal_interface(dev)
+            if common_worker.task_failed(response_minimal):
+                return response_minimal
+            responses_remove.append(response_minimal)
+
+    service_ids = list(set(service.device_ids()))
+    remove_ids = filter(lambda d: d not in service_ids, list(set(delete_service.device_ids())))
     for dev_id in remove_ids:
         response_remove = remove_device_vpls(dev_id, service.id)
-        if common_worker.task_failed(responses_remove):
+        if common_worker.task_failed(response_remove):
             return response_remove
         responses_remove.append(response_remove)
 
-    device_ids = list(set(service.device_ids())) + remove_ids
+    device_ids = service_ids + remove_ids
 
     add_debug_info = task['inputData']['service'].get('debug', False)
 
@@ -326,10 +402,24 @@ def create_device_delete_from_vpls(task, vpls_config):
         raise Exception("VPLS '%s' does not exist." % task['inputData']['service']['id'])
     service = service[0]
 
-    ids = set(d['id'] for d in task['inputData']['service']['devices'])
-    service.devices = filter(lambda d: d.id not in ids, service.devices)
+    remove_ifcs = []
+    for dev in task['inputData']['service']['devices']:
+        if 'interface' in dev:
+            remove_ifcs.append(dev)
+
+    remove_ids = list(set(dev['id'] for dev in filter(lambda d: 'interface' not in d, task['inputData']['service']['devices'])))
+    service.devices = filter(lambda d: d.id not in remove_ids, service.devices)
     if len(service.devices) < 2:
         raise Exception('VPLS must have at least 2 devices left')
+
+    remove_devs = []
+    for dev in remove_ifcs:
+        for dev1 in service.devices:
+            if dev['id'] == dev1.id and dev['interface'] == dev1.interface:
+                remove_devs.append(dev1)
+
+    for dev in remove_devs:
+        service.devices.remove(dev)
 
     return service
 
@@ -351,7 +441,7 @@ def read_remote_services(task):
         else uniconfig_worker.execute_read_uniconfig_topology_config(task)
 
     if common_worker.task_failed(response):
-        raise Exception('Unable to read uniconfig', response=response)
+        raise Exception('Unable to read uniconfig', response)
     if reconciliation not in ['name', 'vccid']:
         raise Exception('Unable to reconcile with strategy: %s' % reconciliation)
 

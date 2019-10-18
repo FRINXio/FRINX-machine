@@ -1,5 +1,16 @@
 import uniconfig_worker
 
+INTERFACE_PRIORITY = 3                          #set the priority level on interface
+INTERFACE_PRIORITY_FORCE = True                 #set the force priority on interface
+INTERFACE_ISIS_PASSIVE = True                   #set passive mode on isis interface
+INTERFACE_PREFIX = "IUP-"                       #set prefix to interface and router interface description
+INTERFACE_PREFIX_2 = "IUP-phys-"                #set prefix to interface if description is not present
+FREE_DESCRIPTION = "available"                  #set description on interface that is no longer needed in configuration and is free for next use
+
+
+
+
+
 # Uniconfig RPCs
 
 

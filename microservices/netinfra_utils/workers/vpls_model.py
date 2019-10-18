@@ -149,3 +149,23 @@ class Service:
         for d in remotes:
             if d.remote_ip == remote_ip:
                 service.devices.remove(d)
+
+
+class ServiceDeletion(Service):
+
+    def __init__(self, service):
+        Service.__init__(self, service)
+
+    def parse_devices(self, devices):
+        # type: (Service, list) -> list[Device]
+        for d in devices:
+            d.update({"remote_ip": "UNKNOWN"})
+            if 'interface' not in d:
+                d.update({"interface": "UNKNOWN"})
+        return [Device.parse(d, i) for i, d in enumerate(devices)]
+
+    @staticmethod
+    def parse_from_task(task):
+        if task['inputData']['service'].get('vccid') is None:
+            task['inputData']['service'].update({'vccid':'UNKNOWN'})
+        return ServiceDeletion(Service.extract_from_task(task))

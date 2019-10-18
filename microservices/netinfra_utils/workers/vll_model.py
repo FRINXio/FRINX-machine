@@ -136,9 +136,12 @@ class Service:
         if len(pf) > 0:
             device['in_policy'] = pf[0]['config']['frinx-brocade-pf-interfaces-extension:input-service-policy']
             device['out_policy'] = pf[0]['config']['frinx-brocade-pf-interfaces-extension:output-service-policy']
-        ifc = filter(lambda i: i['name'] == device['interface'], ifcs)[0]
-        device['tpid'] = ifc['config'].get('frinx-openconfig-vlan:tpid', None)
-        device['auto_negotiate'] = ifc.get('frinx-openconfig-if-ethernet:ethernet', {}).get('config', {}).get('auto-negotiate', None)
+        dev_ifc = filter(lambda i: i['name'] == device['interface'], ifcs)
+        if len(dev_ifc) > 0:
+            ifc = dev_ifc[0]
+            device['tpid'] = ifc['config'].get('frinx-openconfig-vlan:tpid', None)
+            device['auto_negotiate'] = ifc.get('frinx-openconfig-if-ethernet:ethernet', {}).get('config', {}).get('auto-negotiate', None)
+            device['description'] = ifc['config'].get('description', None)
 
 
 class LocalService(Service):
@@ -267,8 +270,11 @@ class ServiceDeletion(Service):
 
     def parse_devices(self, devices):
         # type: (Service, list) -> list[LocalDevice]
-        for d in devices: d.update({"interface": "UNKNOWN"})
-        return [LocalDevice.parse(d, i) for i, d in enumerate(devices)]
+        for d in devices:
+            if 'interface' not in d:
+                d.update({"interface": "UNKNOWN"})
+        devs = [LocalDevice.parse(d, i) for i, d in enumerate(devices)]
+        return devs
 
     @staticmethod
     def parse_from_task(task):
