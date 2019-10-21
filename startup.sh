@@ -39,7 +39,7 @@ function start_container {
 }
 
 function start_containers {
-local containers_to_start=("dynomite" "elasticsearch" "logstash" "conductor-server" "odl" "sample-topology" "uniconfig-ui" "kibana" "micros")
+local containers_to_start=("dynomite" "elasticsearch" "logstash" "conductor-server" "odl" "sample-topology" "uniconfig-ui" "kibana" "micros" "portainer")
 
 
 for i in "${containers_to_start[@]}"; do

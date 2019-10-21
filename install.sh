@@ -66,7 +66,7 @@ function valid {
 }
 
 file=odl/frinx.license.cfg
-valid_images=("odl" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui")
+valid_images=("odl" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui" "portainer")
 license=
 license_flag=false
 build=false

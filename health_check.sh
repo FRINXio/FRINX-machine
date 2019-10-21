@@ -173,6 +173,9 @@ for i in "${containers_to_check[@]}"; do
     uniconfig-ui )
     check_container $i curl_uniconfig_ui
     ;;
+    portainer )
+    echo "Skipping health check"
+    ;;
     * )
     echo "Invalid container name: $i"
     exit 1
