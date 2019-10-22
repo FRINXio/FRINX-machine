@@ -111,7 +111,7 @@ def get_all_devices_as_tasks(task):
         dynamic_tasks_i = {}
         for device_id in ids:
             per_device_params = dict(add_params)
-            per_device_params.update({"id": device_id})
+            per_device_params.update({"device_id": device_id})
             dynamic_tasks_i.update({device_id: per_device_params})
 
         dynamic_tasks = []
@@ -141,7 +141,7 @@ def apply_functions(uri):
 
 
 def read_structured_data(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     uri = task['inputData']['uri']
     uri = apply_functions(uri)
 
@@ -163,7 +163,7 @@ def read_structured_data(task):
 
 
 def write_structured_data(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     uri = task['inputData']['uri']
     uri = apply_functions(uri)
     template = task['inputData']['template']
@@ -192,7 +192,7 @@ def write_structured_data(task):
 
 
 def write_structured_data_as_tasks(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     uri = task['inputData']['uri']
     uri = apply_functions(uri)
     template = task['inputData']['template']
@@ -206,7 +206,7 @@ def write_structured_data_as_tasks(task):
         data_json = Template(data_json).substitute(iface=param)
         escaped_param = param.replace("/", "%2F")
         url = Template(uri).substitute(iface=escaped_param)
-        per_iface_params = {"id": device_id, "template": data_json, "uri": url}
+        per_iface_params = {"device_id": device_id, "template": data_json, "uri": url}
         key = device_id + param
         dynamic_tasks_i.update({key:per_iface_params})
         task_body = copy.deepcopy(task_body_template)
@@ -220,7 +220,7 @@ def write_structured_data_as_tasks(task):
 
 
 def delete_structured_data(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     uri = task['inputData']['uri']
     uri = apply_functions(uri)
 
@@ -424,8 +424,15 @@ def parse_devices(task):
     return extracted_devices
 
 
+delete_snapshot_template = {
+    "input": {
+        "name": "",
+    }
+}
+
+
 def delete_snapshot(task):
-    snapshot_body = copy.deepcopy(snapshot_template)
+    snapshot_body = copy.deepcopy(delete_snapshot_template)
     snapshot_body["input"]["name"] = task["inputData"]["name"]
 
     r = requests.post(odl_url_uniconfig_delete_snapshot,
