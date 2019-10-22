@@ -237,7 +237,7 @@ def get_all_devices_as_tasks(task):
 
         dynamic_tasks_i = {}
         for device_id in ids:
-            dynamic_tasks_i.update({device_id: {"id": device_id}})
+            dynamic_tasks_i.update({device_id: {"device_id": device_id}})
 
         dynamic_tasks = []
         for device_id in ids:
