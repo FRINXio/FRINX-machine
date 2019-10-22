@@ -78,7 +78,7 @@ execute_and_read_template = {
 
 
 def execute_execute_and_read_rpc_cli(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     template = task['inputData']['template']
     params = task['inputData']['params'] if task['inputData']['params'] else {}
     params = params if isinstance(params, dict) else eval(params)

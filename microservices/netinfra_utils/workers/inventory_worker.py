@@ -27,13 +27,13 @@ add_template = {
 
 
 def add_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = Template(inventory_device_url).substitute({"id": device_id})
 
     add_body = copy.deepcopy(add_template)
 
-    add_body["id"] = task['inputData']['id']
+    add_body["id"] = task['inputData']['device_id']
     add_body["host"] = task['inputData']['host']
     add_body["port"] = task['inputData']['port']
     add_body["transport_type"] = task['inputData']['protocol']
@@ -69,7 +69,7 @@ add_field_template = {
 
 
 def add_field_to_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     field = task['inputData']['field']
     value = task['inputData']['value']
 
@@ -127,7 +127,7 @@ def add_nested_field_to_device(task):
 
 
 def remove_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = Template(inventory_device_url).substitute({"id": device_id})
 
@@ -147,7 +147,7 @@ def remove_device(task):
 
 
 def get_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = Template(inventory_device_get_url).substitute({"id": device_id})
 
@@ -266,7 +266,7 @@ add_show_command_template = {
 
 
 def add_show_command(task):
-    command_id = task['inputData']['id']
+    command_id = task['inputData']['template_id']
 
     id_url = Template(inventory_show_command_url).substitute({"id": command_id})
 
@@ -291,7 +291,7 @@ def add_show_command(task):
 
 
 def get_show_command(task):
-    command_id = task['inputData']['id']
+    command_id = task['inputData']['template_id']
 
     id_url = Template(inventory_show_command_get_url).substitute({"id": command_id})
 
