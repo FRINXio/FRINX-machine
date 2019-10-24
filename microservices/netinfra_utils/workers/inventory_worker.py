@@ -228,7 +228,9 @@ task_body_template = {
 
 def get_all_devices_as_tasks(task):
     device_labels = task['inputData']['labels']
-    task = task['inputData']['task']
+    task = task['inputData']['task'],
+    add_params = task['inputData']['task_params']
+    add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
 
     response_code, response_json = read_all_devices(device_labels)
 
@@ -237,6 +239,8 @@ def get_all_devices_as_tasks(task):
 
         dynamic_tasks_i = {}
         for device_id in ids:
+            per_device_params = dict(add_params)
+            per_device_params.update({"device_id": device_id})
             dynamic_tasks_i.update({device_id: {"device_id": device_id}})
 
         dynamic_tasks = []
