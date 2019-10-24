@@ -28,11 +28,11 @@ mount_template = {
 
 
 def execute_mount_netconf(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     mount_body = copy.deepcopy(mount_template)
 
-    mount_body["node"]["node-id"] = task['inputData']['id']
+    mount_body["node"]["node-id"] = task['inputData']['device_id']
     mount_body["node"]["netconf-node-topology:host"] = task['inputData']['host']
     mount_body["node"]["netconf-node-topology:port"] = task['inputData']['port']
     mount_body["node"]["netconf-node-topology:keepalive-delay"] = task['inputData']['keepalive-delay']
@@ -60,7 +60,7 @@ def execute_mount_netconf(task):
 
 
 def execute_unmount_netconf(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = odl_url_netconf_mount + device_id
 
@@ -74,7 +74,7 @@ def execute_unmount_netconf(task):
 
 
 def execute_check_netconf_id_available(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = odl_url_netconf_mount + device_id
 
@@ -95,7 +95,7 @@ def execute_check_netconf_id_available(task):
 
 
 def execute_check_connected_netconf(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = odl_url_netconf_mount_oper + device_id
 

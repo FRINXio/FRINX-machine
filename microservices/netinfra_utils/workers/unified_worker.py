@@ -70,7 +70,7 @@ def get_all_devices_as_tasks(task):
         dynamic_tasks_i = {}
         for device_id in ids:
             per_device_params = dict(add_params)
-            per_device_params.update({"id": device_id})
+            per_device_params.update({"device_id": device_id})
             dynamic_tasks_i.update({device_id: per_device_params})
 
         dynamic_tasks = []
@@ -92,7 +92,7 @@ def get_all_devices_as_tasks(task):
 
 
 def read_structured_data(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     uri = task['inputData']['uri']
     uri = uniconfig_worker.apply_functions(uri)
 
@@ -114,7 +114,7 @@ def read_structured_data(task):
 
 
 def write_structured_data(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     uri = task['inputData']['uri']
     uri = uniconfig_worker.apply_functions(uri)
 
@@ -145,7 +145,7 @@ def write_structured_data(task):
 
 
 def delete_structured_data(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     uri = task['inputData']['uri']
     uri = uniconfig_worker.apply_functions(uri)
 
