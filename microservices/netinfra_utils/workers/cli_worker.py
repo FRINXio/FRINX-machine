@@ -37,11 +37,11 @@ mount_template = {
 
 
 def execute_mount_cli(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     mount_body = copy.deepcopy(mount_template)
 
-    mount_body["network-topology:node"]["network-topology:node-id"] = task['inputData']['id']
+    mount_body["network-topology:node"]["network-topology:node-id"] = task['inputData']['device_id']
     mount_body["network-topology:node"]["cli-topology:host"] = task['inputData']['host']
     mount_body["network-topology:node"]["cli-topology:port"] = task['inputData']['port']
     mount_body["network-topology:node"]["cli-topology:transport-type"] = task['inputData']['protocol']
@@ -78,7 +78,7 @@ execute_and_read_template = {
 
 
 def execute_execute_and_read_rpc_cli(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     template = task['inputData']['template']
     params = task['inputData']['params'] if task['inputData']['params'] else {}
     params = params if isinstance(params, dict) else eval(params)
@@ -108,7 +108,7 @@ def execute_execute_and_read_rpc_cli(task):
 
 
 def execute_unmount_cli(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = odl_url_cli_mount + device_id
 
@@ -122,7 +122,7 @@ def execute_unmount_cli(task):
 
 
 def execute_check_cli_id_available(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = odl_url_cli_mount + device_id
 
@@ -143,7 +143,7 @@ def execute_check_cli_id_available(task):
 
 
 def execute_check_connected_cli(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = odl_url_cli_mount_oper + device_id
 
@@ -217,7 +217,7 @@ def get_all_devices_as_tasks(task):
 
         dynamic_tasks_i = {}
         for device_id in ids:
-            dynamic_tasks_i.update({device_id: {"id": device_id}})
+            dynamic_tasks_i.update({device_id: {"device_id": device_id}})
             print(task_input)
             print(dynamic_tasks_i)
             dynamic_tasks_i[device_id].update(task_input)
@@ -242,7 +242,7 @@ def get_all_devices_as_tasks(task):
 
 
 def execute_get_cli_journal(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = Template(odl_url_cli_read_journal).substitute({"id": device_id})
 
