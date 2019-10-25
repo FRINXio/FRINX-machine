@@ -102,7 +102,7 @@ add_nested_field_template = {
 
 
 def add_nested_field_to_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     field = task['inputData']['field']
     value = task['inputData']['value']
 
