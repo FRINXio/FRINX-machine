@@ -9,7 +9,7 @@ odl_url_components = odl_url_base + "/operational/network-topology:network-topol
 
 
 def read_components(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = Template(odl_url_components).substitute({"id": device_id})
 
