@@ -197,7 +197,7 @@ def write_structured_data_as_tasks(task):
     uri = apply_functions(uri)
     template = task['inputData']['template']
     add_params = task['inputData']['task_params']
-    add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
+    add_params = [param.strip() for param in add_params.split(',')] if isinstance(add_params, basestring) else (add_params if add_params else {})
 
     dynamic_tasks_i = {}
     dynamic_tasks = []
