@@ -31,11 +31,11 @@ mount_template = {
 
 
 def execute_mount_netconf(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     mount_body = copy.deepcopy(mount_template)
 
-    mount_body["node"]["node-id"] = task['inputData']['id']
+    mount_body["node"]["node-id"] = task['inputData']['device_id']
     mount_body["node"]["netconf-node-topology:host"] = task['inputData']['host']
     mount_body["node"]["netconf-node-topology:port"] = task['inputData']['port']
     mount_body["node"]["netconf-node-topology:keepalive-delay"] = task['inputData']['keepalivedelay']
@@ -63,7 +63,7 @@ def execute_mount_netconf(task):
 
 
 def execute_unmount_netconf(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = odl_url_netconf_mount + device_id
 
@@ -77,7 +77,7 @@ def execute_unmount_netconf(task):
 
 
 def execute_check_netconf_id_available(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = odl_url_netconf_mount + device_id
 
@@ -98,7 +98,7 @@ def execute_check_netconf_id_available(task):
 
 
 def execute_check_connected_netconf(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = odl_url_netconf_mount_oper + device_id
 
@@ -129,13 +129,13 @@ netconf_device_template = {
 
 
 def add_netconf_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = Template(inventory_netconf_device_url).substitute({"id": device_id})
 
     add_body = copy.deepcopy(netconf_device_template)
 
-    add_body["id"] = task['inputData']['id']
+    add_body["id"] = task['inputData']['device_id']
     add_body["host"] = task['inputData']['host']
     add_body["port"] = task['inputData']['port']
     add_body['keepalivedelay'] = task['inputData']['keepalivedelay']
@@ -159,7 +159,7 @@ def add_netconf_device(task):
 
 
 def remove_netconf_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = Template(inventory_netconf_device_url).substitute({"id": device_id})
 
@@ -177,8 +177,9 @@ def remove_netconf_device(task):
                                                'response_body': response_json},
                 'logs': []}
 
+
 def get_netconf_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = Template(inventory_netconf_device_url_get).substitute({"id": device_id})
 
@@ -195,15 +196,29 @@ def get_netconf_device(task):
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': []}
+
+
 def start(cc):
     print('Starting Netconf workers')
 
+    cc.register('Netconf_mount_netconf')
     cc.start('Netconf_mount_netconf', execute_mount_netconf, False)
+
+    cc.register('Netconf_unmount_netconf')
     cc.start('Netconf_unmount_netconf', execute_unmount_netconf, False)
+
+    cc.register('Netconf_check_netconf_connected')
     cc.start('Netconf_check_netconf_connected', execute_check_connected_netconf, False)
+
+    cc.register('Netconf_check_netconf_id_available')
     cc.start('Netconf_check_netconf_id_available', execute_check_netconf_id_available, False)
 
+    cc.register('INVENTORY_add_netconf_device')
     cc.start('INVENTORY_add_netconf_device', add_netconf_device, False)
+
+    cc.register('INVENTORY_remove_netconf_device')
     cc.start('INVENTORY_remove_netconf_device', remove_netconf_device, False)
+
+    cc.register('INVENTORY_get_netconf_device')
     cc.start('INVENTORY_get_netconf_device', get_netconf_device, False)
 

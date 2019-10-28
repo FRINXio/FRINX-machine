@@ -112,7 +112,7 @@ sudo ./teardown.sh
 
 To remove the volumes use:
 ```bash
-sudo docker volume rm redis_data elastic_data odl_logs
+sudo docker volume rm redis_data elastic_data odl_logs odl_data odl_pass
 ```
 
 ### For developers

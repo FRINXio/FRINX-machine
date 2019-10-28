@@ -1,2 +1,2 @@
-device_id,port,keepalivedelay,tcponly,username,password
-netconf-testtool,1783,10000,true,admin,admin
+device_id,port,keepalivedelay,tcponly,username,password,labels
+netconf-testtool,1783,10000,true,admin,admin,NETCONF

@@ -21,18 +21,19 @@ add_template = {
     "device_type": "",
     "device_version": "",
     "username": "",
-    "password": ""
+    "password": "",
+    "labels": []
 }
 
 
 def add_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = Template(inventory_device_url).substitute({"id": device_id})
 
     add_body = copy.deepcopy(add_template)
 
-    add_body["id"] = task['inputData']['id']
+    add_body["id"] = task['inputData']['device_id']
     add_body["host"] = task['inputData']['host']
     add_body["port"] = task['inputData']['port']
     add_body["transport_type"] = task['inputData']['protocol']
@@ -40,6 +41,10 @@ def add_device(task):
     add_body["device_version"] = task['inputData']['version']
     add_body["username"] = task['inputData']['username']
     add_body["password"] = task['inputData']['password']
+
+    device_labels = [label.strip() for label in task['inputData']['labels'].split(',')]
+    for label in device_labels:
+        add_body["labels"].append(label)
 
     r = requests.post(id_url, data=json.dumps(add_body), headers=elastic_headers)
     response_code, response_json = parse_response(r)
@@ -64,7 +69,7 @@ add_field_template = {
 
 
 def add_field_to_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     field = task['inputData']['field']
     value = task['inputData']['value']
 
@@ -97,7 +102,7 @@ add_nested_field_template = {
 
 
 def add_nested_field_to_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
     field = task['inputData']['field']
     value = task['inputData']['value']
 
@@ -122,7 +127,7 @@ def add_nested_field_to_device(task):
 
 
 def remove_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = Template(inventory_device_url).substitute({"id": device_id})
 
@@ -142,7 +147,7 @@ def remove_device(task):
 
 
 def get_device(task):
-    device_id = task['inputData']['id']
+    device_id = task['inputData']['device_id']
 
     id_url = Template(inventory_device_get_url).substitute({"id": device_id})
 
@@ -162,16 +167,22 @@ def get_device(task):
 
 
 device_query_template = {
-    "query": {
-        "term": {"device_type": ""}
+  "query": {
+    "bool": {
+      "must": []
     }
+  }
 }
+
+device_query_labels_template = {"term": {"labels.keyword": ""}}
+
+device_query_type_template = {"term": {"device_type.keyword": ""}}
 
 
 def get_all_devices(task):
-    device_type = task['inputData']['type']
+    device_labels = task['inputData']['labels']
 
-    response_code, response_json = read_all_devices(device_type)
+    response_code, response_json = read_all_devices(device_labels)
 
     if response_code == requests.codes.ok:
         return {'status': 'COMPLETED', 'output': {'url': inventory_all_devices_url,
@@ -185,10 +196,18 @@ def get_all_devices(task):
                 'logs': []}
 
 
-def read_all_devices(device_type):
-    if device_type is not None and device_type is not "":
-        device_query_body = copy.deepcopy(device_query_template)
-        device_query_body["query"]["term"]["device_type"] = device_type
+def read_all_devices(device_labels):
+    device_query_body = ""
+    if device_labels is not None and device_labels is not "":
+        if device_query_body is "":
+            device_query_body = copy.deepcopy(device_query_template)
+        device_labels = [label.strip() for label in device_labels.split(',')]
+        for label in device_labels:
+            labels_template = copy.deepcopy(device_query_labels_template)
+            labels_template["term"]["labels.keyword"] = label
+            device_query_body["query"]["bool"]["must"].append(labels_template)
+
+    if device_query_body is not "":
         r = requests.get(inventory_all_devices_url, data=json.dumps(device_query_body), headers=elastic_headers)
     else:
         r = requests.get(inventory_all_devices_url, headers=elastic_headers)
@@ -208,17 +227,17 @@ task_body_template = {
 
 
 def get_all_devices_as_tasks(task):
-    device_type = task['inputData']['type']
+    device_labels = task['inputData']['labels']
     task = task['inputData']['task']
 
-    response_code, response_json = read_all_devices(device_type)
+    response_code, response_json = read_all_devices(device_labels)
 
     if response_code == requests.codes.ok:
-        ids = map(lambda x: x["_id"], response_json["hits"]["hits"])
+        ids = [hits["_id"] for hits in response_json["hits"]["hits"]]
 
         dynamic_tasks_i = {}
         for device_id in ids:
-            dynamic_tasks_i.update({device_id: {"id": device_id}})
+            dynamic_tasks_i.update({device_id: {"device_id": device_id}})
 
         dynamic_tasks = []
         for device_id in ids:
@@ -247,7 +266,7 @@ add_show_command_template = {
 
 
 def add_show_command(task):
-    command_id = task['inputData']['id']
+    command_id = task['inputData']['template_id']
 
     id_url = Template(inventory_show_command_url).substitute({"id": command_id})
 
@@ -272,7 +291,7 @@ def add_show_command(task):
 
 
 def get_show_command(task):
-    command_id = task['inputData']['id']
+    command_id = task['inputData']['template_id']
 
     id_url = Template(inventory_show_command_get_url).substitute({"id": command_id})
 
@@ -294,13 +313,29 @@ def get_show_command(task):
 def start(cc):
     print('Starting Inventory workers')
 
+    cc.register('INVENTORY_add_device')
     cc.start('INVENTORY_add_device', add_device, False)
+
+    cc.register('INVENTORY_add_field_to_device')
     cc.start('INVENTORY_add_field_to_device', add_field_to_device, False)
+
+    cc.register('INVENTORY_add_nested_field_to_device')
     cc.start('INVENTORY_add_nested_field_to_device', add_nested_field_to_device, False)
+
+    cc.register('INVENTORY_remove_device')
     cc.start('INVENTORY_remove_device', remove_device, False)
+
+    cc.register('INVENTORY_get_device')
     cc.start('INVENTORY_get_device', get_device, False)
+
+    cc.register('INVENTORY_get_all_devices')
     cc.start('INVENTORY_get_all_devices', get_all_devices, False)
+
+    cc.register('INVENTORY_get_all_devices_as_tasks')
     cc.start('INVENTORY_get_all_devices_as_tasks', get_all_devices_as_tasks, False)
 
+    cc.register('INVENTORY_add_show_command')
     cc.start('INVENTORY_add_show_command', add_show_command, False)
+
+    cc.register('INVENTORY_get_show_command')
     cc.start('INVENTORY_get_show_command', get_show_command, False)
