@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "0d729671-74c8-4191-a235-471c1ed31221",
+		"_postman_id": "4b8391bf-a3ec-429c-96b1-766797df6cef",
 		"name": "CONDUCTOR latest",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -420,6 +420,36 @@
 								"body": {
 									"mode": "raw",
 									"raw": "[{\n  \"name\": \"Mount_cli_from_inventory\",\n  \"description\": \"mount and check a CLI device from inventory - CLI, SOUTHBOUND, INVENTORY\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"sub_read_inventory\",\n      \"taskReferenceName\": \"read_inventory\",\n\t\t\"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Get_device_from_inventory\",\n        \"version\": 1\n      }\n    },\n  \t{\n      \"name\": \"sub_mount\",\n      \"taskReferenceName\": \"mount\",\n\t\t\"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\",\n\t\t\"type\": \"${read_inventory.output.device.device_type}\",\n        \"version\": \"${read_inventory.output.device.device_version}\",\n        \"host\": \"${read_inventory.output.device.host}\",\n        \"protocol\": \"${read_inventory.output.device.transport_type}\",\n        \"port\": \"${read_inventory.output.device.port}\",\n        \"username\": \"${read_inventory.output.device.username}\",\n        \"password\": \"${read_inventory.output.device.password}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Mount_and_check_cli\",\n        \"version\": 1\n      }\n    }\n  ],\n  \"outputParameters\": {\n  \t\"inventory\": \"${read_inventory.output.device}\",\n \t\"odl\": \"${mount.output.mount}\",\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Mount netconf from Inventory",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Mount_netconf_from_inventory\",\n  \"description\": \"mount and check a NETCONF device from inventory - NETCONF, SOUTHBOUND, INVENTORY\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"sub_read_inventory\",\n      \"taskReferenceName\": \"read_inventory\",\n\t\t\"inputParameters\": {\n        \"id\": \"${workflow.input.id}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Get_netconf_device_from_inventory\",\n        \"version\": 1\n      }\n    },\n  \t{\n      \"name\": \"sub_mount\",\n      \"taskReferenceName\": \"mount\",\n\t\t\"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n        \"host\": \"${read_inventory.output.device.host}\",\n        \"port\": \"${read_inventory.output.device.port}\",\n        \"keepalivedelay\": \"${read_inventory.output.device.keepalivedelay}\",\n        \"tcponly\": \"${read_inventory.output.device.tcponly}\",\n        \"username\": \"${read_inventory.output.device.username}\",\n        \"password\": \"${read_inventory.output.device.password}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Mount_netconf_device\",\n        \"version\": 1\n      }\n    }\n  ],\n  \"outputParameters\": {\n  \t\"inventory\": \"${read_inventory.output.device}\",\n \t\"odl\": \"${mount.output.mount}\",\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -963,6 +993,37 @@
 							"response": []
 						},
 						{
+							"name": "Add netconf device",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Add_netconf_device_to_inventory\",\n  \"description\": \"add a NETCONF device to inventory database - INVENTORY, NETCONF\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[Unique identifier of device across all systems][n1]\",\n\t\"host[IP or hostname of the management endpoint on a device][sample-topology]\",\n    \"port[TCP port of the management endpoint of a device][1783]\",\n\t\"keepalivedelay[Keepalive delay][100000]\",\n    \"tcponly[tcp only][true]\",\n\t\"username[Username credential][cisco]\",\n\t\"password[Password credential][cisco]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_netconf_device\",\n      \"taskReferenceName\": \"INVENTORY_add_netconf_device\",\n      \"type\": \"SIMPLE\",\n            \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\",\n        \"port\": \"${workflow.input.port}\",\n        \"host\": \"${workflow.input.host}\",\n        \"keepalivedelay\": \"${workflow.input.keepalivedelay}\",\n        \"tcponly\": \"${workflow.input.tcponly}\",\n        \"username\": \"${workflow.input.username}\",\n        \"password\": \"${workflow.input.password}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								},
+								"description": "This requires an http server at 172.17.0.1:9999 serving following file:\n\n{\n  \"id\": \"ios2\",\n  \"host\": \"192.168.1.254\",\n  \"type\": \"ios\",\n  \"version\" : \"*\",\n  \"protocol\": \"ssh\",\n  \"port\": 22,\n  \"username\": \"cisco\",\n  \"password\": \"cisco\"\n}\n\n\nto do that on linux:\n\nwhile :\ndo\n\t{ echo -ne \"HTTP/1.0 200 OK\\r\\n\\r\\n\"; cat content.json; } | nc -l -p 9999\ndone"
+							},
+							"response": []
+						},
+						{
 							"name": "Add field to device",
 							"request": {
 								"method": "PUT",
@@ -1056,6 +1117,37 @@
 							"response": []
 						},
 						{
+							"name": "Remove netconf device",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Remove_netconf_device_from_inventory\",\n  \"description\": \"remove a NETCONF device to inventory database - INVENTORY, NETCONF\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[Unique identifier of a command in DB]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_remove_netconf_device\",\n      \"taskReferenceName\": \"INVENTORY_remove_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								},
+								"description": "This requires an http server at 172.17.0.1:9999 serving following file:\n\n{\n  \"id\": \"ios2\",\n  \"host\": \"192.168.1.254\",\n  \"type\": \"ios\",\n  \"version\" : \"*\",\n  \"protocol\": \"ssh\",\n  \"port\": 22,\n  \"username\": \"cisco\",\n  \"password\": \"cisco\"\n}\n\n\nto do that on linux:\n\nwhile :\ndo\n\t{ echo -ne \"HTTP/1.0 200 OK\\r\\n\\r\\n\"; cat content.json; } | nc -l -p 9999\ndone"
+							},
+							"response": []
+						},
+						{
 							"name": "Get all devices",
 							"request": {
 								"method": "PUT",
@@ -1099,6 +1191,37 @@
 								"body": {
 									"mode": "raw",
 									"raw": "[{\n  \"name\": \"Get_device_from_inventory\",\n  \"description\": \"get 1 device from inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[Unique identifier of a command in DB]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_device\",\n      \"taskReferenceName\": \"INVENTORY_get_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device\": \"${INVENTORY_get_device.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								},
+								"description": "This requires an http server at 172.17.0.1:9999 serving following file:\n\n{\n  \"id\": \"ios2\",\n  \"host\": \"192.168.1.254\",\n  \"type\": \"ios\",\n  \"version\" : \"*\",\n  \"protocol\": \"ssh\",\n  \"port\": 22,\n  \"username\": \"cisco\",\n  \"password\": \"cisco\"\n}\n\n\nto do that on linux:\n\nwhile :\ndo\n\t{ echo -ne \"HTTP/1.0 200 OK\\r\\n\\r\\n\"; cat content.json; } | nc -l -p 9999\ndone"
+							},
+							"response": []
+						},
+						{
+							"name": "Get netconf device",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Get_netconf_device_from_inventory\",\n  \"description\": \"Get 1 netconf device from inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[Unique identifier of a command in DB]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_get_netconf_device\",\n      \"taskReferenceName\": \"INVENTORY_get_netconf_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device\": \"${INVENTORY_get_netconf_device.output.response_body}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -2612,10 +2735,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "http://{{host}}:{{port}}/api/metadata/taskdefs",
 							"protocol": "http",
@@ -2637,10 +2756,6 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
 							"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
 							"protocol": "http",
