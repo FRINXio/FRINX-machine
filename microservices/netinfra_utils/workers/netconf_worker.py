@@ -124,7 +124,8 @@ netconf_device_template = {
     "keepalivedelay": "",
     "tcponly": "",
     "username": "",
-    "password": ""
+    "password": "",
+    "blacklist": []
 }
 
 
@@ -142,6 +143,10 @@ def add_netconf_device(task):
     add_body['tcponly'] = task['inputData']['tcponly']
     add_body["username"] = task['inputData']['username']
     add_body["password"] = task['inputData']['password']
+
+    model_array = [model.strip() for model in task['inputData']['blacklist'].split(',')]
+    for model in model_array:
+        add_body["blacklist"].append(model)
 
     r = requests.post(id_url, data=json.dumps(add_body), headers=elastic_headers)
     response_code, response_json = parse_response(r)
