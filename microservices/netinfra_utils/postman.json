@@ -1004,7 +1004,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Add_netconf_device_to_inventory\",\n  \"description\": \"add a NETCONF device to inventory database - INVENTORY, NETCONF\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[Unique identifier of device across all systems][n1]\",\n\t\"host[IP or hostname of the management endpoint on a device][sample-topology]\",\n    \"port[TCP port of the management endpoint of a device][1783]\",\n\t\"keepalivedelay[Keepalive delay][100000]\",\n    \"tcponly[tcp only][true]\",\n\t\"username[Username credential][cisco]\",\n\t\"password[Password credential][cisco]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_netconf_device\",\n      \"taskReferenceName\": \"INVENTORY_add_netconf_device\",\n      \"type\": \"SIMPLE\",\n            \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\",\n        \"port\": \"${workflow.input.port}\",\n        \"host\": \"${workflow.input.host}\",\n        \"keepalivedelay\": \"${workflow.input.keepalivedelay}\",\n        \"tcponly\": \"${workflow.input.tcponly}\",\n        \"username\": \"${workflow.input.username}\",\n        \"password\": \"${workflow.input.password}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Add_netconf_device_to_inventory\",\n  \"description\": \"add a NETCONF device to inventory database - INVENTORY, NETCONF\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[Unique identifier of device across all systems][n1]\",\n\t\"host[IP or hostname of the management endpoint on a device][sample-topology]\",\n    \"port[TCP port of the management endpoint of a device][1783]\",\n\t\"keepalivedelay[Keepalive delay][100000]\",\n    \"tcponly[tcp only][true]\",\n\t\"username[Username credential][cisco]\",\n\t\"password[Password credential][cisco]\",\n\t\"blacklist[List of blacklisted root paths][openconfig-interfaces:interfaces]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_netconf_device\",\n      \"taskReferenceName\": \"INVENTORY_add_netconf_device\",\n      \"type\": \"SIMPLE\",\n            \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\",\n        \"port\": \"${workflow.input.port}\",\n        \"host\": \"${workflow.input.host}\",\n        \"keepalivedelay\": \"${workflow.input.keepalivedelay}\",\n        \"tcponly\": \"${workflow.input.tcponly}\",\n        \"username\": \"${workflow.input.username}\",\n        \"password\": \"${workflow.input.password}\",\n        \"blacklist\": \"${workflow.input.blacklist}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1035,7 +1035,38 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Add_field_to_device_in_inventory\",\n  \"description\": \"add a field key/value to device in inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[The id of the device in the inventory.]\",\n\t\"field[Key of the new entry (e.g. labels)]\",\n\t\"value[Value of the new entry (e.g. EDGE or a list like EDGE, PRODUCTION, ACTIVE)]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_field_to_device\",\n      \"taskReferenceName\": \"INVENTORY_add_field_to_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\",\n\t\t\"field\": \"${workflow.input.field}\",\n        \"value\": \"${workflow.input.value}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Add_field_to_device_in_inventory\",\n  \"description\": \"add a field key/value to device in inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[The id of the device in the inventory.]\",\n\t\"field[Key of the new entry (e.g. labels)]\",\n\t\"value[Value of the new entry (e.g. EDGE or a list like EDGE, PRODUCTION, ACTIVE)]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_field_to_device\",\n      \"taskReferenceName\": \"INVENTORY_add_field_to_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\",\n\t\t\"field\": \"${workflow.input.field}\",\n        \"value\": \"${workflow.input.value}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								},
+								"description": "This requires an http server at 172.17.0.1:9999 serving following file:\n\n{\n  \"id\": \"ios2\",\n  \"host\": \"192.168.1.254\",\n  \"type\": \"ios\",\n  \"version\" : \"*\",\n  \"protocol\": \"ssh\",\n  \"port\": 22,\n  \"username\": \"cisco\",\n  \"password\": \"cisco\"\n}\n\n\nto do that on linux:\n\nwhile :\ndo\n\t{ echo -ne \"HTTP/1.0 200 OK\\r\\n\\r\\n\"; cat content.json; } | nc -l -p 9999\ndone"
+							},
+							"response": []
+						},
+						{
+							"name": "Add labels to device",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n  \"name\": \"Add_labels_to_device\",\n  \"description\": \"add a labels to device in inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[The id of the device in the inventory.]\",\n\t\"labels[Value of the labels (e.g. EDGE or a list like EDGE, PRODUCTION, ACTIVE)]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_array_to_field\",\n      \"taskReferenceName\": \"INVENTORY_add_array_to_field\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\",\n        \"field\": \"labels\",\n        \"values\": \"${workflow.input.labels}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1066,7 +1097,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Add_nested_field_to_device_in_inventory\",\n  \"description\": \"add a nested field (nested json structure) to device in inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Unique identifier of a command in DB]\",\n\t\"field[Key (identifier) of a new field]\",\n\t\"value[Value (json content) of a new field]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_nested_field_to_device\",\n      \"taskReferenceName\": \"INVENTORY_nested_add_field_to_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n\t\t\"field\": \"${workflow.input.field}\",\n        \"value\": \"${workflow.input.value}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Add_nested_field_to_device_in_inventory\",\n  \"description\": \"add a nested field (nested json structure) to device in inventory database - INVENTORY\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[Unique identifier of a command in DB]\",\n\t\"field[Key (identifier) of a new field]\",\n\t\"value[Value (json content) of a new field]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_nested_field_to_device\",\n      \"taskReferenceName\": \"INVENTORY_nested_add_field_to_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\",\n\t\t\"field\": \"${workflow.input.field}\",\n        \"value\": \"${workflow.input.value}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1097,7 +1128,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Remove_cli_device_from_inventory\",\n  \"description\": \"remove a CLI device to inventory database - INVENTORY, CLI\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"id[Unique identifier of a command in DB]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_remove_device\",\n      \"taskReferenceName\": \"INVENTORY_remove_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Remove_cli_device_from_inventory\",\n  \"description\": \"remove a CLI device to inventory database - INVENTORY, CLI\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[Unique identifier of a command in DB]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_remove_device\",\n      \"taskReferenceName\": \"INVENTORY_remove_device\",\n      \"type\": \"SIMPLE\",\n      \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",

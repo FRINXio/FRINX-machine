@@ -126,6 +126,41 @@ def add_nested_field_to_device(task):
                 'logs': []}
 
 
+add_array_field_command = "ctx._source.$field = [$value]"
+
+
+def add_array_to_field(task):
+    device_id = task['inputData']['device_id']
+    field = task['inputData']['field']
+    values = task['inputData']['values']
+
+    id_url = Template(inventory_device_update_url).substitute({"id": device_id})
+    array_values = []
+    device_labels = [value.strip() for value in values.split(',')]
+    for label in device_labels:
+        array_values.append(label)
+
+    data = Template(add_array_field_command).substitute({"field": field, "value": array_values})
+
+    update_body = copy.deepcopy(add_field_template)
+
+    update_body["script"] = data
+
+    r = requests.post(id_url, data=json.dumps(update_body), headers=elastic_headers)
+    response_code, response_json = parse_response(r)
+
+    if response_code == requests.codes.ok:
+        return {'status': 'COMPLETED', 'output': {'url': id_url,
+                                                  'response_code': response_code,
+                                                  'response_body': response_json},
+                'logs': []}
+    else:
+        return {'status': 'FAILED', 'output': {'url': id_url,
+                                               'response_code': response_code,
+                                               'response_body': response_json},
+                'logs': []}
+
+
 def remove_device(task):
     device_id = task['inputData']['device_id']
 
@@ -321,6 +356,9 @@ def start(cc):
 
     cc.register('INVENTORY_add_nested_field_to_device')
     cc.start('INVENTORY_add_nested_field_to_device', add_nested_field_to_device, False)
+
+    cc.register('INVENTORY_add_array_to_field')
+    cc.start('INVENTORY_add_array_to_field', add_array_to_field, False)
 
     cc.register('INVENTORY_remove_device')
     cc.start('INVENTORY_remove_device', remove_device, False)
