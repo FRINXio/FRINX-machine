@@ -25,7 +25,6 @@ mount_template = {
             "netconf-node-topology:tcp-only":"",
             "netconf-node-topology:username": "",
             "netconf-node-topology:password": "",
-
         }
 }
 
@@ -38,10 +37,18 @@ def execute_mount_netconf(task):
     mount_body["node"]["node-id"] = task['inputData']['device_id']
     mount_body["node"]["netconf-node-topology:host"] = task['inputData']['host']
     mount_body["node"]["netconf-node-topology:port"] = task['inputData']['port']
-    mount_body["node"]["netconf-node-topology:keepalive-delay"] = task['inputData']['keepalivedelay']
-    mount_body["node"]["netconf-node-topology:tcp-only"] = task['inputData']['tcponly']
+    mount_body["node"]["netconf-node-topology:keepalive-delay"] = task['inputData']['keepalive-delay']
+    mount_body["node"]["netconf-node-topology:tcp-only"] = task['inputData']['tcp-only']
     mount_body["node"]["netconf-node-topology:username"] = task['inputData']['username']
     mount_body["node"]["netconf-node-topology:password"] = task['inputData']['password']
+
+    if 'blacklist' in task['inputData'] and task['inputData']['blacklist'] is not None:
+        mount_body["node"]["uniconfig-config:uniconfig-native-enabled"] = True
+        mount_body["node"]["uniconfig-config:blacklist"] = {'uniconfig-config:path':[]}
+
+        model_array = [model.strip() for model in task['inputData']['blacklist'].split(',')]
+        for model in model_array:
+            mount_body["node"]["uniconfig-config:blacklist"]["uniconfig-config:path"].append(model)
 
     id_url = odl_url_netconf_mount + device_id
 
@@ -121,11 +128,11 @@ netconf_device_template = {
     "id": "",
     "host": "",
     "port": "",
-    "keepalivedelay": "",
-    "tcponly": "",
+    "keepalive-delay": "",
+    "tcp-only": "",
     "username": "",
     "password": "",
-    "blacklist": []
+    "blacklist": ""
 }
 
 
@@ -139,14 +146,11 @@ def add_netconf_device(task):
     add_body["id"] = task['inputData']['device_id']
     add_body["host"] = task['inputData']['host']
     add_body["port"] = task['inputData']['port']
-    add_body['keepalivedelay'] = task['inputData']['keepalivedelay']
-    add_body['tcponly'] = task['inputData']['tcponly']
+    add_body['keepalive-delay'] = task['inputData']['keepalive-delay']
+    add_body['tcp-only'] = task['inputData']['tcp-only']
     add_body["username"] = task['inputData']['username']
     add_body["password"] = task['inputData']['password']
-
-    model_array = [model.strip() for model in task['inputData']['blacklist'].split(',')]
-    for model in model_array:
-        add_body["blacklist"].append(model)
+    add_body["blacklist"] = task['inputData']['blacklist']
 
     r = requests.post(id_url, data=json.dumps(add_body), headers=elastic_headers)
     response_code, response_json = parse_response(r)
