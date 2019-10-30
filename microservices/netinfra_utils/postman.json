@@ -318,6 +318,36 @@
 							"response": []
 						},
 						{
+							"name": "Mount blacklist netconf",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n    \"name\": \"Mount_blacklist_netconf_device\",\n    \"description\": \"mount a Netconf device - NETCONF, SOUTHBOUND\",\n    \"version\": 1,\n    \"inputParameters\": [\n\t\"device_id[Unique identifier of device across all systems]\",\n\t\"host[IP or hostname of the management endpoint on a device]\",\n\t\"port[TCP port of the management endpoint of a device][22]\",\n\t\"keepalivedelay[Time delay][0]\",\n\t\"tcponly[Use tcp-only communication][false]\",\n\t\"username[Username credential]\",\n\t\"password[Password credential]\",\n\t\"blacklist[List of blacklisted root paths (comma separated list) #template][openconfig-interfaces:interfaces,ietf-interfaces:interfaces]\"\n  ],\n    \"tasks\": [\n        {\n            \"name\": \"Netconf_check_netconf_id_available\",\n            \"taskReferenceName\": \"Netconf_check_netconf_id_available\",\n            \"inputParameters\": {\n                \"device_id\": \"${workflow.input.device_id}\"\n            },\n            \"type\": \"SIMPLE\",\n            \"startDelay\": 0\n        },\n        {\n            \"name\": \"Netconf_mount_netconf\",\n            \"taskReferenceName\": \"Netconf_mount_netconf\",\n            \"inputParameters\": {\n                \"device_id\": \"${workflow.input.device_id}\",\n                \"host\": \"${workflow.input.host}\",\n                \"port\": \"${workflow.input.port}\",\n                \"keepalive-delay\": \"${workflow.input.keepalivedelay}\",\n                \"tcp-only\": \"${workflow.input.tcponly}\",\n                \"username\": \"${workflow.input.username}\",\n                \"password\": \"${workflow.input.password}\",\n                \"blacklist\": \"${workflow.input.blacklist}\"\n            },\n            \"type\": \"SIMPLE\",\n            \"startDelay\": 0\n        }\n    ],\n    \"outputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\"\n    },\n    \"restartable\": true,\n    \"schemaVersion\": 2\n}]"
+								},
+								"url": {
+									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
+									"protocol": "http",
+									"host": [
+										"{{host}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"metadata",
+										"workflow"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Check cli connected",
 							"request": {
 								"method": "PUT",
@@ -449,7 +479,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Mount_netconf_from_inventory\",\n  \"description\": \"mount and check a NETCONF device from inventory - NETCONF, SOUTHBOUND, INVENTORY\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"sub_read_inventory\",\n      \"taskReferenceName\": \"read_inventory\",\n\t\t\"inputParameters\": {\n        \"id\": \"${workflow.input.id}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Get_netconf_device_from_inventory\",\n        \"version\": 1\n      }\n    },\n  \t{\n      \"name\": \"sub_mount\",\n      \"taskReferenceName\": \"mount\",\n\t\t\"inputParameters\": {\n        \"id\": \"${workflow.input.id}\",\n        \"host\": \"${read_inventory.output.device.host}\",\n        \"port\": \"${read_inventory.output.device.port}\",\n        \"keepalivedelay\": \"${read_inventory.output.device.keepalivedelay}\",\n        \"tcponly\": \"${read_inventory.output.device.tcponly}\",\n        \"username\": \"${read_inventory.output.device.username}\",\n        \"password\": \"${read_inventory.output.device.password}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Mount_netconf_device\",\n        \"version\": 1\n      }\n    }\n  ],\n  \"outputParameters\": {\n  \t\"inventory\": \"${read_inventory.output.device}\",\n \t\"odl\": \"${mount.output.mount}\",\n    \"id\": \"${workflow.input.id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Mount_netconf_from_inventory\",\n  \"description\": \"mount and check a NETCONF device from inventory - NETCONF, SOUTHBOUND, INVENTORY\",\n  \"version\": 1,\n  \"tasks\": [\n  \t{\n      \"name\": \"sub_read_inventory\",\n      \"taskReferenceName\": \"read_inventory\",\n\t\t\"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Get_netconf_device_from_inventory\",\n        \"version\": 1\n      }\n    },\n  \t{\n      \"name\": \"sub_mount\",\n      \"taskReferenceName\": \"mount\",\n\t\t\"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\",\n        \"host\": \"${read_inventory.output.device.host}\",\n        \"port\": \"${read_inventory.output.device.port}\",\n        \"keepalivedelay\": \"${read_inventory.output.device.keepalive-delay}\",\n        \"tcponly\": \"${read_inventory.output.device.tcp-only}\",\n        \"username\": \"${read_inventory.output.device.username}\",\n        \"password\": \"${read_inventory.output.device.password}\",\n        \"blacklist\": \"${read_inventory.output.device.blacklist}\"\n      },\n      \"type\": \"SUB_WORKFLOW\",\n      \"subWorkflowParam\": {\n        \"name\": \"Mount_blacklist_netconf_device\",\n        \"version\": 1\n      }\n    }\n  ],\n  \"outputParameters\": {\n  \t\"inventory\": \"${read_inventory.output.device}\",\n \t\"odl\": \"${mount.output.mount}\",\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
@@ -1004,7 +1034,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "[{\n  \"name\": \"Add_netconf_device_to_inventory\",\n  \"description\": \"add a NETCONF device to inventory database - INVENTORY, NETCONF\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[Unique identifier of device across all systems][n1]\",\n\t\"host[IP or hostname of the management endpoint on a device][sample-topology]\",\n    \"port[TCP port of the management endpoint of a device][1783]\",\n\t\"keepalivedelay[Keepalive delay][100000]\",\n    \"tcponly[tcp only][true]\",\n\t\"username[Username credential][cisco]\",\n\t\"password[Password credential][cisco]\",\n\t\"blacklist[List of blacklisted root paths][openconfig-interfaces:interfaces]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_netconf_device\",\n      \"taskReferenceName\": \"INVENTORY_add_netconf_device\",\n      \"type\": \"SIMPLE\",\n            \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\",\n        \"port\": \"${workflow.input.port}\",\n        \"host\": \"${workflow.input.host}\",\n        \"keepalivedelay\": \"${workflow.input.keepalivedelay}\",\n        \"tcponly\": \"${workflow.input.tcponly}\",\n        \"username\": \"${workflow.input.username}\",\n        \"password\": \"${workflow.input.password}\",\n        \"blacklist\": \"${workflow.input.blacklist}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
+									"raw": "[{\n  \"name\": \"Add_netconf_device_to_inventory\",\n  \"description\": \"add a NETCONF device to inventory database - INVENTORY, NETCONF\",\n  \"version\": 1,\n  \"inputParameters\": [\n\t\"device_id[Unique identifier of device across all systems][n1]\",\n\t\"host[IP or hostname of the management endpoint on a device][sample-topology]\",\n    \"port[TCP port of the management endpoint of a device][1783]\",\n\t\"keepalivedelay[Keepalive delay][100000]\",\n    \"tcponly[tcp only][true]\",\n\t\"username[Username credential][cisco]\",\n\t\"password[Password credential][cisco]\",\n\t\"blacklist[List of blacklisted root paths][openconfig-interfaces:interfaces]\"\n  ],\n  \"tasks\": [\n    {\n      \"name\": \"INVENTORY_add_netconf_device\",\n      \"taskReferenceName\": \"INVENTORY_add_netconf_device\",\n      \"type\": \"SIMPLE\",\n            \"inputParameters\": {\n        \"device_id\": \"${workflow.input.device_id}\",\n        \"port\": \"${workflow.input.port}\",\n        \"host\": \"${workflow.input.host}\",\n        \"keepalive-delay\": \"${workflow.input.keepalivedelay}\",\n        \"tcp-only\": \"${workflow.input.tcponly}\",\n        \"username\": \"${workflow.input.username}\",\n        \"password\": \"${workflow.input.password}\",\n        \"blacklist\": \"${workflow.input.blacklist}\"\n      }\n    }\n  ],\n  \"outputParameters\": {\n    \"device_id\": \"${workflow.input.device_id}\"\n  },\n  \"schemaVersion\": 2\n}]"
 								},
 								"url": {
 									"raw": "http://{{host}}:{{port}}/api/metadata/workflow",
