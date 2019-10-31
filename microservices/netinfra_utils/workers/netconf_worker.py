@@ -11,8 +11,7 @@ from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_respons
 odl_url_netconf_mount = odl_url_base + "/config/network-topology:network-topology/topology/topology-netconf/node/"
 odl_url_netconf_mount_oper = odl_url_base + "/operational/network-topology:network-topology/topology/topology-netconf/node/"
 
-inventory_netconf_device_url = elastic_url_base + "/inventory-netconf-device/device/$id"
-inventory_netconf_device_url_get = elastic_url_base + "/inventory-netconf-device/device/$id/_source"
+inventory_netconf_device_url = elastic_url_base + "/inventory-device/device/$id"
 
 mount_template = {
     "node": 
@@ -132,6 +131,7 @@ netconf_device_template = {
     "tcp-only": "",
     "username": "",
     "password": "",
+    "topolology": "netconf",
     "blacklist": ""
 }
 
@@ -167,46 +167,6 @@ def add_netconf_device(task):
                 'logs': []}
 
 
-def remove_netconf_device(task):
-    device_id = task['inputData']['device_id']
-
-    id_url = Template(inventory_netconf_device_url).substitute({"id": device_id})
-
-    r = requests.delete(id_url, headers=elastic_headers)
-    response_code, response_json = parse_response(r)
-
-    if response_code == requests.codes.ok:
-        return {'status': 'COMPLETED', 'output': {'url': id_url,
-                                                  'response_code': response_code,
-                                                  'response_body': response_json},
-                'logs': []}
-    else:
-        return {'status': 'FAILED', 'output': {'url': id_url,
-                                               'response_code': response_code,
-                                               'response_body': response_json},
-                'logs': []}
-
-
-def get_netconf_device(task):
-    device_id = task['inputData']['device_id']
-
-    id_url = Template(inventory_netconf_device_url_get).substitute({"id": device_id})
-
-    r = requests.get(id_url, headers=elastic_headers)
-    response_code, response_json = parse_response(r)
-
-    if response_code == requests.codes.ok:
-        return {'status': 'COMPLETED', 'output': {'url': id_url,
-                                                  'response_code': response_code,
-                                                  'response_body': response_json},
-                'logs': []}
-    else:
-        return {'status': 'FAILED', 'output': {'url': id_url,
-                                               'response_code': response_code,
-                                               'response_body': response_json},
-                'logs': []}
-
-
 def start(cc):
     print('Starting Netconf workers')
 
@@ -224,10 +184,4 @@ def start(cc):
 
     cc.register('INVENTORY_add_netconf_device')
     cc.start('INVENTORY_add_netconf_device', add_netconf_device, False)
-
-    cc.register('INVENTORY_remove_netconf_device')
-    cc.start('INVENTORY_remove_netconf_device', remove_netconf_device, False)
-
-    cc.register('INVENTORY_get_netconf_device')
-    cc.start('INVENTORY_get_netconf_device', get_netconf_device, False)
 
