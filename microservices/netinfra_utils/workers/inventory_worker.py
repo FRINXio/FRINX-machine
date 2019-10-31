@@ -22,6 +22,7 @@ add_template = {
     "device_version": "",
     "username": "",
     "password": "",
+    "topolology": "cli",
     "labels": []
 }
 
