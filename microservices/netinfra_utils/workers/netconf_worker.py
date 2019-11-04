@@ -131,8 +131,9 @@ netconf_device_template = {
     "tcp-only": "",
     "username": "",
     "password": "",
-    "topolology": "netconf",
-    "blacklist": ""
+    "topology": "netconf",
+    "blacklist": "",
+    "labels": []
 }
 
 
@@ -151,6 +152,11 @@ def add_netconf_device(task):
     add_body["username"] = task['inputData']['username']
     add_body["password"] = task['inputData']['password']
     add_body["blacklist"] = task['inputData']['blacklist']
+
+    if task['inputData']['labels'] is not None:
+        device_labels = [label.strip() for label in task['inputData']['labels'].split(',')]
+        for label in device_labels:
+            add_body["labels"].append(label)
 
     r = requests.post(id_url, data=json.dumps(add_body), headers=elastic_headers)
     response_code, response_json = parse_response(r)
@@ -176,7 +182,18 @@ def start(cc):
     cc.register('Netconf_unmount_netconf')
     cc.start('Netconf_unmount_netconf', execute_unmount_netconf, False)
 
-    cc.register('Netconf_check_netconf_connected')
+    cc.register('Netconf_check_netconf_connected', {
+        "name": "Netconf_check_netconf_connected",
+        "retryCount": 20,
+        "timeoutSeconds": 10,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 5,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "id"
+        ]
+    })
     cc.start('Netconf_check_netconf_connected', execute_check_connected_netconf, False)
 
     cc.register('Netconf_check_netconf_id_available')
