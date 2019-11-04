@@ -10,6 +10,7 @@ The project is a containerized package of:
 * FRINX microservices to execute conductor tasks
 * Device simulation container
 * [Uniconfig-ui]
+* [Portainer]
 
 
 ## Requirements
@@ -47,6 +48,7 @@ cd FRINX-machine
 
 #### Services used in the project
 * odl
+* dynomite
 * conductor-server
 * elasticsearch
 * kibana
@@ -54,6 +56,7 @@ cd FRINX-machine
 * micros
 * uniconfig-ui
 * sample-topology
+* portainer
  
 ### Installation
 
@@ -94,6 +97,9 @@ sudo ./startup.sh
 Open web page:
  http://localhost:3000
 
+Container management(portainer):
+ http://localhost:9000
+
 ## Documentation & Use Cases
 More detailed documentation and use cases can be found at https://docs.frinx.io/FRINX_Machine/index.html.
 
@@ -112,7 +118,7 @@ sudo ./teardown.sh
 
 To remove the volumes use:
 ```bash
-sudo docker volume rm redis_data elastic_data odl_logs odl_data odl_pass
+sudo docker volume rm redis_data elastic_data odl_logs odl_data odl_pass portainer_data
 ```
 
 ### For developers
@@ -141,3 +147,4 @@ sudo docker-compose up -d [service]
 [Kibana]: <https://www.elastic.co/products/kibana>
 [Logstash]: <https://www.elastic.co/products/logstash>
 [Uniconfig-ui]: <https://github.com/FRINXio/frinx-uniconfig-ui>
+[Portainer]: <https://www.portainer.io/>
