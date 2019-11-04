@@ -43,9 +43,10 @@ def add_device(task):
     add_body["username"] = task['inputData']['username']
     add_body["password"] = task['inputData']['password']
 
-    device_labels = [label.strip() for label in task['inputData']['labels'].split(',')]
-    for label in device_labels:
-        add_body["labels"].append(label)
+    if task['inputData']['labels'] is not None:
+        device_labels = [label.strip() for label in task['inputData']['labels'].split(',')]
+        for label in device_labels:
+            add_body["labels"].append(label)
 
     r = requests.post(id_url, data=json.dumps(add_body), headers=elastic_headers)
     response_code, response_json = parse_response(r)
