@@ -264,11 +264,8 @@ task_body_template = {
 
 
 def get_all_devices_as_tasks(task):
-    if task['inputData']['task_params'] is not None:
-        add_params = task['inputData']['task_params']
-        add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
-    else:
-        add_params = {}
+    add_params = task['inputData']['task_params'] if 'task_params' in task['inputData'] else {}
+    add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
     device_labels = task['inputData']['labels']
     task = task['inputData']['task']
 
