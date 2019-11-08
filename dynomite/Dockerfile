@@ -18,7 +18,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
  tcl8.5 
 
 # Clone the Dynomite Git
-RUN git clone -b v0.6 https://github.com/Netflix/dynomite.git
+RUN git clone -b v0.6.21 https://github.com/Netflix/dynomite.git
 RUN echo 'Git repo has been cloned in your Docker VM'
 
 
