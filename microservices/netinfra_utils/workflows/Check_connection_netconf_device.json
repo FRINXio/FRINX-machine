@@ -1,0 +1,22 @@
+[{
+  "name": "Check_connection_netconf_device",
+  "description": "check connection to a NETCONF device - BASIC,NETCONF",
+  "version": 1,
+  "inputParameters": [
+    "device_id[Unique device identifier. Example: IOS01]"
+  ],
+  "tasks": [
+  	{
+      "name": "Netconf_check_netconf_connected",
+      "taskReferenceName": "Netconf_check_netconf_connected",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "mount": "${Netconf_check_netconf_connected.output.response_body}"
+  },
+  "schemaVersion": 2
+}]

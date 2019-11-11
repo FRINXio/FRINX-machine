@@ -1,0 +1,60 @@
+[{
+  "name": "Build_read_store_LLDP_topology",
+  "description": "Build, read and store LLDP topology in database - DEMO,LLDP",
+  "version": 1,
+  "inputParameters": [
+  	"node_aggregation[Which unique attribute of a device to use in order to identify a device. This reduces node duplicity][system-name]",
+  	"link_aggregation[Which unique attribute of a link to use in order to identify a device e.g. source and destination interfaces][bidirectional-abbreviations]",
+  	"per_node_read_timeout[Max time to spend on 1 device in seconds][30]",
+  	"concurrent_read_nodes[How many devices to query in parallel][8]",
+  	"destination_topology[Name of a topology under which the result will be stored][lldp]"
+  ],
+  "tasks": [
+  	{
+      "name": "sub_build",
+      "taskReferenceName": "build",
+	    "inputParameters": {
+        "node_aggregation": "${workflow.input.node_aggregation}",
+		    "link_aggregation": "${workflow.input.link_aggregation}",
+        "per_node_read_timeout": "${workflow.input.per_node_read_timeout}",
+        "concurrent_read_nodes": "${workflow.input.concurrent_read_nodes}",
+        "destination_topology": "${workflow.input.destination_topology}"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Build_LLDP_topology",
+        "version": 1
+      }
+    },
+  	{
+      "name": "sub_read",
+      "taskReferenceName": "read",
+	    "inputParameters": {
+        "destination_topology": "${workflow.input.destination_topology}"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Read_LLDP_topology",
+        "version": 1
+      }
+    },
+    {
+      "name": "sub_store",
+      "taskReferenceName": "store",
+	    "inputParameters": {
+        "destination_topology": "${workflow.input.destination_topology}",
+        "content": "${read.output.response.topology}"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Store_LLDP_topology",
+        "version": 1
+      }
+    }
+  ],
+  "outputParameters": {
+    "destination-topology": "${workflow.input.destination_topology}",
+    "content": "${read.output.response.topology}"
+  },
+  "schemaVersion": 2
+}]

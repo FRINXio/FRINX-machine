@@ -1,0 +1,25 @@
+[{
+  "name": "Add_labels_to_device",
+  "description": "add a labels to device in inventory database - BASICS,INVENTORY",
+  "version": 1,
+  "inputParameters": [
+	"device_id[Unique device identifier. Example: IOS01]",
+	"labels[Value of the labels (e.g. EDGE or a list like EDGE, PRODUCTION, ACTIVE)]"
+  ],
+  "tasks": [
+    {
+      "name": "INVENTORY_add_array_to_field",
+      "taskReferenceName": "INVENTORY_add_array_to_field",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}",
+        "field": "labels",
+        "values": "${workflow.input.labels}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "device_id": "${workflow.input.device_id}"
+  },
+  "schemaVersion": 2
+}]

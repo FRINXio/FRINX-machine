@@ -1,0 +1,36 @@
+[{
+  "name": "Read_interfaces_all_from_unified",
+  "description": "read interfaces configuration for all devices in unified topology - DEMO,INTERFACES,UNIFIED",
+  "version": 1,
+  "tasks": [
+  	{
+      "name": "sub_read_unified",
+      "taskReferenceName": "read_unified",
+	  "inputParameters": {
+        "task": "Read_interfaces_unified"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Get_all_devices_in_unified_as_tasks",
+        "version": 1
+      }
+    },
+  	{
+      "name": "sub_read_components",
+      "taskReferenceName": "read_ifcs",
+	  "inputParameters": {
+        "dynamic_tasks": "${read_unified.output.dynamic_tasks}",
+        "dynamic_tasks_i": "${read_unified.output.dynamic_tasks_i}"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Dynamic_fork",
+        "version": 1
+      }
+    }
+  ],
+  "outputParameters": {
+  	"interfaces": "${read_ifcs.output}"
+  },
+  "schemaVersion": 2
+}]

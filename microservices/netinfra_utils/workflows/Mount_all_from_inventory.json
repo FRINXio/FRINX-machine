@@ -1,0 +1,40 @@
+[{
+  "name": "Mount_all_from_inventory",
+  "description": "mount and check all labeled devices from inventory - BASIC,CLI,NETCONF,INVENTORY,MAIN",
+  "version": 1,
+  "inputParameters": [
+    "labels[Enter one or multiple labels to select devices. Match type is ALL.]"
+  ],
+  "tasks": [
+    {
+      "name": "sub_read_inventory",
+      "taskReferenceName": "read_inventory",
+    "inputParameters": {
+        "labels": "${workflow.input.labels}",
+        "task": "Mount_from_inventory"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Get_all_devices_as_tasks_from_inventory",
+        "version": 1
+      }
+    },
+    {
+      "name": "sub_mount",
+      "taskReferenceName": "mount",
+    "inputParameters": {
+        "dynamic_tasks": "${read_inventory.output.dynamic_tasks}",
+        "dynamic_tasks_i": "${read_inventory.output.dynamic_tasks_i}"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Dynamic_fork_optional",
+        "version": 1
+      }
+    }
+  ],
+  "outputParameters": {
+    "ids": "${mount.output.forkedTasks}"
+  },
+  "schemaVersion": 2
+}]

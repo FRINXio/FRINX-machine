@@ -1,0 +1,23 @@
+[{
+  "name": "Read_interfaces_unified",
+  "description": "Read device interface configuration in structured format - DEMO,INTERFACES,UNIFIED",
+  "version": 1,
+  "tasks": [
+  	{
+      "name": "UNIFIED_read_structured_device_data",
+      "taskReferenceName": "UNIFIED_read_structured_device_data",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}",
+		"uri": "/frinx-openconfig-interfaces:interfaces/"
+      }
+    }
+  ],
+  "inputParameters": [
+    "device_id[Unique device identifier. Example: IOS01 #node_id]"
+  ],
+  "outputParameters": {
+    "data": "${UNIFIED_read_structured_device_data.output.response_body}"
+  },
+  "schemaVersion": 2
+}]

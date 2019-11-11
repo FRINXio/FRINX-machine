@@ -1,0 +1,25 @@
+[{
+  "name": "Store_LLDP_topology",
+  "description": "Store lldp topology in database - DEMO,LLDP",
+  "version": 1,
+  "inputParameters": [
+	"destination_topology[Name of a topology to read][lldp]",
+	"content[Actual topology content]"
+  ],
+  "tasks": [
+    {
+      "name": "LLDP_store_topology",
+      "taskReferenceName": "LLDP_store_topology",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "destination-topology": "${workflow.input.destination_topology}",
+        "content": "${workflow.input.content}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "response": "${LLDP_store_topology.output.response_body}",
+    "request": "${LLDP_store_topology.output.request_body}"
+  },
+  "schemaVersion": 2
+}]
