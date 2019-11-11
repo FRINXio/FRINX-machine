@@ -1,0 +1,22 @@
+[{
+  "name": "UNICONFIG_checked_commit",
+  "description": "Checked Commit uniconfig - BASIC,UNICONFIG",
+  "version": 1,  
+  "inputParameters": [
+    "devices[List of devices to be checked committed. This is a mandatory parameter. Example: IOS01, IOS02 #node_ids]"
+  ],
+  "tasks": [
+  	{
+      "name": "UNICONFIG_checked_commit",
+      "taskReferenceName": "UNICONFIG_checked_commit",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "devices": "${workflow.input.devices}"
+	  }
+    }
+  ],
+  "outputParameters": {
+    "response_body": "${UNICONFIG_checked_commit.output.response_body}"
+  },
+  "schemaVersion": 2
+}]

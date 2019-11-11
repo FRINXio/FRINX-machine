@@ -1,0 +1,30 @@
+[{
+  "name": "Unmount_netconf_device",
+  "description": "unmount a CLI device - BASIC,NETCONF",
+  "version": 1,
+  "inputParameters": [
+    "device_id[Unique device identifier. Example: IOS01 #node_id]"
+  ],
+  "tasks": [
+  	{
+      "name": "Netconf_unmount_netconf",
+      "taskReferenceName": "Netconf_unmount_netconf",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}"
+      }
+    },
+  	{
+      "name": "Netconf_check_netconf_id_available",
+      "taskReferenceName": "Netconf_check_netconf_id_available",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "device_id": "${workflow.input.device_id}"
+  },
+  "schemaVersion": 2
+}]

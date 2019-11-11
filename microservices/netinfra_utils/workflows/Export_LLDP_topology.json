@@ -1,0 +1,16 @@
+[{
+  "name": "Export_LLDP_topology",
+  "description": "Export lldp topology - LLDP",
+  "version": 1,
+  "tasks": [
+    {
+      "name": "LLDP_export_topology",
+      "taskReferenceName": "LLDP_export_topology",
+      "type": "SIMPLE"
+    }
+  ],
+  "outputParameters": {
+    "export": "${LLDP_export_topology.output.response_body}"
+  },
+  "schemaVersion": 2
+}]

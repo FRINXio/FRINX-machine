@@ -1,0 +1,44 @@
+[{
+  "name": "Execute_all_from_cli_update_inventory",
+  "description": "execute a command from inventory for all devices in cli topology and store in inventory - DEMO,INVENTORY,CLI",
+  "version": 1,
+  "inputParameters": [
+    "command_id[Unique command identifier]",
+    "params[]"
+  ],
+  "tasks": [
+  	{
+      "name": "sub_read_unified",
+      "taskReferenceName": "read_unified",
+	    "inputParameters": {
+        "task": "Execute_and_read_rpc_cli_device_from_inventory_update_inventory",
+        "task_input": {
+        	"command_id": "${workflow.input.command_id}",
+			    "params": "${workflow.input.params}"
+        }
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Get_all_cli_devices_as_tasks",
+        "version": 1
+      }
+    },
+  	{
+      "name": "sub_execute_command",
+      "taskReferenceName": "execute_command",
+	    "inputParameters": {
+        "dynamic_tasks": "${read_unified.output.dynamic_tasks}",
+        "dynamic_tasks_i": "${read_unified.output.dynamic_tasks_i}"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Dynamic_fork",
+        "version": 1
+      }
+    }
+  ],
+  "outputParameters": {
+  	"device_ids": "${execute_command.output.forkedTasks}"
+  },
+  "schemaVersion": 2
+}]

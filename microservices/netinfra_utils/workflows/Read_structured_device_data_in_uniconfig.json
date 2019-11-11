@@ -1,0 +1,23 @@
+[{
+  "name": "Read_structured_device_data_in_uniconfig",
+  "description": "Read device configuration or operational data in structured format e.g. openconfig - BASIC,UNICONFIG,OPENCONFIG",
+  "version": 1,
+  "inputParameters": [
+    "device_id[Unique identifier of device. Example: IOS01 #node_id]"
+  ],
+  "tasks": [
+  	{
+      "name": "UNICONFIG_read_structured_device_data",
+      "taskReferenceName": "UNICONFIG_read_structured_device_data",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}",
+		"uri": "${workflow.input.uri}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "data": "${UNICONFIG_read_structured_device_data.output.response_body}"
+  },
+  "schemaVersion": 2
+}]

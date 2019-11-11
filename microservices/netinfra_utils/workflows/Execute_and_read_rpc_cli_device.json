@@ -1,0 +1,26 @@
+[{
+  "name": "Execute_and_read_rpc_cli_device",
+  "description": "execute commands for a CLI device - BASIC,CLI",
+  "version": 1,
+  "inputParameters": [
+    "device_id[Unique device identifier. Example: IOS01 #node_id]",
+	  "template[Command template e.g. show running-config #template]",
+    "params[]"
+  ],
+  "tasks": [
+  	{
+      "name": "CLI_execute_and_read_rpc_cli",
+      "taskReferenceName": "CLI_execute_and_read_rpc_cli",
+      "type": "SIMPLE",
+      "inputParameters": {
+		    "device_id": "${workflow.input.device_id}",
+        "template": "${workflow.input.template}",
+        "params": "${workflow.input.params}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "output": "${CLI_execute_and_read_rpc_cli.output.response_body.output.output}"
+  },
+  "schemaVersion": 2
+}]

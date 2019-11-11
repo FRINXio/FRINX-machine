@@ -1,0 +1,22 @@
+[{
+  "name": "Get_cli_command_template_from_inventory",
+  "description": "get 1 command template from inventory database - BASIC,INVENTORY,CLI",
+  "version": 1,
+  "inputParameters": [
+	 "template_id[Unique command template identifier in DB]"
+  ],
+  "tasks": [
+    {
+      "name": "INVENTORY_get_show_command",
+      "taskReferenceName": "INVENTORY_get_show_command",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "template_id": "${workflow.input.template_id}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "command": "${INVENTORY_get_show_command.output.response_body.command}"
+  },
+  "schemaVersion": 2
+}]

@@ -1,0 +1,24 @@
+[{
+  "name": "Get_all_devices_in_unified_as_tasks",
+  "description": "get all devices in unified topology as workflow tasks - BASIC,UNIFIED",
+  "version": 1,
+   "inputParameters": [
+    "task[Name of a task to schedule for subsequent execution in the output #tasks]"
+  ],
+  "tasks": [
+    {
+      "name": "UNIFIED_get_all_devices_as_tasks",
+      "taskReferenceName": "UNIFIED_get_all_devices_as_tasks",
+      "type": "SIMPLE",
+      "inputParameters": {
+    		"task": "${workflow.input.task}",
+    		"task_params": "${workflow.input.task_params}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "dynamic_tasks_i": "${UNIFIED_get_all_devices_as_tasks.output.dynamic_tasks_i}",
+    "dynamic_tasks": "${UNIFIED_get_all_devices_as_tasks.output.dynamic_tasks}"
+  },
+  "schemaVersion": 2
+}]

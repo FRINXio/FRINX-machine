@@ -1,0 +1,22 @@
+[{
+  "name": "Read_components_openconfig",
+  "description": "Read components in openconfig format - DEMO,PLATFORM,UNIFIED,OPENCONFIG",
+  "version": 1,
+  "inputParameters": [
+    "device_id[Unique device identifier. Example: IOS01 #node_id]"
+  ],
+  "tasks": [
+  	{
+      "name": "OC-PLATFORM_read_components",
+      "taskReferenceName": "OC-PLATFORM_read_components",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "components": "${OC-PLATFORM_read_components.output.response_body}"
+  },
+  "schemaVersion": 2
+}]

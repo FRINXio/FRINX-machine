@@ -1,0 +1,22 @@
+[{
+  "name": "Check_unified_node_exists",
+  "description": "check unified node exists - BASIC,UNIFIED",
+  "version": 1,
+  "inputParameters": [
+    "device_id[Unique device identifier. Example: IOS01]"
+  ],
+  "tasks": [
+  	{
+      "name": "UNIFIED_check_unified_node_exists",
+      "taskReferenceName": "UNIFIED_check_unified_node_exists",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "mount": "${UNIFIED_check_unified_node_exists.output.response_body}"
+  },
+  "schemaVersion": 2
+}]
