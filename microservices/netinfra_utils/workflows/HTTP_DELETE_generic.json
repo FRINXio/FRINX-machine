@@ -1,0 +1,30 @@
+[{
+      "name": "HTTP_DELETE_generic",
+      "description": "GENERIC HTTP DELETE workflow - BASIC,SYSTEM,HTTP",
+      "version": 1,
+      "inputParameters": [
+          "uri[URI of HTTP request e.g. http://ip.jsontest.com/][http://ip.jsontest.com/]"
+      ],
+      "tasks": [
+           {
+              "name": "http_get_generic",
+              "taskReferenceName": "http_get_generic_instance",
+              "inputParameters": {
+                "http_request": {
+                  "uri": "${workflow.input.uri}",
+                  "method": "DELETE",
+                  "contentType": "application/json",
+                  "accept": "application/json",
+                  "connectionTimeOut":"3600",
+                 "readTimeOut":"3600"
+                }
+              },
+              "type": "HTTP",
+              "startDelay": 0
+          }
+      ],
+      "outputParameters": {
+        "response_body": "${http_get_generic_instance.output.response.body}"
+      },
+      "schemaVersion": 2
+    }]

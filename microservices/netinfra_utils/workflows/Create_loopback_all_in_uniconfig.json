@@ -1,0 +1,77 @@
+[{
+  "name": "Create_loopback_all_in_uniconfig",
+  "description": "Create loopback interface for all devices in uniconfig topology - DEMO,INTERFACES,UNICONFIG,OPENCONFIG",
+  "version": 1,
+  "inputParameters": [
+    "loopback_id[Unique loopback identifier (e.g. 77)]"
+  ],
+  "tasks": [
+  	{
+      "name": "sub_read_unified",
+      "taskReferenceName": "read_unified",
+	    "inputParameters": {
+        "task": "Create_loopback_interface_uniconfig",
+        "task_params": "{\"loopback_id\": \"${workflow.input.loopback_id}\"}"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Get_all_devices_as_tasks_in_uniconfig",
+        "version": 1
+      }
+    },
+  	{
+      "name": "sub_create_loopback",
+      "taskReferenceName": "create_loopback",
+	   "inputParameters": {
+        "dynamic_tasks": "${read_unified.output.dynamic_tasks}",
+        "dynamic_tasks_i": "${read_unified.output.dynamic_tasks_i}"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Dynamic_fork",
+        "version": 1
+      }
+    },
+  	{
+      "name": "sub_calc_diff",
+      "taskReferenceName": "calc_diff",
+      "type": "SUB_WORKFLOW",
+       "inputParameters": {
+        "devices": "${create_loopback.output.forkedTasks}"
+      },
+      "subWorkflowParam": {
+        "name": "UNICONFIG_calculate_diff",
+        "version": 1
+      }
+    },
+  	{
+      "name": "sub_dryrun_commit",
+      "taskReferenceName": "dryrun_commit",
+      "type": "SUB_WORKFLOW",
+      "inputParameters": {
+        "devices": "${create_loopback.output.forkedTasks}"
+      },
+      "subWorkflowParam": {
+        "name": "UNICONFIG_dryrun_commit",
+        "version": 1
+      },
+      "optional": true
+    },
+  	{
+      "name": "sub_commit",
+      "taskReferenceName": "commit",
+      "type": "SUB_WORKFLOW",
+      "inputParameters": {
+        "devices": "${create_loopback.output.forkedTasks}"
+      },
+      "subWorkflowParam": {
+        "name": "UNICONFIG_commit",
+        "version": 1
+      }
+    }
+  ],
+  "outputParameters": {
+  	"interfaces": "${UNICONFIG_commit.output}"
+  },
+  "schemaVersion": 2
+}]

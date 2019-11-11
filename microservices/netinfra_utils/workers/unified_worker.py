@@ -9,6 +9,7 @@ import uniconfig_worker
 
 odl_url_unified_oper_shallow = odl_url_base + "/operational/network-topology:network-topology/topology/unified?depth=3"
 odl_url_unified_oper = odl_url_base + "/operational/network-topology:network-topology/topology/unified"
+odl_url_unified_oper_mount = odl_url_unified_oper + "/node/"
 odl_url_unified_mount = odl_url_base + "/config/network-topology:network-topology/topology/unified/node/"
 
 
@@ -168,6 +169,28 @@ def delete_structured_data(task):
                 'logs': ["Unable to update device with ID %s" % device_id]}
 
 
+def execute_check_unified_node_exists(task):
+    device_id = task['inputData']['device_id']
+
+    id_url = odl_url_unified_oper_mount + device_id
+
+    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    response_code, response_json = parse_response(r)
+
+    if response_code != requests.codes.not_found:
+        # Mountpoint with such ID already exists
+        return {'status': 'COMPLETED', 'output': {'url': id_url,
+                                                  'response_code': response_code,
+                                                  'response_body': response_json},
+                'logs': ["Unified mountpoint with ID %s exists" % device_id]}
+    else:
+        return {'status': 'FAILED', 'output': {'url': id_url,
+                                               'response_code': response_code,
+                                               'response_body': response_json},
+                'logs': ["Unified mountpoint with ID %s doesn't exist" % device_id]}
+
+
+
 def start(cc):
     print('Starting Unified workers')
 
@@ -185,3 +208,6 @@ def start(cc):
 
     cc.register('UNIFIED_delete_structured_device_data')
     cc.start('UNIFIED_delete_structured_device_data', delete_structured_data, False)
+
+    cc.register('UNIFIED_check_unified_node_exists')
+    cc.start('UNIFIED_check_unified_node_exists', execute_check_unified_node_exists, False)

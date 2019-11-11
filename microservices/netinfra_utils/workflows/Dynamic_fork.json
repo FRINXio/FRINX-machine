@@ -1,0 +1,27 @@
+[{
+  "name": "Dynamic_fork",
+  "description": "A dynamic fork + join task - BASIC,UTILS",
+  "version": 1,
+  "tasks": [
+    {
+	  "name": "dynamic_fork",
+	  "taskReferenceName": "fork",
+	  "inputParameters": {
+	     "dynamic_tasks": "${workflow.input.dynamic_tasks}",
+	     "dynamic_tasks_i": "${workflow.input.dynamic_tasks_i}"
+	  },
+	  "type": "FORK_JOIN_DYNAMIC",
+	  "dynamicForkTasksParam": "dynamic_tasks",
+	  "dynamicForkTasksInputParamName": "dynamic_tasks_i"
+	},
+	{
+      "name": "join",
+      "taskReferenceName": "join",
+      "type": "JOIN"
+    }
+  ],
+  "outputParameters": {
+    "forkedTasks": "${fork.input.forkedTasks}"
+  },
+  "schemaVersion": 2
+}]

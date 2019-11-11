@@ -1,0 +1,26 @@
+[{
+  "name": "Add_nested_field_to_device_in_inventory",
+  "description": "add a nested field (nested json structure) to device in inventory database - BASICS,INVENTORY",
+  "version": 1,
+  "inputParameters": [
+  	"device_id[Unique device identifier. Example: IOS01]",
+  	"field[Key (identifier) of a new field]",
+  	"value[Value (json content) of a new field]"
+  ],
+  "tasks": [
+    {
+      "name": "INVENTORY_add_nested_field_to_device",
+      "taskReferenceName": "INVENTORY_nested_add_field_to_device",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}",
+		    "field": "${workflow.input.field}",
+        "value": "${workflow.input.value}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "device_id": "${workflow.input.device_id}"
+  },
+  "schemaVersion": 2
+}]

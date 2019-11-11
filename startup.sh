@@ -39,7 +39,7 @@ function start_container {
 }
 
 function start_containers {
-local containers_to_start=("dynomite" "elasticsearch" "logstash" "conductor-server" "odl" "sample-topology" "uniconfig-ui" "kibana" "micros" "portainer")
+local containers_to_start=("dynomite" "elasticsearch" "logstash" "conductor-server" "odl" "micros" "sample-topology" "uniconfig-ui" "kibana" "portainer")
 
 
 for i in "${containers_to_start[@]}"; do
@@ -55,7 +55,7 @@ done
 }
 
 function import_workflows {
-sudo docker exec micros bash -c "cd /home/app && newman run netinfra_utils/postman.json --folder 'SETUP' -e netinfra_utils/postman_environment.json"
+sudo docker exec micros bash -c "cd /home/app/netinfra_utils && ./importWorkflow.sh"
 if [ "$skip" = false ]; then
   check_success $?
 fi
@@ -80,7 +80,6 @@ fi
 
 # Loop arguments
 skip=false
-import=false
 while [ "$1" != "" ];
 do
 case $1 in

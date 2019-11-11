@@ -1,0 +1,22 @@
+[{
+  "name": "UNICONFIG_calculate_diff",
+  "description": "Calculate uniconfig diff - BASIC,UNICONFIG",
+  "version": 1,  
+  "inputParameters": [
+    "devices[List of devices to be changed by operation. This is a mandatory parameter. Example: IOS01, IOS02 #node_ids]"
+  ],
+  "tasks": [
+  	{
+      "name": "UNICONFIG_calculate_diff",
+      "taskReferenceName": "UNICONFIG_calculate_diff",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "devices": "${workflow.input.devices}"
+	  }
+    }
+  ],
+  "outputParameters": {
+    "response_body": "${UNICONFIG_calculate_diff.output.response_body}"
+  },
+  "schemaVersion": 2
+}]

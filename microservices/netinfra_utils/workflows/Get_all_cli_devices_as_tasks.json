@@ -1,0 +1,24 @@
+[{
+  "name": "Get_all_cli_devices_as_tasks",
+  "description": "get all devices in CLI topology as workflow tasks - BASIC,CLI",
+  "version": 1,
+  "inputParameters": [
+    "task[Name of a task to schedule for subsequent execution in the output #tasks]"
+  ],
+  "tasks": [
+    {
+      "name": "CLI_get_all_devices_as_tasks",
+      "taskReferenceName": "CLI_get_all_devices_as_tasks",
+      "type": "SIMPLE",
+      "inputParameters": {
+    		"task": "${workflow.input.task}",
+    		"task_input": "${workflow.input.task_input}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "dynamic_tasks_i": "${CLI_get_all_devices_as_tasks.output.dynamic_tasks_i}",
+    "dynamic_tasks": "${CLI_get_all_devices_as_tasks.output.dynamic_tasks}"
+  },
+  "schemaVersion": 2
+}]

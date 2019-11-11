@@ -1,0 +1,22 @@
+[{
+  "name": "Remove_device_from_inventory",
+  "description": "remove a device to inventory database - BASIC,INVENTORY",
+  "version": 1,
+  "inputParameters": [
+	 "device_id[Unique device identifier in DB. Example: IOS01]"
+  ],
+  "tasks": [
+    {
+      "name": "INVENTORY_remove_device",
+      "taskReferenceName": "INVENTORY_remove_device",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "device_id": "${workflow.input.device_id}"
+  },
+  "schemaVersion": 2
+}]
