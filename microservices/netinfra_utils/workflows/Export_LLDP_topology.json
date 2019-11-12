@@ -1,6 +1,6 @@
 [{
   "name": "Export_LLDP_topology",
-  "description": "Export lldp topology - LLDP",
+  "description": "Export lldp topology - DEMO,LLDP",
   "version": 1,
   "tasks": [
     {

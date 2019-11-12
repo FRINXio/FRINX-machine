@@ -1,6 +1,6 @@
 [{
   "name": "Execute_and_read_rpc_cli_device",
-  "description": "execute commands for a CLI device - BASIC,CLI",
+  "description": "execute commands for a CLI device - BASICS,CLI",
   "version": 1,
   "inputParameters": [
     "device_id[Unique device identifier. Example: IOS01 #node_id]",

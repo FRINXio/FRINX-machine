@@ -1,6 +1,6 @@
 [{
   "name": "Get_all_devices_as_tasks_from_inventory",
-  "description": "get all devices in inventory database as workflow tasks - BASIC,INVENTORY",
+  "description": "get all devices in inventory database as workflow tasks - BASICS,INVENTORY",
   "version": 1,
   "inputParameters": [
   	"labels[Enter one or multiple labels to select devices. Match type is ALL.]",

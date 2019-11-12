@@ -1,6 +1,6 @@
 [{
   "name": "Read_cli_topology_operational",
-  "description": "Read operational state of CLI - BASIC,CLI",
+  "description": "Read operational state of CLI - BASICS,CLI",
   "version": 1,
   "tasks": [
   	{

@@ -1,6 +1,6 @@
 [{
       "name": "HTTP_PUT_generic",
-      "description": "GENERIC HTTP PUT workflow - BASIC,SYSTEM,HTTP",
+      "description": "GENERIC HTTP PUT workflow - BASICS,SYSTEM,HTTP",
       "version": 1,
       "inputParameters": [
         "template[Body of HTTP request][{\"text\":\"sample PUT message from http get workflow.\"}]",

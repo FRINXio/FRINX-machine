@@ -1,6 +1,6 @@
 [{
   "name": "Dynamic_fork",
-  "description": "A dynamic fork + join task - BASIC,UTILS",
+  "description": "A dynamic fork + join task - BASICS,UTILS",
   "version": 1,
   "tasks": [
     {

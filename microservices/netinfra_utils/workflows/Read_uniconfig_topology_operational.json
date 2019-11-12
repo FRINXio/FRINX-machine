@@ -1,6 +1,6 @@
 [{
   "name": "Read_uniconfig_topology_operational",
-  "description": "Read operational state of Uniconfig - BASIC,UNICONFIG",
+  "description": "Read operational state of Uniconfig - BASICS,UNICONFIG",
   "version": 1,
   "inputParameters": [
     "devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02 #node_ids]"

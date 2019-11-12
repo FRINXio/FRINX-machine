@@ -1,6 +1,6 @@
 [{
       "name": "HTTP_GET_generic",
-      "description": "GENERIC HTTP GET workflow - BASIC,SYSTEM,HTTP",
+      "description": "GENERIC HTTP GET workflow - BASICS,SYSTEM,HTTP",
       "version": 1,
       "inputParameters": [
         "uri[URI of HTTP request e.g. http://ip.jsontest.com/][http://ip.jsontest.com/]"
