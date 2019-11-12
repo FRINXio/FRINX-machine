@@ -1,6 +1,6 @@
 [{
   "name": "Mount_cli_device",
-  "description": "mount a CLI device - CLI, SOUTHBOUND",
+  "description": "mount a CLI device - BASICS,CLI",
   "version": 1,
   "inputParameters": [
 	"device_id[Unique identifier of device across all systems]",

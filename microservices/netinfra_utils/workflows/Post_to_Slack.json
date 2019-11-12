@@ -1,14 +1,15 @@
 [{
   "name": "Post_to_Slack",
+  "description": "Post a message to your favorite Slack channel - SLACK,HTTP",
   "version": 1,
   "tasks": [
     {
       "name": "HTTP_POST_generic",
       "taskReferenceName": "http_post_generic_ref_6EHC",
       "inputParameters": {
-        "uri": "https://hooks.slack.com/services/${workflow.input.uri}",
+        "uri": "https://hooks.slack.com/services/${workflow.input.slack_webhook_id}",
         "template": {
-          "text": "Message from http POST workflow."
+          "text": "${workflow.input.message_text}"
         }
       },
       "type": "SUB_WORKFLOW",
@@ -16,12 +17,12 @@
       "subWorkflowParam": {
         "name": "HTTP_POST_generic",
         "version": 1
-      },
-      "optional": false
+      }
     }
   ],
   "inputParameters": [
-    "uri[URI hook][T7UQ7KATX/BP8M0S3EH/W3YpmbUr2fQDEA7WIoWcJIXX]"
+    "slack_webhook_id[The Slack webhook ID that you want to send this message to][T7UQ7KATX/BP8M0S3EH/W3YpmbUr2fQDEA7WIoWcJIXX]",
+    "message_text[The message that you want to send to Slack][I am sitting in a room ]"
   ],
   "schemaVersion": 2,
   "restartable": true,

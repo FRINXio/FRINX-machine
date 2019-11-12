@@ -1,6 +1,6 @@
 [{
   "name": "Get_all_devices_as_tasks_in_uniconfig",
-  "description": "get all devices in uniconfig topology as workflow tasks - BASIC,UNICONFIG",
+  "description": "get all devices in uniconfig topology as workflow tasks - BASICS,UNICONFIG",
   "version": 1,
    "inputParameters": [
     "task[Name of a task to schedule for subsequent execution in the output #tasks]"

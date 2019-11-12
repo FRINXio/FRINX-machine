@@ -1,6 +1,6 @@
 [{
   "name": "UNICONFIG_dryrun_commit",
-  "description": "Dryrun Commit uniconfig - BASIC,UNICONFIG",
+  "description": "Dryrun Commit uniconfig - BASICS,UNICONFIG",
   "version": 1,  
   "inputParameters": [
     "devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02 #node_ids]"

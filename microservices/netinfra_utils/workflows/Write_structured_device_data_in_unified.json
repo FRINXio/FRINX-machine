@@ -1,6 +1,6 @@
 [{
   "name": "Write_structured_device_data_in_unified",
-  "description": "Write device configuration data in structured format e.g. openconfig - BASIC,UNIFIED",
+  "description": "Write device configuration data in structured format e.g. openconfig - BASICS,UNIFIED",
   "version": 1,
   "inputParameters": [
     "device_id[Unique device identifier. Example: IOS01 #node_id]"

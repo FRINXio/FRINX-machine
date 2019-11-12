@@ -1,6 +1,6 @@
 [{
       "name": "HTTP_POST_generic",
-      "description": "GENERIC HTTP POST workflow - BASIC,SYSTEM,HTTP",
+      "description": "GENERIC HTTP POST workflow - BASICS,SYSTEM,HTTP",
       "version": 1,
       "inputParameters": [
         "uri[URI of HTTP request][https://hooks.slack.com/services/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]",

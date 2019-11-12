@@ -1,6 +1,6 @@
 [{
   "name": "Check_unified_node_exists",
-  "description": "check unified node exists - BASIC,UNIFIED",
+  "description": "check unified node exists - BASICS,UNIFIED",
   "version": 1,
   "inputParameters": [
     "device_id[Unique device identifier. Example: IOS01]"

@@ -1,6 +1,6 @@
 [{
   "name": "Unmount_netconf_device",
-  "description": "unmount a CLI device - BASIC,NETCONF",
+  "description": "unmount a CLI device - BASICS,NETCONF",
   "version": 1,
   "inputParameters": [
     "device_id[Unique device identifier. Example: IOS01 #node_id]"

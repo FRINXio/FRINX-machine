@@ -1,6 +1,6 @@
 [{
   "name": "Get_cli_command_template_from_inventory",
-  "description": "get 1 command template from inventory database - BASIC,INVENTORY,CLI",
+  "description": "get 1 command template from inventory database - BASICS,INVENTORY,CLI",
   "version": 1,
   "inputParameters": [
 	 "template_id[Unique command template identifier in DB]"

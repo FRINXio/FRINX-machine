@@ -1,6 +1,6 @@
 [{
   "name": "Mount_and_check_cli",
-  "description": "mount, check and leave device mounted - CLI, SOUTHBOUND",
+  "description": "mount, check and leave device mounted - BASICS,CLI",
   "version": 1,
   "inputParameters": [
 	"device_id[Unique identifier of device across all systems]",
