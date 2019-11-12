@@ -1,6 +1,6 @@
 [{
   "name": "Read_journal_cli_device",
-  "description": "Read cli journal for a device - BASIC,CLI",
+  "description": "Read cli journal for a device - BASICS,CLI",
   "version": 1,
   "inputParameters": [
     "device_id[Unique identifier of device. Example: IOS01 #node_id]"

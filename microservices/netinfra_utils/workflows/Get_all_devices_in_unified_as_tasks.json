@@ -1,6 +1,6 @@
 [{
   "name": "Get_all_devices_in_unified_as_tasks",
-  "description": "get all devices in unified topology as workflow tasks - BASIC,UNIFIED",
+  "description": "get all devices in unified topology as workflow tasks - BASICS,UNIFIED",
   "version": 1,
    "inputParameters": [
     "task[Name of a task to schedule for subsequent execution in the output #tasks]"

@@ -1,6 +1,6 @@
 [{
     "name": "Mount_netconf_device",
-    "description": "mount a Netconf device - BASIC,NETCONF",
+    "description": "mount a Netconf device - BASICS,NETCONF",
     "version": 1,
     "inputParameters": [
 	"device_id[Unique identifier of device across all systems]",

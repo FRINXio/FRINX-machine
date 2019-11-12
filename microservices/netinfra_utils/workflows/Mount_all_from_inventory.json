@@ -1,6 +1,6 @@
 [{
   "name": "Mount_all_from_inventory",
-  "description": "mount and check all labeled devices from inventory - BASIC,CLI,NETCONF,INVENTORY,MAIN",
+  "description": "mount and check all labeled devices from inventory - BASICS,CLI,NETCONF,INVENTORY,MAIN",
   "version": 1,
   "inputParameters": [
     "labels[Enter one or multiple labels to select devices. Match type is ALL.]"
@@ -28,7 +28,7 @@
       },
       "type": "SUB_WORKFLOW",
       "subWorkflowParam": {
-        "name": "Dynamic_fork_optional",
+        "name": "Dynamic_fork",
         "version": 1
       }
     }

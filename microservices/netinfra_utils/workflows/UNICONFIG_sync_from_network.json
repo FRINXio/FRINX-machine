@@ -1,6 +1,6 @@
 [{
   "name": "UNICONFIG_sync_from_network",
-  "description": "Sync uniconfig from network - BASIC,UNICONFIG",
+  "description": "Sync uniconfig from network - BASICS,UNICONFIG",
   "version": 1,  
   "inputParameters": [
     "devices[List of devices to be changed by operation. This is a mandatory parameter. Example: IOS01, IOS02 #node_ids]"

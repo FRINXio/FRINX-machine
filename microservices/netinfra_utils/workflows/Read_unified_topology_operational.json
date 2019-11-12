@@ -1,6 +1,6 @@
 [{
   "name": "Read_unified_topology_operational",
-  "description": "Read operational state of Unified - BASIC,UNIFIED",
+  "description": "Read operational state of Unified - BASICS,UNIFIED",
   "version": 1,
   "tasks": [
   	{

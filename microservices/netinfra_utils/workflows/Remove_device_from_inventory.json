@@ -1,6 +1,6 @@
 [{
   "name": "Remove_device_from_inventory",
-  "description": "remove a device to inventory database - BASIC,INVENTORY",
+  "description": "remove a device to inventory database - BASICS,INVENTORY",
   "version": 1,
   "inputParameters": [
 	 "device_id[Unique device identifier in DB. Example: IOS01]"

@@ -1,6 +1,6 @@
 [{
   "name": "Add_cli_device_to_inventory",
-  "description": "add a CLI device to inventory database - BASIC,MAIN,INVENTORY,CLI",
+  "description": "add a CLI device to inventory database - BASICS,MAIN,INVENTORY,CLI",
   "version": 1,
   "inputParameters": [
     "device_id[Unique identifier of device across all systems]",

@@ -1,6 +1,6 @@
 [{
   "name": "Get_device_from_inventory",
-  "description": "get 1 device from inventory database - BASIC,INVENTORY",
+  "description": "get 1 device from inventory database - BASICS,INVENTORY",
   "version": 1,
   "inputParameters": [
 	 "device_id[Unique device identifier. Example: IOS01]"
