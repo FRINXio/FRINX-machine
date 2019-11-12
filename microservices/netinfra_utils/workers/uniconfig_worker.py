@@ -257,7 +257,7 @@ def commit(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["overall-configuration-status"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_commit,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -276,7 +276,7 @@ def dryrun_commit(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["overall-configuration-status"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_dryrun_commit,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -295,7 +295,7 @@ def checked_commit(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["overall-configuration-status"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_checked_commit,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -314,7 +314,7 @@ def calc_diff(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_calculate_diff,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -333,7 +333,7 @@ def sync_from_network(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["overall-sync-status"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_sync_from_network,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -352,7 +352,7 @@ def replace_config_with_oper(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["result"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_replace_config_with_operational,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -382,7 +382,7 @@ def create_snapshot(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["result"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_create_snapshot,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -441,7 +441,7 @@ def delete_snapshot(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_delete_snapshot,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -461,7 +461,7 @@ def replace_config_with_snapshot(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["result"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_replace_config_with_snapshot,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
