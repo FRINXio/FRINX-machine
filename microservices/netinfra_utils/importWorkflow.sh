@@ -16,7 +16,7 @@ for file in "$DIR"/*; do
 	echo $file
     BODY=$( cat $file) 
 
-    curl -X PUT -H "Content-Type: application/json" -d "$BODY" http://$host:8080/api/metadata/workflow
+    curl -X PUT -H "Content-Type: application/json" -d "[$BODY]" http://$host:8080/api/metadata/workflow
     echo " "
 done
 }

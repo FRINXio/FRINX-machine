@@ -1,4 +1,4 @@
-[{
+{
   "name": "Get_all_cli_devices_as_tasks",
   "description": "get all devices in CLI topology as workflow tasks - BASICS,CLI",
   "version": 1,
@@ -21,4 +21,4 @@
     "dynamic_tasks": "${CLI_get_all_devices_as_tasks.output.dynamic_tasks}"
   },
   "schemaVersion": 2
-}]
+}

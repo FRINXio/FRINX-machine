@@ -1,4 +1,4 @@
-[{
+{
   "name": "Get_device_from_inventory",
   "description": "get 1 device from inventory database - BASICS,INVENTORY",
   "version": 1,
@@ -19,4 +19,4 @@
     "device": "${INVENTORY_get_device.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

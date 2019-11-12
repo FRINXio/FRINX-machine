@@ -1,4 +1,4 @@
-[{
+{
   "name": "Get_all_devices_as_tasks_in_uniconfig",
   "description": "get all devices in uniconfig topology as workflow tasks - BASICS,UNICONFIG",
   "version": 1,
@@ -21,4 +21,4 @@
     "dynamic_tasks": "${UNICONFIG_get_all_devices_as_tasks.output.dynamic_tasks}"
   },
   "schemaVersion": 2
-}]
+}

@@ -80,11 +80,16 @@ fi
 
 # Loop arguments
 skip=false
+browser=flase
 while [ "$1" != "" ];
 do
 case $1 in
     -s | --skip)
     skip=true
+    shift
+    ;;
+    -b | --browser)
+    browser=true
     shift
     ;;
     -h | --help )
@@ -110,4 +115,12 @@ import_workflows
 # Import devices
 import_devices
 
-echo 'Startup finished!'
+echo -e 'Startup finished!\n'
+echo -e 'FRINX UniConfig UI is ready and listening on port 3000. e.g. http://localhost:3000/\n'
+
+if [ "$browser" = true ]; then
+  if which google-chrome > /dev/null
+  then
+    google-chrome --disable-gpu http://localhost:3000/
+  fi
+fi

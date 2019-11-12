@@ -1,4 +1,4 @@
-[{
+{
   "name": "Execute_all_from_cli_update_inventory",
   "description": "execute a command from inventory for all devices in cli topology and store in inventory - DEMO,INVENTORY,CLI",
   "version": 1,
@@ -41,4 +41,4 @@
   	"device_ids": "${execute_command.output.forkedTasks}"
   },
   "schemaVersion": 2
-}]
+}

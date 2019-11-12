@@ -1,4 +1,4 @@
-[{
+{
   "name": "Build_read_store_LLDP_topology",
   "description": "Build, read and store LLDP topology in database - DEMO,LLDP",
   "version": 1,
@@ -57,4 +57,4 @@
     "content": "${read.output.response.topology}"
   },
   "schemaVersion": 2
-}]
+}

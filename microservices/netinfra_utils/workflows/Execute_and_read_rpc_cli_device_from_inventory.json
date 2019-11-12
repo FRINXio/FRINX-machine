@@ -1,4 +1,4 @@
-[{
+{
   "name": "Execute_and_read_rpc_cli_device_from_inventory",
   "description": "execute commands loaded from inventory for a CLI device - BASICS,CLI,INVENTORY",
   "version": 1,
@@ -39,4 +39,4 @@
     "output": "${execute_template.output.output}"
   },
   "schemaVersion": 2
-}]
+}

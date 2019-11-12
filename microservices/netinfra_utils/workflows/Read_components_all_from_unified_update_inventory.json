@@ -1,4 +1,4 @@
-[{
+{
   "name": "Read_components_all_from_unified_update_inventory",
   "description": "read components for all devices in unified topology and store in inventory - DEMO,PLATFORM,UNIFIED,INVENTORY",
   "version": 1,
@@ -33,4 +33,4 @@
   	"a": "b"
   },
   "schemaVersion": 2
-}]
+}

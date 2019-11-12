@@ -1,4 +1,4 @@
-[{
+{
   "name": "UNICONFIG_dryrun_commit",
   "description": "Dryrun Commit uniconfig - BASICS,UNICONFIG",
   "version": 1,  
@@ -19,4 +19,4 @@
     "response_body": "${UNICONFIG_dryrun_commit.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

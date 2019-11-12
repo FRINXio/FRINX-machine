@@ -1,4 +1,4 @@
-[{
+{
   "name": "Create_loopback_interface_unified",
   "description": "Create loopback interface - DEMO,INTERFACES,UNIFIED,OPENCONFIG",
   "version": 1,
@@ -23,4 +23,4 @@
     "response_body": "${UNIFIED_write_structured_device_data.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

@@ -1,4 +1,4 @@
-[{
+{
   "name": "Unmount_cli_device",
   "description": "unmount a CLI device - BASICS,CLI",
   "version": 1,
@@ -27,4 +27,4 @@
     "device_id": "${workflow.input.device_id}"
   },
   "schemaVersion": 2
-}]
+}

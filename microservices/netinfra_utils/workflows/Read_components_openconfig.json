@@ -1,4 +1,4 @@
-[{
+{
   "name": "Read_components_openconfig",
   "description": "Read components in openconfig format - DEMO,PLATFORM,UNIFIED,OPENCONFIG",
   "version": 1,
@@ -19,4 +19,4 @@
     "components": "${OC-PLATFORM_read_components.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}
