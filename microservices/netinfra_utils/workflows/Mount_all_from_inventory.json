@@ -1,4 +1,4 @@
-[{
+{
   "name": "Mount_all_from_inventory",
   "description": "mount and check all labeled devices from inventory - BASICS,CLI,NETCONF,INVENTORY,MAIN",
   "version": 1,
@@ -37,4 +37,4 @@
     "ids": "${mount.output.forkedTasks}"
   },
   "schemaVersion": 2
-}]
+}

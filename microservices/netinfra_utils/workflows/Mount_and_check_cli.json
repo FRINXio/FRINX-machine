@@ -1,4 +1,4 @@
-[{
+{
   "name": "Mount_and_check_cli",
   "description": "mount, check and leave device mounted - BASICS,CLI",
   "version": 1,
@@ -49,4 +49,4 @@
     "mount": "${check_mounted.output.mount}"
   },
   "schemaVersion": 2
-}]
+}

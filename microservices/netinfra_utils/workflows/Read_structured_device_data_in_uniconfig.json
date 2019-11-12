@@ -1,4 +1,4 @@
-[{
+{
   "name": "Read_structured_device_data_in_uniconfig",
   "description": "Read device configuration or operational data in structured format e.g. openconfig - BASICS,UNICONFIG,OPENCONFIG",
   "version": 1,
@@ -20,4 +20,4 @@
     "data": "${UNICONFIG_read_structured_device_data.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

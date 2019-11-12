@@ -1,4 +1,4 @@
-[{
+{
   "name": "Write_structured_device_data_in_uniconfig",
   "description": "Write device configuration data in structured format e.g. openconfig - BASICS,UNICONFIG",
   "version": 1,
@@ -22,4 +22,4 @@
     "response_body": "${UNICONFIG_write_structured_device_data.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

@@ -1,4 +1,4 @@
-[{
+{
   "name": "UNICONFIG_replace_config_with_oper",
   "description": "Replace config with oper in uniconfig - BASICS,UNICONFIG",
   "version": 1,  
@@ -19,4 +19,4 @@
     "response_body": "${UNICONFIG_replace_config_with_oper.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

@@ -1,4 +1,4 @@
-[{
+{
   "name": "Mount_cli_device",
   "description": "mount a CLI device - BASICS,CLI",
   "version": 1,
@@ -33,4 +33,4 @@
     "device_id": "${workflow.input.device_id}"
   },
   "schemaVersion": 2
-}]
+}

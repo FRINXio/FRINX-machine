@@ -1,4 +1,4 @@
-[{
+{
   "name": "Add_labels_to_device",
   "description": "add a labels to device in inventory database - BASICS,INVENTORY",
   "version": 1,
@@ -22,4 +22,4 @@
     "device_id": "${workflow.input.device_id}"
   },
   "schemaVersion": 2
-}]
+}

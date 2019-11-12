@@ -1,4 +1,4 @@
-[{
+{
   "name": "Read_unified_topology_operational",
   "description": "Read operational state of Unified - BASICS,UNIFIED",
   "version": 1,
@@ -13,4 +13,4 @@
     "id": "${UNIFIED_read_unified_topology_operational.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

@@ -1,4 +1,4 @@
-[{
+{
     "name": "Mount_netconf_device",
     "description": "mount a Netconf device - BASICS,NETCONF",
     "version": 1,
@@ -44,4 +44,4 @@
     },
     "restartable": true,
     "schemaVersion": 2
-}]
+}
