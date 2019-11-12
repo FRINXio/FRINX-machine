@@ -1,4 +1,4 @@
-[{
+{
   "name": "UNICONFIG_calculate_diff",
   "description": "Calculate uniconfig diff - BASICS,UNICONFIG",
   "version": 1,  
@@ -19,4 +19,4 @@
     "response_body": "${UNICONFIG_calculate_diff.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

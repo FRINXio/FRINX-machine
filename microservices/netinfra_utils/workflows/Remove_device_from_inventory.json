@@ -1,4 +1,4 @@
-[{
+{
   "name": "Remove_device_from_inventory",
   "description": "remove a device to inventory database - BASICS,INVENTORY",
   "version": 1,
@@ -19,4 +19,4 @@
     "device_id": "${workflow.input.device_id}"
   },
   "schemaVersion": 2
-}]
+}

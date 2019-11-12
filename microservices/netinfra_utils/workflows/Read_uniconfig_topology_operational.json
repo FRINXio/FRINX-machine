@@ -1,4 +1,4 @@
-[{
+{
   "name": "Read_uniconfig_topology_operational",
   "description": "Read operational state of Uniconfig - BASICS,UNICONFIG",
   "version": 1,
@@ -19,4 +19,4 @@
     "id": "${UNICONFIG_read_unified_topology_operational.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

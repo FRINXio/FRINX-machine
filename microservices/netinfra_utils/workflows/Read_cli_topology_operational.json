@@ -1,4 +1,4 @@
-[{
+{
   "name": "Read_cli_topology_operational",
   "description": "Read operational state of CLI - BASICS,CLI",
   "version": 1,
@@ -13,4 +13,4 @@
     "id": "${CLI_read_cli_topology_operational.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

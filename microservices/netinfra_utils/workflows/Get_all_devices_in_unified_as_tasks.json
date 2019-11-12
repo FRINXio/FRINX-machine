@@ -1,4 +1,4 @@
-[{
+{
   "name": "Get_all_devices_in_unified_as_tasks",
   "description": "get all devices in unified topology as workflow tasks - BASICS,UNIFIED",
   "version": 1,
@@ -21,4 +21,4 @@
     "dynamic_tasks": "${UNIFIED_get_all_devices_as_tasks.output.dynamic_tasks}"
   },
   "schemaVersion": 2
-}]
+}

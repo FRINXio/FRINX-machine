@@ -1,4 +1,4 @@
-[{
+{
       "name": "HTTP_DELETE_generic",
       "description": "GENERIC HTTP DELETE workflow - BASICS,SYSTEM,HTTP",
       "version": 1,
@@ -27,4 +27,4 @@
         "response_body": "${http_get_generic_instance.output.response.body}"
       },
       "schemaVersion": 2
-    }]
+    }

@@ -1,4 +1,4 @@
-[{
+{
       "name": "HTTP_PUT_generic",
       "description": "GENERIC HTTP PUT workflow - BASICS,SYSTEM,HTTP",
       "version": 1,
@@ -28,4 +28,4 @@
         "response_body": "${http_get_generic_instance.output.response.body}"
       },
       "schemaVersion": 2
-    }]
+    }

@@ -1,4 +1,4 @@
-[{
+{
   "name": "Mount_from_inventory",
   "description": "Get device from inventory and decide to mount cli or netconf - BASICS,CLI,NETCONF,INVENTORY,MAIN",
   "version": 1,
@@ -117,4 +117,4 @@
   "schemaVersion": 2,
   "restartable": true,
   "workflowStatusListenerEnabled": false
-}]
+}

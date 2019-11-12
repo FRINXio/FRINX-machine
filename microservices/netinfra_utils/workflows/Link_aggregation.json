@@ -1,4 +1,3 @@
-[
 {
   "name": "Link_aggregation",
   "description": "Creates a link aggregation between two nodes - DEMO,LINKAGG",
@@ -144,4 +143,3 @@
   "restartable": true,
   "schemaVersion": 2
 }
-]

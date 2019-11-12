@@ -1,4 +1,4 @@
-[{
+{
   "name": "Add_netconf_device_to_inventory",
   "description": "add a NETCONF device to inventory database - BASICS,MAIN,NETCONF",
   "version": 1,
@@ -35,4 +35,4 @@
     "device_id": "${workflow.input.device_id}"
   },
   "schemaVersion": 2
-}]
+}

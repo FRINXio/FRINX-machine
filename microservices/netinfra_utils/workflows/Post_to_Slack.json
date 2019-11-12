@@ -1,4 +1,4 @@
-[{
+{
   "name": "Post_to_Slack",
   "description": "Post a message to your favorite Slack channel - SLACK,HTTP",
   "version": 1,
@@ -27,4 +27,4 @@
   "schemaVersion": 2,
   "restartable": true,
   "workflowStatusListenerEnabled": false
-}]
+}

@@ -1,4 +1,4 @@
-[{
+{
   "name": "Get_all_devices_in_inventory",
   "description": "get all devices in inventory database - BASICS,INVENTORY",
   "version": 1,
@@ -19,4 +19,4 @@
     "devices": "${INVENTORY_get_all_devices.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

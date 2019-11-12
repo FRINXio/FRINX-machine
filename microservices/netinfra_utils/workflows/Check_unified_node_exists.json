@@ -1,4 +1,4 @@
-[{
+{
   "name": "Check_unified_node_exists",
   "description": "check unified node exists - BASICS,UNIFIED",
   "version": 1,
@@ -19,4 +19,4 @@
     "mount": "${UNIFIED_check_unified_node_exists.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

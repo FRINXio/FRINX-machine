@@ -1,4 +1,4 @@
-[{
+{
   "name": "Build_LLDP_topology",
   "description": "Build lldp topology - DEMO,LLDP",
   "version": 1,
@@ -28,4 +28,4 @@
     "request": "${LLDP_build_topology.output.request_body}"
   },
   "schemaVersion": 2
-}]
+}

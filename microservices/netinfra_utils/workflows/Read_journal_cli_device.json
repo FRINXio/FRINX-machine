@@ -1,4 +1,4 @@
-[{
+{
   "name": "Read_journal_cli_device",
   "description": "Read cli journal for a device - BASICS,CLI",
   "version": 1,
@@ -19,4 +19,4 @@
     "journal": "${CLI_get_cli_journal.output.response_body.output.journal}"
   },
   "schemaVersion": 2
-}]
+}

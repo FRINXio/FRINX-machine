@@ -1,4 +1,4 @@
-[{
+{
   "name": "Create_loopback_all_in_unified",
   "description": "Create loopback interface for all devices in unified topology -  DEMO,INTERFACES,UNIFIED,OPENCONFIG",
   "version": 1,
@@ -37,4 +37,4 @@
   	"interfaces": "${create_loopback.output}"
   },
   "schemaVersion": 2
-}]
+}

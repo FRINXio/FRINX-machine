@@ -1,4 +1,4 @@
-[{
+{
   "name": "Read_interfaces_unified",
   "description": "Read device interface configuration in structured format - DEMO,INTERFACES,UNIFIED",
   "version": 1,
@@ -20,4 +20,4 @@
     "data": "${UNIFIED_read_structured_device_data.output.response_body}"
   },
   "schemaVersion": 2
-}]
+}

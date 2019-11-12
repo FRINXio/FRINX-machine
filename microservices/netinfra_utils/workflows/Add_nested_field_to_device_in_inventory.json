@@ -1,4 +1,4 @@
-[{
+{
   "name": "Add_nested_field_to_device_in_inventory",
   "description": "add a nested field (nested json structure) to device in inventory database - BASICS,INVENTORY",
   "version": 1,
@@ -23,4 +23,4 @@
     "device_id": "${workflow.input.device_id}"
   },
   "schemaVersion": 2
-}]
+}

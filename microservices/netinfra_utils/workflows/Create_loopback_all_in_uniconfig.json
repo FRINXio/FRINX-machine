@@ -1,4 +1,4 @@
-[{
+{
   "name": "Create_loopback_all_in_uniconfig",
   "description": "Create loopback interface for all devices in uniconfig topology - DEMO,INTERFACES,UNICONFIG,OPENCONFIG",
   "version": 1,
@@ -74,4 +74,4 @@
   	"interfaces": "${UNICONFIG_commit.output}"
   },
   "schemaVersion": 2
-}]
+}

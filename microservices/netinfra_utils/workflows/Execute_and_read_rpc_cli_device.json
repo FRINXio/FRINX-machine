@@ -1,4 +1,4 @@
-[{
+{
   "name": "Execute_and_read_rpc_cli_device",
   "description": "execute commands for a CLI device - BASICS,CLI",
   "version": 1,
@@ -23,4 +23,4 @@
     "output": "${CLI_execute_and_read_rpc_cli.output.response_body.output.output}"
   },
   "schemaVersion": 2
-}]
+}
