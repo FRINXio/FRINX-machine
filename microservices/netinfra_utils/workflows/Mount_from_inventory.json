@@ -71,8 +71,8 @@
         ],
         "netconf": [
           {
-            "name": "Mount_blacklist_netconf_device",
-            "taskReferenceName": "mount_blacklist_netconf_device_ref_16F0",
+            "name": "Mount_netconf_device",
+            "taskReferenceName": "mount_netconf_device_ref_16F0",
             "inputParameters": {
               "device_id": "${get_device_from_inventory_ref_B1GP.output.device.id}",
               "host": "${get_device_from_inventory_ref_B1GP.output.device.host}",
@@ -86,7 +86,7 @@
             "type": "SUB_WORKFLOW",
             "startDelay": 0,
             "subWorkflowParam": {
-              "name": "Mount_blacklist_netconf_device",
+              "name": "Mount_netconf_device",
               "version": 1
             },
             "optional": false,
