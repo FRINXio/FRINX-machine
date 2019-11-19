@@ -5,7 +5,7 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )"/workflows && pwd )
 function help {
   usage
     echo -e "OPTION:"
-    echo -e "  -s | --skip      Skips health check."
+    echo -e "  -l | --local      Import from localhost"
     echo -e "\n"
   example
 }
