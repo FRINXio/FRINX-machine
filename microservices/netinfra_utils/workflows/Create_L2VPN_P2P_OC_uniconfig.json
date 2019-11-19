@@ -77,33 +77,23 @@
       "optional": false
     },
     {
-      "name": "decide_task",
-      "taskReferenceName": "decide1",
+      "name": "decisionTask",
+      "taskReferenceName": "decisionTaskRef_9LC8",
       "inputParameters": {
-        "case_value_param": "${uniconfig_commit_ref_RXFF.output.response_body.output.overall-configuration-status}"
+        "param": "${uniconfig_commit_ref_RXFF.output.response_body.output.overall-configuration-status}"
       },
       "type": "DECISION",
-      "caseValueParam": "case_value_param",
+      "caseValueParam": "param",
       "decisionCases": {
-        "fail": [
-          {
-            "name": "Post_to_Slack",
-            "taskReferenceName": "post_to_slack_ref_2EQD",
-            "type": "SUB_WORKFLOW",
-            "startDelay": 0,
-            "subWorkflowParam": {
-              "name": "Post_to_Slack",
-              "version": 1
-            },
-            "optional": false
-          }
-        ],
         "complete": [
           {
             "name": "Post_to_Slack",
-            "taskReferenceName": "post_to_slack_ref_FW4E",
+            "taskReferenceName": "post_to_slack_ref_94YO",
+            "inputParameters": {
+              "slack_webhook_id": "T7UQ7KATX/BP8M0S3EH/W3YpmbUr2fQDEA7WIoWcJIXX",
+              "message_text": "Configuration attempt succeeded!"
+            },
             "type": "SUB_WORKFLOW",
-            "startDelay": 0,
             "subWorkflowParam": {
               "name": "Post_to_Slack",
               "version": 1
@@ -112,6 +102,23 @@
           }
         ]
       },
+      "defaultCase": [
+        {
+          "name": "Post_to_Slack",
+          "taskReferenceName": "post_to_slack_ref_284C",
+          "inputParameters": {
+            "slack_webhook_id": "T7UQ7KATX/BP8M0S3EH/W3YpmbUr2fQDEA7WIoWcJIXX",
+            "message_text": "Configuration attempt failed"
+          },
+          "type": "SUB_WORKFLOW",
+          "subWorkflowParam": {
+            "name": "Post_to_Slack",
+            "version": 1
+          },
+          "optional": false,
+          "startDelay": 0
+        }
+      ],
       "startDelay": 0,
       "optional": false
     },
