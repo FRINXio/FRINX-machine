@@ -1,0 +1,24 @@
+{
+  "name": "UNICONFIG_replace_config_with_snapshot",
+  "description": "Replace config with snapshot - BASIC,UNICONFIG",
+  "version": 1,  
+  "inputParameters": [
+  	"name[Name of snapshot]",
+    "devices[List of devices to replace config with snapshot. This is a mandatory parameter. Example: IOS01, IOS02 #node_ids]"
+  ],
+  "tasks": [
+  	{
+      "name": "UNICONFIG_replace_config_with_snapshot",
+      "taskReferenceName": "UNICONFIG_replace_config_with_snapshot",
+      "type": "SIMPLE",
+      "inputParameters": {
+      	"name": "${workflow.input.name}",
+        "devices": "${workflow.input.devices}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "response_body": "${UNICONFIG_replace_config_with_snapshot.output.response_body}"
+  },
+  "schemaVersion": 2
+}
