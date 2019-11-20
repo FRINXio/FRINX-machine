@@ -9,7 +9,7 @@
       "type": "SIMPLE",
       "inputParameters": {
         "device_id": "${workflow.input.device_id}",
-		"uri": "/frinx-openconfig-interfaces:interfaces/"
+		"uri": "/frinx-openconfig-interfaces:interfaces"
       }
     }
   ],

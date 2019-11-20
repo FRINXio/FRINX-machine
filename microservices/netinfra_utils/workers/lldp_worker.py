@@ -10,7 +10,7 @@ from frinx_rest import elastic_url_base, odl_url_base, odl_headers, odl_credenti
 
 build_lldp_url = odl_url_base + "/operations/lldptopo:build"
 export_lldp_url = odl_url_base + "/operations/lldptopo:export"
-read_lldp_url = odl_url_base + "/operational/network-topology:network-topology/topology/"
+read_lldp_url = odl_url_base + "/data/network-topology:network-topology/topology=$topology?content=nonconfig"
 inventory_lldp_url = elastic_url_base + "/inventory-lldp/lldp/$id"
 
 
@@ -85,7 +85,7 @@ def export_lldp(task):
 def read_lldp(task):
     topo_id = task['inputData']['destination-topology']
 
-    id_url = read_lldp_url + topo_id
+    id_url = Template(read_lldp_url).substitute({"topology": topo_id})
 
     r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
