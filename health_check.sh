@@ -26,7 +26,7 @@ function example {
 valid_containers=("odl" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui" "portainer")
 containers_to_check=()
 
-curl_odl=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET "http://127.0.0.1:8181/restconf/modules" )
+curl_odl=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET 'http://127.0.0.1:8181/rests/data/network-topology:network-topology')
 curl_conductor_server=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/api/metadata/workflow')
 curl_elasticsearch=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:9200/_cluster/health' )
 curl_kibana=( curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:5601/api/status' )
