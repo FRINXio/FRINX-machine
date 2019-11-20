@@ -1,19 +1,19 @@
-FROM frinx/uniconfig:4.2.3-rc2
+FROM frinx/uniconfig:4.2.3.frinx
 
 # copy updated distribution into container (if any available)
-RUN mkdir /opt/distribution-frinx-override || true
-COPY distribution/ /opt/distribution-frinx-override/
-RUN if [ -f /opt/distribution-frinx-override/run_uniconfig.sh ]; then rm -R /opt/distribution-frinx && mv /opt/distribution-frinx-override /opt/distribution-frinx; fi
+RUN mkdir /opt/uniconfig-frinx-override || true
+COPY distribution/ /opt/uniconfig-frinx-override/
+RUN if [ -f /opt/uniconfig-frinx-override/run_uniconfig.sh ]; then rm -R /opt/uniconfig-frinx && mv /opt/uniconfig-frinx-override /opt/uniconfig-frinx; fi
 
 # copy licence to container image
-COPY frinx.license.cfg /opt/distribution-frinx/config
+COPY frinx.license.cfg /opt/uniconfig-frinx/config
 
 # Configure
-COPY odl-wrapper.sh /opt/distribution-frinx/
+COPY odl-wrapper.sh /opt/uniconfig-frinx/
 
 # Replace schema folder
-COPY schema /opt/distribution-frinx/cache/schema
+COPY schema /opt/uniconfig-frinx/cache/schema
 
 
 ENTRYPOINT ["/bin/bash"]
-CMD ["/opt/distribution-frinx/odl-wrapper.sh"]
+CMD ["/opt/uniconfig-frinx/odl-wrapper.sh"]
