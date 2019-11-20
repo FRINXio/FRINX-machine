@@ -10,10 +10,10 @@ import requests
 
 from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_response
 
-odl_url_uniconfig_config_shallow = odl_url_base + "/config/network-topology:network-topology/topology/uniconfig?depth=3"
-odl_url_uniconfig_oper = odl_url_base + "/operational/network-topology:network-topology/topology/uniconfig"
-odl_url_uniconfig_config = odl_url_base + "/config/network-topology:network-topology/topology/uniconfig"
-odl_url_uniconfig_mount = odl_url_base + "/config/network-topology:network-topology/topology/uniconfig/node/"
+odl_url_uniconfig_config_shallow = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config&depth=3"
+odl_url_uniconfig_oper = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=nonconfig"
+odl_url_uniconfig_config = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config"
+odl_url_uniconfig_mount = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id"
 odl_url_uniconfig_commit = odl_url_base + '/operations/uniconfig-manager:commit'
 odl_url_uniconfig_dryrun_commit = odl_url_base + '/operations/dryrun-manager:dryrun-commit'
 odl_url_uniconfig_checked_commit = odl_url_base + '/operations/uniconfig-manager:checked-commit'
@@ -145,7 +145,7 @@ def read_structured_data(task):
     uri = task['inputData']['uri']
     uri = apply_functions(uri)
 
-    id_url = odl_url_uniconfig_mount + device_id + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
+    id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
 
     r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
@@ -173,13 +173,13 @@ def write_structured_data(task):
     data_json = template if isinstance(template, basestring) else json.dumps(template if template else {})
     data_json = Template(data_json).substitute(params)
 
-    id_url = odl_url_uniconfig_mount + device_id + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
+    id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
     id_url = Template(id_url).substitute(params)
 
     r = requests.put(id_url, data=data_json, headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok or response_code == requests.codes.created:
+    if response_code == requests.codes.no_content or response_code == requests.codes.created:
         return {'status': 'COMPLETED', 'output': {'url': id_url,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -208,7 +208,7 @@ def write_structured_data_as_tasks(task):
         url = Template(uri).substitute(iface=escaped_param)
         per_iface_params = {"device_id": device_id, "template": data_json, "uri": url}
         key = device_id + param
-        dynamic_tasks_i.update({key:per_iface_params})
+        dynamic_tasks_i.update({key: per_iface_params})
         task_body = copy.deepcopy(task_body_template)
         task_body["taskReferenceName"] = key
         task_body["subWorkflowParam"]["name"] = "Write_structured_device_data_in_uniconfig"
@@ -224,12 +224,12 @@ def delete_structured_data(task):
     uri = task['inputData']['uri']
     uri = apply_functions(uri)
 
-    id_url = odl_url_uniconfig_mount + device_id + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
+    id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
 
     r = requests.delete(id_url, headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.no_content:
         return {'status': 'COMPLETED', 'output': {'url': id_url,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -257,7 +257,7 @@ def commit(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["overall-configuration-status"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_commit,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -276,7 +276,7 @@ def dryrun_commit(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["overall-configuration-status"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_dryrun_commit,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -295,7 +295,7 @@ def checked_commit(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["overall-configuration-status"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_checked_commit,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -314,7 +314,7 @@ def calc_diff(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_calculate_diff,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -333,7 +333,7 @@ def sync_from_network(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["overall-sync-status"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_sync_from_network,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -352,7 +352,7 @@ def replace_config_with_oper(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["result"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_replace_config_with_operational,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -382,7 +382,7 @@ def create_snapshot(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["result"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_create_snapshot,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -441,7 +441,7 @@ def delete_snapshot(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_delete_snapshot,
                                                   'response_code': response_code,
                                                   'response_body': response_json},
@@ -461,7 +461,7 @@ def replace_config_with_snapshot(task):
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok and response_json["output"]["result"] == "complete":
+    if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_replace_config_with_snapshot,
                                                   'response_code': response_code,
                                                   'response_body': response_json},

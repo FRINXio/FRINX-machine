@@ -13,7 +13,7 @@
       "type": "SIMPLE",
       "inputParameters": {
         "device_id": "${workflow.input.device_id}",
-    		"uri": "/frinx-openconfig-interfaces:interfaces/interface/Loopback${workflow.input.loopback_id}",
+    		"uri": "/frinx-openconfig-interfaces:interfaces/interface=Loopback${workflow.input.loopback_id}",
     		"template": "{\"interface\":[{\"name\":\"Loopback${workflow.input.loopback_id}\",\"config\":{\"type\":\"iana-if-type:softwareLoopback\",\"enabled\":false,\"name\":\"Loopback${workflow.input.loopback_id}\"}}]}",
     		"params": "{}"
       }

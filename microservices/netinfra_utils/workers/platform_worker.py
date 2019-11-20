@@ -5,7 +5,7 @@ from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_respons
 
 from string import Template
 
-odl_url_components = odl_url_base + "/operational/network-topology:network-topology/topology/unified/node/$id/yang-ext:mount/frinx-openconfig-platform:components"
+odl_url_components = odl_url_base + "/data/network-topology:network-topology/topology=unified/node=$id/yang-ext:mount/frinx-openconfig-platform:components?content=nonconfig"
 
 
 def read_components(task):

@@ -13,7 +13,7 @@
       "type": "SIMPLE",
       "inputParameters": {
         "device_id": "${workflow.input.device_id}",
-		    "uri": "/frinx-openconfig-interfaces:interfaces/interface/Loopback${workflow.input.loopback_id}"
+		    "uri": "/frinx-openconfig-interfaces:interfaces/interface=Loopback${workflow.input.loopback_id}"
 	    }
     }
   ],

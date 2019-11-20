@@ -22,7 +22,7 @@
 		      "taskReferenceName": "UNICONFIG_write_bundle_ether_node1",
 		      "inputParameters": {
 		        "device_id": "${workflow.input.node1}",
-		        "uri": "/frinx-openconfig-interfaces:interfaces/interface/Bundle-Ether${workflow.input.bundle_ether_id}",
+		        "uri": "/frinx-openconfig-interfaces:interfaces/interface=Bundle-Ether${workflow.input.bundle_ether_id}",
 		        "template": "{\"interface\":[{\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\",\"config\":{\"type\":\"iana-if-type:ieee8023adLag\",\"enabled\":${workflow.input.bundle_ether_enabled},\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\"}}]}",
 		        "params": "{}"
 		      },
@@ -36,7 +36,7 @@
 		      "taskReferenceName": "UNICONFIG_write_bundle_ether_node2",
 		      "inputParameters": {
 		        "device_id": "${workflow.input.node2}",
-		        "uri": "/frinx-openconfig-interfaces:interfaces/interface/Bundle-Ether${workflow.input.bundle_ether_id}",
+		        "uri": "/frinx-openconfig-interfaces:interfaces/interface=Bundle-Ether${workflow.input.bundle_ether_id}",
 		        "template": "{\"interface\":[{\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\",\"config\":{\"type\":\"iana-if-type:ieee8023adLag\",\"enabled\":${workflow.input.bundle_ether_enabled},\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\"}}]}",
 		        "params": "{}"
 		      },
@@ -66,7 +66,7 @@
 		      "taskReferenceName": "UNICONFIG_write_structured_data_as_tasks_node1",
 		      "inputParameters": {
 		        "device_id": "${workflow.input.node1}",
-		        "uri": "/frinx-openconfig-interfaces:interfaces/interface/$iface",
+		        "uri": "/frinx-openconfig-interfaces:interfaces/interface=$iface",
 		        "template": "{\"interface\":[{\"name\":\"$iface\",\"config\":{\"type\":\"iana-if-type:ethernetCsmacd\",\"name\":\"$iface\"},\"frinx-openconfig-if-ethernet:ethernet\":{\"config\":{\"frinx-openconfig-if-aggregate:aggregate-id\": \"Bundle-Ether${workflow.input.bundle_ether_id}\"}}}]}",
 		        "task_params": "${workflow.input.node1_ifaces}"
 		      },
@@ -94,7 +94,7 @@
 		      "taskReferenceName": "UNICONFIG_write_structured_data_as_tasks_node2",
 		      "inputParameters": {
 		        "device_id": "${workflow.input.node2}",
-		        "uri": "/frinx-openconfig-interfaces:interfaces/interface/$iface",
+		        "uri": "/frinx-openconfig-interfaces:interfaces/interface=$iface",
 		        "template": "{\"interface\":[{\"name\":\"$iface\",\"config\":{\"type\":\"iana-if-type:ethernetCsmacd\",\"name\":\"$iface\"},\"frinx-openconfig-if-ethernet:ethernet\":{\"config\":{\"frinx-openconfig-if-aggregate:aggregate-id\": \"Bundle-Ether${workflow.input.bundle_ether_id}\"}}}]}",
 		        "task_params": "${workflow.input.node2_ifaces}"
 		      },

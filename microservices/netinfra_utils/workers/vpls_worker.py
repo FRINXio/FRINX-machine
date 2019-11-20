@@ -5,7 +5,7 @@ from string import Template
 
 import uniconfig_worker
 
-odl_url_uniconfig_network_instance_config = '/frinx-openconfig-network-instance:network-instances/network-instance/$vpls'
+odl_url_uniconfig_network_instance_config = '/frinx-openconfig-network-instance:network-instances/network-instance=$vpls'
 
 
 vpls_response_template = {
