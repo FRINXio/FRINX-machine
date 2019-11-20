@@ -8,8 +8,8 @@ from bi_model import Service
 import vll_service_worker
 from vll_model import Device
 
-odl_url_uniconfig_vlan_config = '/frinx-openconfig-network-instance:network-instances/network-instance/default/vlans/vlan/escape($vlan)'
-odl_url_uniconfig_isis_config = '/frinx-openconfig-network-instance:network-instances/network-instance/default/protocols/protocol/frinx-openconfig-policy-types:ISIS/default/isis/interfaces/interface/escape($ifc)'
+odl_url_uniconfig_vlan_config = '/frinx-openconfig-network-instance:network-instances/network-instance/default/vlans/vlan=escape($vlan)'
+odl_url_uniconfig_isis_config = '/frinx-openconfig-network-instance:network-instances/network-instance/default/protocols/protocol=frinx-openconfig-policy-types:ISIS/default/isis/interfaces/interface=escape($ifc)'
 
 
 # Vlan updates

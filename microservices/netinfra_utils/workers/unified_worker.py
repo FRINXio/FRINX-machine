@@ -7,10 +7,10 @@ from string import Template
 from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_response
 import uniconfig_worker
 
-odl_url_unified_oper_shallow = odl_url_base + "/operational/network-topology:network-topology/topology/unified?depth=3"
-odl_url_unified_oper = odl_url_base + "/operational/network-topology:network-topology/topology/unified"
-odl_url_unified_oper_mount = odl_url_unified_oper + "/node/"
-odl_url_unified_mount = odl_url_base + "/config/network-topology:network-topology/topology/unified/node/"
+odl_url_unified_oper_shallow = odl_url_base + "/data/network-topology:network-topology/topology=unified?content=nonconfig&depth=3"
+odl_url_unified_oper = odl_url_base + "/data/network-topology:network-topology/topology=unified?content=nonconfig"
+odl_url_unified_oper_mount = odl_url_base + "/data/network-topology:network-topology/topology=unified/node=$id?content=nonconfig"
+odl_url_unified_mount = odl_url_base + "/data/network-topology:network-topology/topology=unified/node=$id"
 
 
 def execute_read_unified_topology_operational(task):
@@ -97,7 +97,7 @@ def read_structured_data(task):
     uri = task['inputData']['uri']
     uri = uniconfig_worker.apply_functions(uri)
 
-    id_url = odl_url_unified_mount + device_id + "/yang-ext:mount" + (uri if uri else "")
+    id_url = Template(odl_url_unified_mount).substitute({"id": device_id}) + "/yang-ext:mount" + (uri if uri else "") + "?content=config"
 
     r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
@@ -125,13 +125,13 @@ def write_structured_data(task):
     data_json = template if isinstance(template, basestring) else json.dumps(template if template else {})
     data_json = Template(data_json).substitute(params)
 
-    id_url = odl_url_unified_mount + device_id + "/yang-ext:mount" + (uri if uri else "")
+    id_url = Template(odl_url_unified_mount).substitute({"id": device_id}) + "/yang-ext:mount" + (uri if uri else "")
     id_url = Template(id_url).substitute(params)
 
     r = requests.put(id_url, data=data_json, headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok or response_code == requests.codes.created:
+    if response_code == requests.codes.no_content or response_code == requests.codes.created:
         return {'status': 'COMPLETED', 'output': {'url': id_url,
                                                   'request_url': id_url,
                                                   'response_code': response_code,
@@ -150,12 +150,12 @@ def delete_structured_data(task):
     uri = task['inputData']['uri']
     uri = uniconfig_worker.apply_functions(uri)
 
-    id_url = odl_url_unified_mount + device_id + "/yang-ext:mount" + (uri if uri else "")
+    id_url = Template(odl_url_unified_mount).substitute({"id": device_id}) + "/yang-ext:mount" + (uri if uri else "")
 
     r = requests.delete(id_url, headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.ok:
+    if response_code == requests.codes.no_content:
         return {'status': 'COMPLETED', 'output': {'url': id_url,
                                                   'request_url': id_url,
                                                   'response_code': response_code,
@@ -172,7 +172,7 @@ def delete_structured_data(task):
 def execute_check_unified_node_exists(task):
     device_id = task['inputData']['device_id']
 
-    id_url = odl_url_unified_oper_mount + device_id
+    id_url = Template(odl_url_unified_oper_mount).substitute({"id": device_id})
 
     r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
