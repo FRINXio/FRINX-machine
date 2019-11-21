@@ -81,9 +81,8 @@ def task_failed(task_response):
 
 
 def uniconfig_task_failed(task_response):
-    config_status = task_response.get('output', {}).get('response_body', {}).get('output', {}).get('overall-configuration-status', 'fail')
-    sync_status = task_response.get('output', {}).get('response_body', {}).get('output', {}).get('overall-sync-status', 'fail')
-    return config_status == "fail" and sync_status == "fail"
+    overall_status = task_response.get('output', {}).get('response_body', {}).get('output', {}).get('overall-status', 'fail')
+    return overall_status == "fail"
 
 
 # Filter Strategies

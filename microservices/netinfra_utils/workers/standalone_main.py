@@ -1,5 +1,5 @@
 import frinx_rest
-frinx_rest.odl_url_base = "http://localhost:8181/restconf"
+frinx_rest.odl_url_base = "http://localhost:8181/rests"
 import json
 import time
 
