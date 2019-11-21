@@ -30,7 +30,7 @@ def vccid_filter_strategy(vccid):
 def read_interface(device):
     url = Template(odl_url_uniconfig_ifc_config).substitute({'ifc': device.interface})
     ifc_response = uniconfig_worker.read_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
     }})
     return ifc_response
@@ -39,7 +39,7 @@ def read_interface(device):
 def delete_interface(device):
     url = Template(odl_url_uniconfig_ifc_config).substitute({'ifc': device.interface})
     ifc_response = uniconfig_worker.delete_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
     }})
     return ifc_response
@@ -75,7 +75,7 @@ def put_interface(service, device):
         ifc_config['frinx-openconfig-interfaces:interface'][0]['config']["frinx-openconfig-vlan:tpid"] = Device.switch_tpid.get(device.tpid)
 
     ifc_response = uniconfig_worker.write_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
         "template": ifc_config,
         'params': {}
@@ -101,7 +101,7 @@ def put_minimal_interface(device):
     }
 
     ifc_response = uniconfig_worker.write_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
         "template": ifc_config,
         'params': {}
@@ -113,7 +113,7 @@ def put_minimal_interface(device):
 def read_interface_policy(device):
     url = Template(odl_url_uniconfig_ifc_policy_config).substitute({'ifc': device.interface})
     ifc_response = uniconfig_worker.read_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
     }})
     return ifc_response
@@ -141,7 +141,7 @@ def put_interface_policy(device):
         ifc_config['frinx-openconfig-network-instance:interface'][0]['config']['frinx-brocade-pf-interfaces-extension:output-service-policy'] = device.out_policy
 
     ifc_response = uniconfig_worker.write_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
         "template": ifc_config,
         'params': {}
@@ -156,7 +156,7 @@ def delete_interface_policy(device):
 
     url = Template(odl_url_uniconfig_ifc_policy_config).substitute({'ifc': device.interface})
     ifc_response = uniconfig_worker.delete_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url
     }})
     return ifc_response
@@ -166,7 +166,7 @@ def disable_interface_stp(device):
     url = Template(odl_url_uniconfig_ifc_stp_config).substitute({'ifc': device.interface})
 
     ifc_response = uniconfig_worker.delete_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url
     }})
     return ifc_response

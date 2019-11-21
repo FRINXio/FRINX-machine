@@ -18,7 +18,7 @@ odl_url_uniconfig_isis_config = '/frinx-openconfig-network-instance:network-inst
 def read_vlan(device):
     url = Template(odl_url_uniconfig_vlan_config).substitute({'vlan': device.vlan})
     vlan_response = uniconfig_worker.read_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
     }})
     return vlan_response
@@ -27,7 +27,7 @@ def read_vlan(device):
 def delete_vlan(device):
     url = Template(odl_url_uniconfig_vlan_config).substitute({'vlan': device.vlan})
     vlan_response = uniconfig_worker.delete_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
     }})
     return vlan_response
@@ -48,7 +48,7 @@ def put_vlan(service, device):
     }
 
     vlan_response = uniconfig_worker.write_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
         "template": vlan_config,
         'params': {}
@@ -63,7 +63,7 @@ def put_vlan(service, device):
 def read_ve_interface(device):
     url = Template(vll_service_worker.odl_url_uniconfig_ifc_config).substitute({'ifc': device.ve_interface})
     ifc_response = uniconfig_worker.read_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
     }})
     return ifc_response
@@ -72,7 +72,7 @@ def read_ve_interface(device):
 def delete_ve_interface(device):
     url = Template(vll_service_worker.odl_url_uniconfig_ifc_config).substitute({'ifc': device.ve_interface})
     ifc_response = uniconfig_worker.delete_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
     }})
     return ifc_response
@@ -120,7 +120,7 @@ def put_interface(service, device):
         ifc_config['frinx-openconfig-interfaces:interface'][0]['config']["frinx-openconfig-vlan:tpid"] = Device.switch_tpid.get(device.tpid)
 
     ifc_response = uniconfig_worker.write_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
         "template": ifc_config,
         'params': {}
@@ -178,7 +178,7 @@ def put_ve_interface(service, device):
         }})
 
     ifc_response = uniconfig_worker.write_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
         "template": ifc_config,
         'params': {}
@@ -202,7 +202,7 @@ def put_isis(device):
     }
 
     isis_response = uniconfig_worker.write_structured_data({'inputData': {
-        'id': device.id,
+        'device_id': device.id,
         'uri': url,
         "template": isis_config,
         'params': {}

@@ -85,7 +85,7 @@ vpls_remote_cp_template = {
 def device_create_vpls(task):
     vpls_config = create_vpls_request(task)
     response = uniconfig_worker.write_structured_data({'inputData': {
-        'id': task['inputData']['id'],
+        'device_id': task['inputData']['id'],
         'uri': (Template(odl_url_uniconfig_network_instance_config).substitute({'vpls': (task['inputData']['service_id'])})),
         'template': vpls_config, 'params': {}}})
     response.update({'vpls_data': vpls_config})
@@ -94,14 +94,14 @@ def device_create_vpls(task):
 
 def device_delete_vpls(task):
     return uniconfig_worker.delete_structured_data({'inputData': {
-        'id': task['inputData']['id'],
+        'device_id': task['inputData']['id'],
         'uri': (Template(odl_url_uniconfig_network_instance_config).substitute({'vpls': (task['inputData']['service_id'])})),
     }})
 
 
 def device_read_vpls(task):
     return uniconfig_worker.read_structured_data({'inputData': {
-        'id': task['inputData']['id'],
+        'device_id': task['inputData']['id'],
         'uri': (Template(odl_url_uniconfig_network_instance_config).substitute({'vpls': (task['inputData']['service_id'])})),
     }})
 
