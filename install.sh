@@ -12,21 +12,21 @@ margs=1
 
 # Common functions
 function example {
-    echo -e "example: $script -l license_token -b odl kibana"
+    echo -e "example: $script -l license_token -b uniconfig kibana"
 }
 
 function usage {
     echo -e "usage: $script OPTIONS [services] \n"
     echo -e "If no services are specified all are pulled or built."
-    echo -e "Services: odl micros conductor-server dynomite elasticsearch kibana sample-topology logstash uniconfig-ui"
+    echo -e "Services: uniconfig micros conductor-server dynomite elasticsearch kibana sample-topology logstash uniconfig-ui"
 }
 
 function help {
   usage
     echo -e "OPTIONS:"
     echo -e "  -l | --license  <VALUE>    Specify custom license.
-            Saves license token to [PATH to git repo]/odl/frinx.license.cfg.
-            If license file exists, custom odl license is applied after each pull"
+            Saves license token to [PATH to git repo]/uniconfig/frinx.license.cfg.
+            If license file exists, custom uniconfig license is applied after each pull"
     echo -e "  -b | --build               Build specified services locally"
     echo -e "\n"
   example
@@ -65,8 +65,8 @@ function valid {
   return 1
 }
 
-file=odl/frinx.license.cfg
-valid_images=("odl" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui" "portainer")
+file=uniconfig/frinx.license.cfg
+valid_images=("uniconfig" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui" "portainer")
 license=
 license_flag=false
 build=false
@@ -123,7 +123,7 @@ if [ "$build" = false ]; then
   # Copy custom license if file exists
   if [[ -f "$file" ]]; then
     echo "Apply license from file $file"
-    docker-compose build odl
+    sudo docker-compose build odl
   fi
 else
   echo 'Build images'

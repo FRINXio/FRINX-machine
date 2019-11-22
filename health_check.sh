@@ -13,20 +13,20 @@ function help {
     echo -e "  -s   Skip given containers"
     echo -e "\n"
     echo -e "ARGUMENTS:"
-    echo -e "odl frinxit micros conductor-server uniconfig-ui dynomite elasticsearch kibana portainer"
+    echo -e "uniconfig frinxit micros conductor-server uniconfig-ui dynomite elasticsearch kibana portainer"
   example
 }
 
 function example {
-  echo -e health_check.sh -s odl frinxit
+  echo -e health_check.sh -s uniconfig frinxit
 }
 
 
 # all container names
-valid_containers=("odl" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui" "portainer")
+valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui" "portainer")
 containers_to_check=()
 
-curl_odl=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET 'http://127.0.0.1:8181/rests/data/network-topology:network-topology')
+curl_uniconfig=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -H "Accept: application/json" -X GET 'http://127.0.0.1:8181/rests/data/network-topology:network-topology')
 curl_conductor_server=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/api/metadata/workflow')
 curl_elasticsearch=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:9200/_cluster/health' )
 curl_kibana=( curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:5601/api/status' )
@@ -134,8 +134,8 @@ result=0
 # check containers in array
 for i in "${containers_to_check[@]}"; do
   case $i in
-    odl )
-    check_container $i curl_odl
+    uniconfig )
+    check_container $i curl_uniconfig
     result+=$?
     ;;
     frinxit )

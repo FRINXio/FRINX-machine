@@ -1,24 +1,24 @@
 version: "3.7"
 
 services:
-  odl:
+  uniconfig:
     tty: true
     build:
-      context: ./odl
+      context: uniconfig
       dockerfile: Dockerfile
-    image: frinx/fm-odl
+    image: frinx/fm-uniconfig
     logging:
         driver: "json-file"
         options:
             max-file: "3"
             max-size: "10m"
-    container_name: odl
+    container_name: uniconfig
     environment:
       - JAVA_MAX_MEM=4G
     volumes:
-       - odl_logs:/opt/distribution-frinx/log
-       - odl_pass:/opt/distribution-frinx/db-credentials
-       - odl_data:/opt/distribution-frinx/data
+       - uniconfig_logs:/opt/uniconfig-frinx/log
+       - uniconfig_pass:/opt/uniconfig-frinx/db-credentials
+       - uniconfig_data:/opt/uniconfig-frinx/data
     ports:
       - 8181:8181
 
@@ -34,11 +34,11 @@ services:
             max-size: "10m"
     container_name: micros
     depends_on:
-      - odl
+      - uniconfig
       - conductor-server
     command: ["/home/app/wait_for_it.sh", "-t", "180",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
     volumes:
-        - odl_pass:/opt/odl_pass:ro
+        - uniconfig_pass:/opt/uniconfig_pass:ro
 
   sample-topology:
     build:
@@ -47,7 +47,7 @@ services:
     image: frinx/fm-sample-topology
     container_name: sample-topology
     volumes:
-        - odl_pass:/opt/odl_pass:ro
+        - uniconfig_pass:/opt/uniconfig_pass:ro
     logging:
         driver: "json-file"
         options:
@@ -146,14 +146,14 @@ services:
             max-size: "10m"
     container_name: logstash
     volumes:
-       - odl_logs:/odl-logs:ro
+       - uniconfig_logs:/uniconfig-logs:ro
 
   uniconfig-ui:
    build:
      context: ./frinx-uniconfig-ui
      dockerfile: Dockerfile
      args:
-       - ODL=odl:8181
+       - ODL=uniconfig:8181
        - WF_SERVER=conductor-server:8080
        - REACT_APP_LOGIN_ENABLED=false
    image: frinx/fm-uniconfig-ui
@@ -186,12 +186,12 @@ volumes:
     name: redis_data
   elastic_data:
     name: elastic_data
-  odl_logs:
-    name: odl_logs
-  odl_pass:
-      name: odl_pass
-  odl_data:
-      name: odl_data
+  uniconfig_logs:
+    name: uniconfig_logs
+  uniconfig_pass:
+      name: uniconfig_pass
+  uniconfig_data:
+      name: uniconfig_data
   portainer_data:
       name: portainer_data
 
