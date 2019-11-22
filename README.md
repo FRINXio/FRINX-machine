@@ -1,7 +1,7 @@
 # FRINX-machine
 The project is a containerized package of: 
 
-* [FRINX ODL]
+* [FRINX Uniconfig]
 * FRINX fork of Netflix's [Conductor]
 * Elastic's
     * [Elasticsearch]
@@ -17,8 +17,8 @@ The project is a containerized package of:
 * 16GB and 4 CPU
 * [Docker](https://www.docker.com/)
 * [Docker Compose](https://github.com/docker/compose)
+* License for FRINX Uniconf (you can find a trial license in the "Installation Guide" section below)
 * [Manage Docker as a non-root user](https://docs.docker.com/install/linux/linux-postinstall/)
-* License for FRINX ODL (you can find a trial license in the "Installation Guide" section below)
 
 ### Tested on
 * Ubuntu 16.04 / 18.04 /
@@ -35,7 +35,7 @@ License token:
 e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643100ccd31052430de1955540cf5ae1e510d657bd2af8ef2fc
 ```
 
-30 days after your first installation, your token will expire and you will see an error message during ODL startup. If you would like to continue with your evaluation, please register as a user on our homepage, where you will find another 30 day token under the section "My License Information". After the second trial period has expired, you can continue with a commercial license that has no time limitations. 
+30 days after your first installation, your token will expire and you will see an error message during Uniconfig startup. If you would like to continue with your evaluation, please register as a user on our homepage, where you will find another 30 day token under the section "My License Information". After the second trial period has expired, you can continue with a commercial license that has no time limitations. 
 
 #### Get the project
 Clone the repository:
@@ -48,7 +48,7 @@ cd FRINX-machine
 ```
 
 #### Services used in the project
-* odl
+* uniconfig
 * dynomite
 * conductor-server
 * elasticsearch
@@ -77,7 +77,7 @@ Installation with the trial license token:
 ```
 ./install.sh -l e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643100ccd31052430de1955540cf5ae1e510d657bd2af8ef2fc
 ```
-After the first run the license token is saved to a <git directory>/odl/frinx.license.cfg and will be copied to image after each update.
+After the first run the license token is saved to a <git directory>/uniconfig/frinx.license.cfg and will be copied to image after each update.
 
 
 ### Startup
@@ -141,7 +141,7 @@ docker rm [service]
 docker-compose up -d [service]
 ```
 
-[FRINX ODL]: <https://frinx.io/odl_distribution>
+[FRINX UNICONFIG]: <https://frinx.io/odl_distribution>
 [Conductor]: <https://github.com/FRINXio/conductor>
 [Elasticsearch]: <https://www.elastic.co/products/elasticsearch>
 [Kibana]: <https://www.elastic.co/products/kibana>
