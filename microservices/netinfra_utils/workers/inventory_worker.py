@@ -63,7 +63,7 @@ def add_device(task):
                 'logs': []}
 
 
-add_field_command = "ctx._source['field'] = '$value'"
+add_field_command = "ctx._source['$field'] = '$value'"
 
 add_field_template = {
     "script": ""
