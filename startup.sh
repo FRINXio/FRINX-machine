@@ -35,7 +35,7 @@ fi
 }
 
 function start_container {
-  sudo docker-compose up -d "$1"
+  docker-compose up -d "$1"
 }
 
 function start_containers {
@@ -55,7 +55,7 @@ done
 }
 
 function import_workflows {
-sudo docker exec micros bash -c "cd /home/app/netinfra_utils && ./importWorkflow.sh"
+docker exec micros bash -c "cd /home/app/netinfra_utils && ./importWorkflow.sh"
 if [ "$skip" = false ]; then
   check_success $?
 fi
@@ -64,13 +64,13 @@ fi
 
 function import_devices {
 # Import cli devices
-sudo docker exec micros bash -c "cd /home/app && newman run netinfra_utils/devices/device_import.postman_collection.json --folder 'cli' -d netinfra_utils/devices/device_data.csv"
+docker exec micros bash -c "cd /home/app && newman run netinfra_utils/devices/device_import.postman_collection.json --folder 'cli' -d netinfra_utils/devices/device_data.csv"
 if [ "$skip" = false ]; then
   check_success $?
 fi
 
 #Import netconf devices
-sudo docker exec micros bash -c "cd /home/app && newman run netinfra_utils/devices/device_import.postman_collection.json --folder 'netconf' -d netinfra_utils/devices/netconf_device_data.csv"
+docker exec micros bash -c "cd /home/app && newman run netinfra_utils/devices/device_import.postman_collection.json --folder 'netconf' -d netinfra_utils/devices/netconf_device_data.csv"
 if [ "$skip" = false ]; then
   check_success $?
 fi
@@ -104,7 +104,7 @@ esac
 done
 
 # Clean up docker
-sudo docker system prune -f
+docker system prune -f
 
 # Starts containers
 start_containers

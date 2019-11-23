@@ -118,17 +118,17 @@ echo "submodVersion=$(git for-each-ref refs/tags --sort=-taggerdate --format='%(
 cd ${DIR}
 if [ "$build" = false ]; then
   echo 'Pull images'
-  sudo docker-compose pull "${input_containers[@]}"
+  docker-compose pull "${input_containers[@]}"
 
   # Copy custom license if file exists
   if [[ -f "$file" ]]; then
     echo "Apply license from file $file"
-    sudo docker-compose build odl
+    docker-compose build odl
   fi
 else
   echo 'Build images'
-  sudo docker-compose build "${input_containers[@]}"
+  docker-compose build "${input_containers[@]}"
 fi
 
 # Clean up
-sudo docker system prune -f
+docker system prune -f

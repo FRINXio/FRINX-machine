@@ -5,4 +5,4 @@ cd ${DIR}
 
 
 ### Stop and remove containers
-sudo docker-compose down
+docker-compose down

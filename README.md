@@ -17,6 +17,7 @@ The project is a containerized package of:
 * 16GB and 4 CPU
 * [Docker](https://www.docker.com/)
 * [Docker Compose](https://github.com/docker/compose)
+* [Manage Docker as a non-root user](https://docs.docker.com/install/linux/linux-postinstall/)
 * License for FRINX ODL (you can find a trial license in the "Installation Guide" section below)
 
 ### Tested on
@@ -88,9 +89,8 @@ Here is what it does:
 * Starts simulated devices
 
 
-Docker needs privileged mode, so `startup.sh` should be executed with sudo. Otherwise it will prompt for password while executing.
 ```bash
-sudo ./startup.sh
+./startup.sh
 ```
 
 #### Web interface
@@ -110,7 +110,7 @@ The `teardown.sh` script in the FRINX-machine folder:
 
 Using docker, also needs privileged mode:
 ```bash
-sudo ./teardown.sh
+./teardown.sh
 ```
 
 ### Removal of external volumes
@@ -118,7 +118,7 @@ sudo ./teardown.sh
 
 To remove the volumes use:
 ```bash
-sudo docker volume rm redis_data elastic_data odl_logs odl_data odl_pass portainer_data
+docker volume rm redis_data elastic_data odl_logs odl_data odl_pass portainer_data
 ```
 
 ### For developers
@@ -136,9 +136,9 @@ If no container is specified all are updated.
 
 To replace running service with new one run after updating the image:
 ```
-sudo docker stop [service]
-sudo docker rm [service]
-sudo docker-compose up -d [service]
+docker stop [service]
+docker rm [service]
+docker-compose up -d [service]
 ```
 
 [FRINX ODL]: <https://frinx.io/odl_distribution>
