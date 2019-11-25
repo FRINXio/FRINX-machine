@@ -1,17 +1,17 @@
 {
   "name": "UNICONFIG_delete_snapshot",
-  "description": "Delete snapshot in uniconfig - BASIC,UNICONFIG",
+  "description": "Delete snapshot in uniconfig - BASICS,UNICONFIG",
   "version": 1,  
   "inputParameters": [
     "name[Name of snapshot]"
   ],
   "tasks": [
-  	{
+    {
       "name": "UNICONFIG_delete_snapshot",
       "taskReferenceName": "UNICONFIG_delete_snapshot",
       "type": "SIMPLE",
       "inputParameters": {
-      	"name": "${workflow.input.name}"
+        "name": "${workflow.input.name}"
       }
     }
   ],

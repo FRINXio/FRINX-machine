@@ -1,6 +1,6 @@
 {
   "name": "UNICONFIG_replace_config_with_snapshot",
-  "description": "Replace config with snapshot - BASIC,UNICONFIG",
+  "description": "Replace config with snapshot - BASICS,UNICONFIG",
   "version": 1,  
   "inputParameters": [
   	"name[Name of snapshot]",

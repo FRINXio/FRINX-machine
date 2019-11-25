@@ -34,11 +34,11 @@ def register_workers(cc):
     inventory_worker.start(cc)
     unified_worker.start(cc)
     uniconfig_worker.start(cc)
-    vll_worker.start(cc)
-    vll_service_worker.start(cc)
-    vpls_worker.start(cc)
-    vpls_service_worker.start(cc)
-    bi_service_worker.start(cc)
+    # vll_worker.start(cc)
+    # vll_service_worker.start(cc)
+    # vpls_worker.start(cc)
+    # vpls_service_worker.start(cc)
+    # bi_service_worker.start(cc)
     common_worker.start(cc)
 
 
