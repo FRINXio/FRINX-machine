@@ -1,6 +1,6 @@
 {
   "name": "Add_field_to_device_in_inventory",
-  "description": "add a field key/value to device in inventory database - BASIC,INVENTORY",
+  "description": "add a field key/value to device in inventory database - BASICS,INVENTORY",
   "version": 1,
   "inputParameters": [
   	"device_id[The id of the device in the inventory.]",
