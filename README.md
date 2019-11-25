@@ -1,7 +1,7 @@
 # FRINX-machine
 The project is a containerized package of: 
 
-* [FRINX Uniconfig]
+* [FRINX UniConfig]
 * FRINX fork of Netflix's [Conductor]
 * Elastic's
     * [Elasticsearch]
@@ -17,8 +17,8 @@ The project is a containerized package of:
 * 16GB and 4 CPU
 * [Docker](https://www.docker.com/)
 * [Docker Compose](https://github.com/docker/compose)
-* License for FRINX Uniconf (you can find a trial license in the "Installation Guide" section below)
 * [Manage Docker as a non-root user](https://docs.docker.com/install/linux/linux-postinstall/)
+* License for FRINX UniConfig (you can find a trial license in the "Installation Guide" section below)
 
 ### Tested on
 * Ubuntu 16.04 / 18.04 /
@@ -141,7 +141,7 @@ docker rm [service]
 docker-compose up -d [service]
 ```
 
-[FRINX UNICONFIG]: <https://frinx.io/odl_distribution>
+[FRINX UniConfig]: <https://frinx.io/odl_distribution>
 [Conductor]: <https://github.com/FRINXio/conductor>
 [Elasticsearch]: <https://www.elastic.co/products/elasticsearch>
 [Kibana]: <https://www.elastic.co/products/kibana>
