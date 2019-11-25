@@ -1,18 +1,18 @@
 {
   "name": "UNICONFIG_create_snapshot",
-  "description": "Create snapshot in uniconfig - BASIC,UNICONFIG",
+  "description": "Create snapshot in uniconfig - BASICS,UNICONFIG",
   "version": 1,  
   "inputParameters": [
     "name[Name of snapshot]",
     "devices[List of devices to be committed. This is a mandatory parameter. Example: IOS01, IOS02 #node_ids]"
   ],
   "tasks": [
-  	{
+    {
       "name": "UNICONFIG_create_snapshot",
       "taskReferenceName": "UNICONFIG_create_snapshot",
       "type": "SIMPLE",
       "inputParameters": {
-      	"name": "${workflow.input.name}",
+        "name": "${workflow.input.name}",
         "devices": "${workflow.input.devices}"
       }
     }

@@ -3,14 +3,15 @@
     "description": "mount a Netconf device - BASICS,NETCONF",
     "version": 1,
     "inputParameters": [
-	"device_id[Unique identifier of device across all systems]",
-	"host[IP or hostname of the management endpoint on a device]",
-	"port[TCP port of the management endpoint of a device][22]",
-	"keepalivedelay[Time delay][0]",
-	"tcponly[Use tcp-only communication][false]",
-	"username[Username credential]",
-	"password[Password credential]",
-	"blacklist[List of blacklisted root paths (comma separated list) #template][openconfig-interfaces:interfaces,ietf-interfaces:interfaces]"
+    "device_id[Unique identifier of device across all systems]",
+    "host[IP or hostname of the management endpoint on a device]",
+    "port[TCP port of the management endpoint of a device][22]",
+    "keepalivedelay[Time delay][0]",
+    "tcponly[Use tcp-only communication][false]",
+    "username[Username credential]",
+    "password[Password credential]",
+    "uniconfignative[Enable uniconfig-native][true]",
+    "blacklist[List of blacklisted root paths (comma separated list) #template][openconfig-interfaces:interfaces,ietf-interfaces:interfaces]"
   ],
     "tasks": [
         {
@@ -33,6 +34,7 @@
                 "tcp-only": "${workflow.input.tcponly}",
                 "username": "${workflow.input.username}",
                 "password": "${workflow.input.password}",
+                "uniconfig-native": "${workflow.input.uniconfignative}",
                 "blacklist": "${workflow.input.blacklist}"
             },
             "type": "SIMPLE",

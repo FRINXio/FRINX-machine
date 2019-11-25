@@ -41,10 +41,11 @@ def execute_mount_netconf(task):
     mount_body["node"]["netconf-node-topology:username"] = task['inputData']['username']
     mount_body["node"]["netconf-node-topology:password"] = task['inputData']['password']
 
-    if 'blacklist' in task['inputData'] and task['inputData']['blacklist'] is not None:
-        mount_body["node"]["uniconfig-config:uniconfig-native-enabled"] = True
-        mount_body["node"]["uniconfig-config:blacklist"] = {'uniconfig-config:path':[]}
+    if 'uniconfig-native' in task['inputData'] and task['inputData']['uniconfig-native'] is not None:
+        mount_body["node"]["uniconfig-config:uniconfig-native-enabled"] = task['inputData']['uniconfig-native']
 
+    if 'blacklist' in task['inputData'] and task['inputData']['blacklist'] is not None:
+        mount_body["node"]["uniconfig-config:blacklist"] = {'uniconfig-config:path':[]}
         model_array = [model.strip() for model in task['inputData']['blacklist'].split(',')]
         for model in model_array:
             mount_body["node"]["uniconfig-config:blacklist"]["uniconfig-config:path"].append(model)
@@ -133,6 +134,7 @@ netconf_device_template = {
     "password": "",
     "topology": "netconf",
     "blacklist": "",
+    "uniconfig-native": "",
     "labels": []
 }
 
@@ -151,6 +153,7 @@ def add_netconf_device(task):
     add_body['tcp-only'] = task['inputData']['tcp-only']
     add_body["username"] = task['inputData']['username']
     add_body["password"] = task['inputData']['password']
+    add_body["uniconfig-native"] = task['inputData']['uniconfig-native']
     add_body["blacklist"] = task['inputData']['blacklist']
 
     if task['inputData']['labels'] is not None:

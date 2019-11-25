@@ -81,6 +81,7 @@
               "tcponly": "${get_device_from_inventory_ref_B1GP.output.device.tcp-only}",
               "username": "${get_device_from_inventory_ref_B1GP.output.device.username}",
               "password": "${get_device_from_inventory_ref_B1GP.output.device.password}",
+              "uniconfignative": "${get_device_from_inventory_ref_B1GP.output.device.uniconfig-native}",
               "blacklist": "${get_device_from_inventory_ref_B1GP.output.device.blacklist}"
             },
             "type": "SUB_WORKFLOW",
