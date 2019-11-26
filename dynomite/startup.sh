@@ -4,4 +4,4 @@
 redis-server /etc/redis/redis.conf
 
 #Start dynomite
-src/dynomite --conf-file=conf/redis_single.yml -v11
+src/dynomite --conf-file=conf/redis_single.yml
