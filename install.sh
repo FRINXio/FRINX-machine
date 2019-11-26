@@ -123,7 +123,7 @@ if [ "$build" = false ]; then
   # Copy custom license if file exists
   if [[ -f "$file" ]]; then
     echo "Apply license from file $file"
-    sudo docker-compose build odl
+    sudo docker-compose build uniconfig
   fi
 else
   echo 'Build images'
