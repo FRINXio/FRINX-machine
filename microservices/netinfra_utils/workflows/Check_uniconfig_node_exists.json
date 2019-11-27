@@ -1,0 +1,22 @@
+{
+  "name": "Check_uniconfig_node_exists",
+  "description": "Check uniconfig node exists - BASICS,UNICONFIG",
+  "version": 1,
+  "inputParameters": [
+    "device_id[Unique device identifier. Example: IOS01]"
+  ],
+  "tasks": [
+  	{
+      "name": "UNICONFIG_check_uniconfig_node_exists",
+      "taskReferenceName": "UNICONFIG_check_uniconfig_node_exists",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "mount": "${UNICONFIG_check_uniconfig_node_exists.output.response_body}"
+  },
+  "schemaVersion": 2
+}

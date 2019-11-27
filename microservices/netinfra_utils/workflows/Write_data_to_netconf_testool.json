@@ -21,8 +21,8 @@
       "startDelay": 0
     },
     {
-      "name": "sub_check",
-      "taskReferenceName": "check_mounted",
+      "name": "netconf_check",
+      "taskReferenceName": "netconf_check",
       "inputParameters": {
         "device_id": "netconf-testtool"
       },
@@ -33,16 +33,20 @@
       }
     },
     {
-      "name": "UNICONFIG_check_uniconfig_node_exists",
-      "taskReferenceName": "UNICONFIG_check_uniconfig_node_exists",
-      "type": "SIMPLE",
+      "name": "uniconfig_check",
+      "taskReferenceName": "uniconfig_check",
       "inputParameters": {
         "device_id": "netconf-testtool"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Check_uniconfig_node_exists",
+        "version": 1
       }
     },
   	{
       "name": "UNICONFIG_write_structured_device_data",
-      "taskReferenceName": "UNICONFIG_write_structured_device_data1",
+      "taskReferenceName": "UNICONFIG_write_interfaces",
       "type": "SIMPLE",
       "inputParameters": {
         "device_id": "netconf-testtool",
@@ -53,7 +57,7 @@
     },
     {
       "name": "UNICONFIG_write_structured_device_data",
-      "taskReferenceName": "UNICONFIG_write_structured_device_data2",
+      "taskReferenceName": "UNICONFIG_write_bgp",
       "type": "SIMPLE",
       "inputParameters": {
         "device_id": "netconf-testtool",
@@ -64,7 +68,7 @@
     },
     {
       "name": "UNICONFIG_write_structured_device_data",
-      "taskReferenceName": "UNICONFIG_write_structured_device_data3",
+      "taskReferenceName": "UNICONFIG_write_routing-policy",
       "type": "SIMPLE",
       "inputParameters": {
         "device_id": "netconf-testtool",
