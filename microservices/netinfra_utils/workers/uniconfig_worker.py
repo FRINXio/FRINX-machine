@@ -241,6 +241,27 @@ def delete_structured_data(task):
                 'logs': ["Unable to update device with ID %s" % device_id]}
 
 
+def execute_check_uniconfig_node_exists(task):
+    device_id = task['inputData']['device_id']
+
+    id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/node-id"
+
+    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    response_code, response_json = parse_response(r)
+
+    if response_code != requests.codes.not_found:
+        # Mountpoint with such ID already exists
+        return {'status': 'COMPLETED', 'output': {'url': id_url,
+                                                  'response_code': response_code,
+                                                  'response_body': response_json},
+                'logs': ["Uniconfig mountpoint with ID %s exists" % device_id]}
+    else:
+        return {'status': 'FAILED', 'output': {'url': id_url,
+                                               'response_code': response_code,
+                                               'response_body': response_json},
+                'logs': ["Uniconfig mountpoint with ID %s doesn't exist" % device_id]}
+
+
 commit_input = {
     "input": {
         "target-nodes": {
@@ -523,3 +544,17 @@ def start(cc):
 
     cc.register('UNICONFIG_replace_config_with_snapshot')
     cc.start('UNICONFIG_replace_config_with_snapshot', replace_config_with_snapshot, False)
+
+    cc.register('UNICONFIG_check_uniconfig_node_exists', {
+        "name": "UNICONFIG_check_uniconfig_node_exists",
+        "retryCount": 20,
+        "timeoutSeconds": 10,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 5,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "id"
+        ]
+    })
+    cc.start('UNICONFIG_check_uniconfig_node_exists', execute_check_uniconfig_node_exists, False)

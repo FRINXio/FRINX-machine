@@ -22,7 +22,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"id\": \"{{device_id}}\",\n   \t\"host\": \"sample-topology\",\n    \"port\": \"{{port}}\",\n    \"keepalive-delay\": \"{{keepalivedelay}}\",\n    \"tcp-only\": \"{{tcponly}}\",\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\",\n    \"topology\": \"netconf\",\n    \"labels\" : [\"{{labels}}\"]\n}"
+							"raw": "{\n    \"id\": \"{{device_id}}\",\n   \t\"host\": \"sample-topology\",\n    \"port\": \"{{port}}\",\n    \"keepalive-delay\": \"{{keepalivedelay}}\",\n    \"tcp-only\": \"{{tcponly}}\",\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\",\n    \"topology\": \"netconf\",\n    \"uniconfig-native\": true,\n    \"blacklist\": \"openconfig-interfaces:interfaces,ietf-interfaces:interfaces,openconfig-vlan:vlans,openconfig-routing-policy:routing-policy\",\n    \"labels\" : [\"{{labels}}\"]\n}"
 						},
 						"url": {
 							"raw": "http://elasticsearch:9200/inventory-device/device/{{device_id}}",
