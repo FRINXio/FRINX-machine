@@ -74,13 +74,13 @@
         "name": "UNICONFIG_commit",
         "version": 1
       },
-      "optional": false
+      "optional": true
     },
     {
       "name": "decisionTask",
       "taskReferenceName": "decisionTaskRef_9LC8",
       "inputParameters": {
-        "param": "${uniconfig_commit_ref_RXFF.output.response_body.output.overall-configuration-status}"
+        "param": "${uniconfig_commit_ref_RXFF.output.response_body.output.overall-status}"
       },
       "type": "DECISION",
       "caseValueParam": "param",

@@ -115,6 +115,8 @@ import_workflows
 # Import devices
 import_devices
 
+curl --silent -H "Content-Type: application/json"  -X POST -d "{\"name\":\"Write_data_to_netconf_testool\",\"version\":1,\"input\":{}}" http://localhost:8080/api/workflow/ &>/dev/null
+
 echo -e 'Startup finished!\n'
 echo -e 'FRINX UniConfig UI is ready and listening on port 3000. e.g. http://localhost:3000/\n'
 
