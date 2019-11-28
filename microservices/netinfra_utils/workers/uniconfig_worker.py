@@ -518,31 +518,58 @@ def start(cc):
     cc.register('UNICONFIG_delete_structured_device_data')
     cc.start('UNICONFIG_delete_structured_device_data', delete_structured_data, False)
 
-    cc.register('UNICONFIG_commit')
+    cc.register('UNICONFIG_commit', {
+        "name": "UNICONFIG_commit",
+        "responseTimeoutSeconds": 600
+    })
     cc.start('UNICONFIG_commit', commit, False)
 
-    cc.register('UNICONFIG_dryrun_commit')
+    cc.register('UNICONFIG_dryrun_commit', {
+        "name": "UNICONFIG_dryrun_commit",
+        "responseTimeoutSeconds": 600
+    })
     cc.start('UNICONFIG_dryrun_commit', dryrun_commit, False)
 
-    cc.register('UNICONFIG_checked_commit')
+    cc.register('UNICONFIG_checked_commit', {
+        "name": "UNICONFIG_checked_commit",
+        "responseTimeoutSeconds": 600
+    })
     cc.start('UNICONFIG_checked_commit', checked_commit, False)
 
-    cc.register('UNICONFIG_calculate_diff')
+    cc.register('UNICONFIG_calculate_diff', {
+        "name": "UNICONFIG_calculate_diff",
+        "responseTimeoutSeconds": 600
+    })
     cc.start('UNICONFIG_calculate_diff', calc_diff, False)
 
-    cc.register('UNICONFIG_sync_from_network')
+    cc.register('UNICONFIG_sync_from_network', {
+        "name": "UNICONFIG_sync_from_network",
+        "responseTimeoutSeconds": 600
+    })
     cc.start('UNICONFIG_sync_from_network', sync_from_network, False)
 
-    cc.register('UNICONFIG_replace_config_with_oper')
+    cc.register('UNICONFIG_replace_config_with_oper', {
+        "name": "UNICONFIG_replace_config_with_oper",
+        "responseTimeoutSeconds": 600
+    })
     cc.start('UNICONFIG_replace_config_with_oper', replace_config_with_oper, False)
 
-    cc.register('UNICONFIG_create_snapshot')
+    cc.register('UNICONFIG_create_snapshot', {
+        "name": "UNICONFIG_create_snapshot",
+        "responseTimeoutSeconds": 600
+    })
     cc.start('UNICONFIG_create_snapshot', create_snapshot, False)
 
-    cc.register('UNICONFIG_delete_snapshot')
+    cc.register('UNICONFIG_delete_snapshot', {
+        "name": "UNICONFIG_delete_snapshot",
+        "responseTimeoutSeconds": 600
+    })
     cc.start('UNICONFIG_delete_snapshot', delete_snapshot, False)
 
-    cc.register('UNICONFIG_replace_config_with_snapshot')
+    cc.register('UNICONFIG_replace_config_with_snapshot', {
+        "name": "UNICONFIG_replace_config_with_snapshot",
+        "responseTimeoutSeconds": 600
+    })
     cc.start('UNICONFIG_replace_config_with_snapshot', replace_config_with_snapshot, False)
 
     cc.register('UNICONFIG_check_uniconfig_node_exists', {
