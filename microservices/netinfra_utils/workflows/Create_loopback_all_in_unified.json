@@ -1,6 +1,6 @@
 {
   "name": "Create_loopback_all_in_unified",
-  "description": "Create loopback interface for all devices in unified topology -  DEMO,INTERFACES,UNIFIED,OPENCONFIG",
+  "description": "Create loopback interface for all devices in unified topology - DEMO,INTERFACES,UNIFIED,OPENCONFIG",
   "version": 1,
   "inputParameters": [
     "loopback_id[Unique loopback identifier (e.g. 77)]"
