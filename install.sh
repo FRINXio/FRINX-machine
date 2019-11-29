@@ -28,6 +28,7 @@ function help {
             Saves license token to [PATH to git repo]/uniconfig/frinx.license.cfg.
             If license file exists, custom uniconfig license is applied after each pull"
     echo -e "  -b | --build               Build specified services locally"
+    echo -e "  -d | --dev                 Updates submodules to latest, else does nothing with submodules"
     echo -e "\n"
   example
 }
@@ -70,6 +71,7 @@ valid_images=("uniconfig" "micros" "conductor-server" "dynomite" "elasticsearch"
 license=
 license_flag=false
 build=false
+dev_flag=false
 
 # Args while-loop
 while [ "$1" != "" ];
@@ -82,6 +84,9 @@ case $1 in
    ;;
    -b | --build )
    build=true
+   ;;
+   -d | --dev )
+   dev_flag=true
    ;;
    -h | --help )
    help
@@ -107,13 +112,18 @@ then
       echo "token=$license" > $file
 fi
 
-# Update submodules
-git submodule init
-git submodule update --recursive --remote
 
-cd conductor
-echo 'git.root=../../' > gradle.properties
-echo "submodVersion=$(git for-each-ref refs/tags --sort=-taggerdate --format='%(tag)' | grep -v -m 1 'frinx' | cut -d "v" -f 2)" >> gradle.properties
+if [ "$dev_flag" = true ]
+then
+    # Update submodules
+    git submodule init
+    git submodule update --recursive --remote
+
+    cd conductor
+    echo 'git.root=../../' > gradle.properties
+    echo "submodVersion=$(git for-each-ref refs/tags --sort=-taggerdate --format='%(tag)' | grep -v -m 1 'frinx' | cut -d "v" -f 2)" >> gradle.properties
+fi
+
 
 cd ${DIR}
 if [ "$build" = false ]; then
