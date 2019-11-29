@@ -1,0 +1,1 @@
+FROM portainer/portainer:1.22.2

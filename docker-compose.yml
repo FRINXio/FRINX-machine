@@ -167,7 +167,10 @@ services:
      - 3000:3000
 
   portainer:
-    image: portainer/portainer
+    build:
+      context: ./
+      dockerfile: ./portainer/Dockerfile
+    image: frinx/fm-portainer:1.0
     container_name: portainer
     logging:
       driver: "json-file"
