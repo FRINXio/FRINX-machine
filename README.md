@@ -52,14 +52,14 @@ e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643
 
 
 #### Get the project
-Download zip from v1.0 release:
+Download zip of release v1.0: 
 https://github.com/FRINXio/FRINX-machine/releases
 
 Unzip:
 ```bash
 unzip -q FRINX-machine_v1.0.zip -d /path/to/unzip/to
 ```
-Creates FRINX-machine folder containing project. Change to that directory:
+Change to FRINX-machine directory:
 ```bash
 cd /path/to/unzip/to/FRINX-machine
 ```
@@ -137,6 +137,12 @@ To build image from cloned repository:
 ./install.sh -b [service]
 ```
 If no container is specified all are updated.
+
+
+To use latest version of submodules for locally built images:
+```
+./install.sh --dev -b [service]
+```
 
 To replace running service with new one run after updating the image:
 ```
