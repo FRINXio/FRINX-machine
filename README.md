@@ -13,7 +13,7 @@ The project is a containerized package of:
 * [Portainer]
 
 
-## Requirements
+### Requirements
 * 16GB and 4 CPU
 * [Docker](https://www.docker.com/)
 * [Docker Compose](https://github.com/docker/compose)
@@ -26,27 +26,6 @@ The project is a containerized package of:
 * docker-compose 1.21.2, v1.22.0
 * Chrome browser
 
-
-## Installation Guide
-#### Trial license
-We offer a 30 day trial license. No signup needed!
-License token:
-```
-e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643100ccd31052430de1955540cf5ae1e510d657bd2af8ef2fc
-```
-
-30 days after your first installation, your token will expire and you will see an error message during Uniconfig startup. If you would like to continue with your evaluation, please register as a user on our homepage, where you will find another 30 day token under the section "My License Information". After the second trial period has expired, you can continue with a commercial license that has no time limitations. 
-
-#### Get the project
-Clone the repository:
-```bash
-git clone -b 0.9 https://github.com/FRINXio/FRINX-machine.git
-```
-Navigate into the project folder:
-```bash
-cd FRINX-machine
-```
-
 #### Services used in the project
 * uniconfig
 * dynomite
@@ -58,13 +37,38 @@ cd FRINX-machine
 * uniconfig-ui
 * sample-topology
 * portainer
- 
+
+## Installation Guide
+#### Trial license
+We offer a 30 day trial license. No signup needed!
+Alredy bundled in release.
+License token:
+```
+e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643100ccd31052430de1955540cf5ae1e510d657bd2af8ef2fc
+```
+
+30 days after your first installation, your token will expire and you will see an error message during Uniconfig startup. If you would like to continue with your evaluation, please register as a user on our homepage, where you will find another 30 day token under the section "My License Information". After the second trial period has expired, you can continue with a commercial license that has no time limitations. 
+
+
+
+#### Get the project
+Download zip from v1.0 release:
+https://github.com/FRINXio/FRINX-machine/releases
+
+Unzip:
+```bash
+unzip -q FRINX-machine_v1.0.zip -d /path/to/unzip/to
+```
+Creates FRINX-machine folder containing project. Change to that directory:
+```bash
+cd /path/to/unzip/to/FRINX-machine
+```
+
 ### Installation
 
 The installation script `install.sh` is in the FRINX-machine folder. 
 
 The installation script does the following things:
-* Updates project submodules (e.g. conductor)
 * Copies license token
 * Pulls conductor project parts from maven repository
 * Builds conductor-server .jar file
