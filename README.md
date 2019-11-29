@@ -53,15 +53,15 @@ e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643
 
 #### Get the project
 Download zip of release v1.0: 
-https://github.com/FRINXio/FRINX-machine/releases
+https://github.com/FRINXio/FRINX-machine/releases/download/v1.0/FRINX-machine_v1.0.zip
 
 Unzip:
 ```bash
-unzip -q FRINX-machine_v1.0.zip -d /path/to/unzip/to
+unzip FRINX-machine_v1.0.zip
 ```
 Change to FRINX-machine directory:
 ```bash
-cd /path/to/unzip/to/FRINX-machine
+cd FRINX-machine
 ```
 
 ### Installation
