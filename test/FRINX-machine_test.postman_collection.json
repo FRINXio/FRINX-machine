@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "fdf4fe1a-6a26-4d26-a9c4-92ecfa67ead6",
+		"_postman_id": "35cf2d66-83d8-4bac-9f05-f45d451e7864",
 		"name": "FRINX-machine _test",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -29,10 +29,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://{{conductor_ip}}:8080/api/metadata/taskdefs",
 					"protocol": "http",
@@ -72,10 +68,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://{{conductor_ip}}:8080/api/metadata/workflow",
 					"protocol": "http",
@@ -93,7 +85,7 @@
 			"response": []
 		},
 		{
-			"name": "Execute and read cli",
+			"name": "Mount cli device",
 			"event": [
 				{
 					"listen": "test",
@@ -165,10 +157,6 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
 				"url": {
 					"raw": "http://{{conductor_ip}}:8080/api/workflow/{{workflowId}}?includeTasks=false",
 					"protocol": "http",
@@ -192,48 +180,19 @@
 			"response": []
 		},
 		{
-			"name": "Check status connected",
+			"name": "Check if connected",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "54cb33a9-367e-4766-a669-2989d3ed9de6",
+						"id": "6cd7ab3e-1b72-4667-a402-6d4011de795d",
 						"type": "text/javascript",
 						"exec": [
-							"console.log(\"Response: \" + responseBody)",
+							"pm.test(\"Success\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200,201]);",
+							"});",
 							"",
-							"// attempts counter",
-							"var attempt = JSON.parse(postman.getEnvironmentVariable(\"attempt\"));",
-							"",
-							"var jsonData = JSON.parse(responseBody);",
-							"if ( pm.response.code == 200){",
-							"    tests[\"Mount point exists\"] = true",
-							"    // Reset attempt counter",
-							"    postman.setEnvironmentVariable(\"attempt\", JSON.stringify(1));",
-							"} else {",
-							"    // If too many attempts, abort",
-							"    if (attempt > JSON.parse(postman.getEnvironmentVariable(\"connect_attempts\"))) {",
-							"        postman.setEnvironmentVariable(\"attempt\", JSON.stringify(1));",
-							"        console.log(\"Not connected yet ! Too many attempts !\")",
-							"        // Reset attempt counter",
-							"        tests[\"Mount point exists\"] = false",
-							"    } else {",
-							"        // Schedule next check attempt",
-							"        console.log(\"Not connected yet ! Waiting, attempt : \" + attempt)",
-							"        setTimeout(function(){}, JSON.parse(postman.getEnvironmentVariable(\"connect_attempt_delay\")));",
-							"        postman.setEnvironmentVariable(\"attempt\", JSON.stringify(attempt + 1));",
-							"        postman.setNextRequest('Check status connected');",
-							"    }",
-							"}"
-						]
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "ed1f4afe-5479-4e45-bb4a-30485e52aae3",
-						"type": "text/javascript",
-						"exec": [
+							"pm.environment.set(\"workflowId\", responseBody);",
 							"",
 							""
 						]
@@ -241,16 +200,8 @@
 				}
 			],
 			"request": {
-				"method": "GET",
+				"method": "POST",
 				"header": [
-					{
-						"key": "Authorization",
-						"value": "Basic YWRtaW46YWRtaW4="
-					},
-					{
-						"key": "Accept",
-						"value": "application/json"
-					},
 					{
 						"key": "Content-Type",
 						"value": "application/json"
@@ -258,23 +209,66 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"network-topology:node\" :\n    {\n      \"network-topology:node-id\" : \"IOS2\",\n      \n      \"cli-topology:host\" : \"{{classic_ip}}\",\n      \"cli-topology:port\" : \"22\",\n      \"cli-topology:transport-type\" : \"ssh\",\n      \n      \"cli-topology:device-type\" : \"ios\",\n      \"cli-topology:device-version\" : \"*\",\n      \n      \"cli-topology:username\" : \"cisco\",\n      \"cli-topology:password\" : \"cisco\",\n      \n      \"cli-topology:journal-size\": 150\n    }\n  }"
+					"raw": "{\n  \"id\": \"XR1\",\n  \"type\": \"ios\",\n  \"version\": \"6\",\n  \"host\": \"{{sample_topology_ip}}\",\n  \"protocol\": \"ssh\",\n  \"port\": \"10001\",\n  \"username\": \"cisco\",\n  \"password\": \"cisco\"\n}"
 				},
 				"url": {
-					"raw": "http://{{odl_ip}}:8181/restconf/operational/network-topology:network-topology/topology/{{topology_id}}/node/{{node_id}}",
+					"raw": "http://{{conductor_ip}}:8080/api/workflow/Mount_cli_device",
 					"protocol": "http",
 					"host": [
-						"{{odl_ip}}"
+						"{{conductor_ip}}"
 					],
-					"port": "8181",
+					"port": "8080",
 					"path": [
-						"restconf",
-						"operational",
-						"network-topology:network-topology",
-						"topology",
-						"{{topology_id}}",
-						"node",
-						"{{node_id}}"
+						"api",
+						"workflow",
+						"Mount_cli_device"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check workflow status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a08206af-b276-4edf-93ca-7ff8e88adf38",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Success\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+							"});",
+							"",
+							"",
+							"var jsonData = JSON.parse(responseBody);",
+							"pm.test(\"Workflow status Success/Running\", function () {",
+							"    pm.expect(jsonData.status).to.be.oneOf([\"COMPLETED\",\"RUNNING\"\t]);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{conductor_ip}}:8080/api/workflow/{{workflowId}}?includeTasks=false",
+					"protocol": "http",
+					"host": [
+						"{{conductor_ip}}"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"workflow",
+						"{{workflowId}}"
+					],
+					"query": [
+						{
+							"key": "includeTasks",
+							"value": "false"
+						}
 					]
 				}
 			},
@@ -328,5 +322,6 @@
 			},
 			"response": []
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
