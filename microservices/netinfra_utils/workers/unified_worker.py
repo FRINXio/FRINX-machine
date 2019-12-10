@@ -56,9 +56,10 @@ task_body_template = {
 }
 
 
-def get_all_devices_as_tasks(task):
+def get_all_devices_as_dynamic_fork_tasks(task):
     subworkflow = task['inputData']['task']
     add_params = task['inputData']['task_params']
+    optional = task['inputData']['optional'] if 'optional' in task['inputData'] else "false"
     add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
 
     response_code, response_json = read_all_devices(odl_url_unified_oper_shallow)
@@ -77,6 +78,8 @@ def get_all_devices_as_tasks(task):
         dynamic_tasks = []
         for device_id in ids:
             task_body = copy.deepcopy(task_body_template)
+            if optional == "true":
+                task_body['optional'] = True
             task_body["taskReferenceName"] = device_id
             task_body["subWorkflowParam"]["name"] = subworkflow
             dynamic_tasks.append(task_body)
@@ -197,8 +200,8 @@ def start(cc):
     cc.register('UNIFIED_read_unified_topology_operational')
     cc.start('UNIFIED_read_unified_topology_operational', execute_read_unified_topology_operational, False)
 
-    cc.register('UNIFIED_get_all_devices_as_tasks')
-    cc.start('UNIFIED_get_all_devices_as_tasks', get_all_devices_as_tasks, False)
+    cc.register('UNIFIED_get_all_devices_as_dynamic_fork_tasks')
+    cc.start('UNIFIED_get_all_devices_as_dynamic_fork_tasks', get_all_devices_as_dynamic_fork_tasks, False)
 
     cc.register('UNIFIED_read_structured_device_data')
     cc.start('UNIFIED_read_structured_device_data', read_structured_data, False)

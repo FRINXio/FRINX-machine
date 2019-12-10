@@ -11,7 +11,7 @@
       },
       "type": "SUB_WORKFLOW",
       "subWorkflowParam": {
-        "name": "Get_all_devices_in_unified_as_tasks",
+        "name": "Get_all_devices_as_dynamic_fork_tasks_in_unified",
         "version": 1
       }
     },
@@ -30,7 +30,7 @@
     }
   ],
   "outputParameters": {
-  	"a": "b"
+  	"output": "${read_components.output}"
   },
   "schemaVersion": 2
 }

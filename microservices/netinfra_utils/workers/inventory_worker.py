@@ -263,9 +263,10 @@ task_body_template = {
 }
 
 
-def get_all_devices_as_tasks(task):
+def get_all_devices_as_dynamic_fork_tasks(task):
     add_params = task['inputData']['task_params'] if 'task_params' in task['inputData'] else {}
     add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
+    optional = task['inputData']['optional'] if 'optional' in task['inputData'] else "false"
     device_labels = task['inputData']['labels']
     task = task['inputData']['task']
 
@@ -283,6 +284,8 @@ def get_all_devices_as_tasks(task):
         dynamic_tasks = []
         for device_id in ids:
             task_body = copy.deepcopy(task_body_template)
+            if optional == "true":
+                task_body['optional'] = True
             task_body["taskReferenceName"] = device_id
             task_body["subWorkflowParam"]["name"] = task
             dynamic_tasks.append(task_body)
@@ -375,8 +378,8 @@ def start(cc):
     cc.register('INVENTORY_get_all_devices')
     cc.start('INVENTORY_get_all_devices', get_all_devices, False)
 
-    cc.register('INVENTORY_get_all_devices_as_tasks')
-    cc.start('INVENTORY_get_all_devices_as_tasks', get_all_devices_as_tasks, False)
+    cc.register('INVENTORY_get_all_devices_as_dynamic_fork_tasks')
+    cc.start('INVENTORY_get_all_devices_as_dynamic_fork_tasks', get_all_devices_as_dynamic_fork_tasks, False)
 
     cc.register('INVENTORY_add_show_command')
     cc.start('INVENTORY_add_show_command', add_show_command, False)

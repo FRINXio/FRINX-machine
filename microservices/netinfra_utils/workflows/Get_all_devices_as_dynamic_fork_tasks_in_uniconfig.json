@@ -1,0 +1,26 @@
+{
+  "name": "Get_all_devices_as_dynamic_fork_tasks_in_uniconfig",
+  "description": "get all devices in uniconfig topology as dynamic fork tasks - BASICS,UNICONFIG",
+  "version": 1,
+  "inputParameters": [
+    "task[Name of a task to schedule for subsequent execution in the output #tasks]",
+    "optional[When set to true - tasks continues even if the task fails]"
+  ],
+  "tasks": [
+    {
+      "name": "UNICONFIG_get_all_devices_as_dynamic_fork_tasks",
+      "taskReferenceName": "UNICONFIG_get_all_devices_as_dynamic_fork_tasks",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "task": "${workflow.input.task}",
+        "task_params": "${workflow.input.task_params}",
+        "optional": "${workflow.input.optional}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "dynamic_tasks_i": "${UNICONFIG_get_all_devices_as_dynamic_fork_tasks.output.dynamic_tasks_i}",
+    "dynamic_tasks": "${UNICONFIG_get_all_devices_as_dynamic_fork_tasks.output.dynamic_tasks}"
+  },
+  "schemaVersion": 2
+}
