@@ -1,0 +1,2204 @@
+/*
+ * Copyright (c) 2018 Juniper Networks, Inc.
+ * All rights reserved.
+ */
+ module show-chassis {
+  namespace "http://yang.juniper.net/yang/1.1/jrpc/show-chassis/junos/17.3R1.10";
+  prefix show-chassis;
+
+  organization
+    "Juniper Networks, Inc.";
+
+  description
+    "Junos YANG module for RPC";
+
+
+  revision 2017-01-01 {
+    description
+      "Junos YANG module for RPC.";
+  }
+   typedef daemon {
+     type string;
+   }
+   typedef filename {
+     type string;
+   }
+   typedef client-filename {
+     type string;
+   }
+   typedef hostname {
+     type string;
+   }
+   typedef ipaddr {
+     type string;
+   }
+   typedef sysid {
+     type string;
+   }
+   typedef interface-device {
+     type string;
+   }
+   typedef ddl-bits {
+     type string;
+   }
+   typedef isoaddr {
+     type string;
+   }
+   typedef ipprefix {
+     type string;
+   }
+   typedef ipprefix-mandatory {
+     type string;
+   }
+   typedef interface-unit {
+     type string;
+   }
+   typedef ipaddr-or-interface {
+     type string;
+   }
+   typedef areaid {
+     type string;
+   }
+   typedef interface-name {
+     type string;
+   }
+   typedef community {
+     type string;
+   }
+   typedef interface-wildcard {
+     type string;
+   }
+   typedef unreadable {
+     type string;
+   }
+   typedef ipprefix-optional {
+     type string;
+   }
+   typedef policy-algebra {
+     type string;
+   }
+   typedef regular-expression {
+     type string;
+   }
+   typedef group-glob {
+     type string;
+   }
+   typedef atm-vci {
+     type string;
+   }
+   typedef ipprefix-only {
+     type string;
+   }
+   typedef ipv4addr {
+     type string;
+   }
+   typedef ipv4prefix {
+     type string;
+   }
+   typedef ipv4prefix-mandatory {
+     type string;
+   }
+   typedef ipv4addr-or-interface {
+     type string;
+   }
+   typedef ipv4prefix-optional {
+     type string;
+   }
+   typedef ipv4prefix-only {
+     type string;
+   }
+   typedef ipv6addr {
+     type string;
+   }
+   typedef ipv6prefix {
+     type string;
+   }
+   typedef ipv6prefix-mandatory {
+     type string;
+   }
+   typedef ipv6addr-or-interface {
+     type string;
+   }
+   typedef ipv6prefix-optional {
+     type string;
+   }
+   typedef ipv6prefix-only {
+     type string;
+   }
+   typedef interface-device-wildcard {
+     type string;
+   }
+   typedef time {
+     type string;
+   }
+   typedef mac-addr {
+     type string;
+   }
+   typedef mac-addr-prefix {
+     type string;
+   }
+   typedef mac-unicast {
+     type string;
+   }
+   typedef mac-unicast-prefix {
+     type string;
+   }
+   typedef mac-multicast {
+     type string;
+   }
+   typedef mac-multicast-prefix {
+     type string;
+   }
+   typedef mpls-label {
+     type string;
+   }
+   typedef unsigned-float {
+     type string;
+   }
+   typedef isoprefix {
+     type string;
+   }
+   typedef isosysid {
+     type string;
+   }
+   typedef string-huge {
+     type string;
+   }
+   typedef variable {
+     type string;
+   }
+   typedef glob-variable {
+     type string;
+   }
+   typedef vlan-range {
+     type string;
+   }
+   typedef interface-range-wild {
+     type string;
+   }
+   typedef fc-addr {
+     type string;
+   }
+   typedef wwn {
+     type string;
+   }
+   typedef logfilename {
+     type string;
+   }
+   typedef range {
+     type string;
+   }
+   typedef esi {
+     type string;
+   }
+
+   rpc get-power-usage-information {
+     description "Show Chassis Power Usages";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml power-usage-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-power-usage-information-detail {
+     description "Show chassis power usage detail";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml power-usage-information-detail;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-fru-power-on-sequence {
+     description "Show chassis fru power on sequence";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml fru-power-on-sequence;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-alarm-information {
+     description "Show alarm status";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml alarm-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-alarm-satellite-information {
+     description "Show alarm status for satellite devices";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-alarm-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-jam-test-information {
+     description "Show Jam API test result";
+     input {
+       leaf detail {
+         description "Display detailed output";
+         type empty;
+       }
+       leaf fpc-slot {
+         description "FPC slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 11";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml jam-test-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc network-services {
+     description "Show chassis network services";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml network-services;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-craft-information {
+     description "Show craft interface status";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml craft-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-ethernet-switch-information {
+     description "Show Ethernet switch information";
+     output {
+       leaf output {
+         type string;
+       }
+     }
+   }
+   rpc get-chassis-zones-information {
+     description "Show chassis cooling zones information";
+     input {
+       leaf detail {
+         description "Display detailed output";
+         type empty;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-zones-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-environment-information {
+     description "Show component status and temperature, cooling system speeds";
+     input {
+       leaf monitored {
+         description "Show items whose temperatures are monitored";
+         type empty;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml environment-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-environment-fan-information {
+     description "Show fan status";
+     input {
+       leaf slot {
+         description "Fantray slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 6";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml fan-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-environment-fpc-information {
+     description "Show Flexible PIC Concentrator information";
+     input {
+       leaf fpc-slot {
+         description "FPC slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 11";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml environment-component-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-environment-fpc-satellite-info {
+     description "Show environment FPC details";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf device-alias {
+         description "Device alias";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-environment-fpc-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-environment-fpm-information {
+     description "Show craft interface information";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml environment-component-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-environment-cb-information {
+     description "Show Control Board information";
+     input {
+       leaf slot {
+         description "CB slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 1";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml environment-component-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-environment-pem-information {
+     description "Show Power Entry Module information";
+     input {
+       leaf slot {
+         description "PEM slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range 0;
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml environment-component-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-environment-pem-satellite-info {
+     description "Show environment PEM details";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf device-alias {
+         description "Device alias";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-environment-pem-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-environment-psm-information {
+     description "Show Power Supply Module information";
+     input {
+       leaf slot {
+         description "PSM slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range 0;
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml environment-component-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-environment-sfb-information {
+     description "Show SFB status";
+     input {
+       leaf sfb-slot {
+         description "SFB slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 7";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml sfb-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-environment-adc-information {
+     description "Show adc status";
+     input {
+       leaf adc-slot {
+         description "ADC slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 11";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml sfb-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-environment-re-information {
+     description "Show Routing Engine information";
+     input {
+       leaf slot {
+         description "Routing Engine slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 1";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml environment-component-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-environment-re-satellite-info {
+     description "Show environment routing engine details";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf device-alias {
+         description "Device alias";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-environment-routing-engine-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-environment-satellite-information {
+     description "Show environment details";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf device-alias {
+         description "Device alias";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-environment-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-firmware-information {
+     description "Show firmware and operating system version for components";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml firmware-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-firmware-satellite-information {
+     description "Show FPC firmware details";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf device-alias {
+         description "Device alias";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-firmware-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-fpc-information {
+     description "Show Flexible PIC Concentrator status";
+     input {
+       leaf detail {
+         description "Display detailed output";
+         type empty;
+       }
+       leaf fpc-slot {
+         description "FPC slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 11";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml fpc-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-pic-information {
+     description "Show Physical Interface Cards installed in FPC";
+     input {
+       leaf slot {
+         description "FPC slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 11";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml fpc-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-fpc-port-information {
+     description "Show Port status installed in FPC";
+     input {
+       leaf slot {
+         description "FPC slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 11";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml fpc-port-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-fpc-error-information {
+     description "Show ASIC errors on all the FPC's";
+     input {
+       leaf detail {
+         description "Display detailed output";
+         type empty;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml fpc-error-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-adc-information {
+     description "Show ADC status";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml adc-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-pic-detail {
+     description "Show Physical Interface Card state, type, and uptime";
+     input {
+       leaf fpc-slot {
+         description "Slot number of FPC that houses PIC";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 11";
+           }
+         }
+       }
+       leaf pic-slot {
+         description "PIC slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type int32 {
+             range "0 .. 3";
+           }
+         }
+         mandatory true;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml fpc-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-pic-transport-information {
+     description "Show Physical Interface Card transport information";
+     input {
+       leaf fpc-slot {
+         description "Slot number of FPC that houses PIC";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 11";
+           }
+         }
+         mandatory true;
+       }
+       leaf pic-slot {
+         description "PIC slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type int32 {
+             range "0 .. 3";
+           }
+         }
+         mandatory true;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml pic-transport-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-spmb-information {
+     description "Show Switch Processor Mezzanine Board status";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml spmb-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-sfb-information {
+     description "Show Switch Fabric Board status";
+     input {
+       leaf slot {
+         description "SFB slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range 0;
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml sfb-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-inventory {
+     description "Show installed hardware components";
+     input {
+       leaf verbosity {
+         type enumeration {
+           enum "detail" {
+             description "Include RAM and disk information in output";
+           }
+           enum "extensive" {
+             description "Display ID EEPROM information";
+           }
+           enum "models" {
+             description "Display serial number and model number for orderable FRUs";
+           }
+           enum "clei-models" {
+             description "Display CLEI barcode and model number for orderable FRUs";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-inventory;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-hardware-satellite-information {
+     description "Show hardware details";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf device-alias {
+         description "Device alias";
+         type string;
+       }
+       leaf verbosity {
+         type enumeration {
+           enum "detail" {
+             description "Include RAM and disk information in output";
+           }
+           enum "extensive" {
+             description "Display ID EEPROM information";
+           }
+           enum "models" {
+             description "Display serial number and model number for orderable FRUs";
+           }
+           enum "clei-models" {
+             description "Display CLEI barcode and model number for orderable FRUs";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-hardware-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-mac-addresses {
+     description "Show media access control addresses";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-mac-addresses;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-route-engine-information {
+     description "Show Routing Engine status";
+     input {
+       leaf slot {
+         description "Routing Engine slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "0 .. 1";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml route-engine-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-bios-version-information {
+     description "Show BIOS firmware version";
+     output {
+       leaf output {
+         type string;
+       }
+     }
+   }
+   rpc get-chassis-routing-engine-bios-satellite-info {
+     description "Show routing engine bios details";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf device-alias {
+         description "Device alias";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-routing-engine-bios-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-routing-engine-errors {
+     description "Show re errors";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml errors;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-routing-engine-satellite-information {
+     description "Show routing engine details";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf device-alias {
+         description "Device alias";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-routing-engine-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-fan-satellite-information {
+     description "Show fan details";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf device-alias {
+         description "Device alias";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-fan-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-location {
+     description "Show physical location of chassis";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-location;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-temperature-threshold-information {
+     description "Show chassis temperature threshold settings";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml temperature-threshold-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-temp-thresholds-satellite-info {
+     description "Show temperature thresholds details";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf device-alias {
+         description "Device alias";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-temperature-thresholds-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-oss-map {
+     description "Show Operation Supported System's translated model";
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-oss-map;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-information {
+     description "Show Satellite Devices information";
+     input {
+       choice arg {
+         case fpc-slot {
+           leaf fpc-slot {
+             description "Satellite slot number";
+             type union {
+               type string {
+                 pattern "<.*>";
+               }
+               type uint32 {
+                 range "65 .. 254";
+               }
+             }
+           }
+         }
+         case device-alias {
+           leaf device-alias {
+             description "Device alias";
+             type string;
+           }
+         }
+       }
+       leaf cluster {
+         description "Cluster name";
+         type string;
+       }
+       leaf since {
+         description "Show history since YYYY-MM-DD.HH:MM:SS";
+         type time;
+       }
+       leaf level {
+         default "brief";
+         type enumeration {
+           enum "terse" {
+             description "Display terse output";
+           }
+           enum "brief" {
+             description "Display brief output (default)";
+           }
+           enum "detail" {
+             description "Display detailed output";
+           }
+           enum "extensive" {
+             description "Display extensive output";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-unprovision-information {
+     description "Display unprovisioned satellites";
+     input {
+       leaf system-id {
+         description "Satellite system id";
+         type mac-addr;
+       }
+       leaf since {
+         description "Show history since YYYY-MM-DD.HH:MM:SS";
+         type time;
+       }
+       leaf level {
+         default "brief";
+         type enumeration {
+           enum "brief" {
+             description "Display brief output (default)";
+           }
+           enum "detail" {
+             description "Display detailed output";
+           }
+           enum "extensive" {
+             description "Display extensive output";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-statistics {
+     description "Display device statistics information";
+     input {
+       choice arg {
+         case fpc-slot {
+           leaf fpc-slot {
+             description "Satellite slot number";
+             type union {
+               type string {
+                 pattern "<.*>";
+               }
+               type uint32 {
+                 range "65 .. 254";
+               }
+             }
+           }
+         }
+         case device-alias {
+           leaf device-alias {
+             description "Device alias";
+             type string;
+           }
+         }
+       }
+       leaf cluster {
+         description "Cluster name";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml device-statistics;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-redundancy-group-info {
+     description "Display multi-chassis cluster information";
+     input {
+       leaf since {
+         description "Show history since YYYY-MM-DD.HH:MM:SS";
+         type time;
+       }
+       leaf level {
+         default "terse";
+         type enumeration {
+           enum "terse" {
+             description "Display terse output (default)";
+           }
+           enum "brief" {
+             description "Display brief output";
+           }
+           enum "detail" {
+             description "Display detailed output";
+           }
+           enum "extensive" {
+             description "Display extensive output";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml multi-chassis-cluster-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-redundacy-grp-devices-info {
+     description "Display satellite device information";
+     input {
+       leaf level {
+         default "terse";
+         type enumeration {
+           enum "terse" {
+             description "Display terse output (default)";
+           }
+           enum "brief" {
+             description "Display brief output";
+           }
+           enum "detail" {
+             description "Display detailed output";
+           }
+           enum "extensive" {
+             description "Display extensive output";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml multi-chassis-cluster-device-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-redundancy-grp-dev-history {
+     description "Display device history information";
+     input {
+       leaf verbosity_level {
+         default "brief";
+         type enumeration {
+           enum "brief" {
+             description "Display brief output (default)";
+           }
+           enum "detail" {
+             description "Display detailed output";
+           }
+           enum "extensive" {
+             description "Display extensive output";
+           }
+         }
+       }
+       leaf serial-number {
+         description "Device Serial Number";
+         type string;
+       }
+       leaf global {
+         description "Global history";
+         type empty;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml multi-chassis-cluster-device-history-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-extended-port-information {
+     description "Display extended-port information";
+     input {
+       leaf interface-name {
+         description "Interface name";
+         type string;
+       }
+       leaf since {
+         description "Show history since YYYY-MM-DD.HH:MM:SS";
+         type time;
+       }
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf level {
+         default "terse";
+         type enumeration {
+           enum "terse" {
+             description "Display terse output (default)";
+           }
+           enum "brief" {
+             description "Display brief output";
+           }
+           enum "detail" {
+             description "Display detailed output";
+           }
+           enum "extensive" {
+             description "Display extensive output";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml extended-port-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-upgrade-group-information {
+     description "Display upgrade group information";
+     input {
+       leaf level {
+         default "terse";
+         type enumeration {
+           enum "terse" {
+             description "Display terse output (default)";
+           }
+           enum "brief" {
+             description "Display brief output";
+           }
+           enum "detail" {
+             description "Display detailed output";
+           }
+           enum "extensive" {
+             description "Display extensive output";
+           }
+         }
+       }
+       leaf group-name {
+         description "Upgrade group name";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml upgrade-group-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-neighbor-information {
+     description "Display satellite adjacency information";
+     input {
+       leaf interface-name {
+         description "Name of interface";
+         type string;
+       }
+       leaf since {
+         description "Show history since YYYY-MM-DD.HH:MM:SS";
+         type time;
+       }
+       leaf level {
+         default "terse";
+         type enumeration {
+           enum "terse" {
+             description "Display terse output (default)";
+           }
+           enum "brief" {
+             description "Display brief output";
+           }
+           enum "detail" {
+             description "Display detailed output";
+           }
+           enum "extensive" {
+             description "Display extensive output";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml adjacency-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-neighbor-statistics {
+     description "Display adjacency statistics information";
+     input {
+       leaf interface-name {
+         description "Name of interface";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml adjacency-statistics;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-interface-information {
+     description "Display satellite protocol interface information";
+     input {
+       leaf verbosity_level {
+         default "brief";
+         type enumeration {
+           enum "brief" {
+             description "Display brief output (default)";
+           }
+           enum "detail" {
+             description "Display detailed output";
+           }
+           enum "extensive" {
+             description "Display extensive output";
+           }
+         }
+       }
+       leaf interface-name {
+         description "Name of interface";
+         type string;
+       }
+       leaf since {
+         description "Show history since YYYY-MM-DD.HH:MM:SS";
+         type time;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml satellite-interface-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-satellite-management-software-information {
+     description "Show satellite software installed";
+     input {
+       leaf level {
+         default "brief";
+         type enumeration {
+           enum "brief" {
+             description "Display brief output (default)";
+           }
+           enum "detail" {
+             description "Display detailed output";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml satellite-software-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-power-budget-information {
+     description "Show power budget chassis satellite information";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml power-budget-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-cluster-information {
+     description "Show Satellite Cluster information";
+     input {
+       leaf cluster {
+         description "Cluster name";
+         type string;
+       }
+       leaf level {
+         default "brief";
+         type enumeration {
+           enum "terse" {
+             description "Display terse output";
+           }
+           enum "brief" {
+             description "Display brief output (default)";
+           }
+           enum "detail" {
+             description "Display detailed output";
+           }
+           enum "extensive" {
+             description "Display extensive output";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml satellite-cluster-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-cluster-route {
+     description "Display cluster route information";
+     input {
+       leaf cluster {
+         description "Cluster name";
+         type string;
+       }
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "65 .. 254";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml cluster-statistics-route;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-satellite-cluster-statistics {
+     description "Display cluster statistics information";
+     input {
+       leaf cluster {
+         description "Cluster name";
+         type string;
+       }
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint32 {
+             range "65 .. 254";
+           }
+         }
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml cluster-statistics;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+   rpc get-chassis-led-satellite-information {
+     description "Show led details";
+     input {
+       leaf fpc-slot {
+         description "Satellite slot number";
+         type union {
+           type string {
+             pattern "<.*>";
+           }
+           type uint16 {
+             range "65 .. 254";
+           }
+         }
+       }
+       leaf device-alias {
+         description "Device alias";
+         type string;
+       }
+     }
+     output {
+       choice output_c {
+         case output-tag {
+           leaf output {
+             type string;
+           }
+         }
+         case actual-tag {
+           anyxml chassis-led-satellite-information;
+         }
+         case multichassis-tag {
+           anyxml multi-routing-engine-results;
+         }
+       }
+     }
+   }
+ }

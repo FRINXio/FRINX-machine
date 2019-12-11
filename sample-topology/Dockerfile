@@ -26,7 +26,7 @@ RUN mkdir -p /home/topology/netconf-testtool/schemas
 ADD  https://license.frinx.io/download/netconf-testtool-1.4.2-Oxygen-SR2.4_2_3_rc2-frinxodl-executable.jar /home/topology/netconf-testtool
 
 ## copy schemas
-COPY ./sample-topology/netconf-testtol/schemas /home/topology/netconf-testtool/schemas
+COPY ./sample-topology/netconf-testtol/xr/schemas /home/topology/netconf-testtool/schemas
 ##
 
 
