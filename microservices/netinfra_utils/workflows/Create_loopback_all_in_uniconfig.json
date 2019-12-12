@@ -15,7 +15,7 @@
       },
       "type": "SUB_WORKFLOW",
       "subWorkflowParam": {
-        "name": "Get_all_devices_as_dynamic_fork_tasks_in_uniconfig",
+        "name": "Get_all_devices_in_uniconfig_as_dynamic_fork_tasks",
         "version": 1
       }
     },

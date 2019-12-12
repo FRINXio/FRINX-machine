@@ -17,7 +17,7 @@
       },
       "type": "SUB_WORKFLOW",
       "subWorkflowParam": {
-        "name": "Get_all_devices_as_dynamic_fork_tasks_from_inventory",
+        "name": "Get_all_devices_from_inventory_as_dynamic_fork_tasks",
         "version": 1
       }
     },

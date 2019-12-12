@@ -1,5 +1,5 @@
 {
-  "name": "Get_all_devices_as_dynamic_fork_tasks_from_inventory",
+  "name": "Get_all_devices_from_inventory_as_dynamic_fork_tasks",
   "description": "get all devices in inventory database as dynamic fork tasks - BASICS,INVENTORY",
   "version": 1,
   "inputParameters": [
