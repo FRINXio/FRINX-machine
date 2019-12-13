@@ -9,20 +9,20 @@
   	{
       "name": "sub_read_unified",
       "taskReferenceName": "read_unified",
-	    "inputParameters": {
+      "inputParameters": {
         "task": "Create_loopback_interface_uniconfig",
         "task_params": "{\"loopback_id\": \"${workflow.input.loopback_id}\"}"
       },
       "type": "SUB_WORKFLOW",
       "subWorkflowParam": {
-        "name": "Get_all_devices_as_tasks_in_uniconfig",
+        "name": "Get_all_devices_in_uniconfig_as_dynamic_fork_tasks",
         "version": 1
       }
     },
   	{
       "name": "sub_create_loopback",
       "taskReferenceName": "create_loopback",
-	   "inputParameters": {
+      "inputParameters": {
         "dynamic_tasks": "${read_unified.output.dynamic_tasks}",
         "dynamic_tasks_i": "${read_unified.output.dynamic_tasks_i}"
       },
