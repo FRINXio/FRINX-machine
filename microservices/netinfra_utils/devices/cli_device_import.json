@@ -1,0 +1,12 @@
+{
+	"device_type": "{{device_type}}",
+	"device_version": "{{device_version}}",
+	"host": "sample-topology",
+	"id": "{{device_id}}",
+	"password": "{{password}}",
+	"username": "{{username}}",
+	"port": "{{port}}",
+	"transport_type": "ssh",
+	"topology": "cli",
+	"labels" : ["{{labels}}"]
+}

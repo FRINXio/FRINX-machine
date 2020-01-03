@@ -1,13 +1,5 @@
 FROM python:3.6.10-buster
 
-## Install nodejs
-
-### /nodejs
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs
-
-### Install newman
-RUN npm install -g newman
-
 # Install unzip
 RUN apt-get update \
  && apt-get install unzip
