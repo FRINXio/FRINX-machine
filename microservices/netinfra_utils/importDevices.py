@@ -53,7 +53,7 @@ def main():
         device_json = device_import_json
 
         # replace the relevant parts for each device to create a JSON file
-        # to send to the conductor server
+        # to send to elasticsearch
         for k in json_replacements.keys():
             val = json_replacements[k];
             device_json = device_json.replace(k, device_data[val])
