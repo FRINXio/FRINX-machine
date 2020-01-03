@@ -1,0 +1,13 @@
+{
+    "id": "{{device_id}}",
+   	"host": "sample-topology",
+    "port": "{{port}}",
+    "keepalive-delay": "{{keepalivedelay}}",
+    "tcp-only": "{{tcponly}}",
+    "username": "{{username}}",
+    "password": "{{password}}",
+    "topology": "netconf",
+    "uniconfig-native": true,
+    "blacklist": "openconfig-interfaces:interfaces,ietf-interfaces:interfaces,openconfig-vlan:vlans,openconfig-routing-policy:routing-policy",
+    "labels" : ["{{labels}}"]
+}

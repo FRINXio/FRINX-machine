@@ -1,12 +1,4 @@
-FROM python:2.7.16-jessie
-
-## Install nodejs
-
-### /nodejs
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && apt-get install -y nodejs
-
-### Install newman
-RUN npm install -g newman
+FROM python:3.6.10-buster
 
 # Install unzip
 RUN apt-get update \
