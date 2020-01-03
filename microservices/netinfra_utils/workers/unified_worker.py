@@ -60,13 +60,13 @@ def get_all_devices_as_dynamic_fork_tasks(task):
     subworkflow = task['inputData']['task']
     add_params = task['inputData']['task_params']
     optional = task['inputData']['optional'] if 'optional' in task['inputData'] else "false"
-    add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
+    add_params = json.loads(add_params) if isinstance(add_params, str) else (add_params if add_params else {})
 
     response_code, response_json = read_all_devices(odl_url_unified_oper_shallow)
 
     if response_code == requests.codes.ok:
         print(response_json)
-        ids = map(lambda x: x["node-id"], response_json["topology"][0]["node"])
+        ids = [nodes["node-id"] for nodes in response_json["topology"][0]["node"]]
         print(ids)
 
         dynamic_tasks_i = {}
@@ -125,7 +125,7 @@ def write_structured_data(task):
     template = task['inputData']['template']
     params = task['inputData']['params'] if task['inputData']['params'] else {}
 
-    data_json = template if isinstance(template, basestring) else json.dumps(template if template else {})
+    data_json = template if isinstance(template, str) else json.dumps(template if template else {})
     data_json = Template(data_json).substitute(params)
 
     id_url = Template(odl_url_unified_mount).substitute({"id": device_id}) + "/yang-ext:mount" + (uri if uri else "")
@@ -191,7 +191,6 @@ def execute_check_unified_node_exists(task):
                                                'response_code': response_code,
                                                'response_body': response_json},
                 'logs': ["Unified mountpoint with ID %s doesn't exist" % device_id]}
-
 
 
 def start(cc):

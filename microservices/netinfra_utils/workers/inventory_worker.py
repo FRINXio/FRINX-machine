@@ -13,7 +13,7 @@ inventory_device_get_url = elastic_url_base + "/inventory-device/device/$id/_sou
 inventory_device_update_url = elastic_url_base + "/inventory-device/device/$id/_update"
 inventory_all_devices_url = elastic_url_base + "/inventory-device/device/_search?size=10000"
 
-add_template = {
+cli_device_template = {
     "id": "",
     "host": "",
     "port": "",
@@ -27,12 +27,12 @@ add_template = {
 }
 
 
-def add_device(task):
+def add_cli_device(task):
     device_id = task['inputData']['device_id']
 
     id_url = Template(inventory_device_url).substitute({"id": device_id})
 
-    add_body = copy.deepcopy(add_template)
+    add_body = copy.deepcopy(cli_device_template)
 
     add_body["id"] = task['inputData']['device_id']
     add_body["host"] = task['inputData']['host']
@@ -265,7 +265,7 @@ task_body_template = {
 
 def get_all_devices_as_dynamic_fork_tasks(task):
     add_params = task['inputData']['task_params'] if 'task_params' in task['inputData'] else {}
-    add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
+    add_params = json.loads(add_params) if isinstance(add_params, str) else (add_params if add_params else {})
     optional = task['inputData']['optional'] if 'optional' in task['inputData'] else "false"
     device_labels = task['inputData']['labels']
     task = task['inputData']['task']
@@ -354,11 +354,63 @@ def get_show_command(task):
                 'logs': []}
 
 
+netconf_device_template = {
+    "id": "",
+    "host": "",
+    "port": "",
+    "keepalive-delay": "",
+    "tcp-only": "",
+    "username": "",
+    "password": "",
+    "topology": "netconf",
+    "blacklist": "",
+    "uniconfig-native": "",
+    "labels": []
+}
+
+
+def add_netconf_device(task):
+    device_id = task['inputData']['device_id']
+
+    id_url = Template(inventory_device_url).substitute({"id": device_id})
+
+    add_body = copy.deepcopy(netconf_device_template)
+
+    add_body["id"] = task['inputData']['device_id']
+    add_body["host"] = task['inputData']['host']
+    add_body["port"] = task['inputData']['port']
+    add_body['keepalive-delay'] = task['inputData']['keepalive-delay']
+    add_body['tcp-only'] = task['inputData']['tcp-only']
+    add_body["username"] = task['inputData']['username']
+    add_body["password"] = task['inputData']['password']
+    add_body["uniconfig-native"] = task['inputData']['uniconfig-native']
+    add_body["blacklist"] = task['inputData']['blacklist']
+
+    if task['inputData']['labels'] is not None:
+        device_labels = [label.strip() for label in task['inputData']['labels'].split(',')]
+        for label in device_labels:
+            add_body["labels"].append(label)
+
+    r = requests.post(id_url, data=json.dumps(add_body), headers=elastic_headers)
+    response_code, response_json = parse_response(r)
+
+    if response_code == requests.codes.ok or response_code == requests.codes.created:
+        return {'status': 'COMPLETED', 'output': {'url': id_url,
+                                                  'response_code': response_code,
+                                                  'response_body': response_json},
+                'logs': []}
+    else:
+        return {'status': 'FAILED', 'output': {'url': id_url,
+                                               'response_code': response_code,
+                                               'response_body': response_json},
+                'logs': []}
+
+
 def start(cc):
     print('Starting Inventory workers')
 
     cc.register('INVENTORY_add_device')
-    cc.start('INVENTORY_add_device', add_device, False)
+    cc.start('INVENTORY_add_device', add_cli_device, False)
 
     cc.register('INVENTORY_add_field_to_device')
     cc.start('INVENTORY_add_field_to_device', add_field_to_device, False)
@@ -386,3 +438,6 @@ def start(cc):
 
     cc.register('INVENTORY_get_show_command')
     cc.start('INVENTORY_get_show_command', get_show_command, False)
+
+    cc.register('INVENTORY_add_netconf_device')
+    cc.start('INVENTORY_add_netconf_device', add_netconf_device, False)
