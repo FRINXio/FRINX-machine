@@ -1,6 +1,6 @@
 {
     "id": "{{device_id}}",
-   	"host": "sample-topology",
+    "host": "sample-topology",
     "port": "{{port}}",
     "keepalive-delay": "{{keepalivedelay}}",
     "tcp-only": "{{tcponly}}",
