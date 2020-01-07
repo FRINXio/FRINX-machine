@@ -27,8 +27,8 @@ COPY ./wait_for_it.sh .
 
 ### Install appliacation setup
 WORKDIR /home/app/conductor/client/python
-RUN pip install setuptools
-RUN python setup.py install
+RUN pip3 install setuptools
+RUN python3 setup.py install
 
 WORKDIR /home/app/netinfra_utils/workers
-CMD [ "python", "main.py" ]
+CMD [ "python3", "main.py" ]
