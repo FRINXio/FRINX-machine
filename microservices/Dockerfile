@@ -1,4 +1,4 @@
-FROM python:3.6.8-jessie
+FROM python:3.6.10-buster
 
 ## Install nodejs
 
