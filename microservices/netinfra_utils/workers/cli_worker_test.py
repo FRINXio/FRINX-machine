@@ -134,7 +134,7 @@ class TestMount(unittest.TestCase):
             request = cli_worker.execute_mount_cli(
                 {"inputData": {"device_id": "xr5", "host": "192.168.1.1", "port": "22", "protocol": "ssh",
                                "type": "ios xr", "version": "5.3.4", "username": "name", "password": "password"}})
-            self.assertEqual(request["status"], "FAILED")
+            self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["url"], odl_url_base
                              + "/data/network-topology:network-topology/topology=cli/node=xr5")
             self.assertEqual(request["output"]["response_code"], 204)

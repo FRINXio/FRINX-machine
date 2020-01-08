@@ -53,7 +53,7 @@ def execute_mount_netconf(task):
     r = requests.put(id_url, data=json.dumps(mount_body), headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.created:
+    if response_code == requests.codes.created or response_code == requests.codes.no_content:
         return {'status': 'COMPLETED', 'output': {'url': id_url,
                                                   'request_body': mount_body,
                                                   'response_code': response_code,
@@ -84,7 +84,7 @@ def execute_unmount_netconf(task):
 def execute_check_netconf_id_available(task):
     device_id = task['inputData']['device_id']
 
-    id_url = Template(odl_url_netconf_mount).substitute({"id": device_id})
+    id_url = Template(odl_url_netconf_mount).substitute({"id": device_id}) + "?content=config"
 
     r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)

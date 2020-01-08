@@ -77,7 +77,7 @@ class TestMount(unittest.TestCase):
             request = netconf_worker.execute_mount_netconf(
                 {"inputData": {"device_id": "xr6", "host": "192.168.1.1", "port": "830", "keepalive-delay": "1000",
                                "tcp-only": "false", "username": "name", "password": "password"}})
-            self.assertEqual(request["status"], "FAILED")
+            self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["url"], odl_url_base
                              + "/data/network-topology:network-topology/topology=topology-netconf/node=xr6")
             self.assertEqual(request["output"]["response_code"], 204)
@@ -127,7 +127,8 @@ class TestCheckNetconfIdAvailable(unittest.TestCase):
             request = netconf_worker.execute_check_netconf_id_available({"inputData": {"device_id": "xr6"}})
             self.assertEqual(request["status"], "FAILED")
             self.assertEqual(request["output"]["url"], odl_url_base
-                             + "/data/network-topology:network-topology/topology=topology-netconf/node=xr6")
+                             + "/data/network-topology:network-topology"
+                               "/topology=topology-netconf/node=xr6?content=config")
 
     def test_execute_check_netconf_id_available_non_exist(self):
         with patch('netconf_worker.requests.get') as mock:
@@ -135,7 +136,8 @@ class TestCheckNetconfIdAvailable(unittest.TestCase):
             request = netconf_worker.execute_check_netconf_id_available({"inputData": {"device_id": "xr6"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["url"], odl_url_base
-                             + "/data/network-topology:network-topology/topology=topology-netconf/node=xr6")
+                             + "/data/network-topology:network-topology"
+                               "/topology=topology-netconf/node=xr6?content=config")
 
 
 if __name__ == "__main__":

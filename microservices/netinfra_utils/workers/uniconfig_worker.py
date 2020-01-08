@@ -101,9 +101,7 @@ def get_all_devices_as_dynamic_fork_tasks(task):
     response_code, response_json = read_all_devices(odl_url_uniconfig_config_shallow)
 
     if response_code == requests.codes.ok:
-        print(response_json)
         ids = [nodes["node-id"] for nodes in response_json["topology"][0]["node"]]
-        print(ids)
 
         dynamic_tasks_i = {}
         for device_id in ids:

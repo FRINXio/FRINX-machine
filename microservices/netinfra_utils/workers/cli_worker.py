@@ -55,7 +55,7 @@ def execute_mount_cli(task):
     r = requests.put(id_url, data=json.dumps(mount_body), headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.created:
+    if response_code == requests.codes.created or response_code == requests.codes.no_content:
         return {'status': 'COMPLETED', 'output': {'url': id_url,
                                                   'request_body': mount_body,
                                                   'response_code': response_code,
@@ -215,9 +215,7 @@ def get_all_devices_as_dynamic_fork_tasks(task):
     response_code, response_json = read_all_devices(odl_url_unified_oper_shallow)
 
     if response_code == requests.codes.ok:
-        print(response_json)
         ids = [nodes["node-id"] for nodes in response_json["topology"][0]["node"]]
-        print(ids)
 
         dynamic_tasks_i = {}
         for device_id in ids:
