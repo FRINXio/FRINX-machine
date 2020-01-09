@@ -11,8 +11,6 @@ from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_respons
 odl_url_netconf_mount = odl_url_base + "/data/network-topology:network-topology/topology=topology-netconf/node=$id"
 odl_url_netconf_mount_oper = odl_url_base + "/data/network-topology:network-topology/topology=topology-netconf/node=$id?content=nonconfig"
 
-inventory_netconf_device_url = elastic_url_base + "/inventory-device/device/$id"
-
 mount_template = {
     "node": 
         {
@@ -55,7 +53,7 @@ def execute_mount_netconf(task):
     r = requests.put(id_url, data=json.dumps(mount_body), headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.created:
+    if response_code == requests.codes.created or response_code == requests.codes.no_content:
         return {'status': 'COMPLETED', 'output': {'url': id_url,
                                                   'request_body': mount_body,
                                                   'response_code': response_code,
@@ -86,7 +84,7 @@ def execute_unmount_netconf(task):
 def execute_check_netconf_id_available(task):
     device_id = task['inputData']['device_id']
 
-    id_url = Template(odl_url_netconf_mount).substitute({"id": device_id})
+    id_url = Template(odl_url_netconf_mount).substitute({"id": device_id}) + "?content=config"
 
     r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
@@ -124,58 +122,6 @@ def execute_check_connected_netconf(task):
                 'logs': ["Mountpoint with ID %s not yet connected" % device_id]}
 
 
-netconf_device_template = {
-    "id": "",
-    "host": "",
-    "port": "",
-    "keepalive-delay": "",
-    "tcp-only": "",
-    "username": "",
-    "password": "",
-    "topology": "netconf",
-    "blacklist": "",
-    "uniconfig-native": "",
-    "labels": []
-}
-
-
-def add_netconf_device(task):
-    device_id = task['inputData']['device_id']
-
-    id_url = Template(inventory_netconf_device_url).substitute({"id": device_id})
-
-    add_body = copy.deepcopy(netconf_device_template)
-
-    add_body["id"] = task['inputData']['device_id']
-    add_body["host"] = task['inputData']['host']
-    add_body["port"] = task['inputData']['port']
-    add_body['keepalive-delay'] = task['inputData']['keepalive-delay']
-    add_body['tcp-only'] = task['inputData']['tcp-only']
-    add_body["username"] = task['inputData']['username']
-    add_body["password"] = task['inputData']['password']
-    add_body["uniconfig-native"] = task['inputData']['uniconfig-native']
-    add_body["blacklist"] = task['inputData']['blacklist']
-
-    if task['inputData']['labels'] is not None:
-        device_labels = [label.strip() for label in task['inputData']['labels'].split(',')]
-        for label in device_labels:
-            add_body["labels"].append(label)
-
-    r = requests.post(id_url, data=json.dumps(add_body), headers=elastic_headers)
-    response_code, response_json = parse_response(r)
-
-    if response_code == requests.codes.ok or response_code == requests.codes.created:
-        return {'status': 'COMPLETED', 'output': {'url': id_url,
-                                                  'response_code': response_code,
-                                                  'response_body': response_json},
-                'logs': []}
-    else:
-        return {'status': 'FAILED', 'output': {'url': id_url,
-                                               'response_code': response_code,
-                                               'response_body': response_json},
-                'logs': []}
-
-
 def start(cc):
     print('Starting Netconf workers')
 
@@ -201,7 +147,3 @@ def start(cc):
 
     cc.register('Netconf_check_netconf_id_available')
     cc.start('Netconf_check_netconf_id_available', execute_check_netconf_id_available, False)
-
-    cc.register('INVENTORY_add_netconf_device')
-    cc.start('INVENTORY_add_netconf_device', add_netconf_device, False)
-
