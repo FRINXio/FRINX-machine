@@ -329,6 +329,51 @@ class TestWriteStructuredData(unittest.TestCase):
             self.assertEqual(request["output"]["response_body"]['errors']['error'][0]["error-tag"], "malformed-message")
 
 
+class TestWriteStructuredDataAsDynamicForkTasks(unittest.TestCase):
+    def test_write_structured_data_as_dynamic_fork_tasks(self):
+        request = uniconfig_worker.write_structured_data_as_dynamic_fork_tasks(
+            {"inputData": {"device_id": "XR01",
+                           "uri": "/frinx-openconfig-interfaces:interfaces/interface=$iface",
+                           "template": "{\"interface\":[{\"name\":\"$iface\","
+                                       "\"config\":{\"type\":\"iana-if-type:ethernetCsmacd\","
+                                       "\"name\":\"$iface\"},"
+                                       "\"frinx-openconfig-if-ethernet:ethernet\":{"
+                                       "\"config\":{\"frinx-openconfig-if-aggregate:aggregate-id\": "
+                                       "\"Bundle-Ether3\"}}}]}",
+                           "task_params": "GigabitEthernet0/0/0/0, GigabitEthernet0/0/0/1"
+                           }})
+        self.assertEqual(request["status"], "COMPLETED")
+        self.assertEqual(request["output"]["dynamic_tasks_i"]["XR01GigabitEthernet0/0/0/0"]["device_id"], "XR01")
+        self.assertEqual(request["output"]["dynamic_tasks_i"]["XR01GigabitEthernet0/0/0/0"]["template"],
+                         "{\"interface\":[{\"name\":\"GigabitEthernet0/0/0/0\",\"config\":"
+                         "{\"type\":\"iana-if-type:ethernetCsmacd\",\"name\":\"GigabitEthernet0/0/0/0\"},"
+                         "\"frinx-openconfig-if-ethernet:ethernet\":{\"config\":"
+                         "{\"frinx-openconfig-if-aggregate:aggregate-id\": \"Bundle-Ether3\"}}}]}",)
+        self.assertEqual(request["output"]["dynamic_tasks_i"]["XR01GigabitEthernet0/0/0/0"]["uri"],
+                         "/frinx-openconfig-interfaces:interfaces/interface=GigabitEthernet0%2F0%2F0%2F0")
+        self.assertEqual(request["output"]["dynamic_tasks_i"]["XR01GigabitEthernet0/0/0/1"]["device_id"], "XR01")
+        self.assertEqual(request["output"]["dynamic_tasks_i"]["XR01GigabitEthernet0/0/0/1"]["template"],
+                         "{\"interface\":[{\"name\":\"GigabitEthernet0/0/0/1\",\"config\":"
+                         "{\"type\":\"iana-if-type:ethernetCsmacd\",\"name\":\"GigabitEthernet0/0/0/1\"},"
+                         "\"frinx-openconfig-if-ethernet:ethernet\":{\"config\":"
+                         "{\"frinx-openconfig-if-aggregate:aggregate-id\": \"Bundle-Ether3\"}}}]}")
+        self.assertEqual(request["output"]["dynamic_tasks"][0]["name"], "sub_task")
+        self.assertEqual(request["output"]["dynamic_tasks"][0]["taskReferenceName"], "XR01GigabitEthernet0/0/0/0")
+        self.assertEqual(request["output"]["dynamic_tasks"][0]["type"], "SUB_WORKFLOW")
+        self.assertEqual(request["output"]["dynamic_tasks"][0]["subWorkflowParam"]["name"],
+                         "Write_structured_device_data_in_uniconfig")
+        self.assertEqual(request["output"]["dynamic_tasks"][0]["subWorkflowParam"]["version"], 1)
+        self.assertEqual(request["output"]["dynamic_tasks"][1]["name"], "sub_task")
+        self.assertEqual(request["output"]["dynamic_tasks"][1]["taskReferenceName"], "XR01GigabitEthernet0/0/0/1")
+        self.assertEqual(request["output"]["dynamic_tasks"][1]["type"], "SUB_WORKFLOW")
+        self.assertEqual(request["output"]["dynamic_tasks"][1]["subWorkflowParam"]["name"],
+                         "Write_structured_device_data_in_uniconfig")
+        self.assertEqual(request["output"]["dynamic_tasks"][1]["subWorkflowParam"]["version"], 1)
+
+
+
+
+
 class TestDeleteStructuredData(unittest.TestCase):
     def test_delete_structured_data_with_device(self):
         with patch('uniconfig_worker.requests.delete') as mock:
