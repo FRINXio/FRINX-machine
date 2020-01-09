@@ -13,14 +13,15 @@ conductor_url_base = "http://conductor-server:8080/api"
 #     password = lines[1].split(':')[1].rstrip('\n')
 
 odl_credentials = ('admin', 'admin')
-#odl_credentials = (username, password)
+# odl_credentials = (username, password)
 odl_headers = {"Content-Type": "application/json"}
 elastic_headers = {"Content-Type": "application/json"}
+
 
 def parse_response(r):
     decode = r.content.decode('utf8')
     try:
-    	response_json = json.loads(decode if decode else "{}")
+        response_json = json.loads(decode if decode else "{}")
     except ValueError as e:
         response_json = json.loads("{}")
 

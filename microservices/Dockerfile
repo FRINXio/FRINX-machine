@@ -1,4 +1,4 @@
-FROM python:2.7.16-jessie
+FROM python:3.6.10-buster
 
 ## Install nodejs
 
@@ -40,3 +40,7 @@ RUN python setup.py install
 
 WORKDIR /home/app/netinfra_utils/workers
 CMD [ "python", "main.py" ]
+RUN python -m unittest uniconfig_worker_test.py
+RUN python -m unittest unified_worker_test.py
+RUN python -m unittest netconf_worker_test.py
+RUN python -m unittest cli_worker_test.py

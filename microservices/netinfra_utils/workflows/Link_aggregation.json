@@ -62,7 +62,7 @@
         "forkTasks": [
 	  	[
 	  		{
-		      "name": "UNICONFIG_write_structured_data_as_tasks",
+		      "name": "UNICONFIG_write_structured_data_as_dynamic_fork_tasks",
 		      "taskReferenceName": "UNICONFIG_write_structured_data_as_tasks_node1",
 		      "inputParameters": {
 		        "device_id": "${workflow.input.node1}",
@@ -90,7 +90,7 @@
 		],
 		[
 		    {
-		      "name": "UNICONFIG_write_structured_data_as_tasks",
+		      "name": "UNICONFIG_write_structured_data_as_dynamic_fork_tasks",
 		      "taskReferenceName": "UNICONFIG_write_structured_data_as_tasks_node2",
 		      "inputParameters": {
 		        "device_id": "${workflow.input.node2}",

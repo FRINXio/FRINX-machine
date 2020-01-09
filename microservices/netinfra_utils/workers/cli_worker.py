@@ -55,7 +55,7 @@ def execute_mount_cli(task):
     r = requests.put(id_url, data=json.dumps(mount_body), headers=odl_headers, auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code == requests.codes.created or response_code == requests.codes.ok:
+    if response_code == requests.codes.created or response_code == requests.codes.no_content:
         return {'status': 'COMPLETED', 'output': {'url': id_url,
                                                   'request_body': mount_body,
                                                   'response_code': response_code,
@@ -77,7 +77,7 @@ execute_and_read_template = {
 }
 
 
-def execute_execute_and_read_rpc_cli(task):
+def execute_and_read_rpc_cli(task):
     device_id = task['inputData']['device_id']
     template = task['inputData']['template']
     params = task['inputData']['params'] if task['inputData']['params'] else {}
@@ -206,28 +206,30 @@ task_body_template = {
 }
 
 
-def get_all_devices_as_tasks(task):
-    task_name = task['inputData']['task']
-    task_input = task['inputData']['task_input']
+def get_all_devices_as_dynamic_fork_tasks(task):
+    subworkflow = task['inputData']['task']
+    optional = task['inputData']['optional'] if 'optional' in task['inputData'] else "false"
+    add_params = task['inputData']['task_params']
+    add_params = json.loads(add_params) if isinstance(add_params, str) else (add_params if add_params else {})
 
     response_code, response_json = read_all_devices(odl_url_unified_oper_shallow)
 
     if response_code == requests.codes.ok:
-        ids = map(lambda x: x["node-id"], response_json["topology"][0]["node"])
+        ids = [nodes["node-id"] for nodes in response_json["topology"][0]["node"]]
 
         dynamic_tasks_i = {}
         for device_id in ids:
-            dynamic_tasks_i.update({device_id: {"device_id": device_id}})
-            print(task_input)
-            print(dynamic_tasks_i)
-            dynamic_tasks_i[device_id].update(task_input)
-            print(dynamic_tasks_i)
+            per_device_params = dict(add_params)
+            per_device_params.update({"device_id": device_id})
+            dynamic_tasks_i.update({device_id: per_device_params})
 
         dynamic_tasks = []
         for device_id in ids:
             task_body = copy.deepcopy(task_body_template)
+            if optional == "true":
+                task_body['optional'] = True
             task_body["taskReferenceName"] = device_id
-            task_body["subWorkflowParam"]["name"] = task_name
+            task_body["subWorkflowParam"]["name"] = subworkflow
             dynamic_tasks.append(task_body)
 
         return {'status': 'COMPLETED', 'output': {'url': odl_url_unified_oper_shallow,
@@ -297,7 +299,7 @@ def start(cc):
             "params"
         ]
     })
-    cc.start('CLI_execute_and_read_rpc_cli', execute_execute_and_read_rpc_cli, False)
+    cc.start('CLI_execute_and_read_rpc_cli', execute_and_read_rpc_cli, False)
 
     cc.register('CLI_check_cli_id_available')
     cc.start('CLI_check_cli_id_available', execute_check_cli_id_available, False)
@@ -305,8 +307,8 @@ def start(cc):
     cc.register('CLI_read_cli_topology_operational')
     cc.start('CLI_read_cli_topology_operational', execute_read_cli_topology_operational, False)
 
-    cc.register('CLI_get_all_devices_as_tasks')
-    cc.start('CLI_get_all_devices_as_tasks', get_all_devices_as_tasks, False)
+    cc.register('CLI_get_all_devices_as_dynamic_fork_tasks')
+    cc.start('CLI_get_all_devices_as_dynamic_fork_tasks', get_all_devices_as_dynamic_fork_tasks, False)
 
     cc.register('CLI_get_cli_journal')
     cc.start('CLI_get_cli_journal', execute_get_cli_journal, False)

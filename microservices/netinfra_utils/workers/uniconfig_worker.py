@@ -70,14 +70,10 @@ def read_selected_devices(url, devices):
             {
                 'node': []
             }
-        ],
-        'topology-id': 'uniconfig',
-        'topology-types': {
-            'frinx-uniconfig-topology:uniconfig': {}
-        }
+        ]
     }
     for d in devices:
-        r = requests.get(url + "/node/" + d + "/", headers=odl_headers, auth=odl_credentials)
+        r = requests.get(url + "/node=" + d + "/", headers=odl_headers, auth=odl_credentials)
         response_code, response_json_tmp = parse_response(r)
         response_json['topology'][0]['node'].append(response_json_tmp['node'][0])
         if response_code != requests.codes.ok:
@@ -100,14 +96,12 @@ def get_all_devices_as_dynamic_fork_tasks(task):
     subworkflow = task['inputData']['task']
     optional = task['inputData']['optional'] if 'optional' in task['inputData'] else "false"
     add_params = task['inputData']['task_params']
-    add_params = json.loads(add_params) if isinstance(add_params, basestring) else (add_params if add_params else {})
+    add_params = json.loads(add_params) if isinstance(add_params, str) else (add_params if add_params else {})
 
     response_code, response_json = read_all_devices(odl_url_uniconfig_config_shallow)
 
     if response_code == requests.codes.ok:
-        print(response_json)
-        ids = map(lambda x: x["node-id"], response_json["topology"][0]["node"])
-        print(ids)
+        ids = [nodes["node-id"] for nodes in response_json["topology"][0]["node"]]
 
         dynamic_tasks_i = {}
         for device_id in ids:
@@ -139,7 +133,7 @@ def apply_functions(uri):
     if not uri:
         return uri
     escape_regex = r"escape\(([^\)]*)\)"
-    uri = re.sub(escape_regex, lambda match: urllib.quote(match.group(1), safe=''), uri)
+    uri = re.sub(escape_regex, lambda match: urllib.parse.quote(match.group(1), safe=''), uri)
     return uri
 
 
@@ -171,9 +165,9 @@ def write_structured_data(task):
     uri = apply_functions(uri)
     template = task['inputData']['template']
     params = task['inputData']['params']
-    params = json.loads(params) if isinstance(params, basestring) else (params if params else {})
+    params = json.loads(params) if isinstance(params, str) else (params if params else {})
 
-    data_json = template if isinstance(template, basestring) else json.dumps(template if template else {})
+    data_json = template if isinstance(template, str) else json.dumps(template if template else {})
     data_json = Template(data_json).substitute(params)
 
     id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
@@ -194,18 +188,18 @@ def write_structured_data(task):
                 'logs': ["Unable to update device with ID %s" % device_id]}
 
 
-def write_structured_data_as_tasks(task):
+def write_structured_data_as_dynamic_fork_tasks(task):
     device_id = task['inputData']['device_id']
     uri = task['inputData']['uri']
     uri = apply_functions(uri)
     template = task['inputData']['template']
     add_params = task['inputData']['task_params']
-    add_params = [param.strip() for param in add_params.split(',')] if isinstance(add_params, basestring) else (add_params if add_params else {})
+    add_params = [param.strip() for param in add_params.split(',')] if isinstance(add_params, str) else (add_params if add_params else {})
 
     dynamic_tasks_i = {}
     dynamic_tasks = []
     for param in add_params:
-        data_json = template if isinstance(template, basestring) else json.dumps(template if template else {})
+        data_json = template if isinstance(template, str) else json.dumps(template if template else {})
         data_json = Template(data_json).substitute(iface=param)
         escaped_param = param.replace("/", "%2F")
         url = Template(uri).substitute(iface=escaped_param)
@@ -515,8 +509,8 @@ def start(cc):
     cc.register('UNICONFIG_write_structured_device_data')
     cc.start('UNICONFIG_write_structured_device_data', write_structured_data, False)
 
-    cc.register('UNICONFIG_write_structured_data_as_tasks')
-    cc.start('UNICONFIG_write_structured_data_as_tasks', write_structured_data_as_tasks, False)
+    cc.register('UNICONFIG_write_structured_data_as_dynamic_fork_tasks')
+    cc.start('UNICONFIG_write_structured_data_as_dynamic_fork_tasks', write_structured_data_as_dynamic_fork_tasks, False)
 
     cc.register('UNICONFIG_delete_structured_device_data')
     cc.start('UNICONFIG_delete_structured_device_data', delete_structured_data, False)
