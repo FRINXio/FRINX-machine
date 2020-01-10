@@ -17,6 +17,8 @@ function usage {
 function help {
   usage
     echo -e "OPTION:"
+    echo -e "  -d | --demo      Imports sample workflows and devices." \
+            "Starts simulated devices"
     echo -e "  -s | --skip      Skips health check."
     echo -e "\n"
   example
@@ -39,8 +41,11 @@ function start_container {
 }
 
 function start_containers {
-local containers_to_start=("dynomite" "elasticsearch" "logstash" "conductor-server" "uniconfig" "micros" "sample-topology" "uniconfig-ui" "kibana" "portainer")
+local containers_to_start=("dynomite" "elasticsearch" "logstash" "conductor-server" "uniconfig" "micros" "uniconfig-ui" "kibana" "portainer")
 
+if [ "$demo" == true ]; then
+    containers_to_start+=("sample-topology")
+fi
 
 for i in "${containers_to_start[@]}"; do
 
@@ -79,11 +84,17 @@ fi
 
 
 # Loop arguments
+demo=false
 skip=false
 browser=flase
+
 while [ "$1" != "" ];
 do
 case $1 in
+    -d | --demo)
+    demo=true
+    shift
+    ;;
     -s | --skip)
     skip=true
     shift
@@ -109,13 +120,18 @@ docker system prune -f
 # Starts containers
 start_containers
 
-# Imports workflows
-import_workflows
+if [ "$demo" == true ]; then
 
-# Import devices
-import_devices
+  # Imports workflows
+  import_workflows
 
-curl --silent -H "Content-Type: application/json"  -X POST -d "{\"name\":\"Write_data_to_netconf_testool\",\"version\":1,\"input\":{}}" http://localhost:8080/api/workflow/ &>/dev/null
+  # Import devices
+  import_devices
+
+  # Calls a workflow that configures the netconf-testtool
+  curl --silent -H "Content-Type: application/json"  -X POST -d "{\"name\":\"Write_data_to_netconf_testool\",\"version\":1,\"input\":{}}" http://localhost:8080/api/workflow/ &>/dev/null
+
+fi
 
 echo -e 'Startup finished!\n'
 echo -e 'FRINX UniConfig UI is ready and listening on port 3000. e.g. http://localhost:3000/\n'

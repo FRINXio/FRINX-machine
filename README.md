@@ -86,10 +86,14 @@ After the first run the license token is saved to a <git directory>/uniconfig/fr
 ### Startup
 The startup script `startup.sh` can be found in the FRINX-machine folder.
 Here is what it does:
+
 * Creates the docker containers from the images and starts them.
-* Imports workflow definitions.
-* Adds sample devices to inventory
-* Starts simulated devices
+
+If executed with the `-d` or `--demo` flags, it will also:
+
+* Import workflow definitions.
+* Add sample devices to inventory
+* Start simulated devices
 
 
 ```bash
