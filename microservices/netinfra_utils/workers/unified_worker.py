@@ -175,7 +175,7 @@ def execute_check_unified_node_exists(task):
 
     id_url = Template(odl_url_unified_oper_mount).substitute({"id": device_id})
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code != requests.codes.not_found:

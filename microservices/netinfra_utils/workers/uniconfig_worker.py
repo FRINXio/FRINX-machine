@@ -73,7 +73,7 @@ def read_selected_devices(url, devices):
         ]
     }
     for d in devices:
-        r = requests.get(url + "/node=" + d + "/", headers=odl_headers, auth=odl_credentials)
+        r = requests.get(url + "/node=" + d + "/", headers=odl_headers, auth=odl_credentials, verify=False)
         response_code, response_json_tmp = parse_response(r)
         response_json['topology'][0]['node'].append(response_json_tmp['node'][0])
         if response_code != requests.codes.ok:
@@ -243,7 +243,7 @@ def execute_check_uniconfig_node_exists(task):
 
     id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/node-id"
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials, verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code != requests.codes.not_found:
@@ -312,7 +312,8 @@ def checked_commit(task):
     r = requests.post(odl_url_uniconfig_checked_commit,
                       data=json.dumps(create_commit_request(task)),
                       headers=odl_headers,
-                      auth=odl_credentials)
+                      auth=odl_credentials,
+                      verify=False)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["output"]["overall-status"] == "complete":
