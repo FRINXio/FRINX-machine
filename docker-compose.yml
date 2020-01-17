@@ -6,6 +6,8 @@ services:
     build:
       context: uniconfig
       dockerfile: Dockerfile
+      args:
+        - STORE_PASS=random_password
     image: frinx/fm-uniconfig
     logging:
         driver: "json-file"

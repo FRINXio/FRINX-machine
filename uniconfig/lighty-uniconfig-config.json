@@ -1,0 +1,92 @@
+{
+    "controller":{
+        "restoreDirectoryPath":"./clustered-datastore-restore",
+        "maxDataBrokerFutureCallbackQueueSize":1000,
+        "maxDataBrokerFutureCallbackPoolSize":10,
+        "configurationDatastoreContext": {
+            "maximumMessageSliceSize":1024000,
+            "useTellBasedProtocol": true,
+            "frontendRequestTimeoutInSeconds":300,
+            "shardTransactionCommitTimeoutInSeconds":120,
+            "backendAlivenessTimerIntervalInSeconds":120,
+            "shardLeaderElectionTimeout":60000,
+            "shardInitializationTimeout":60000,
+            "operationTimeoutInMillis": 300000,
+            "syncIndexThreshold":100,
+            "shardHeartbeatIntervalInMillis":1000,
+            "shardTransactionIdleTimeout": 600000,
+            "shardJournalRecoveryLogBatchSize": 1,
+            "shardSnapshotBatchCount": 20000,
+            "shardSnapshotDataThresholdPercentage": 12,
+            "shardTransactionCommitQueueCapacity": 50000,
+            "persistent": false,
+            "shardBatchedModificationCount": 1,
+            "shardCommitQueueExpiryTimeoutInMillis": 120000,
+            "transactionDebugContextEnabled": false,
+            "maxShardDataChangeExecutorPoolSize": 20,
+            "maxShardDataChangeExecutorQueueSize": 1000,
+            "maxShardDataChangeListenerQueueSize": 1000,
+            "maxShardDataStoreExecutorQueueSize": 5000,
+            "fileBackedStreamingThresholdInMegabytes": 128,
+            "frontendNoProgressTimeoutInSeconds": 900
+        },
+        "operationalDatastoreContext": {
+            "maximumMessageSliceSize":1024000,
+            "useTellBasedProtocol": true,
+            "frontendRequestTimeoutInSeconds":300,
+            "shardTransactionCommitTimeoutInSeconds":120,
+            "backendAlivenessTimerIntervalInSeconds":120,
+            "shardLeaderElectionTimeout":60000,
+            "shardInitializationTimeout":60000,
+            "operationTimeoutInMillis": 300000,
+            "syncIndexThreshold":100,
+            "shardHeartbeatIntervalInMillis":1000,
+            "shardTransactionIdleTimeout": 600000,
+            "shardJournalRecoveryLogBatchSize": 1,
+            "shardSnapshotBatchCount": 20000,
+            "shardSnapshotDataThresholdPercentage": 12,
+            "shardTransactionCommitQueueCapacity": 50000,
+            "persistent": false,
+            "shardBatchedModificationCount": 1,
+            "shardCommitQueueExpiryTimeoutInMillis": 120000,
+            "transactionDebugContextEnabled": false,
+            "maxShardDataChangeExecutorPoolSize": 20,
+            "maxShardDataChangeExecutorQueueSize": 1000,
+            "maxShardDataChangeListenerQueueSize": 1000,
+            "maxShardDataStoreExecutorQueueSize": 5000,
+            "fileBackedStreamingThresholdInMegabytes": 128,
+            "frontendNoProgressTimeoutInSeconds": 900
+        },
+        "metricCaptureEnabled":false,
+        "mailboxCapacity":1000,
+        "moduleShardsConfig": "config/module-shards.conf",
+        "modulesConfig": "config/modules.conf",
+        "domNotificationRouterConfig":{
+            "queueDepth":65536,
+            "spinTime":0,
+            "parkTime":0,
+            "unit":"MILLISECONDS"
+        },
+        "actorSystemConfig":{
+            "akkaConfigPath":"config/akka.conf",
+            "factoryAkkaConfigPath":"config/factory-akka.conf"
+        },
+        "schemaServiceConfig":{
+            "topLevelModels":[]
+        }
+    },
+    "restconf":{
+        "httpPort":8181,
+        "inetAddress":"0.0.0.0",
+        "webSocketPort": 8185,
+        "restconfServletContextPath":"/rests",
+        "jsonRestconfServiceType": "DRAFT_18"
+    },
+
+    "tls": {
+    "enabledTls": true,
+    "enabledClientAuthentication": false,
+    "keystorePath": "tls/.keystore",
+    "keystorePassword": "key-pass"
+}
+}
