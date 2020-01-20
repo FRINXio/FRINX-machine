@@ -2,23 +2,23 @@
   "name": "Mount_apply_template_unmount_cli",
   "description": "mount, check, apply template and unmount a CLI device - DEMO,CLI",
   "version": 1,
-   "inputParameters": [
-	"device_id[Unique identifier of device across all systems]",
-	"type[Type of device or device IOS e.g. ios, ios xr]",
-	"version[Version of device or device OS e.g. 15.2]",
-	"host[IP or hostname of the management endpoint on a device]",
-	"protocol[CLI management transport protocol e.g. tcp or ssh][ssh]",
-	"port[TCP port of the management endpoint of a device][22]",
-	"username[Username credential]",
-	"password[Password credential]"
+  "inputParameters": [
+    "device_id[Unique identifier of device across all systems]",
+    "type[Type of device or device IOS e.g. ios, ios xr]",
+    "version[Version of device or device OS e.g. 15.2]",
+    "host[IP or hostname of the management endpoint on a device]",
+    "protocol[CLI management transport protocol e.g. tcp or ssh][ssh]",
+    "port[TCP port of the management endpoint of a device][22]",
+    "username[Username credential]",
+    "password[Password credential]"
   ],
   "tasks": [
-  	{
-      "name": "sub_mount",
+    {
+      "name": "CLI_mount_cli",
       "taskReferenceName": "mount",
-		"inputParameters": {
+      "inputParameters": {
         "device_id": "${workflow.input.device_id}",
-		"type": "${workflow.input.type}",
+        "type": "${workflow.input.type}",
         "version": "${workflow.input.version}",
         "host": "${workflow.input.host}",
         "protocol": "${workflow.input.protocol}",
@@ -26,42 +26,30 @@
         "username": "${workflow.input.username}",
         "password": "${workflow.input.password}"
       },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Mount_cli_device",
-        "version": 1
-      }
-    },
-	{
-      "name": "sub_check",
-      "taskReferenceName": "check_mounted",
-		"inputParameters": {
-        "device_id": "${workflow.input.device_id}"
-      },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Check_connection_cli_device",
-        "version": 1
-      }
+      "type": "SIMPLE"
     },
     {
-      "name": "sub_execute",
+      "name": "CLI_check_cli_connected",
+      "taskReferenceName": "check_mounted",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}"
+      },
+      "type": "SIMPLE"
+    },
+    {
+      "name": "CLI_execute_and_read_rpc_cli",
       "taskReferenceName": "execute_template",
-		"inputParameters": {
+      "inputParameters": {
         "device_id": "${workflow.input.device_id}",
         "template": "${workflow.input.template}",
-		"params": "${workflow.input.params}"
+        "params": "${workflow.input.params}"
       },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Execute_and_read_rpc_cli_device",
-        "version": 1
-      }
+      "type": "SIMPLE"
     },
-	{
+    {
       "name": "sub_unmount",
       "taskReferenceName": "unmount",
-		"inputParameters": {
+      "inputParameters": {
         "device_id": "${workflow.input.device_id}"
       },
       "type": "SUB_WORKFLOW",

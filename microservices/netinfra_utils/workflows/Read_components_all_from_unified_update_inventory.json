@@ -3,22 +3,20 @@
   "description": "read components for all devices in unified topology and store in inventory - DEMO,PLATFORM,UNIFIED,INVENTORY",
   "version": 1,
   "tasks": [
-  	{
-      "name": "sub_read_unified",
+    {
+      "name": "UNIFIED_get_all_devices_as_dynamic_fork_tasks",
       "taskReferenceName": "read_unified",
-	  "inputParameters": {
-        "task": "Read_components_update_inventory"
+      "inputParameters": {
+        "task": "Read_components_update_inventory",
+        "task_params": "${workflow.input.task_params}",
+        "optional": "${workflow.input.optional}"
       },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Get_all_devices_in_unified_as_dynamic_fork_tasks",
-        "version": 1
-      }
+      "type": "SIMPLE"
     },
-  	{
+    {
       "name": "sub_read_components",
       "taskReferenceName": "read_components",
-	  "inputParameters": {
+      "inputParameters": {
         "dynamic_tasks": "${read_unified.output.dynamic_tasks}",
         "dynamic_tasks_i": "${read_unified.output.dynamic_tasks_i}"
       },
@@ -30,7 +28,7 @@
     }
   ],
   "outputParameters": {
-  	"output": "${read_components.output}"
+    "output": "${read_components.output}"
   },
   "schemaVersion": 2
 }

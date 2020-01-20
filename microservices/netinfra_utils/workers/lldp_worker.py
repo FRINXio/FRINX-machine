@@ -129,14 +129,86 @@ def store_lldp(task):
 def start(cc):
     print('Starting LLDP topology workers')
 
-    cc.register('LLDP_build_topology')
+    cc.register('LLDP_build_topology', {
+        "name": "LLDP_build_topology",
+        "description": "Build lldp topology - DEMO,LLDP",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "node_aggregation",
+            "link_aggregation",
+            "per-node-read-timeout",
+            "concurrent-read_nodes",
+            "destination-topology"
+        ],
+        "outputKeys": [
+            "url",
+            'request_body'
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('LLDP_build_topology', build_lldp, False)
 
-    cc.register('LLDP_export_topology')
+    cc.register('LLDP_export_topology', {
+        "name": "LLDP_export_topology",
+        "description": "Export lldp topology - DEMO,LLDP",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "outputKeys": [
+            "url",
+            'request_body'
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('LLDP_export_topology', export_lldp, False)
 
-    cc.register('LLDP_read_topology')
+    cc.register('LLDP_read_topology', {
+        "name": "LLDP_read_topology",
+        "description": "Read lldp topology - DEMO,LLDP",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "destination-topology"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('LLDP_read_topology', read_lldp, False)
 
-    cc.register('LLDP_store_topology')
+    cc.register('LLDP_store_topology', {
+        "name": "LLDP_store_topology",
+        "description": "Store lldp topology in database - DEMO,LLDP",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "destination-topology",
+            "content"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('LLDP_store_topology', store_lldp, False)

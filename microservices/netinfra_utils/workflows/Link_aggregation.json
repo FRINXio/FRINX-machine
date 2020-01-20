@@ -3,129 +3,129 @@
   "description": "Creates a link aggregation between two nodes - DEMO,LINKAGG",
   "version": 1,
   "inputParameters": [
-  	"bundle_ether_id[BundleEtherX][3]",
-  	"bundle_ether_enabled[enabled][true]",
+    "bundle_ether_id[BundleEtherX][3]",
+    "bundle_ether_enabled[enabled][true]",
     "node1[First node to create a link aggregation with #node_id][XR01]",
     "node2[Second node to create a link aggregation with #node_id][XR02]",
     "node1_ifaces[Interfaces for node1][[GigabitEthernet0/0/0/0, GigabitEthernet0/0/0/1]]",
     "node2_ifaces[Interfaces for node2][[GigabitEthernet0/0/0/1, GigabitEthernet0/0/0/2, GigabitEthernet0/0/0/3]]"
   ],
   "tasks": [
-  	{
-        "name": "fork_join",
-        "taskReferenceName": "forkx",
-        "type": "FORK_JOIN",
-        "forkTasks": [
-	  	[
-		    {
-		      "name": "UNICONFIG_write_structured_device_data",
-		      "taskReferenceName": "UNICONFIG_write_bundle_ether_node1",
-		      "inputParameters": {
-		        "device_id": "${workflow.input.node1}",
-		        "uri": "/frinx-openconfig-interfaces:interfaces/interface=Bundle-Ether${workflow.input.bundle_ether_id}",
-		        "template": "{\"interface\":[{\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\",\"config\":{\"type\":\"iana-if-type:ieee8023adLag\",\"enabled\":${workflow.input.bundle_ether_enabled},\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\"}}]}",
-		        "params": "{}"
-		      },
-		      "type": "SIMPLE",
-		      "startDelay": 0
-		    }
-		],
-		[
-		    {
-		      "name": "UNICONFIG_write_structured_device_data",
-		      "taskReferenceName": "UNICONFIG_write_bundle_ether_node2",
-		      "inputParameters": {
-		        "device_id": "${workflow.input.node2}",
-		        "uri": "/frinx-openconfig-interfaces:interfaces/interface=Bundle-Ether${workflow.input.bundle_ether_id}",
-		        "template": "{\"interface\":[{\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\",\"config\":{\"type\":\"iana-if-type:ieee8023adLag\",\"enabled\":${workflow.input.bundle_ether_enabled},\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\"}}]}",
-		        "params": "{}"
-		      },
-		      "type": "SIMPLE",
-		      "startDelay": 0
-		    }
-	    ]
-	  ]
-  	},
     {
-        "name": "join",
-        "taskReferenceName": "join1",
-        "type": "JOIN",
-        "joinOn": [
-          "UNICONFIG_write_bundle_ether_node1",
-          "UNICONFIG_write_bundle_ether_node2"
+      "name": "fork_join",
+      "taskReferenceName": "forkx",
+      "type": "FORK_JOIN",
+      "forkTasks": [
+        [
+          {
+            "name": "UNICONFIG_write_structured_device_data",
+            "taskReferenceName": "UNICONFIG_write_bundle_ether_node1",
+            "inputParameters": {
+              "device_id": "${workflow.input.node1}",
+              "uri": "/frinx-openconfig-interfaces:interfaces/interface=Bundle-Ether${workflow.input.bundle_ether_id}",
+              "template": "{\"interface\":[{\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\",\"config\":{\"type\":\"iana-if-type:ieee8023adLag\",\"enabled\":${workflow.input.bundle_ether_enabled},\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\"}}]}",
+              "params": "{}"
+            },
+            "type": "SIMPLE",
+            "startDelay": 0
+          }
+        ],
+        [
+          {
+            "name": "UNICONFIG_write_structured_device_data",
+            "taskReferenceName": "UNICONFIG_write_bundle_ether_node2",
+            "inputParameters": {
+              "device_id": "${workflow.input.node2}",
+              "uri": "/frinx-openconfig-interfaces:interfaces/interface=Bundle-Ether${workflow.input.bundle_ether_id}",
+              "template": "{\"interface\":[{\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\",\"config\":{\"type\":\"iana-if-type:ieee8023adLag\",\"enabled\":${workflow.input.bundle_ether_enabled},\"name\":\"Bundle-Ether${workflow.input.bundle_ether_id}\"}}]}",
+              "params": "{}"
+            },
+            "type": "SIMPLE",
+            "startDelay": 0
+          }
         ]
+      ]
     },
     {
-        "name": "fork_join",
-        "taskReferenceName": "forky",
-        "type": "FORK_JOIN",
-        "forkTasks": [
-	  	[
-	  		{
-		      "name": "UNICONFIG_write_structured_data_as_dynamic_fork_tasks",
-		      "taskReferenceName": "UNICONFIG_write_structured_data_as_tasks_node1",
-		      "inputParameters": {
-		        "device_id": "${workflow.input.node1}",
-		        "uri": "/frinx-openconfig-interfaces:interfaces/interface=$iface",
-		        "template": "{\"interface\":[{\"name\":\"$iface\",\"config\":{\"type\":\"iana-if-type:ethernetCsmacd\",\"name\":\"$iface\"},\"frinx-openconfig-if-ethernet:ethernet\":{\"config\":{\"frinx-openconfig-if-aggregate:aggregate-id\": \"Bundle-Ether${workflow.input.bundle_ether_id}\"}}}]}",
-		        "task_params": "${workflow.input.node1_ifaces}"
-		      },
-		      "type": "SIMPLE",
-		      "startDelay": 0
-		    },
-		    {
-			  "name": "sub_write",
-			  "taskReferenceName": "write1",
-			  "inputParameters": {
-			     "dynamic_tasks": "${UNICONFIG_write_structured_data_as_tasks_node1.output.dynamic_tasks}",
-			     "dynamic_tasks_i": "${UNICONFIG_write_structured_data_as_tasks_node1.output.dynamic_tasks_i}"
-			  },
-			  "type": "SUB_WORKFLOW",
-			  "start-delay": 0,
-			  "subWorkflowParam": {
-		        "name": "Dynamic_fork",
-		        "version": 1
-		      }
-			}
-		],
-		[
-		    {
-		      "name": "UNICONFIG_write_structured_data_as_dynamic_fork_tasks",
-		      "taskReferenceName": "UNICONFIG_write_structured_data_as_tasks_node2",
-		      "inputParameters": {
-		        "device_id": "${workflow.input.node2}",
-		        "uri": "/frinx-openconfig-interfaces:interfaces/interface=$iface",
-		        "template": "{\"interface\":[{\"name\":\"$iface\",\"config\":{\"type\":\"iana-if-type:ethernetCsmacd\",\"name\":\"$iface\"},\"frinx-openconfig-if-ethernet:ethernet\":{\"config\":{\"frinx-openconfig-if-aggregate:aggregate-id\": \"Bundle-Ether${workflow.input.bundle_ether_id}\"}}}]}",
-		        "task_params": "${workflow.input.node2_ifaces}"
-		      },
-		      "type": "SIMPLE",
-		      "startDelay": 0
-		    },
-    		{
-			  "name": "sub_write",
-			  "taskReferenceName": "write2",
-			  "inputParameters": {
-			     "dynamic_tasks": "${UNICONFIG_write_structured_data_as_tasks_node2.output.dynamic_tasks}",
-			     "dynamic_tasks_i": "${UNICONFIG_write_structured_data_as_tasks_node2.output.dynamic_tasks_i}"
-			  },
-			  "type": "SUB_WORKFLOW",
-			  "start-delay": 0,
-			  "subWorkflowParam": {
-		        "name": "Dynamic_fork",
-		        "version": 1
-		      }
-			}
-		]
-	  ]
+      "name": "join",
+      "taskReferenceName": "join1",
+      "type": "JOIN",
+      "joinOn": [
+        "UNICONFIG_write_bundle_ether_node1",
+        "UNICONFIG_write_bundle_ether_node2"
+      ]
     },
     {
-        "name": "join",
-        "taskReferenceName": "join2",
-        "type": "JOIN",
-        "joinOn": [
-          "write1",
-          "write2"
+      "name": "fork_join",
+      "taskReferenceName": "forky",
+      "type": "FORK_JOIN",
+      "forkTasks": [
+        [
+          {
+            "name": "UNICONFIG_write_structured_data_as_dynamic_fork_tasks",
+            "taskReferenceName": "UNICONFIG_write_structured_data_as_tasks_node1",
+            "inputParameters": {
+              "device_id": "${workflow.input.node1}",
+              "uri": "/frinx-openconfig-interfaces:interfaces/interface=$iface",
+              "template": "{\"interface\":[{\"name\":\"$iface\",\"config\":{\"type\":\"iana-if-type:ethernetCsmacd\",\"name\":\"$iface\"},\"frinx-openconfig-if-ethernet:ethernet\":{\"config\":{\"frinx-openconfig-if-aggregate:aggregate-id\": \"Bundle-Ether${workflow.input.bundle_ether_id}\"}}}]}",
+              "task_params": "${workflow.input.node1_ifaces}"
+            },
+            "type": "SIMPLE",
+            "startDelay": 0
+          },
+          {
+            "name": "sub_write",
+            "taskReferenceName": "write1",
+            "inputParameters": {
+              "dynamic_tasks": "${UNICONFIG_write_structured_data_as_tasks_node1.output.dynamic_tasks}",
+              "dynamic_tasks_i": "${UNICONFIG_write_structured_data_as_tasks_node1.output.dynamic_tasks_i}"
+            },
+            "type": "SUB_WORKFLOW",
+            "start-delay": 0,
+            "subWorkflowParam": {
+              "name": "Dynamic_fork",
+              "version": 1
+            }
+          }
+        ],
+        [
+          {
+            "name": "UNICONFIG_write_structured_data_as_dynamic_fork_tasks",
+            "taskReferenceName": "UNICONFIG_write_structured_data_as_tasks_node2",
+            "inputParameters": {
+              "device_id": "${workflow.input.node2}",
+              "uri": "/frinx-openconfig-interfaces:interfaces/interface=$iface",
+              "template": "{\"interface\":[{\"name\":\"$iface\",\"config\":{\"type\":\"iana-if-type:ethernetCsmacd\",\"name\":\"$iface\"},\"frinx-openconfig-if-ethernet:ethernet\":{\"config\":{\"frinx-openconfig-if-aggregate:aggregate-id\": \"Bundle-Ether${workflow.input.bundle_ether_id}\"}}}]}",
+              "task_params": "${workflow.input.node2_ifaces}"
+            },
+            "type": "SIMPLE",
+            "startDelay": 0
+          },
+          {
+            "name": "sub_write",
+            "taskReferenceName": "write2",
+            "inputParameters": {
+              "dynamic_tasks": "${UNICONFIG_write_structured_data_as_tasks_node2.output.dynamic_tasks}",
+              "dynamic_tasks_i": "${UNICONFIG_write_structured_data_as_tasks_node2.output.dynamic_tasks_i}"
+            },
+            "type": "SUB_WORKFLOW",
+            "start-delay": 0,
+            "subWorkflowParam": {
+              "name": "Dynamic_fork",
+              "version": 1
+            }
+          }
         ]
+      ]
+    },
+    {
+      "name": "join",
+      "taskReferenceName": "join2",
+      "type": "JOIN",
+      "joinOn": [
+        "write1",
+        "write2"
+      ]
     },
     {
       "name": "UNICONFIG_commit",
@@ -134,9 +134,9 @@
       "startDelay": 0,
       "inputParameters": {
         "devices": "${workflow.input.node1}, ${workflow.input.node2}"
-	  }
+      }
     }
-   ],    
+  ],
   "outputParameters": {
     "Aggregation link ID": "${workflow.input.bundle_ether_id}"
   },

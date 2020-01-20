@@ -3,22 +3,22 @@
   "description": "mount, check and leave device mounted - BASICS,CLI",
   "version": 1,
   "inputParameters": [
-	"device_id[Unique identifier of device across all systems]",
-	"type[Type of device or device IOS e.g. ios, ios xr]",
-	"version[Version of device or device OS e.g. 15.2]",
-	"host[IP or hostname of the management endpoint on a device]",
-	"protocol[CLI management transport protocol e.g. tcp or ssh][ssh]",
-	"port[TCP port of the management endpoint of a device][22]",
-	"username[Username credential]",
-	"password[Password credential]"
+    "device_id[Unique identifier of device across all systems]",
+    "type[Type of device or device IOS e.g. ios, ios xr]",
+    "version[Version of device or device OS e.g. 15.2]",
+    "host[IP or hostname of the management endpoint on a device]",
+    "protocol[CLI management transport protocol e.g. tcp or ssh][ssh]",
+    "port[TCP port of the management endpoint of a device][22]",
+    "username[Username credential]",
+    "password[Password credential]"
   ],
   "tasks": [
-  	{
-      "name": "sub_mount",
+    {
+      "name": "CLI_mount_cli",
       "taskReferenceName": "mount",
-		"inputParameters": {
+      "inputParameters": {
         "device_id": "${workflow.input.device_id}",
-		"type": "${workflow.input.type}",
+        "type": "${workflow.input.type}",
         "version": "${workflow.input.version}",
         "host": "${workflow.input.host}",
         "protocol": "${workflow.input.protocol}",
@@ -26,23 +26,15 @@
         "username": "${workflow.input.username}",
         "password": "${workflow.input.password}"
       },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Mount_cli_device",
-        "version": 1
-      }
+      "type": "SIMPLE"
     },
-	{
-      "name": "sub_check",
+    {
+      "name": "CLI_check_cli_connected",
       "taskReferenceName": "check_mounted",
-		"inputParameters": {
+      "inputParameters": {
         "device_id": "${workflow.input.device_id}"
       },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Check_connection_cli_device",
-        "version": 1
-      }
+      "type": "SIMPLE"
     }
   ],
   "outputParameters": {

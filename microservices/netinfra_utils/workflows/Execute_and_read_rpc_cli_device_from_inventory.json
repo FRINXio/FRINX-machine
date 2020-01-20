@@ -9,29 +9,21 @@
   ],
   "tasks": [
     {
-      "name": "sub_read_command",
+      "name": "INVENTORY_get_show_command",
       "taskReferenceName": "read_command",
-		  "inputParameters": {
+      "type": "SIMPLE",
+      "inputParameters": {
         "template_id": "${workflow.input.template_id}"
-      },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Get_cli_command_template_from_inventory",
-        "version": 1
       }
     },
     {
-      "name": "sub_execute",
+      "name": "CLI_execute_and_read_rpc_cli",
       "taskReferenceName": "execute_template",
-	   "inputParameters": {
+      "type": "SIMPLE",
+      "inputParameters": {
         "device_id": "${workflow.input.device_id}",
         "template": "${read_command.output.command}",
-		    "params": "${workflow.input.params}"
-      },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Execute_and_read_rpc_cli_device",
-        "version": 1
+        "params": "${workflow.input.params}"
       }
     }
   ],

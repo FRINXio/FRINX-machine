@@ -3,7 +3,7 @@
   "description": "Write device configuration data to netconf testtool e.g. openconfig - DEMO,UNICONFIG,NETCONF",
   "version": 1,
   "tasks": [
-  	{
+    {
       "name": "Netconf_mount_netconf",
       "taskReferenceName": "Netconf_mount_netconf",
       "inputParameters": {
@@ -21,37 +21,29 @@
       "startDelay": 0
     },
     {
-      "name": "netconf_check",
+      "name": "Netconf_check_netconf_connected",
       "taskReferenceName": "netconf_check",
       "inputParameters": {
         "device_id": "netconf-testtool"
       },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Check_connection_netconf_device",
-        "version": 1
-      }
+      "type": "SIMPLE"
     },
     {
-      "name": "uniconfig_check",
+      "name": "UNICONFIG_check_uniconfig_node_exists",
       "taskReferenceName": "uniconfig_check",
       "inputParameters": {
         "device_id": "netconf-testtool"
       },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Check_uniconfig_node_exists",
-        "version": 1
-      }
+      "type": "SIMPLE"
     },
-  	{
+    {
       "name": "UNICONFIG_write_structured_device_data",
       "taskReferenceName": "UNICONFIG_write_interfaces",
       "type": "SIMPLE",
       "inputParameters": {
         "device_id": "netconf-testtool",
-    		"uri": "/Cisco-IOS-XR-ifmgr-cfg:interface-configurations",
-    		"template": "{\"Cisco-IOS-XR-ifmgr-cfg:interface-configurations\": {\r\n                    \"interface-configuration\": [\r\n                        {\r\n                            \"active\": \"act\",\r\n                            \"interface-name\": \"GigabitEthernet0\/0\/0\/2\",\r\n                            \"shutdown\": [\r\n                                null\r\n                            ]\r\n                        },\r\n                        {\r\n                            \"active\": \"act\",\r\n                            \"interface-name\": \"GigabitEthernet0\/0\/0\/1\",\r\n                            \"shutdown\": [\r\n                                null\r\n                            ]\r\n                        },\r\n                        {\r\n                            \"active\": \"act\",\r\n                            \"interface-name\": \"GigabitEthernet0\/0\/0\/0\",\r\n                            \"shutdown\": [\r\n                                null\r\n                            ]\r\n                        },\r\n                        {\r\n                            \"active\": \"act\",\r\n                            \"interface-name\": \"MgmtEth0\/0\/CPU0\/0\",\r\n                            \"Cisco-IOS-XR-ipv4-io-cfg:ipv4-network\": {\r\n                                \"addresses\": {\r\n                                    \"primary\": {\r\n                                        \"address\": \"192.168.1.213\",\r\n                                        \"netmask\": \"255.255.255.0\"\r\n                                    }\r\n                                }\r\n                            }\r\n                        }\r\n                    ]\r\n                }}",
+        "uri": "/Cisco-IOS-XR-ifmgr-cfg:interface-configurations",
+        "template": "{\"Cisco-IOS-XR-ifmgr-cfg:interface-configurations\": {\r\n                    \"interface-configuration\": [\r\n                        {\r\n                            \"active\": \"act\",\r\n                            \"interface-name\": \"GigabitEthernet0\/0\/0\/2\",\r\n                            \"shutdown\": [\r\n                                null\r\n                            ]\r\n                        },\r\n                        {\r\n                            \"active\": \"act\",\r\n                            \"interface-name\": \"GigabitEthernet0\/0\/0\/1\",\r\n                            \"shutdown\": [\r\n                                null\r\n                            ]\r\n                        },\r\n                        {\r\n                            \"active\": \"act\",\r\n                            \"interface-name\": \"GigabitEthernet0\/0\/0\/0\",\r\n                            \"shutdown\": [\r\n                                null\r\n                            ]\r\n                        },\r\n                        {\r\n                            \"active\": \"act\",\r\n                            \"interface-name\": \"MgmtEth0\/0\/CPU0\/0\",\r\n                            \"Cisco-IOS-XR-ipv4-io-cfg:ipv4-network\": {\r\n                                \"addresses\": {\r\n                                    \"primary\": {\r\n                                        \"address\": \"192.168.1.213\",\r\n                                        \"netmask\": \"255.255.255.0\"\r\n                                    }\r\n                                }\r\n                            }\r\n                        }\r\n                    ]\r\n                }}",
         "params": "{}"
       }
     },

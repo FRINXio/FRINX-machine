@@ -125,10 +125,53 @@ def execute_check_connected_netconf(task):
 def start(cc):
     print('Starting Netconf workers')
 
-    cc.register('Netconf_mount_netconf')
+    cc.register('Netconf_mount_netconf', {
+        "name": "Netconf_mount_netconf",
+        "description": "mount a Netconf device - BASICS,NETCONF",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "host",
+            "port",
+            "keepalive-delay",
+            "tcp-only",
+            "username",
+            "password",
+            "uniconfig-native",
+            "blacklist"
+        ],
+        "outputKeys": [
+            "url",
+            "request_body",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('Netconf_mount_netconf', execute_mount_netconf, False)
 
-    cc.register('Netconf_unmount_netconf')
+    cc.register('Netconf_unmount_netconf', {
+        "name": "Netconf_unmount_netconf",
+        "description": "unmount a CLI device - BASICS,NETCONF",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('Netconf_unmount_netconf', execute_unmount_netconf, False)
 
     cc.register('Netconf_check_netconf_connected', {
@@ -140,10 +183,32 @@ def start(cc):
         "retryDelaySeconds": 5,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "id"
+            "device_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
         ]
     })
     cc.start('Netconf_check_netconf_connected', execute_check_connected_netconf, False)
 
-    cc.register('Netconf_check_netconf_id_available')
+    cc.register('Netconf_check_netconf_id_available', {
+        "name": "Netconf_check_netconf_id_available",
+        "description": "checks if netconf device is available - BASICS,NETCONF",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('Netconf_check_netconf_id_available', execute_check_netconf_id_available, False)

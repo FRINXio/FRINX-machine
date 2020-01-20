@@ -409,35 +409,248 @@ def add_netconf_device(task):
 def start(cc):
     print('Starting Inventory workers')
 
-    cc.register('INVENTORY_add_device')
+    cc.register('INVENTORY_add_device', {
+        "name": "INVENTORY_add_device",
+        "description": "add a CLI device to inventory database - BASICS,MAIN,INVENTORY,CLI",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "type",
+            "version",
+            "host",
+            "protocol",
+            "port",
+            "username",
+            "password",
+            "labels"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('INVENTORY_add_device', add_cli_device, False)
 
-    cc.register('INVENTORY_add_field_to_device')
+    cc.register('INVENTORY_add_field_to_device', {
+        "name": "INVENTORY_add_field_to_device",
+        "description": "add a field key/value to device in inventory database - BASICS,INVENTORY",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "field",
+            "value"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('INVENTORY_add_field_to_device', add_field_to_device, False)
 
-    cc.register('INVENTORY_add_nested_field_to_device')
+    cc.register('INVENTORY_add_nested_field_to_device', {
+        "name": "INVENTORY_add_nested_field_to_device",
+        "description": "add a nested field (nested json structure) to device in inventory database - BASICS,INVENTORY",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "field",
+            "value"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('INVENTORY_add_nested_field_to_device', add_nested_field_to_device, False)
 
-    cc.register('INVENTORY_add_array_to_field')
+    cc.register('INVENTORY_add_array_to_field', {
+        "name": "INVENTORY_add_array_to_field",
+        "description": "add an array to field on device in inventory database - BASICS,INVENTORY",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "field",
+            "values"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('INVENTORY_add_array_to_field', add_array_to_field, False)
 
-    cc.register('INVENTORY_remove_device')
+    cc.register('INVENTORY_remove_device', {
+        "name": "INVENTORY_remove_device",
+        "description": "remove a device to inventory database - BASICS,INVENTORY",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('INVENTORY_remove_device', remove_device, False)
 
-    cc.register('INVENTORY_get_device')
+    cc.register('INVENTORY_get_device', {
+        "name": "INVENTORY_get_device",
+        "description": "get 1 device from inventory database - BASICS,INVENTORY",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('INVENTORY_get_device', get_device, False)
 
-    cc.register('INVENTORY_get_all_devices')
+    cc.register('INVENTORY_get_all_devices', {
+        "name": "INVENTORY_get_all_devices",
+        "description": "get all devices in inventory database - BASICS,INVENTORY",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "labels"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('INVENTORY_get_all_devices', get_all_devices, False)
 
-    cc.register('INVENTORY_get_all_devices_as_dynamic_fork_tasks')
+    cc.register('INVENTORY_get_all_devices_as_dynamic_fork_tasks', {
+        "name": "INVENTORY_get_all_devices_as_dynamic_fork_tasks",
+        "description": "get all devices as dynamic fork tasks - BASICS,INVENTORY",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "task_params",
+            "optional",
+            "labels",
+            "task"
+        ],
+        "outputKeys": [
+            "url",
+            "dynamic_tasks_i",
+            "dynamic_tasks"
+        ]
+    })
     cc.start('INVENTORY_get_all_devices_as_dynamic_fork_tasks', get_all_devices_as_dynamic_fork_tasks, False)
 
-    cc.register('INVENTORY_add_show_command')
+    cc.register('INVENTORY_add_show_command', {
+        "name": "INVENTORY_add_show_command",
+        "description": "add a CLI command template to inventory database - BASICS,MAIN,INVENTORY,CLI",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "template_id",
+            "command"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('INVENTORY_add_show_command', add_show_command, False)
 
-    cc.register('INVENTORY_get_show_command')
+    cc.register('INVENTORY_get_show_command', {
+        "name": "INVENTORY_get_show_command",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "template_id",
+            "command"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('INVENTORY_get_show_command', get_show_command, False)
 
-    cc.register('INVENTORY_add_netconf_device')
+    cc.register('INVENTORY_add_netconf_device', {
+        "name": "INVENTORY_add_netconf_device",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "host",
+            "port",
+            "keepalive-delay",
+            "tcp-only",
+            "username",
+            "password",
+            "uniconfig-native",
+            "blacklist",
+            "labels"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('INVENTORY_add_netconf_device', add_netconf_device, False)

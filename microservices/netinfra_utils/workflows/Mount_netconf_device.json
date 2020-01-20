@@ -1,8 +1,8 @@
 {
-    "name": "Mount_netconf_device",
-    "description": "mount a Netconf device - BASICS,NETCONF",
-    "version": 1,
-    "inputParameters": [
+  "name": "Mount_netconf_device",
+  "description": "mount a Netconf device - BASICS,NETCONF",
+  "version": 1,
+  "inputParameters": [
     "device_id[Unique identifier of device across all systems]",
     "host[IP or hostname of the management endpoint on a device]",
     "port[TCP port of the management endpoint of a device][22]",
@@ -13,37 +13,37 @@
     "uniconfignative[Enable uniconfig-native][true]",
     "blacklist[List of blacklisted root paths (comma separated list) #template][openconfig-interfaces:interfaces,ietf-interfaces:interfaces]"
   ],
-    "tasks": [
-        {
-            "name": "Netconf_check_netconf_id_available",
-            "taskReferenceName": "Netconf_check_netconf_id_available",
-            "inputParameters": {
-                "device_id": "${workflow.input.device_id}"
-            },
-            "type": "SIMPLE",
-            "startDelay": 0
-        },
-        {
-            "name": "Netconf_mount_netconf",
-            "taskReferenceName": "Netconf_mount_netconf",
-            "inputParameters": {
-                "device_id": "${workflow.input.device_id}",
-                "host": "${workflow.input.host}",
-                "port": "${workflow.input.port}",
-                "keepalive-delay": "${workflow.input.keepalivedelay}",
-                "tcp-only": "${workflow.input.tcponly}",
-                "username": "${workflow.input.username}",
-                "password": "${workflow.input.password}",
-                "uniconfig-native": "${workflow.input.uniconfignative}",
-                "blacklist": "${workflow.input.blacklist}"
-            },
-            "type": "SIMPLE",
-            "startDelay": 0
-        }
-    ],
-    "outputParameters": {
+  "tasks": [
+    {
+      "name": "Netconf_check_netconf_id_available",
+      "taskReferenceName": "Netconf_check_netconf_id_available",
+      "inputParameters": {
         "device_id": "${workflow.input.device_id}"
+      },
+      "type": "SIMPLE",
+      "startDelay": 0
     },
-    "restartable": true,
-    "schemaVersion": 2
+    {
+      "name": "Netconf_mount_netconf",
+      "taskReferenceName": "Netconf_mount_netconf",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}",
+        "host": "${workflow.input.host}",
+        "port": "${workflow.input.port}",
+        "keepalive-delay": "${workflow.input.keepalivedelay}",
+        "tcp-only": "${workflow.input.tcponly}",
+        "username": "${workflow.input.username}",
+        "password": "${workflow.input.password}",
+        "uniconfig-native": "${workflow.input.uniconfignative}",
+        "blacklist": "${workflow.input.blacklist}"
+      },
+      "type": "SIMPLE",
+      "startDelay": 0
+    }
+  ],
+  "outputParameters": {
+    "device_id": "${workflow.input.device_id}"
+  },
+  "restartable": true,
+  "schemaVersion": 2
 }

@@ -3,8 +3,8 @@
   "description": "get all devices in inventory database as dynamic fork tasks - BASICS,INVENTORY",
   "version": 1,
   "inputParameters": [
-  	"labels[Enter one or multiple labels to select devices. Match type is ALL.]",
-  	"task[Name of a task to schedule for subsequent execution in the output #tasks]",
+    "labels[Enter one or multiple labels to select devices. Match type is ALL.]",
+    "task[Name of a task to schedule for subsequent execution in the output #tasks]",
     "optional[When set to true - tasks continues even if the task fails]"
   ],
   "tasks": [

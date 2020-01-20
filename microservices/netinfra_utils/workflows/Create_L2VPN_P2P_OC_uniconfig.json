@@ -8,28 +8,14 @@
       "taskReferenceName": "uniconfig_sync_from_network_ref_LYVS",
       "inputParameters": {
         "devices": "${workflow.input.devices}"
-      },
-      "type": "SUB_WORKFLOW",
-      "startDelay": 0,
-      "subWorkflowParam": {
-        "name": "UNICONFIG_sync_from_network",
-        "version": 1
-      },
-      "optional": false
+      }
     },
     {
       "name": "UNICONFIG_replace_config_with_oper",
       "taskReferenceName": "uniconfig_replace_config_with_oper_ref_JTJ4",
       "inputParameters": {
         "devices": "${workflow.input.devices}"
-      },
-      "type": "SUB_WORKFLOW",
-      "startDelay": 0,
-      "subWorkflowParam": {
-        "name": "UNICONFIG_replace_config_with_oper",
-        "version": 1
-      },
-      "optional": false
+      }
     },
     {
       "name": "UNICONFIG_write_structured_device_data",
@@ -67,14 +53,7 @@
       "taskReferenceName": "uniconfig_commit_ref_RXFF",
       "inputParameters": {
         "devices": "${workflow.input.devices}"
-      },
-      "type": "SUB_WORKFLOW",
-      "startDelay": 0,
-      "subWorkflowParam": {
-        "name": "UNICONFIG_commit",
-        "version": 1
-      },
-      "optional": true
+      }
     },
     {
       "name": "decisionTask",
@@ -123,32 +102,20 @@
       "optional": false
     },
     {
-      "name": "Read_journal_cli_device",
+      "name": "CLI_get_cli_journal",
       "taskReferenceName": "read_journal_cli_device_ref_LJUO",
+      "type": "SIMPLE",
       "inputParameters": {
         "device_id": "${workflow.input.node01}"
-      },
-      "type": "SUB_WORKFLOW",
-      "startDelay": 0,
-      "subWorkflowParam": {
-        "name": "Read_journal_cli_device",
-        "version": 1
-      },
-      "optional": false
+      }
     },
     {
-      "name": "Read_journal_cli_device",
+      "name": "CLI_get_cli_journal",
       "taskReferenceName": "read_journal_cli_device_ref_CDGP",
+      "type": "SIMPLE",
       "inputParameters": {
         "device_id": "${workflow.input.node02}"
-      },
-      "type": "SUB_WORKFLOW",
-      "startDelay": 0,
-      "subWorkflowParam": {
-        "name": "Read_journal_cli_device",
-        "version": 1
-      },
-      "optional": false
+      }
     }
   ],
   "inputParameters": [

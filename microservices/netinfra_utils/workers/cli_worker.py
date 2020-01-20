@@ -266,14 +266,58 @@ def execute_get_cli_journal(task):
 def start(cc):
     print('Starting CLI workers')
 
-    cc.register('CLI_mount_cli')
+    cc.register('CLI_mount_cli', {
+        "name": "CLI_mount_cli",
+        "description": "mount a CLI device - BASICS,CLI",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "type",
+            "version",
+            "host",
+            "protocol",
+            "port",
+            "username",
+            "password",
+            "labels"
+        ],
+        "outputKeys": [
+            "url",
+            "request_body",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('CLI_mount_cli', execute_mount_cli, False)
 
-    cc.register('CLI_unmount_cli')
+    cc.register('CLI_unmount_cli', {
+        "name": "CLI_unmount_cli",
+        "description": "unmount a CLI device - BASICS,CLI",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('CLI_unmount_cli', execute_unmount_cli, False)
 
     cc.register('CLI_check_cli_connected', {
         "name": "CLI_check_cli_connected",
+        "description": "check connection to a CLI device - BASICS,CLI",
         "retryCount": 20,
         "timeoutSeconds": 10,
         "timeoutPolicy": "TIME_OUT_WF",
@@ -281,13 +325,19 @@ def start(cc):
         "retryDelaySeconds": 5,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "id"
+            "device_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
         ]
     })
     cc.start('CLI_check_cli_connected', execute_check_connected_cli, False)
 
     cc.register('CLI_execute_and_read_rpc_cli', {
         "name": "CLI_execute_and_read_rpc_cli",
+        "description": "execute commands for a CLI device - BASICS,CLI",
         "retryCount": 0,
         "timeoutSeconds": 30,
         "timeoutPolicy": "TIME_OUT_WF",
@@ -295,22 +345,95 @@ def start(cc):
         "retryDelaySeconds": 0,
         "responseTimeoutSeconds": 30,
         "inputKeys": [
+            "device_id",
             "template",
             "params"
+        ],
+        "outputKeys": [
+            "url",
+            "request_body",
+            "response_code",
+            "response_body"
         ]
     })
     cc.start('CLI_execute_and_read_rpc_cli', execute_and_read_rpc_cli, False)
 
-    cc.register('CLI_check_cli_id_available')
+    cc.register('CLI_check_cli_id_available', {
+        "name": "CLI_check_cli_id_available",
+        "description": "check availability of cli id - BASICS,CLI",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('CLI_check_cli_id_available', execute_check_cli_id_available, False)
 
-    cc.register('CLI_read_cli_topology_operational')
+    cc.register('CLI_read_cli_topology_operational', {
+        "name": "CLI_read_cli_topology_operational",
+        "description": "Read operational state of CLI - BASICS,CLI",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('CLI_read_cli_topology_operational', execute_read_cli_topology_operational, False)
 
-    cc.register('CLI_get_all_devices_as_dynamic_fork_tasks')
+    cc.register('CLI_get_all_devices_as_dynamic_fork_tasks', {
+        "name": "CLI_get_all_devices_as_dynamic_fork_tasks",
+        "description": "get all devices in CLI topology as dynamic fork tasks - BASICS,CLI",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "task",
+            "task_params"
+        ],
+        "outputKeys": [
+            "url",
+            "dynamic_tasks",
+            "dynamic_tasks_i"
+        ]
+    })
     cc.start('CLI_get_all_devices_as_dynamic_fork_tasks', get_all_devices_as_dynamic_fork_tasks, False)
 
-    cc.register('CLI_get_cli_journal')
+    cc.register('CLI_get_cli_journal', {
+        "name": "CLI_get_cli_journal",
+        "description": "Read cli journal for a device - BASICS,CLI",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "template_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('CLI_get_cli_journal', execute_get_cli_journal, False)
 
 

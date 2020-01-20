@@ -4,20 +4,17 @@
   "version": 1,
   "tasks": [
     {
-      "name": "HTTP_POST_generic",
+      "name": "http_get_generic",
       "taskReferenceName": "http_post_generic_ref_6EHC",
       "inputParameters": {
-        "uri": "https://hooks.slack.com/services/${workflow.input.slack_webhook_id}",
-        "template": {
-          "text": "${workflow.input.message_text}"
+        "http_request": {
+          "uri": "https://hooks.slack.com/services/${workflow.input.slack_webhook_id}",
+          "template": {
+            "text": "${workflow.input.message_text}"
+          }
         }
       },
-      "type": "SUB_WORKFLOW",
-      "startDelay": 0,
-      "subWorkflowParam": {
-        "name": "HTTP_POST_generic",
-        "version": 1
-      }
+      "type": "HTTP"
     }
   ],
   "inputParameters": [

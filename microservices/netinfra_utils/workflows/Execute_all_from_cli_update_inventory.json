@@ -7,26 +7,22 @@
     "params[]"
   ],
   "tasks": [
-  	{
-      "name": "sub_read_unified",
+    {
+      "name": "CLI_get_all_devices_as_dynamic_fork_tasks",
       "taskReferenceName": "read_unified",
-	    "inputParameters": {
+      "type": "SIMPLE",
+      "inputParameters": {
         "task": "Execute_and_read_rpc_cli_device_from_inventory_update_inventory",
-        "task_input": {
-        	"command_id": "${workflow.input.command_id}",
-			    "params": "${workflow.input.params}"
+        "task_params": {
+          "command_id": "${workflow.input.command_id}",
+          "params": "${workflow.input.params}"
         }
-      },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Get_all_cli_devices_as_tasks",
-        "version": 1
       }
     },
   	{
       "name": "sub_execute_command",
       "taskReferenceName": "execute_command",
-	    "inputParameters": {
+      "inputParameters": {
         "dynamic_tasks": "${read_unified.output.dynamic_tasks}",
         "dynamic_tasks_i": "${read_unified.output.dynamic_tasks_i}"
       },
@@ -38,7 +34,7 @@
     }
   ],
   "outputParameters": {
-  	"device_ids": "${execute_command.output.forkedTasks}"
+    "device_ids": "${execute_command.output.forkedTasks}"
   },
   "schemaVersion": 2
 }

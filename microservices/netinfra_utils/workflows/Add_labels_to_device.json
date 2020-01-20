@@ -3,8 +3,8 @@
   "description": "add a labels to device in inventory database - BASICS,INVENTORY",
   "version": 1,
   "inputParameters": [
-	"device_id[Unique device identifier. Example: IOS01]",
-	"labels[Value of the labels (e.g. EDGE or a list like EDGE, PRODUCTION, ACTIVE)]"
+    "device_id[Unique device identifier. Example: IOS01]",
+    "labels[Value of the labels (e.g. EDGE or a list like EDGE, PRODUCTION, ACTIVE)]"
   ],
   "tasks": [
     {

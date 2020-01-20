@@ -26,7 +26,7 @@ odl_url_uniconfig_replace_config_with_snapshot = odl_url_base + '/operations/sna
 
 
 def execute_read_uniconfig_topology_operational(task):
-    devices = task['inputData']['device'] if 'device' in task['inputData'] else []
+    devices = task['inputData']['devices'] if 'devices' in task['inputData'] else []
     response_code, response_json = read_all_devices(odl_url_uniconfig_oper) if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_oper, devices)
 
     if response_code == requests.codes.ok:
@@ -42,7 +42,7 @@ def execute_read_uniconfig_topology_operational(task):
 
 
 def execute_read_uniconfig_topology_config(task):
-    devices = task['inputData']['device'] if 'device' in task['inputData'] else []
+    devices = task['inputData']['devices'] if 'devices' in task['inputData'] else []
     response_code, response_json = read_all_devices(odl_url_uniconfig_config) if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_config, devices)
 
     if response_code == requests.codes.ok:
@@ -494,77 +494,297 @@ def replace_config_with_snapshot(task):
 def start(cc):
     print('Starting Uniconfig workers')
 
-    cc.register('UNICONFIG_read_unified_topology_operational')
+    cc.register('UNICONFIG_read_unified_topology_operational', {
+        "name": "UNICONFIG_read_unified_topology_operational",
+        "description": "Read operational state of Uniconfig - BASICS,UNICONFIG",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "devices"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('UNICONFIG_read_unified_topology_operational', execute_read_uniconfig_topology_operational, False)
 
-    cc.register('UNICONFIG_read_unified_topology_config')
+    cc.register('UNICONFIG_read_unified_topology_config', {
+        "name": "UNICONFIG_read_unified_topology_config",
+        "description": "Read config state of Uniconfig - BASICS,UNICONFIG",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "devices"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('UNICONFIG_read_unified_topology_config', execute_read_uniconfig_topology_config, False)
 
-    cc.register('UNICONFIG_get_all_devices_as_dynamic_fork_tasks')
+    cc.register('UNICONFIG_get_all_devices_as_dynamic_fork_tasks', {
+        "name": "UNICONFIG_get_all_devices_as_dynamic_fork_tasks",
+        "description": "get all devices in uniconfig topology as dynamic fork tasks - BASICS,UNICONFIG",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "task",
+            "task_params",
+            "optional"
+        ],
+        "outputKeys": [
+            "url",
+            "dynamic_tasks_i",
+            "dynamic_tasks"
+        ]
+    })
     cc.start('UNICONFIG_get_all_devices_as_dynamic_fork_tasks', get_all_devices_as_dynamic_fork_tasks, False)
 
-    cc.register('UNICONFIG_read_structured_device_data')
+    cc.register('UNICONFIG_read_structured_device_data', {
+        "name": "UNICONFIG_read_structured_device_data",
+        "description": "Read device configuration or operational data in structured format e.g. openconfig - BASICS,UNICONFIG,OPENCONFIG",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "uri"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('UNICONFIG_read_structured_device_data', read_structured_data, False)
 
-    cc.register('UNICONFIG_write_structured_device_data')
+    cc.register('UNICONFIG_write_structured_device_data', {
+        "name": "UNICONFIG_write_structured_device_data",
+        "description": "Write device configuration data in structured format e.g. openconfig - BASICS,UNICONFIG",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "uri",
+            "template",
+            "params"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('UNICONFIG_write_structured_device_data', write_structured_data, False)
 
-    cc.register('UNICONFIG_write_structured_data_as_dynamic_fork_tasks')
-    cc.start('UNICONFIG_write_structured_data_as_dynamic_fork_tasks', write_structured_data_as_dynamic_fork_tasks, False)
+    cc.register('UNICONFIG_write_structured_data_as_dynamic_fork_tasks', {
+        "name": "UNICONFIG_write_structured_data_as_dynamic_fork_tasks",
+        "description": "Write device configuration data in strucuted format e.g. openconfig as a task - BASICS,UNICONFIG",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "uri",
+            "template",
+            "params"
+        ],
+        "outputKeys": [
+            "dynamic_tasks_i",
+            "dynamic_tasks"
+        ]
+    })
+    cc.start('UNICONFIG_write_structured_data_as_tasks', write_structured_data_as_dynamic_fork_tasks, False)
 
-    cc.register('UNICONFIG_delete_structured_device_data')
+    cc.register('UNICONFIG_delete_structured_device_data', {
+        "name": "UNICONFIG_delete_structured_device_data",
+        "description": "Delete device configuration data in structured format e.g. openconfig - BASICS,UNICONFIG,OPENCONFIG",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "uri"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('UNICONFIG_delete_structured_device_data', delete_structured_data, False)
 
     cc.register('UNICONFIG_commit', {
         "name": "UNICONFIG_commit",
+        "description": "Commit uniconfig - BASICS,UNICONFIG",
+        "inputKeys": [
+            "devices"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ],
+        "retryCount": 0,
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_commit', commit, False)
 
     cc.register('UNICONFIG_dryrun_commit', {
         "name": "UNICONFIG_dryrun_commit",
+        "description": "Dryrun Commit uniconfig - BASICS,UNICONFIG",
+        "inputKeys": [
+            "devices"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ],
+        "retryCount": 0,
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_dryrun_commit', dryrun_commit, False)
 
     cc.register('UNICONFIG_checked_commit', {
         "name": "UNICONFIG_checked_commit",
+        "description": "Checked Commit uniconfig - BASICS,UNICONFIG",
+        "inputKeys": [
+            "devices"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ],
+        "retryCount": 0,
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_checked_commit', checked_commit, False)
 
     cc.register('UNICONFIG_calculate_diff', {
         "name": "UNICONFIG_calculate_diff",
+        "description": "Calculate uniconfig diff - BASICS,UNICONFIG",
+        "inputKeys": [
+            "devices"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ],
+        "retryCount": 0,
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_calculate_diff', calc_diff, False)
 
     cc.register('UNICONFIG_sync_from_network', {
         "name": "UNICONFIG_sync_from_network",
+        "description": "Sync uniconfig from network - BASICS,UNICONFIG",
+        "inputKeys": [
+            "devices"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ],
+        "retryCount": 0,
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_sync_from_network', sync_from_network, False)
 
     cc.register('UNICONFIG_replace_config_with_oper', {
         "name": "UNICONFIG_replace_config_with_oper",
+        "description": "Replace config with oper in uniconfig - BASICS,UNICONFIG",
+        "inputKeys": [
+            "devices"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ],
+        "retryCount": 0,
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_replace_config_with_oper', replace_config_with_oper, False)
 
     cc.register('UNICONFIG_create_snapshot', {
         "name": "UNICONFIG_create_snapshot",
+        "description": "Create snapshot in uniconfig - BASICS,UNICONFIG",
+        "inputKeys": [
+            "name",
+            "devices"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ],
+        "retryCount": 0,
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_create_snapshot', create_snapshot, False)
 
     cc.register('UNICONFIG_delete_snapshot', {
         "name": "UNICONFIG_delete_snapshot",
+        "description": "Delete snapshot in uniconfig - BASICS,UNICONFIG",
+        "inputKeys": [
+            "name"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ],
+        "retryCount": 0,
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_delete_snapshot', delete_snapshot, False)
 
     cc.register('UNICONFIG_replace_config_with_snapshot', {
         "name": "UNICONFIG_replace_config_with_snapshot",
+        "description": "Replace config with snapshot - BASICS,UNICONFIG",
+        "inputKeys": [
+            "name",
+            "devices"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ],
+        "retryCount": 0,
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_replace_config_with_snapshot', replace_config_with_snapshot, False)
@@ -578,7 +798,7 @@ def start(cc):
         "retryDelaySeconds": 5,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "id"
+            "device_id"
         ]
     })
     cc.start('UNICONFIG_check_uniconfig_node_exists', execute_check_uniconfig_node_exists, False)

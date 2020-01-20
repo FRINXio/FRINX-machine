@@ -7,19 +7,13 @@
   ],
   "tasks": [
     {
-      "name": "Get_device_from_inventory",
+      "name": "INVENTORY_get_device",
       "taskReferenceName": "get_device_from_inventory_ref_B1GP",
       "inputParameters": {
         "device_id": "${workflow.input.device_id}"
       },
-      "type": "SUB_WORKFLOW",
-      "startDelay": 0,
-      "subWorkflowParam": {
-        "name": "Get_device_from_inventory",
-        "version": 1
-      },
-      "optional": false,
-      "asyncComplete": false
+      "type": "SIMPLE",
+      "startDelay": 0
     },
     {
       "name": "decisionTask",
@@ -32,7 +26,7 @@
       "decisionCases": {
         "cli": [
           {
-            "name": "Mount_cli_device",
+            "name": "CLI_mount_cli",
             "taskReferenceName": "mount_cli_device_ref_6RXD",
             "inputParameters": {
               "device_id": "${get_device_from_inventory_ref_B1GP.output.device.id}",
@@ -44,29 +38,15 @@
               "username": "${get_device_from_inventory_ref_B1GP.output.device.username}",
               "password": "${get_device_from_inventory_ref_B1GP.output.device.password}"
             },
-            "type": "SUB_WORKFLOW",
-            "startDelay": 0,
-            "subWorkflowParam": {
-              "name": "Mount_cli_device",
-              "version": 1
-            },
-            "optional": false,
-            "asyncComplete": false
+            "type": "SIMPLE"
           },
           {
-            "name": "Check_connection_cli_device",
+            "name": "CLI_check_cli_connected",
             "taskReferenceName": "check_connection_cli_device_ref_AAR8",
             "inputParameters": {
               "device_id": "${get_device_from_inventory_ref_B1GP.output.device.id}"
             },
-            "type": "SUB_WORKFLOW",
-            "startDelay": 0,
-            "subWorkflowParam": {
-              "name": "Check_connection_cli_device",
-              "version": 1
-            },
-            "optional": false,
-            "asyncComplete": false
+            "type": "SIMPLE"
           }
         ],
         "netconf": [
@@ -89,30 +69,18 @@
             "subWorkflowParam": {
               "name": "Mount_netconf_device",
               "version": 1
-            },
-            "optional": false,
-            "asyncComplete": false
+            }
           },
           {
-            "name": "Check_connection_netconf_device",
+            "name": "Netconf_check_netconf_connected",
             "taskReferenceName": "check_connection_netconf_device_ref_ABDV",
             "inputParameters": {
               "device_id": "${get_device_from_inventory_ref_B1GP.output.device.id}"
             },
-            "type": "SUB_WORKFLOW",
-            "startDelay": 0,
-            "subWorkflowParam": {
-              "name": "Check_connection_netconf_device",
-              "version": 1
-            },
-            "optional": false,
-            "asyncComplete": false
+            "type": "SIMPLE"
           }
         ]
-      },
-      "startDelay": 0,
-      "optional": false,
-      "asyncComplete": false
+      }
     }
   ],
   "schemaVersion": 2,

@@ -11,10 +11,10 @@
     {
       "name": "sub_execute",
       "taskReferenceName": "execute_template",
-	    "inputParameters": {
+      "inputParameters": {
         "device_id": "${workflow.input.device_id}",
-		    "template_id": "${workflow.input.template_id}",
-		    "params": "${workflow.input.params}"
+        "template_id": "${workflow.input.template_id}",
+        "params": "${workflow.input.params}"
       },
       "type": "SUB_WORKFLOW",
       "subWorkflowParam": {
@@ -23,18 +23,14 @@
       }
     },
     {
-      "name": "sub_store_in_inventory",
+      "name": "INVENTORY_add_field_to_device",
       "taskReferenceName": "save",
-	    "inputParameters": {
+      "inputParameters": {
         "device_id": "${workflow.input.device_id}",
         "field": "${workflow.input.template_id}",
         "value": "${execute_template.output.output}"
       },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Add_field_to_device_in_inventory",
-        "version": 1
-      }
+      "type": "SIMPLE"
     }
   ],
   "outputParameters": {

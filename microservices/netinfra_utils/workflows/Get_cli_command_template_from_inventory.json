@@ -3,7 +3,7 @@
   "description": "get 1 command template from inventory database - BASICS,INVENTORY,CLI",
   "version": 1,
   "inputParameters": [
-	 "template_id[Unique command template identifier in DB]"
+    "template_id[Unique command template identifier in DB]"
   ],
   "tasks": [
     {

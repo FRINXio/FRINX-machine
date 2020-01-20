@@ -31,5 +31,22 @@ def read_components(task):
 def start(cc):
     print('Starting Platform workers')
 
-    cc.register('OC-PLATFORM_read_components')
+    cc.register('OC-PLATFORM_read_components', {
+        "name": "OC-PLATFORM_read_components",
+        "description": "Read components in openconfig format - DEMO,PLATFORM,UNIFIED,OPENCONFIG",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('OC-PLATFORM_read_components', read_components, False)

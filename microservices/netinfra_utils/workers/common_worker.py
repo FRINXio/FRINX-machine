@@ -105,22 +105,22 @@ def vccid_filter_strategy(type, vccid):
 def start(cc):
     print('Starting common workers')
 
-    cc.register('http_get_generic', {
-        "name": "http_get_generic",
-        "retryCount": 3,
-        "timeoutSeconds": 10,
-        "timeoutPolicy": "TIME_OUT_WF",
-        "retryLogic": "FIXED",
-        "retryDelaySeconds": 5,
-        "responseTimeoutSeconds": 10
-    })
-
-    cc.register('fork_generic', {
-        "name": "fork_generic",
-        "retryCount": 0,
-        "timeoutSeconds": 50,
-        "timeoutPolicy": "TIME_OUT_WF",
-        "retryLogic": "FIXED",
-        "retryDelaySeconds": 5,
-        "responseTimeoutSeconds": 10
-    })
+    # cc.register('http_get_generic', {
+    #     "name": "http_get_generic",
+    #     "retryCount": 3,
+    #     "timeoutSeconds": 10,
+    #     "timeoutPolicy": "TIME_OUT_WF",
+    #     "retryLogic": "FIXED",
+    #     "retryDelaySeconds": 5,
+    #     "responseTimeoutSeconds": 10
+    # })
+    #
+    # cc.register('fork_generic', {
+    #     "name": "fork_generic",
+    #     "retryCount": 0,
+    #     "timeoutSeconds": 50,
+    #     "timeoutPolicy": "TIME_OUT_WF",
+    #     "retryLogic": "FIXED",
+    #     "retryDelaySeconds": 5,
+    #     "responseTimeoutSeconds": 10
+    # })

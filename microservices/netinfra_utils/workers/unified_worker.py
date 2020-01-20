@@ -194,20 +194,128 @@ def execute_check_unified_node_exists(task):
 def start(cc):
     print('Starting Unified workers')
 
-    cc.register('UNIFIED_read_unified_topology_operational')
+    cc.register('UNIFIED_read_unified_topology_operational', {
+        "name": "UNIFIED_read_unified_topology_operational",
+        "description": "Read operational state of Unified - BASICS,UNIFIED",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('UNIFIED_read_unified_topology_operational', execute_read_unified_topology_operational, False)
 
-    cc.register('UNIFIED_get_all_devices_as_dynamic_fork_tasks')
+    cc.register('UNIFIED_get_all_devices_as_dynamic_fork_tasks', {
+        "name": "UNIFIED_get_all_devices_as_dynamic_fork_tasks",
+        "description": "get all devices in unified topology as workflow tasks - BASICS,UNIFIED",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "task",
+            "task_params",
+            "optional"
+        ],
+        "outputKeys": [
+            "url",
+            "dynamic_tasks_i",
+            "dynamic_tasks"
+        ]
+    })
     cc.start('UNIFIED_get_all_devices_as_dynamic_fork_tasks', get_all_devices_as_dynamic_fork_tasks, False)
 
-    cc.register('UNIFIED_read_structured_device_data')
+    cc.register('UNIFIED_read_structured_device_data', {
+        "name": "UNIFIED_read_structured_device_data",
+        "description": "Read device configuration or operational data in structured format e.g. openconfig - BASICS,UNIFIED,OPENCONFIG",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "uri"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('UNIFIED_read_structured_device_data', read_structured_data, False)
 
-    cc.register('UNIFIED_write_structured_device_data')
+    cc.register('UNIFIED_write_structured_device_data', {
+        "name": "UNIFIED_write_structured_device_data",
+        "description": "Write device configuration data in structured format e.g. openconfig - BASICS,UNIFIED",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "uri",
+            "template",
+            "params"
+        ],
+        "outputKeys": [
+            "url",
+            "request_url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('UNIFIED_write_structured_device_data', write_structured_data, False)
 
-    cc.register('UNIFIED_delete_structured_device_data')
+    cc.register('UNIFIED_delete_structured_device_data', {
+        "name": "UNIFIED_delete_structured_device_data",
+        "description": "Delete device configuration data in structured format e.g. openconfig - BASICS,UNIFIED,OPENCONFIG",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "uri"
+        ],
+        "outputKeys": [
+            "url",
+            "request_url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('UNIFIED_delete_structured_device_data', delete_structured_data, False)
 
-    cc.register('UNIFIED_check_unified_node_exists')
+    cc.register('UNIFIED_check_unified_node_exists', {
+        "name": "UNIFIED_check_unified_node_exists",
+        "description": "check unified node exists - BASICS,UNIFIED",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
     cc.start('UNIFIED_check_unified_node_exists', execute_check_unified_node_exists, False)
