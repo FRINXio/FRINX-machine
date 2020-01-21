@@ -167,7 +167,7 @@ class TestExecuteReadUniconfigTopologyOperational(unittest.TestCase):
     def test_execute_read_uniconfig_topology_operational_no_device(self):
         with patch('uniconfig_worker.read_all_devices') as mock:
             mock.return_value = 200, xr5_response
-            request = uniconfig_worker.execute_read_uniconfig_topology_operational({"inputData": {"device": ""}})
+            request = uniconfig_worker.execute_read_uniconfig_topology_operational({"inputData": {"devices": ""}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["url"], odl_url_base
                              + "/data/network-topology:network-topology/topology=uniconfig?content=nonconfig")
@@ -178,7 +178,7 @@ class TestExecuteReadUniconfigTopologyOperational(unittest.TestCase):
     def test_execute_read_uniconfig_topology_operational_one_device(self):
         with patch('uniconfig_worker.read_selected_devices') as mock:
             mock.return_value = 200, xr5_response
-            request = uniconfig_worker.execute_read_uniconfig_topology_operational({"inputData": {"device": "xr5"}})
+            request = uniconfig_worker.execute_read_uniconfig_topology_operational({"inputData": {"devices": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["url"], odl_url_base
                              + "/data/network-topology:network-topology/topology=uniconfig?content=nonconfig")
@@ -191,7 +191,7 @@ class TestExecuteReadUniconfigTopologyConfig(unittest.TestCase):
     def test_execute_read_uniconfig_topology_config_no_device(self):
         with patch('uniconfig_worker.read_all_devices') as mock:
             mock.return_value = 200, xr5_response
-            request = uniconfig_worker.execute_read_uniconfig_topology_config({"inputData": {"device": ""}})
+            request = uniconfig_worker.execute_read_uniconfig_topology_config({"inputData": {"devices": ""}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["url"], odl_url_base
                              + "/data/network-topology:network-topology/topology=uniconfig?content=config")
@@ -202,7 +202,7 @@ class TestExecuteReadUniconfigTopologyConfig(unittest.TestCase):
     def test_execute_read_uniconfig_topology_config_one_device(self):
         with patch('uniconfig_worker.read_selected_devices') as mock:
             mock.return_value = 200, xr5_response
-            request = uniconfig_worker.execute_read_uniconfig_topology_config({"inputData": {"device": "xr5"}})
+            request = uniconfig_worker.execute_read_uniconfig_topology_config({"inputData": {"devices": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["url"], odl_url_base
                              + "/data/network-topology:network-topology/topology=uniconfig?content=config")

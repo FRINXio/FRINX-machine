@@ -27,12 +27,12 @@ COPY ./wait_for_it.sh .
 
 ### Install appliacation setup
 WORKDIR /home/app/conductor/client/python
-RUN pip install setuptools
-RUN python setup.py install
+RUN pip3 install setuptools
+RUN python3 setup.py install
 
 WORKDIR /home/app/netinfra_utils/workers
-CMD [ "python", "main.py" ]
-RUN python -m unittest uniconfig_worker_test.py
-RUN python -m unittest unified_worker_test.py
-RUN python -m unittest netconf_worker_test.py
-RUN python -m unittest cli_worker_test.py
+CMD [ "python3", "main.py" ]
+RUN python3 -m unittest uniconfig_worker_test.py
+RUN python3 -m unittest unified_worker_test.py
+RUN python3 -m unittest netconf_worker_test.py
+RUN python3 -m unittest cli_worker_test.py
