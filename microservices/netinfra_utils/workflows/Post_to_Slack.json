@@ -9,9 +9,10 @@
       "inputParameters": {
         "http_request": {
           "uri": "https://hooks.slack.com/services/${workflow.input.slack_webhook_id}",
-          "template": {
-            "text": "${workflow.input.message_text}"
-          }
+          "contentType": "application/json",
+          "body": "${workflow.input.template}",
+          "connectionTimeOut":"3600",
+          "readTimeOut":"3600"
         }
       },
       "type": "HTTP"
