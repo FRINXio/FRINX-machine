@@ -8,18 +8,14 @@
   ],
   "tasks": [
     {
-      "name": "sub_read_inventory",
+      "name": "INVENTORY_get_all_devices_as_dynamic_fork_tasks",
       "taskReferenceName": "read_inventory",
       "inputParameters": {
         "labels": "${workflow.input.labels}",
         "task": "Mount_from_inventory",
         "optional": "${workflow.input.optional}"
       },
-      "type": "SUB_WORKFLOW",
-      "subWorkflowParam": {
-        "name": "Get_all_devices_from_inventory_as_dynamic_fork_tasks",
-        "version": 1
-      }
+      "type": "SIMPLE"
     },
     {
       "name": "sub_mount",

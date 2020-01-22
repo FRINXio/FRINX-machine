@@ -283,8 +283,7 @@ def start(cc):
             "protocol",
             "port",
             "username",
-            "password",
-            "labels"
+            "password"
         ],
         "outputKeys": [
             "url",
