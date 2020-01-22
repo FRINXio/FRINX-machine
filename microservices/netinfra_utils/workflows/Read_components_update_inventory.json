@@ -1,0 +1,33 @@
+{
+  "name": "Read_components_update_inventory",
+  "description": "Read components in openconfig format and store in inventory - DEMO,PLATFORM,UNIFIED,OPENCONFIG,INVENTORY",
+  "version": 1,
+  "tasks": [
+  	{
+      "name": "sub_read_unified",
+      "taskReferenceName": "read_unified",
+	  "inputParameters": {
+        "device_id": "${workflow.input.device_id}"
+      },
+      "type": "SUB_WORKFLOW",
+      "subWorkflowParam": {
+        "name": "Read_components_openconfig",
+        "version": 1
+      }
+    },
+    {
+      "name": "INVENTORY_add_nested_field_to_device",
+      "taskReferenceName": "INVENTORY_nested_add_field_to_device",
+      "type": "SIMPLE",
+      "inputParameters": {
+        "device_id": "${workflow.input.device_id}",
+		"field": "components",
+        "value": "${read_unified.output.components.components}"
+      }
+    }
+  ],
+  "outputParameters": {
+    "components": "${read_unified.output.components.components}"
+  },
+  "schemaVersion": 2
+}
