@@ -2,17 +2,8 @@ import time
 import worker_wrapper
 from frinx_rest import conductor_url_base
 import cli_worker
-import inventory_worker
-import lldp_worker
 import netconf_worker
-import platform_worker
 import uniconfig_worker
-import unified_worker
-import vll_worker
-import vll_service_worker
-import vpls_worker
-import vpls_service_worker
-import bi_service_worker
 import common_worker
 
 
@@ -29,16 +20,7 @@ def main():
 def register_workers(cc):
     cli_worker.start(cc)
     netconf_worker.start(cc)
-    platform_worker.start(cc)
-    lldp_worker.start(cc)
-    inventory_worker.start(cc)
-    unified_worker.start(cc)
     uniconfig_worker.start(cc)
-    # vll_worker.start(cc)
-    # vll_service_worker.start(cc)
-    # vpls_worker.start(cc)
-    # vpls_service_worker.start(cc)
-    # bi_service_worker.start(cc)
     common_worker.start(cc)
 
 
