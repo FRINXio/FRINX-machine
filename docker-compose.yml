@@ -152,10 +152,9 @@ services:
    build:
      context: ./frinx-uniconfig-ui
      dockerfile: Dockerfile
-     args:
-       - ODL=uniconfig:8181
-       - WF_SERVER=conductor-server:8080
-       - REACT_APP_LOGIN_ENABLED=false
+   environment:
+       - ODL_HOST=uniconfig:8181
+       - WF_SERVER=conductor-server:8080/api/
    image: frinx/fm-uniconfig-ui
    container_name: uniconfig-ui
    logging:
@@ -164,7 +163,7 @@ services:
        max-file: "3"
        max-size: "10m"
    ports:
-     - 3000:3000
+     - 3000:3001
 
   portainer:
     build:
