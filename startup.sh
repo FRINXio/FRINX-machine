@@ -62,22 +62,6 @@ fi
 
 }
 
-function import_devices {
-# Import cli devices
-docker exec micros bash -c "cd /home/app/netinfra_utils && ./importDevices.py devices/cli_device_data.csv devices/cli_device_import.json"
-if [ "$skip" = false ]; then
-  check_success $?
-fi
-
-#Import netconf devices
-docker exec micros bash -c "cd /home/app/netinfra_utils && ./importDevices.py devices/netconf_device_data.csv devices/netconf_device_import.json"
-if [ "$skip" = false ]; then
-  check_success $?
-fi
-
-}
-
-
 # Loop arguments
 skip=false
 browser=flase
@@ -111,9 +95,6 @@ start_containers
 
 # Imports workflows
 import_workflows
-
-# Import devices
-import_devices
 
 curl --silent -H "Content-Type: application/json"  -X POST -d "{\"name\":\"Write_data_to_netconf_testool\",\"version\":1,\"input\":{}}" http://localhost:8080/api/workflow/ &>/dev/null
 

@@ -33,6 +33,7 @@ RUN python3 setup.py install
 WORKDIR /home/app/netinfra_utils/workers
 CMD [ "python3", "main.py" ]
 RUN python3 -m unittest uniconfig_worker_test.py
-RUN python3 -m unittest unified_worker_test.py
 RUN python3 -m unittest netconf_worker_test.py
 RUN python3 -m unittest cli_worker_test.py
+
+WORKDIR /home/app/netinfra_utils
