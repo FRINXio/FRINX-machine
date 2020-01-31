@@ -48,34 +48,34 @@
             },
             "type": "SIMPLE"
           }
-        ],
-        "netconf": [
-          {
-            "name": "Netconf_mount_netconf",
-            "taskReferenceName": "mount_netconf_device_ref_16F0",
-            "inputParameters": {
-              "device_id": "${get_device_from_inventory_ref_B1GP.output.response_body.id}",
-              "host": "${get_device_from_inventory_ref_B1GP.output.response_body.host}",
-              "port": "${get_device_from_inventory_ref_B1GP.output.response_body.port}",
-              "keepalivedelay": "${get_device_from_inventory_ref_B1GP.output.response_body.keepalive-delay}",
-              "tcponly": "${get_device_from_inventory_ref_B1GP.output.response_body.tcp-only}",
-              "username": "${get_device_from_inventory_ref_B1GP.output.response_body.username}",
-              "password": "${get_device_from_inventory_ref_B1GP.output.response_body.password}",
-              "uniconfignative": "${get_device_from_inventory_ref_B1GP.output.response_body.uniconfig-native}",
-              "blacklist": "${get_device_from_inventory_ref_B1GP.output.response_body.blacklist}"
-            },
-             "type": "SIMPLE"
-          },
-          {
-            "name": "Netconf_check_netconf_connected",
-            "taskReferenceName": "check_connection_netconf_device_ref_ABDV",
-            "inputParameters": {
-              "device_id": "${get_device_from_inventory_ref_B1GP.output.response_body.id}"
-            },
-            "type": "SIMPLE"
-          }
         ]
-      }
+      },
+      "defaultCase": [
+        {
+          "name": "Netconf_mount_netconf",
+          "taskReferenceName": "mount_netconf_device_ref_16F0",
+          "inputParameters": {
+            "device_id": "${get_device_from_inventory_ref_B1GP.output.response_body.id}",
+            "host": "${get_device_from_inventory_ref_B1GP.output.response_body.host}",
+            "port": "${get_device_from_inventory_ref_B1GP.output.response_body.port}",
+            "keepalive-delay": "${get_device_from_inventory_ref_B1GP.output.response_body.keepalive-delay}",
+            "tcp-only": "${get_device_from_inventory_ref_B1GP.output.response_body.tcp-only}",
+            "username": "${get_device_from_inventory_ref_B1GP.output.response_body.username}",
+            "password": "${get_device_from_inventory_ref_B1GP.output.response_body.password}",
+            "uniconfig-native": "${get_device_from_inventory_ref_B1GP.output.response_body.uniconfig-native}",
+            "blacklist": "${get_device_from_inventory_ref_B1GP.output.response_body.blacklist}"
+          },
+          "type": "SIMPLE"
+        },
+        {
+          "name": "Netconf_check_netconf_connected",
+          "taskReferenceName": "check_connection_netconf_device_ref_ABDV",
+          "inputParameters": {
+            "device_id": "${get_device_from_inventory_ref_B1GP.output.response_body.id}"
+          },
+          "type": "SIMPLE"
+        }
+      ]
     }
   ],
   "schemaVersion": 2,
