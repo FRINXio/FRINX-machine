@@ -6,7 +6,7 @@ from string import Template
 
 import requests
 
-from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_response
+from frinx_rest import odl_url_base, odl_credentials, parse_response, add_uniconfig_tx_cookie
 
 odl_url_cli_mount = odl_url_base + "/data/network-topology:network-topology/topology=cli/node=$id"
 odl_url_cli_oper = odl_url_base + "/data/network-topology:network-topology/topology=cli?content=nonconfig"
@@ -38,6 +38,7 @@ mount_template = {
 
 def execute_mount_cli(task):
     device_id = task['inputData']['device_id']
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
     mount_body = copy.deepcopy(mount_template)
 
@@ -52,7 +53,7 @@ def execute_mount_cli(task):
 
     id_url = Template(odl_url_cli_mount).substitute({"id": device_id})
 
-    r = requests.put(id_url, data=json.dumps(mount_body), headers=odl_headers, auth=odl_credentials)
+    r = requests.put(id_url, data=json.dumps(mount_body), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.created or response_code == requests.codes.no_content:
@@ -82,6 +83,7 @@ def execute_and_read_rpc_cli(task):
     template = task['inputData']['template']
     params = task['inputData']['params'] if task['inputData']['params'] else {}
     params = params if isinstance(params, dict) else eval(params)
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task["inputData"] else ""
 
     commands = Template(template).substitute(params)
     exec_body = copy.deepcopy(execute_and_read_template)
@@ -90,7 +92,7 @@ def execute_and_read_rpc_cli(task):
 
     id_url = Template(odl_url_cli_mount_rpc).substitute({"id": device_id}) + "/yang-ext:mount/cli-unit-generic:execute-and-read"
 
-    r = requests.post(id_url, data=json.dumps(exec_body), headers=odl_headers, auth=odl_credentials)
+    r = requests.post(id_url, data=json.dumps(exec_body), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -109,10 +111,11 @@ def execute_and_read_rpc_cli(task):
 
 def execute_unmount_cli(task):
     device_id = task['inputData']['device_id']
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task["inputData"] else ""
 
     id_url = Template(odl_url_cli_mount).substitute({"id": device_id})
 
-    r = requests.delete(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.delete(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     return {'status': 'COMPLETED', 'output': {'url': id_url,
@@ -123,10 +126,11 @@ def execute_unmount_cli(task):
 
 def execute_check_cli_id_available(task):
     device_id = task['inputData']['device_id']
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task["inputData"] else ""
 
     id_url = Template(odl_url_cli_mount).substitute({"id": device_id})
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code != requests.codes.not_found:
@@ -144,10 +148,11 @@ def execute_check_cli_id_available(task):
 
 def execute_check_connected_cli(task):
     device_id = task['inputData']['device_id']
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task["inputData"] else ""
 
     id_url = Template(odl_url_cli_mount_oper).substitute({"id": device_id})
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["node"][0]["cli-topology:connection-status"] == "connected":
@@ -163,7 +168,10 @@ def execute_check_connected_cli(task):
 
 
 def execute_read_cli_topology_operational(task):
-    r = requests.get(odl_url_cli_oper, headers=odl_headers, auth=odl_credentials)
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] \
+        if 'inputData' in task and 'uniconfig_tx_id' in task['inputData'] else ""
+
+    r = requests.get(odl_url_cli_oper, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -178,8 +186,8 @@ def execute_read_cli_topology_operational(task):
                 'logs': []}
 
 
-def read_all_devices(url):
-    r = requests.get(url, headers=odl_headers, auth=odl_credentials)
+def read_all_devices(url, uniconfig_tx_id):
+    r = requests.get(url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     actual_nodes = response_json['topology'][0]['node']
@@ -211,8 +219,9 @@ def get_all_devices_as_dynamic_fork_tasks(task):
     optional = task['inputData']['optional'] if 'optional' in task['inputData'] else "false"
     add_params = task['inputData']['task_params']
     add_params = json.loads(add_params) if isinstance(add_params, str) else (add_params if add_params else {})
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
-    response_code, response_json = read_all_devices(odl_url_unified_oper_shallow)
+    response_code, response_json = read_all_devices(odl_url_unified_oper_shallow, uniconfig_tx_id)
 
     if response_code == requests.codes.ok:
         ids = [nodes["node-id"] for nodes in response_json["topology"][0]["node"]]
@@ -245,10 +254,11 @@ def get_all_devices_as_dynamic_fork_tasks(task):
 
 def execute_get_cli_journal(task):
     device_id = task['inputData']['device_id']
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
     id_url = Template(odl_url_cli_read_journal).substitute({"id": device_id})
 
-    r = requests.post(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.post(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -283,7 +293,8 @@ def start(cc):
             "protocol",
             "port",
             "username",
-            "password"
+            "password",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -304,7 +315,8 @@ def start(cc):
         "retryDelaySeconds": 0,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "device_id"
+            "device_id",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -324,7 +336,8 @@ def start(cc):
         "retryDelaySeconds": 5,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "device_id"
+            "device_id",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -346,7 +359,8 @@ def start(cc):
         "inputKeys": [
             "device_id",
             "template",
-            "params"
+            "params",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -367,7 +381,8 @@ def start(cc):
         "retryDelaySeconds": 0,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "device_id"
+            "device_id",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -386,6 +401,9 @@ def start(cc):
         "retryLogic": "FIXED",
         "retryDelaySeconds": 0,
         "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "uniconfig_tx_id"
+        ],
         "outputKeys": [
             "url",
             "response_code",
@@ -405,7 +423,8 @@ def start(cc):
         "responseTimeoutSeconds": 10,
         "inputKeys": [
             "task",
-            "task_params"
+            "task_params",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -425,7 +444,8 @@ def start(cc):
         "retryDelaySeconds": 0,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "template_id"
+            "template_id",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
