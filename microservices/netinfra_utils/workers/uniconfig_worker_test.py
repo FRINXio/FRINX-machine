@@ -635,8 +635,7 @@ class TestCreateTransaction(unittest.TestCase):
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["response_code"], 201)
             self.assertEqual(request["output"]["response_body"],
-                             {"UNICONFIGTXID": "92a26bac-d623-407e-9a76-3fad3e7cc698",
-                              "JSESSIONID": "1g82dajs6marv18scrdabpgc3m"})
+                             {"UNICONFIGTXID": "92a26bac-d623-407e-9a76-3fad3e7cc698"})
 
 
 class TestCloseTransaction(unittest.TestCase):

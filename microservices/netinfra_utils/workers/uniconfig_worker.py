@@ -12,7 +12,9 @@ from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_respons
 
 odl_url_uniconfig_config_shallow = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config&depth=3"
 odl_url_uniconfig_oper = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=nonconfig"
+odl_url_uniconfig_node_oper = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id?content=nonconfig"
 odl_url_uniconfig_config = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config"
+odl_url_uniconfig_node_config = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id?content=config"
 odl_url_uniconfig_mount = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id"
 odl_url_uniconfig_commit = odl_url_base + '/operations/uniconfig-manager:commit'
 odl_url_uniconfig_dryrun_commit = odl_url_base + '/operations/dryrun-manager:dryrun-commit'
@@ -31,7 +33,7 @@ def execute_read_uniconfig_topology_operational(task):
     devices = task['inputData']['devices'] if 'devices' in task['inputData'] else []
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     response_code, response_json = read_all_devices(odl_url_uniconfig_oper, uniconfig_tx_id)\
-        if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_oper, devices, uniconfig_tx_id)
+        if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_node_oper, devices, uniconfig_tx_id)
 
     if response_code == requests.codes.ok:
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_oper,
@@ -49,7 +51,7 @@ def execute_read_uniconfig_topology_config(task):
     devices = task['inputData']['devices'] if 'devices' in task['inputData'] else []
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     response_code, response_json = read_all_devices(odl_url_uniconfig_config, uniconfig_tx_id) \
-        if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_config, devices, uniconfig_tx_id)
+        if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_node_config, devices, uniconfig_tx_id)
 
     if response_code == requests.codes.ok:
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_config,
@@ -78,8 +80,9 @@ def read_selected_devices(url, devices, uniconfig_tx_id):
             }
         ]
     }
-    for d in devices:
-        r = requests.get(url + "/node=" + d + "/", headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    devices_array = [device.strip() for device in devices.split(',')]
+    for d in devices_array:
+        r = requests.get(Template(url).substitute({"id": d}), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
         response_code, response_json_tmp = parse_response(r)
         response_json['topology'][0]['node'].append(response_json_tmp['node'][0])
         if response_code != requests.codes.ok:
@@ -555,8 +558,8 @@ def close_transaction(task):
 def start(cc):
     print('Starting Uniconfig workers')
 
-    cc.register('UNICONFIG_read_unified_topology_operational', {
-        "name": "UNICONFIG_read_unified_topology_operational",
+    cc.register('UNICONFIG_read_uniconfig_topology_operational', {
+        "name": "UNICONFIG_read_uniconfig_topology_operational",
         "description": "Read operational state of Uniconfig - BASICS,UNICONFIG",
         "retryCount": 0,
         "timeoutSeconds": 60,
@@ -574,10 +577,10 @@ def start(cc):
             "response_body"
         ]
     })
-    cc.start('UNICONFIG_read_unified_topology_operational', execute_read_uniconfig_topology_operational, False)
+    cc.start('UNICONFIG_read_uniconfig_topology_operational', execute_read_uniconfig_topology_operational, False)
 
-    cc.register('UNICONFIG_read_unified_topology_config', {
-        "name": "UNICONFIG_read_unified_topology_config",
+    cc.register('UNICONFIG_read_uniconfig_topology_config', {
+        "name": "UNICONFIG_read_uniconfig_topology_config",
         "description": "Read config state of Uniconfig - BASICS,UNICONFIG",
         "retryCount": 0,
         "timeoutSeconds": 60,
@@ -595,7 +598,7 @@ def start(cc):
             "response_body"
         ]
     })
-    cc.start('UNICONFIG_read_unified_topology_config', execute_read_uniconfig_topology_config, False)
+    cc.start('UNICONFIG_read_uniconfig_topology_config', execute_read_uniconfig_topology_config, False)
 
     cc.register('UNICONFIG_get_all_devices_as_dynamic_fork_tasks', {
         "name": "UNICONFIG_get_all_devices_as_dynamic_fork_tasks",
