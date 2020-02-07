@@ -43,5 +43,5 @@ def parse_header(r):
 def add_uniconfig_tx_cookie(uniconfig_tx_id):
     header = odl_headers
     if uniconfig_tx_id and uniconfig_tx_id != "":
-        header["Cookies"] = "UNICONFIGTXID=" + uniconfig_tx_id
+        header["Cookie"] = "UNICONFIGTXID=" + uniconfig_tx_id
     return header
