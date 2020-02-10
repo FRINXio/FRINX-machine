@@ -6,7 +6,7 @@ from string import Template
 
 import requests
 
-from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_response, elastic_url_base, elastic_headers
+from frinx_rest import odl_url_base, odl_credentials, parse_response, elastic_url_base, elastic_headers, add_uniconfig_tx_cookie
 
 odl_url_netconf_mount = odl_url_base + "/data/network-topology:network-topology/topology=topology-netconf/node=$id"
 odl_url_netconf_mount_oper = odl_url_base + "/data/network-topology:network-topology/topology=topology-netconf/node=$id?content=nonconfig"
@@ -28,6 +28,7 @@ mount_template = {
 
 def execute_mount_netconf(task):
     device_id = task['inputData']['device_id']
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
     mount_body = copy.deepcopy(mount_template)
 
@@ -50,7 +51,7 @@ def execute_mount_netconf(task):
 
     id_url = Template(odl_url_netconf_mount).substitute({"id": device_id})
 
-    r = requests.put(id_url, data=json.dumps(mount_body), headers=odl_headers, auth=odl_credentials)
+    r = requests.put(id_url, data=json.dumps(mount_body), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.created or response_code == requests.codes.no_content:
@@ -69,10 +70,11 @@ def execute_mount_netconf(task):
 
 def execute_unmount_netconf(task):
     device_id = task['inputData']['device_id']
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
     id_url = Template(odl_url_netconf_mount).substitute({"id": device_id})
 
-    r = requests.delete(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.delete(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     return {'status': 'COMPLETED', 'output': {'url': id_url,
@@ -83,10 +85,11 @@ def execute_unmount_netconf(task):
 
 def execute_check_netconf_id_available(task):
     device_id = task['inputData']['device_id']
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
     id_url = Template(odl_url_netconf_mount).substitute({"id": device_id}) + "?content=config"
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code != requests.codes.not_found:
@@ -104,10 +107,11 @@ def execute_check_netconf_id_available(task):
 
 def execute_check_connected_netconf(task):
     device_id = task['inputData']['device_id']
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
     id_url = Template(odl_url_netconf_mount_oper).substitute({"id": device_id})
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok and response_json["node"][0]["netconf-node-topology:connection-status"] == "connected":
@@ -143,7 +147,8 @@ def start(cc):
             "username",
             "password",
             "uniconfig-native",
-            "blacklist"
+            "blacklist",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -164,7 +169,8 @@ def start(cc):
         "retryDelaySeconds": 0,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "device_id"
+            "device_id",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -183,7 +189,8 @@ def start(cc):
         "retryDelaySeconds": 5,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "device_id"
+            "device_id",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -203,7 +210,8 @@ def start(cc):
         "retryDelaySeconds": 0,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "device_id"
+            "device_id",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",

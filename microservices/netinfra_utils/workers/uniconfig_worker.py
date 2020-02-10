@@ -8,11 +8,13 @@ from string import Template
 
 import requests
 
-from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_response
+from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_response, parse_header, add_uniconfig_tx_cookie
 
 odl_url_uniconfig_config_shallow = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config&depth=3"
 odl_url_uniconfig_oper = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=nonconfig"
+odl_url_uniconfig_node_oper = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id?content=nonconfig"
 odl_url_uniconfig_config = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config"
+odl_url_uniconfig_node_config = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id?content=config"
 odl_url_uniconfig_mount = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig/node=$id"
 odl_url_uniconfig_commit = odl_url_base + '/operations/uniconfig-manager:commit'
 odl_url_uniconfig_dryrun_commit = odl_url_base + '/operations/dryrun-manager:dryrun-commit'
@@ -23,11 +25,15 @@ odl_url_uniconfig_replace_config_with_operational = odl_url_base + '/operations/
 odl_url_uniconfig_create_snapshot = odl_url_base + '/operations/snapshot-manager:create-snapshot'
 odl_url_uniconfig_delete_snapshot = odl_url_base + '/operations/snapshot-manager:delete-snapshot'
 odl_url_uniconfig_replace_config_with_snapshot = odl_url_base + '/operations/snapshot-manager:replace-config-with-snapshot'
+odl_url_uniconfig_create_transaction = odl_url_base + '/operations/uniconfig-manager:create-transaction?maxAgeSec=$sec'
+odl_url_uniconfig_close_transaction = odl_url_base + '/operations/uniconfig-manager:close-transaction'
 
 
 def execute_read_uniconfig_topology_operational(task):
     devices = task['inputData']['devices'] if 'devices' in task['inputData'] else []
-    response_code, response_json = read_all_devices(odl_url_uniconfig_oper) if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_oper, devices)
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
+    response_code, response_json = read_all_devices(odl_url_uniconfig_oper, uniconfig_tx_id)\
+        if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_node_oper, devices, uniconfig_tx_id)
 
     if response_code == requests.codes.ok:
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_oper,
@@ -43,7 +49,9 @@ def execute_read_uniconfig_topology_operational(task):
 
 def execute_read_uniconfig_topology_config(task):
     devices = task['inputData']['devices'] if 'devices' in task['inputData'] else []
-    response_code, response_json = read_all_devices(odl_url_uniconfig_config) if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_config, devices)
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
+    response_code, response_json = read_all_devices(odl_url_uniconfig_config, uniconfig_tx_id) \
+        if len(devices) == 0 else read_selected_devices(odl_url_uniconfig_node_config, devices, uniconfig_tx_id)
 
     if response_code == requests.codes.ok:
         return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_config,
@@ -57,13 +65,13 @@ def execute_read_uniconfig_topology_config(task):
                 'logs': []}
 
 
-def read_all_devices(url):
-    r = requests.get(url, headers=odl_headers, auth=odl_credentials)
+def read_all_devices(url, uniconfig_tx_id):
+    r = requests.get(url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
     return response_code, response_json
 
 
-def read_selected_devices(url, devices):
+def read_selected_devices(url, devices, uniconfig_tx_id):
     response_code = requests.codes.ok
     response_json = {
         'topology': [
@@ -72,8 +80,9 @@ def read_selected_devices(url, devices):
             }
         ]
     }
-    for d in devices:
-        r = requests.get(url + "/node=" + d + "/", headers=odl_headers, auth=odl_credentials)
+    devices_array = [device.strip() for device in devices.split(',')]
+    for d in devices_array:
+        r = requests.get(Template(url).substitute({"id": d}), headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
         response_code, response_json_tmp = parse_response(r)
         response_json['topology'][0]['node'].append(response_json_tmp['node'][0])
         if response_code != requests.codes.ok:
@@ -97,8 +106,9 @@ def get_all_devices_as_dynamic_fork_tasks(task):
     optional = task['inputData']['optional'] if 'optional' in task['inputData'] else "false"
     add_params = task['inputData']['task_params']
     add_params = json.loads(add_params) if isinstance(add_params, str) else (add_params if add_params else {})
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
-    response_code, response_json = read_all_devices(odl_url_uniconfig_config_shallow)
+    response_code, response_json = read_all_devices(odl_url_uniconfig_config_shallow, uniconfig_tx_id)
 
     if response_code == requests.codes.ok:
         ids = [nodes["node-id"] for nodes in response_json["topology"][0]["node"]]
@@ -141,10 +151,11 @@ def read_structured_data(task):
     device_id = task['inputData']['device_id']
     uri = task['inputData']['uri']
     uri = apply_functions(uri)
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
     id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.ok:
@@ -166,6 +177,7 @@ def write_structured_data(task):
     template = task['inputData']['template']
     params = task['inputData']['params']
     params = json.loads(params) if isinstance(params, str) else (params if params else {})
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
     data_json = template if isinstance(template, str) else json.dumps(template if template else {})
     data_json = Template(data_json).substitute(params)
@@ -173,7 +185,7 @@ def write_structured_data(task):
     id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
     id_url = Template(id_url).substitute(params)
 
-    r = requests.put(id_url, data=data_json, headers=odl_headers, auth=odl_credentials)
+    r = requests.put(id_url, data=data_json, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.no_content or response_code == requests.codes.created:
@@ -220,10 +232,11 @@ def delete_structured_data(task):
     device_id = task['inputData']['device_id']
     uri = task['inputData']['uri']
     uri = apply_functions(uri)
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
     id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:configuration" + (uri if uri else "")
 
-    r = requests.delete(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.delete(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code == requests.codes.no_content:
@@ -240,10 +253,11 @@ def delete_structured_data(task):
 
 def execute_check_uniconfig_node_exists(task):
     device_id = task['inputData']['device_id']
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
     id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/node-id"
 
-    r = requests.get(id_url, headers=odl_headers, auth=odl_credentials)
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
     if response_code != requests.codes.not_found:
@@ -269,9 +283,10 @@ commit_input = {
 
 
 def commit(task):
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     r = requests.post(odl_url_uniconfig_commit,
                       data=json.dumps(create_commit_request(task)),
-                      headers=odl_headers,
+                      headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
@@ -288,9 +303,10 @@ def commit(task):
 
 
 def dryrun_commit(task):
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     r = requests.post(odl_url_uniconfig_dryrun_commit,
                       data=json.dumps(create_commit_request(task)),
-                      headers=odl_headers,
+                      headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
@@ -307,9 +323,10 @@ def dryrun_commit(task):
 
 
 def checked_commit(task):
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     r = requests.post(odl_url_uniconfig_checked_commit,
                       data=json.dumps(create_commit_request(task)),
-                      headers=odl_headers,
+                      headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
@@ -326,9 +343,10 @@ def checked_commit(task):
 
 
 def calc_diff(task):
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     r = requests.post(odl_url_uniconfig_calculate_diff,
                       data=json.dumps(create_commit_request(task)),
-                      headers=odl_headers,
+                      headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
@@ -345,9 +363,10 @@ def calc_diff(task):
 
 
 def sync_from_network(task):
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     r = requests.post(odl_url_uniconfig_sync_from_network,
                       data=json.dumps(create_commit_request(task)),
-                      headers=odl_headers,
+                      headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
@@ -364,9 +383,10 @@ def sync_from_network(task):
 
 
 def replace_config_with_oper(task):
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     r = requests.post(odl_url_uniconfig_replace_config_with_operational,
                       data=json.dumps(create_commit_request(task)),
-                      headers=odl_headers,
+                      headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
@@ -393,10 +413,11 @@ snapshot_template = {
 
 
 def create_snapshot(task):
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     snapshot_body = create_snapshot_request(task)
     r = requests.post(odl_url_uniconfig_create_snapshot,
                       data=json.dumps(snapshot_body),
-                      headers=odl_headers,
+                      headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
@@ -452,10 +473,11 @@ delete_snapshot_template = {
 def delete_snapshot(task):
     snapshot_body = copy.deepcopy(delete_snapshot_template)
     snapshot_body["input"]["name"] = task["inputData"]["name"]
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
     r = requests.post(odl_url_uniconfig_delete_snapshot,
                       data=json.dumps(snapshot_body),
-                      headers=odl_headers,
+                      headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
@@ -472,10 +494,11 @@ def delete_snapshot(task):
 
 
 def replace_config_with_snapshot(task):
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
     snapshot_body = create_snapshot_request(task)
     r = requests.post(odl_url_uniconfig_replace_config_with_snapshot,
                       data=json.dumps(snapshot_body),
-                      headers=odl_headers,
+                      headers=add_uniconfig_tx_cookie(uniconfig_tx_id),
                       auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
@@ -491,11 +514,52 @@ def replace_config_with_snapshot(task):
                 'logs': ["Uniconfig replace config with snapshot failed"]}
 
 
+def create_transaction(task):
+    max_age_sec = task["inputData"]["maxAgeSec"] if 'maxAgeSec' in task['inputData'] else ""
+    id_url = Template(odl_url_uniconfig_create_transaction).substitute({"sec": max_age_sec})
+    r = requests.post(id_url,
+                      data=json.dumps({}),
+                      headers=odl_headers,
+                      auth=odl_credentials)
+    response_code, response_json = parse_response(r)
+    if response_code == requests.codes.created:
+        response_json = parse_header(r)
+        return {'status': 'COMPLETED', 'output': {'url': id_url,
+                                                  'response_code': response_code,
+                                                  'response_body': response_json},
+                'logs': ["Uniconfig create transaction was successful"]}
+    else:
+        return {'status': 'FAILED', 'output': {'url': id_url,
+                                               'response_code': response_code,
+                                               'response_body': response_json},
+                'logs': ["Uniconfig create transaction failed"]}
+
+
+def close_transaction(task):
+    uniconfig_tx_id = task["inputData"]["uniconfig_tx_id"]
+    custom_header = {"Cookie": "UNICONFIGTXID="+uniconfig_tx_id} if uniconfig_tx_id else {"Cookie": ""}
+    r = requests.post(odl_url_uniconfig_close_transaction,
+                      data=json.dumps({}),
+                      headers=custom_header,
+                      auth=odl_credentials)
+    response_code, response_json = parse_response(r)
+    if response_code == requests.codes.ok:
+        return {'status': 'COMPLETED', 'output': {'url': odl_url_uniconfig_close_transaction,
+                                                  'response_code': response_code,
+                                                  'response_body': response_json},
+                'logs': ["Uniconfig close transaction was successful"]}
+    else:
+        return {'status': 'FAILED', 'output': {'url': odl_url_uniconfig_close_transaction,
+                                               'response_code': response_code,
+                                               'response_body': response_json},
+                'logs': ["Uniconfig close transaction failed"]}
+
+
 def start(cc):
     print('Starting Uniconfig workers')
 
-    cc.register('UNICONFIG_read_unified_topology_operational', {
-        "name": "UNICONFIG_read_unified_topology_operational",
+    cc.register('UNICONFIG_read_uniconfig_topology_operational', {
+        "name": "UNICONFIG_read_uniconfig_topology_operational",
         "description": "Read operational state of Uniconfig - BASICS,UNICONFIG",
         "retryCount": 0,
         "timeoutSeconds": 60,
@@ -504,7 +568,8 @@ def start(cc):
         "retryDelaySeconds": 0,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "devices"
+            "devices",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -512,10 +577,10 @@ def start(cc):
             "response_body"
         ]
     })
-    cc.start('UNICONFIG_read_unified_topology_operational', execute_read_uniconfig_topology_operational, False)
+    cc.start('UNICONFIG_read_uniconfig_topology_operational', execute_read_uniconfig_topology_operational, False)
 
-    cc.register('UNICONFIG_read_unified_topology_config', {
-        "name": "UNICONFIG_read_unified_topology_config",
+    cc.register('UNICONFIG_read_uniconfig_topology_config', {
+        "name": "UNICONFIG_read_uniconfig_topology_config",
         "description": "Read config state of Uniconfig - BASICS,UNICONFIG",
         "retryCount": 0,
         "timeoutSeconds": 60,
@@ -524,7 +589,8 @@ def start(cc):
         "retryDelaySeconds": 0,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "devices"
+            "devices",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -532,7 +598,7 @@ def start(cc):
             "response_body"
         ]
     })
-    cc.start('UNICONFIG_read_unified_topology_config', execute_read_uniconfig_topology_config, False)
+    cc.start('UNICONFIG_read_uniconfig_topology_config', execute_read_uniconfig_topology_config, False)
 
     cc.register('UNICONFIG_get_all_devices_as_dynamic_fork_tasks', {
         "name": "UNICONFIG_get_all_devices_as_dynamic_fork_tasks",
@@ -546,7 +612,8 @@ def start(cc):
         "inputKeys": [
             "task",
             "task_params",
-            "optional"
+            "optional",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -567,7 +634,8 @@ def start(cc):
         "responseTimeoutSeconds": 10,
         "inputKeys": [
             "device_id",
-            "uri"
+            "uri",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -590,7 +658,8 @@ def start(cc):
             "device_id",
             "uri",
             "template",
-            "params"
+            "params",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -633,7 +702,8 @@ def start(cc):
         "responseTimeoutSeconds": 10,
         "inputKeys": [
             "device_id",
-            "uri"
+            "uri",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -647,7 +717,8 @@ def start(cc):
         "name": "UNICONFIG_commit",
         "description": "Commit uniconfig - BASICS,UNICONFIG",
         "inputKeys": [
-            "devices"
+            "devices",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -663,7 +734,8 @@ def start(cc):
         "name": "UNICONFIG_dryrun_commit",
         "description": "Dryrun Commit uniconfig - BASICS,UNICONFIG",
         "inputKeys": [
-            "devices"
+            "devices",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -679,7 +751,8 @@ def start(cc):
         "name": "UNICONFIG_checked_commit",
         "description": "Checked Commit uniconfig - BASICS,UNICONFIG",
         "inputKeys": [
-            "devices"
+            "devices",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -695,7 +768,8 @@ def start(cc):
         "name": "UNICONFIG_calculate_diff",
         "description": "Calculate uniconfig diff - BASICS,UNICONFIG",
         "inputKeys": [
-            "devices"
+            "devices",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -711,7 +785,8 @@ def start(cc):
         "name": "UNICONFIG_sync_from_network",
         "description": "Sync uniconfig from network - BASICS,UNICONFIG",
         "inputKeys": [
-            "devices"
+            "devices",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -727,7 +802,8 @@ def start(cc):
         "name": "UNICONFIG_replace_config_with_oper",
         "description": "Replace config with oper in uniconfig - BASICS,UNICONFIG",
         "inputKeys": [
-            "devices"
+            "devices",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -744,7 +820,8 @@ def start(cc):
         "description": "Create snapshot in uniconfig - BASICS,UNICONFIG",
         "inputKeys": [
             "name",
-            "devices"
+            "devices",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -760,7 +837,8 @@ def start(cc):
         "name": "UNICONFIG_delete_snapshot",
         "description": "Delete snapshot in uniconfig - BASICS,UNICONFIG",
         "inputKeys": [
-            "name"
+            "name",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -777,7 +855,8 @@ def start(cc):
         "description": "Replace config with snapshot - BASICS,UNICONFIG",
         "inputKeys": [
             "name",
-            "devices"
+            "devices",
+            "uniconfig_tx_id"
         ],
         "outputKeys": [
             "url",
@@ -798,7 +877,40 @@ def start(cc):
         "retryDelaySeconds": 5,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "device_id"
+            "device_id",
+            "uniconfig_tx_id"
         ]
     })
     cc.start('UNICONFIG_check_uniconfig_node_exists', execute_check_uniconfig_node_exists, False)
+
+    cc.register('UNICONFIG_create_transaction', {
+        "name": "UNICONFIG_create_transaction",
+        "description": "Create uniconfig transaction - BASICS,UNICONFIG",
+        "inputKeys": [
+            "maxAgeSec"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ],
+        "retryCount": 0,
+        "responseTimeoutSeconds": 600
+    })
+    cc.start('UNICONFIG_create_transaction', create_transaction, False)
+
+    cc.register('UNICONFIG_close_transaction', {
+        "name": "UNICONFIG_close_transaction",
+        "description": "Close uniconfig transaction - BASICS,UNICONFIG",
+        "inputKeys": [
+            "uniconfig_tx_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ],
+        "retryCount": 0,
+        "responseTimeoutSeconds": 600
+    })
+    cc.start('UNICONFIG_close_transaction', close_transaction, False)

@@ -1,10 +1,10 @@
 #!/usr/bin/env/python3
 import json
+from http.cookies import SimpleCookie
 from unittest.mock import patch
 import unittest
 
 import uniconfig_worker
-import requests
 from frinx_rest import odl_url_base
 
 xr5_response = {
@@ -155,9 +155,10 @@ RPC_output_one_device = {
 
 
 class MockResponse:
-    def __init__(self, content, status_code):
+    def __init__(self, content, status_code, cookies):
         self.content = content
         self.status_code = status_code
+        self.cookies = cookies
 
     def json(self):
         return self.content
@@ -233,7 +234,7 @@ class TestGetAllDevicesAsDynamicForkTasks(unittest.TestCase):
 class TestReadStructuredData(unittest.TestCase):
     def test_read_structured_data_with_device(self):
         with patch('uniconfig_worker.requests.get') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(interface_response), encoding='utf-8'), 200)
+            mock.return_value = MockResponse(bytes(json.dumps(interface_response), encoding='utf-8'), 200, "")
             request = uniconfig_worker.read_structured_data(
                 {"inputData": {"device_id": "xr5", "uri": "/frinx-openconfig-interfaces:interfaces"}})
             self.assertEqual(request["status"], "COMPLETED")
@@ -251,7 +252,7 @@ class TestReadStructuredData(unittest.TestCase):
 
     def test_read_structured_data_no_device(self):
         with patch('uniconfig_worker.requests.get') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(bad_request_response), encoding='utf-8'), 404)
+            mock.return_value = MockResponse(bytes(json.dumps(bad_request_response), encoding='utf-8'), 404, "")
             request = uniconfig_worker.read_structured_data(
                 {"inputData": {"device_id": "", "uri": "/frinx-openconfig-interfaces:interfaces"}})
             self.assertEqual(request["status"], "FAILED")
@@ -264,7 +265,7 @@ class TestReadStructuredData(unittest.TestCase):
 class TestWriteStructuredData(unittest.TestCase):
     def test_write_structured_data_with_device(self):
         with patch('uniconfig_worker.requests.put') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps({}), encoding='utf-8'), 201)
+            mock.return_value = MockResponse(bytes(json.dumps({}), encoding='utf-8'), 201, "")
             request = uniconfig_worker.write_structured_data(
                 {"inputData": {"device_id": "xr5",
                                "uri": "/frinx-openconfig-interfaces:interfaces/interface=Loopback01",
@@ -284,7 +285,7 @@ class TestWriteStructuredData(unittest.TestCase):
 
     def test_write_structured_data_with_no_device(self):
         with patch('uniconfig_worker.requests.put') as mock:
-            mock.return_value = mock.return_value = MockResponse(bytes(json.dumps({}), encoding='utf-8'), 404)
+            mock.return_value = mock.return_value = MockResponse(bytes(json.dumps({}), encoding='utf-8'), 404, "")
             request = uniconfig_worker.write_structured_data(
                 {"inputData": {"device_id": "",
                                "uri": "/frinx-openconfig-interfaces:interfaces/interface=Loopback01",
@@ -304,7 +305,7 @@ class TestWriteStructuredData(unittest.TestCase):
 
     def test_write_structured_data_with_bad_template(self):
         with patch('uniconfig_worker.requests.put') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(bad_input_response), encoding='utf-8'), 400)
+            mock.return_value = MockResponse(bytes(json.dumps(bad_input_response), encoding='utf-8'), 400, "")
             request = uniconfig_worker.write_structured_data(
                 {"inputData": {"device_id": "xr5",
                                "uri": "/frinx-openconfig-interfaces:interfaces/interface=Loopback01",
@@ -377,7 +378,7 @@ class TestWriteStructuredDataAsDynamicForkTasks(unittest.TestCase):
 class TestDeleteStructuredData(unittest.TestCase):
     def test_delete_structured_data_with_device(self):
         with patch('uniconfig_worker.requests.delete') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps({}), encoding='utf-8'), 204)
+            mock.return_value = MockResponse(bytes(json.dumps({}), encoding='utf-8'), 204, "")
             request = uniconfig_worker.delete_structured_data(
                 {"inputData": {"device_id": "xr5",
                                "uri": "/frinx-openconfig-interfaces:interfaces/interface=Loopback01"}})
@@ -387,7 +388,7 @@ class TestDeleteStructuredData(unittest.TestCase):
 
     def test_delete_structured_data_with_bad_template(self):
         with patch('uniconfig_worker.requests.delete') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(bad_request_response), encoding='utf-8'), 404)
+            mock.return_value = MockResponse(bytes(json.dumps(bad_request_response), encoding='utf-8'), 404, "")
             request = uniconfig_worker.delete_structured_data({
                 "inputData": {
                     "device_id": "xr5",
@@ -405,7 +406,7 @@ class TestDeleteStructuredData(unittest.TestCase):
 class TestExecuteCheckUniconfigNodeExists(unittest.TestCase):
     def test_execute_check_uniconfig_node_exists_with_existing_device(self):
         with patch('uniconfig_worker.requests.get') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps({"node-id": "xr5"}), encoding='utf-8'), 200)
+            mock.return_value = MockResponse(bytes(json.dumps({"node-id": "xr5"}), encoding='utf-8'), 200, "")
             request = uniconfig_worker.execute_check_uniconfig_node_exists({"inputData": {"device_id": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["response_code"], 200)
@@ -413,7 +414,7 @@ class TestExecuteCheckUniconfigNodeExists(unittest.TestCase):
 
     def test_execute_check_uniconfig_node_exists_with_non_existing_device(self):
         with patch('uniconfig_worker.requests.get') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(bad_request_response), encoding='utf-8'), 404)
+            mock.return_value = MockResponse(bytes(json.dumps(bad_request_response), encoding='utf-8'), 404, "")
             request = uniconfig_worker.execute_check_uniconfig_node_exists({"inputData": {"device_id": "xr5"}})
             self.assertEqual(request["status"], "FAILED")
             self.assertEqual(request["output"]["response_code"], 404)
@@ -425,7 +426,7 @@ class TestExecuteCheckUniconfigNodeExists(unittest.TestCase):
 class TestCommit(unittest.TestCase):
     def test_commit_with_existing_devices(self):
         with patch('uniconfig_worker.requests.post') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(commit_output), encoding='utf-8'), 200)
+            mock.return_value = MockResponse(bytes(json.dumps(commit_output), encoding='utf-8'), 200, "")
             request = uniconfig_worker.commit({"inputData": {"devices": "xr5, xr6"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["response_code"], 200)
@@ -450,7 +451,7 @@ class TestCommit(unittest.TestCase):
 class TestDryRun(unittest.TestCase):
     def test_dry_run_with_existing_devices(self):
         with patch('uniconfig_worker.requests.post') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(dry_run_output), encoding='utf-8'), 200)
+            mock.return_value = MockResponse(bytes(json.dumps(dry_run_output), encoding='utf-8'), 200, "")
             request = uniconfig_worker.dryrun_commit({"inputData": {"devices": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["response_code"], 200)
@@ -476,7 +477,7 @@ class TestDryRun(unittest.TestCase):
 class TestCheckCommit(unittest.TestCase):
     def test_check_commit_with_existing_devices(self):
         with patch('uniconfig_worker.requests.post') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(commit_output), encoding='utf-8'), 200)
+            mock.return_value = MockResponse(bytes(json.dumps(commit_output), encoding='utf-8'), 200, "")
             request = uniconfig_worker.checked_commit({"inputData": {"devices": "xr5, xr6"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["response_code"], 200)
@@ -501,7 +502,7 @@ class TestCheckCommit(unittest.TestCase):
 class TestCalculateDiff(unittest.TestCase):
     def test_calculate_diff_with_existing_devices(self):
         with patch('uniconfig_worker.requests.post') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(calculate_diff_output), encoding='utf-8'), 200)
+            mock.return_value = MockResponse(bytes(json.dumps(calculate_diff_output), encoding='utf-8'), 200, "")
             request = uniconfig_worker.calc_diff({"inputData": {"devices": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["response_code"], 200)
@@ -536,7 +537,7 @@ class TestCalculateDiff(unittest.TestCase):
 class TestSyncFromNetwork(unittest.TestCase):
     def test_sync_from_network_with_existing_devices(self):
         with patch('uniconfig_worker.requests.post') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(RPC_output_multiple_devices), encoding='utf-8'), 200)
+            mock.return_value = MockResponse(bytes(json.dumps(RPC_output_multiple_devices), encoding='utf-8'), 200, "")
             request = uniconfig_worker.sync_from_network({"inputData": {"devices": "xr5, xr6"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["response_code"], 200)
@@ -561,7 +562,7 @@ class TestSyncFromNetwork(unittest.TestCase):
 class TestReplaceConfigWithOper(unittest.TestCase):
     def test_replace_config_with_oper_with_existing_devices(self):
         with patch('uniconfig_worker.requests.post') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(RPC_output_multiple_devices), encoding='utf-8'), 200)
+            mock.return_value = MockResponse(bytes(json.dumps(RPC_output_multiple_devices), encoding='utf-8'), 200, "")
             request = uniconfig_worker.replace_config_with_oper({"inputData": {"devices": "xr5, xr6"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["response_code"], 200)
@@ -586,7 +587,7 @@ class TestReplaceConfigWithOper(unittest.TestCase):
 class TestSnapshot(unittest.TestCase):
     def test_create_snapshot_with_existing_devices(self):
         with patch('uniconfig_worker.requests.post') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps(RPC_output_one_device), encoding='utf-8'), 200)
+            mock.return_value = MockResponse(bytes(json.dumps(RPC_output_one_device), encoding='utf-8'), 200, "")
             request = uniconfig_worker.create_snapshot({"inputData": {"devices": "xr5", "name": "xr5_snapshot"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["response_code"], 200)
@@ -622,6 +623,50 @@ class TestUtilityFunction(unittest.TestCase):
         assert uri is None
         uri = uniconfig_worker.apply_functions("")
         assert uri is ""
+
+
+class TestCreateTransaction(unittest.TestCase):
+    def test_create_transaction(self):
+        with patch('uniconfig_worker.requests.post') as mock:
+            mock.return_value = MockResponse(bytes(json.dumps({}), encoding='utf-8'), 201,
+                                             SimpleCookie(r'UNICONFIGTXID=92a26bac-d623-407e-9a76-3fad3e7cc698'
+                                                          r' JSESSIONID=1g82dajs6marv18scrdabpgc3m'))
+            request = uniconfig_worker.create_transaction({"inputData": {"maxAgeSec": "30"}})
+            self.assertEqual(request["status"], "COMPLETED")
+            self.assertEqual(request["output"]["response_code"], 201)
+            self.assertEqual(request["output"]["response_body"],
+                             {"UNICONFIGTXID": "92a26bac-d623-407e-9a76-3fad3e7cc698"})
+
+
+class TestCloseTransaction(unittest.TestCase):
+    def test_close_transaction_successful(self):
+        with patch('uniconfig_worker.requests.post') as mock:
+            mock.return_value = MockResponse(bytes(json.dumps({}), encoding='utf-8'), 200,
+                                             SimpleCookie(r'UNICONFIGTXID=92a26bac-d623-407e-9a76-3fad3e7cc698'
+                                                          r' JSESSIONID=1g82dajs6marv18scrdabpgc3m'))
+            request = uniconfig_worker.close_transaction({
+                "inputData": {"uniconfig_tx_id": "882ce396-1235-43eb-9596-bad0b25c81d6"}})
+            self.assertEqual(request["status"], "COMPLETED")
+            self.assertEqual(request["output"]["response_code"], 200)
+            self.assertEqual(request["output"]["response_body"], {})
+
+    def test_close_transaction_closed_trans(self):
+        with patch('uniconfig_worker.requests.post') as mock:
+            mock.return_value = MockResponse(bytes("Unknown uniconfig transaction 92a26bac-d623-407e-9a76-3fad3e7cc698",
+                                                   encoding='utf-8'), 403, "")
+            request = uniconfig_worker.close_transaction({
+                "inputData": {"uniconfig_tx_id": "92a26bac-d623-407e-9a76-3fad3e7cc698"}})
+            self.assertEqual(request["status"], "FAILED")
+            self.assertEqual(request["output"]["response_code"], 403)
+            self.assertEqual(request["output"]["response_body"], {})
+
+    def test_close_transaction_no_uniconfig_tx_id(self):
+        with patch('uniconfig_worker.requests.post') as mock:
+            mock.return_value = MockResponse(bytes(json.dumps({}), encoding='utf-8'), 400, "")
+            request = uniconfig_worker.close_transaction({"inputData": {"uniconfig_tx_id": ""}})
+            self.assertEqual(request["status"], "FAILED")
+            self.assertEqual(request["output"]["response_code"], 400)
+            self.assertEqual(request["output"]["response_body"], {})
 
 
 if __name__ == "__main__":
