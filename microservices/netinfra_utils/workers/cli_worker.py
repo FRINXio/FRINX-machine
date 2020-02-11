@@ -444,7 +444,7 @@ def start(cc):
         "retryDelaySeconds": 0,
         "responseTimeoutSeconds": 10,
         "inputKeys": [
-            "template_id",
+            "device_id",
             "uniconfig_tx_id"
         ],
         "outputKeys": [
