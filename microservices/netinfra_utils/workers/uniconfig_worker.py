@@ -90,7 +90,7 @@ def read_selected_devices(url, devices, uniconfig_tx_id):
     return response_code, response_json
 
 
-task_body_template = {
+subworkflow_template = {
     "name": "sub_task",
     "taskReferenceName": "",
     "type": "SUB_WORKFLOW",
@@ -121,7 +121,7 @@ def get_all_devices_as_dynamic_fork_tasks(task):
 
         dynamic_tasks = []
         for device_id in ids:
-            task_body = copy.deepcopy(task_body_template)
+            task_body = copy.deepcopy(subworkflow_template)
             if optional == "true":
                 task_body['optional'] = True
             task_body["taskReferenceName"] = device_id
@@ -200,6 +200,13 @@ def write_structured_data(task):
                 'logs': ["Unable to update device with ID %s" % device_id]}
 
 
+task_body_template = {
+    "name": "",
+    "taskReferenceName": "",
+    "type": "SIMPLE"
+}
+
+
 def write_structured_data_as_dynamic_fork_tasks(task):
     device_id = task['inputData']['device_id']
     uri = task['inputData']['uri']
@@ -215,12 +222,12 @@ def write_structured_data_as_dynamic_fork_tasks(task):
         data_json = Template(data_json).substitute(iface=param)
         escaped_param = param.replace("/", "%2F")
         url = Template(uri).substitute(iface=escaped_param)
-        per_iface_params = {"device_id": device_id, "template": data_json, "uri": url}
+        per_iface_params = {"device_id": device_id, "template": data_json, "uri": url, "params": {}}
         key = device_id + param
         dynamic_tasks_i.update({key: per_iface_params})
         task_body = copy.deepcopy(task_body_template)
         task_body["taskReferenceName"] = key
-        task_body["subWorkflowParam"]["name"] = "Write_structured_device_data_in_uniconfig"
+        task_body["name"] = "UNICONFIG_write_structured_device_data"
         dynamic_tasks.append(task_body)
 
     return {'status': 'COMPLETED', 'output': {'dynamic_tasks_i': dynamic_tasks_i,
@@ -689,7 +696,7 @@ def start(cc):
             "dynamic_tasks"
         ]
     })
-    cc.start('UNICONFIG_write_structured_data_as_tasks', write_structured_data_as_dynamic_fork_tasks, False)
+    cc.start('UNICONFIG_write_structured_data_as_dynamic_fork_tasks', write_structured_data_as_dynamic_fork_tasks, False)
 
     cc.register('UNICONFIG_delete_structured_device_data', {
         "name": "UNICONFIG_delete_structured_device_data",
