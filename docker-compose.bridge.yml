@@ -1,0 +1,199 @@
+version: "3.7"
+
+services:
+  uniconfig:
+    tty: true
+    build:
+      context: uniconfig
+      dockerfile: Dockerfile
+    image: frinx/fm-uniconfig
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+    container_name: uniconfig
+    environment:
+      - JAVA_MAX_MEM=4G
+    volumes:
+       - uniconfig_logs:/opt/uniconfig-frinx/log
+       - uniconfig_pass:/opt/uniconfig-frinx/db-credentials
+       - uniconfig_data:/opt/uniconfig-frinx/data
+    ports:
+      - 8181:8181
+
+  micros:
+    build:
+      context: ./
+      dockerfile: ./microservices/Dockerfile
+    image: frinx/fm-micros
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+    container_name: micros
+    depends_on:
+      - uniconfig
+      - conductor-server
+    command: ["/home/app/wait_for_it.sh", "-t", "180",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
+    volumes:
+        - uniconfig_pass:/opt/uniconfig_pass:ro
+
+  sample-topology:
+    build:
+      context: ./
+      dockerfile: ./sample-topology/Dockerfile
+    image: frinx/fm-sample-topology
+    container_name: sample-topology
+    volumes:
+        - uniconfig_pass:/opt/uniconfig_pass:ro
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+
+  conductor-server:
+    build:
+      context: ./conductor/
+      dockerfile: docker/server/Dockerfile
+    environment:
+      - CONFIG_PROP=config.properties
+    image: frinx/fm-conductor-server
+    container_name: conductor-server
+    links:
+      - elasticsearch:es
+      - dynomite:dyno1
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+    ports:
+      - 8080:8080
+      - 8000:8000
+    depends_on:
+      - dynomite
+    command: ["/app/wait_for.sh", "-t", "120",  "elasticsearch:9300", "--", "/app/startup.sh"]
+
+  dynomite:
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+    build:
+      context: ./
+      dockerfile: ./dynomite/Dockerfile
+    image: frinx/fm-dynomite
+    container_name: dynomite
+    volumes:
+       - redis_data:/var/lib/redis
+
+  elasticsearch:
+    build:
+      context: ./
+      dockerfile: ./elasticsearch/Dockerfile
+    image: frinx/fm-elasticsearch
+    container_name: elasticsearch
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx1024m"
+    volumes:
+       - elastic_data:/usr/share/elasticsearch/data
+    healthcheck:
+        test: ["CMD", "curl", "-IGET", "http://localhost:9200"]
+        interval: 2s
+        timeout: 6s
+        retries: 1
+
+  kibana:
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+    build:
+      context: ./kibana
+      dockerfile: Dockerfile
+    image: frinx/fm-kibana
+    container_name: kibana
+    environment:
+      - "elasticsearch.url=http://elasticsearch:9200"
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    build:
+      context: ./logstash
+      dockerfile: Dockerfile
+    image: frinx/fm-logstash
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+    container_name: logstash
+    volumes:
+       - uniconfig_logs:/uniconfig-logs:ro
+
+  uniconfig-ui:
+   build:
+     context: ./frinx-uniconfig-ui
+     dockerfile: Dockerfile
+   environment:
+       - ODL_HOST=uniconfig:8181
+       - WF_SERVER=conductor-server:8080/api/
+   image: frinx/fm-uniconfig-ui
+   container_name: uniconfig-ui
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
+     - 3000:3001
+
+  portainer:
+    build:
+      context: ./
+      dockerfile: ./portainer/Dockerfile
+    image: frinx/fm-portainer
+    container_name: portainer
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 9000:9000
+
+
+volumes:
+  redis_data:
+    name: redis_data
+  elastic_data:
+    name: elastic_data
+  uniconfig_logs:
+    name: uniconfig_logs
+  uniconfig_pass:
+      name: uniconfig_pass
+  uniconfig_data:
+      name: uniconfig_data
+  portainer_data:
+      name: portainer_data
+

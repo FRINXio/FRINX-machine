@@ -84,16 +84,17 @@ After the first run the license token is saved to a <git directory>/uniconfig/fr
 
 
 ### Startup
-The startup script `startup.sh` can be found in the FRINX-machine folder.
+The startup script `startup.sh [networking]` can be found in the FRINX-machine folder.
 Here is what it does:
 * Creates the docker containers from the images and starts them.
 * Imports workflow definitions.
 * Adds sample devices to inventory
 * Starts simulated devices
+* Deploys bridge or host networking
 
 
 ```bash
-./startup.sh
+./startup.sh [networking]
 ```
 
 #### Web interface
@@ -109,7 +110,7 @@ More detailed documentation and use cases can be found at https://docs.frinx.io/
 ### Teardown
 The `teardown.sh` script in the FRINX-machine folder:
 * Stops and removes containers
-* Optionially removes volumes and images used by services in the `docker-compose.yml` file.
+* Optionially removes volumes and images used by services in the `docker-compose.*.yml` file.
 
 Using docker, also needs privileged mode:
 ```bash

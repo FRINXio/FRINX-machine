@@ -1,4 +1,5 @@
 #!/bin/bash
+#set -x 
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
@@ -34,8 +35,12 @@ function check_success {
 fi
 }
 
-function start_container {
-  docker-compose up -d "$1"
+function start_bridge_container {
+  docker-compose -f docker-compose.bridge.yml up -d "$1"
+}
+
+function start_host_container {
+  docker-compose -f docker-compose.host.yml up -d "$1"
 }
 
 function start_containers {
@@ -44,7 +49,13 @@ local containers_to_start=("dynomite" "elasticsearch" "logstash" "conductor-serv
 
 for i in "${containers_to_start[@]}"; do
 
-start_container $i
+if [ "$networking" = "host" ]; then
+start_host_container $i
+elif [ "$networking" = "bridge" ]; then
+start_bridge_container $i 
+else
+echo "only host or bridge is allowed"
+fi
 if [ "$skip" = false ]; then
   ./health_check.sh $i
   check_success $?
@@ -64,10 +75,18 @@ fi
 
 # Loop arguments
 skip=false
-browser=flase
+browser=false
 while [ "$1" != "" ];
 do
 case $1 in
+    host)
+    networking="host"
+    shift
+    ;;
+    bridge)
+    networking="bridge"
+    shift
+    ;;
     -s | --skip)
     skip=true
     shift
