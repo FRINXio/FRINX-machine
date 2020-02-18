@@ -1,5 +1,5 @@
 # FRINX-machine
-The project is a containerized package of: 
+The project is a containerized package of:
 
 * [FRINX UniConfig]
 * FRINX fork of Netflix's [Conductor]
@@ -46,12 +46,12 @@ License token:
 e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643100ccd31052430de1955540cf5ae1e510d657bd2af8ef2fc
 ```
 
-30 days after your first installation, your token will expire and you will see an error message during Uniconfig startup. If you would like to continue with your evaluation, please register as a user on our homepage, where you will find another 30 day token under the section "My License Information". After the second trial period has expired, you can continue with a commercial license that has no time limitations. 
+30 days after your first installation, your token will expire and you will see an error message during Uniconfig startup. If you would like to continue with your evaluation, please register as a user on our homepage, where you will find another 30 day token under the section "My License Information". After the second trial period has expired, you can continue with a commercial license that has no time limitations.
 
 
 
 #### Get the project
-Download zip of release v1.0: 
+Download zip of release v1.0:
 https://github.com/FRINXio/FRINX-machine/releases/download/v1.0/FRINX-machine_v1.0.zip
 
 Unzip:
@@ -65,7 +65,7 @@ cd FRINX-machine
 
 ### Installation
 
-The installation script `install.sh` is in the FRINX-machine folder. 
+The installation script `install.sh` is in the FRINX-machine folder.
 
 The installation script does the following things:
 * Copies license token
@@ -109,20 +109,15 @@ More detailed documentation and use cases can be found at https://docs.frinx.io/
 ### Teardown
 The `teardown.sh` script in the FRINX-machine folder:
 * Stops and removes containers
-* Does not remove external volumes
+* Optionially removes volumes and images used by services in the `docker-compose.yml` file.
 
 Using docker, also needs privileged mode:
 ```bash
-./teardown.sh
+./teardown.sh [-v|--volumes] [-i|--images]
 ```
 
-### Removal of external volumes
-#### **Caution all data will be lost!**
+#### **Caution all data will be lost if you use the `--volumes` flag!**
 
-To remove the volumes use:
-```bash
-docker volume rm redis_data elastic_data odl_logs odl_data odl_pass portainer_data
-```
 
 ### For developers
 
