@@ -7,6 +7,14 @@ cd ${DIR}
 
 script="install.sh"
 
+# Create symbolic link to default docker-compose
+# if file doesn't exist 
+docker_compose="docker-compose.yml"
+
+if [ ! -f "$docker_compose" ]; then
+    ln -s docker-compose.bridge.yml $docker_compose
+fi
+
 #Declare the number of mandatory args
 margs=1
 
