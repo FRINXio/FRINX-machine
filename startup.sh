@@ -51,10 +51,11 @@ for i in "${containers_to_start[@]}"; do
 
 if [ "$networking" = "host" ]; then
 start_host_container $i
-elif [ "$networking" = "bridge" ]; then
-start_bridge_container $i 
+elif [ -z "$networking" ]; then
+start_bridge_container $i
 else
-echo "only host or bridge is allowed"
+     echo "Only host is allowed"
+     exit  
 fi
 if [ "$skip" = false ]; then
   ./health_check.sh $i
@@ -76,15 +77,13 @@ fi
 # Loop arguments
 skip=false
 browser=false
+
 while [ "$1" != "" ];
 do
 case $1 in
-    host)
-    networking="host"
+    -n | --networking)
+    networking="$2"
     shift
-    ;;
-    bridge)
-    networking="bridge"
     shift
     ;;
     -s | --skip)

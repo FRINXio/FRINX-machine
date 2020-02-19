@@ -84,18 +84,26 @@ After the first run the license token is saved to a <git directory>/uniconfig/fr
 
 
 ### Startup
-The startup script `startup.sh [networking]` can be found in the FRINX-machine folder.
+The startup script `startup.sh` can be found in the FRINX-machine folder.
 Here is what it does:
 * Creates the docker containers from the images and starts them.
 * Imports workflow definitions.
 * Adds sample devices to inventory
 * Starts simulated devices
-* Deploys bridge or host networking
+* Deploys bridge (default) or host networking (optional)
 
+Bridge networking is executed by command:
 
 ```bash
-./startup.sh [networking]
+./startup.sh
 ```
+
+Host networking is executed by command:
+
+```bash
+./startup.sh -n host
+```
+
 
 #### Web interface
 Open web page:

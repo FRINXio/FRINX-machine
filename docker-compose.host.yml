@@ -41,6 +41,7 @@ services:
     extra_hosts:
       - "conductor-server:127.0.0.1"
       - "uniconfig:127.0.0.1"
+      - "elasticsearch:127.0.0.1"
     command: ["/home/app/wait_for_it.sh", "-t", "180",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
     volumes:
         - uniconfig_pass:/opt/uniconfig_pass:ro
@@ -97,7 +98,7 @@ services:
       context: ./
       dockerfile: ./dynomite/Dockerfile
     image: frinx/fm-dynomite
-    container_name: dyno1
+    container_name: dynomite
     ports:
        - 8102:8102 
     volumes:
@@ -109,7 +110,7 @@ services:
       context: ./
       dockerfile: ./elasticsearch/Dockerfile
     image: frinx/fm-elasticsearch
-    container_name: es
+    container_name: elasticsearch
     logging:
         driver: "json-file"
         options:
