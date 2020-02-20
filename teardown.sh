@@ -46,4 +46,4 @@ shift
 done
 
 ### Stop and remove containers, optionally also volumes and images
-docker-compose down $VOLUMES $IMAGES --remove-orphans
+docker-compose -f docker-compose.bridge.yml down $VOLUMES $IMAGES --remove-orphans

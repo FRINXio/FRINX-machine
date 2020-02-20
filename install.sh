@@ -7,14 +7,6 @@ cd ${DIR}
 
 script="install.sh"
 
-# Create symbolic link to default docker-compose
-# if file doesn't exist 
-docker_compose="docker-compose.yml"
-
-if [ ! -f "$docker_compose" ]; then
-    ln -s docker-compose.bridge.yml $docker_compose
-fi
-
 #Declare the number of mandatory args
 margs=1
 
@@ -136,16 +128,16 @@ fi
 cd ${DIR}
 if [ "$build" = false ]; then
   echo 'Pull images'
-  docker-compose pull "${input_containers[@]}"
+  docker-compose -f docker-compose.bridge.yml pull "${input_containers[@]}"
 
   # Copy custom license if file exists
   if [[ -f "$file" ]]; then
     echo "Apply license from file $file"
-    docker-compose build uniconfig
+    docker-compose -f docker-compose.bridge.yml build uniconfig
   fi
 else
   echo 'Build images'
-  docker-compose build "${input_containers[@]}"
+  docker-compose -f docker-compose.bridge.yml build "${input_containers[@]}"
 fi
 
 # Clean up
