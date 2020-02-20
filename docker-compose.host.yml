@@ -22,6 +22,8 @@ services:
     ports:
       - 8181:8181
     network_mode: "host"
+    extra_hosts:
+      - "sample-topology:127.0.0.1"
 
   micros:
     build:
