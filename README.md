@@ -40,7 +40,7 @@ The project is a containerized package of:
 
 ## Installation Guide
 #### Trial license
-We offer a 30 day trial license. No signup needed!
+We offer a 30 day trial license. No signup needed! Alredy bundled in release.
 License token:
 ```
 e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643100ccd31052430de1955540cf5ae1e510d657bd2af8ef2fc
@@ -51,16 +51,16 @@ e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643
 
 
 #### Get the project
-Download zip of release v1.0:
-https://github.com/FRINXio/FRINX-machine/releases/download/v1.0/FRINX-machine_v1.0.zip
+Download zip of release v1.1:
+https://github.com/FRINXio/FRINX-machine/releases/download/v1.1/FRINX-machine_v1.1.zip
 
 Unzip:
 ```bash
-unzip FRINX-machine_v1.0.zip
+unzip FRINX-machine_v1.1.zip -d /path/to/unzip/to
 ```
 Change to FRINX-machine directory:
 ```bash
-cd FRINX-machine
+cd /path/to/unzip/to/FRINX-machine
 ```
 
 ### Installation
