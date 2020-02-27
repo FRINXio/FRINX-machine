@@ -144,7 +144,9 @@ services:
       dockerfile: Dockerfile
     image: frinx/fm-kibana:1.1
     container_name: kibana
+    env_file: .env
     environment:
+      - NODE_HOST=$NODE_HOST
       - "elasticsearch.url=http://elasticsearch:9200"
     ports:
       - 5601:5601
@@ -173,7 +175,9 @@ services:
    build:
      context: ./frinx-uniconfig-ui
      dockerfile: Dockerfile
+   env_file: .env
    environment:
+       - NODE_HOST=$NODE_HOST
        - ODL_HOST=uniconfig:8181
        - WF_SERVER=conductor-server:8080/api/
    image: frinx/fm-uniconfig-ui:1.1
