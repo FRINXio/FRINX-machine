@@ -155,6 +155,7 @@ services:
    environment:
        - ODL_HOST=uniconfig:8181
        - WF_SERVER=conductor-server:8080/api/
+       - REACT_APP_KIBANA=true
    image: frinx/fm-uniconfig-ui:1.1
    container_name: uniconfig-ui
    logging:
