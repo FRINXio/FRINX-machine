@@ -119,7 +119,9 @@ services:
             max-file: "3"
             max-size: "10m"
     environment:
-      - POSTGRES_PASSWORD: frinx
+      - POSTGRES_PASSWORD: frinxmachine
+      - POSTGRES_USER: postgres
+      - POSTGRES_DB: frinxmachine
     ports:
       - 5432:5432
     volumes:
