@@ -107,6 +107,25 @@ services:
        - redis_data:/var/lib/redis
     network_mode: "host"
 
+  postgresql:
+    build:
+      context: ./
+      dockerfile: ./postgresql/Dockerfile
+    image: frinx/fm-postgresql:1.1
+    container_name: postgresql
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+    environment:
+      - POSTGRES_PASSWORD: frinx
+    ports:
+      - 5432:5432
+    volumes:
+       - postgresql_data:/var/lib/postgresql/data
+    network_mode: "host"
+
   elasticsearch:
     build:
       context: ./
@@ -221,4 +240,5 @@ volumes:
       name: uniconfig_data
   portainer_data:
       name: portainer_data
-
+  postgresql_data:
+      name: postgresql_data

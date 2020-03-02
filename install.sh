@@ -18,7 +18,7 @@ function example {
 function usage {
     echo -e "usage: $script OPTIONS [services] \n"
     echo -e "If no services are specified all are pulled or built."
-    echo -e "Services: uniconfig micros conductor-server dynomite elasticsearch kibana sample-topology logstash uniconfig-ui"
+    echo -e "Services: uniconfig micros conductor-server dynomite postgresql elasticsearch kibana sample-topology logstash uniconfig-ui"
 }
 
 function help {
@@ -67,7 +67,7 @@ function valid {
 }
 
 file=uniconfig/frinx.license.cfg
-valid_images=("uniconfig" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui" "portainer")
+valid_images=("uniconfig" "micros" "conductor-server" "dynomite" "postgresql" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui" "portainer")
 license=
 license_flag=false
 build=false
