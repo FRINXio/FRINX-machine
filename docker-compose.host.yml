@@ -108,10 +108,7 @@ services:
     network_mode: "host"
 
   postgresql:
-    build:
-      context: ./
-      dockerfile: ./postgresql/Dockerfile
-    image: frinx/fm-postgresql:1.1
+    image: postgres:12.2
     container_name: postgresql
     logging:
         driver: "json-file"
@@ -119,11 +116,17 @@ services:
             max-file: "3"
             max-size: "10m"
     environment:
-      - POSTGRES_PASSWORD: frinxmachine
-      - POSTGRES_USER: postgres
-      - POSTGRES_DB: frinxmachine
+      - POSTGRES_PASSWORD=frinx
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=frinx
     ports:
       - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     volumes:
        - postgresql_data:/var/lib/postgresql/data
     network_mode: "host"
