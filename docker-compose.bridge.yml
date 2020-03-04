@@ -6,7 +6,7 @@ services:
     build:
       context: uniconfig
       dockerfile: Dockerfile
-    image: frinx/fm-uniconfig:1.1
+    image: frinx/fm-uniconfig
     logging:
         driver: "json-file"
         options:
@@ -26,7 +26,7 @@ services:
     build:
       context: ./
       dockerfile: ./microservices/Dockerfile
-    image: frinx/fm-micros:1.1
+    image: frinx/fm-micros
     logging:
         driver: "json-file"
         options:
@@ -44,7 +44,7 @@ services:
     build:
       context: ./
       dockerfile: ./sample-topology/Dockerfile
-    image: frinx/fm-sample-topology:1.1
+    image: frinx/fm-sample-topology
     container_name: sample-topology
     volumes:
         - uniconfig_pass:/opt/uniconfig_pass:ro
@@ -60,7 +60,7 @@ services:
       dockerfile: docker/server/Dockerfile
     environment:
       - CONFIG_PROP=config.properties
-    image: frinx/fm-conductor-server:1.1
+    image: frinx/fm-conductor-server
     container_name: conductor-server
     links:
       - elasticsearch:es
@@ -86,7 +86,7 @@ services:
     build:
       context: ./
       dockerfile: ./dynomite/Dockerfile
-    image: frinx/fm-dynomite:1.1
+    image: frinx/fm-dynomite
     container_name: dynomite
     volumes:
        - redis_data:/var/lib/redis
@@ -95,7 +95,7 @@ services:
     build:
       context: ./
       dockerfile: ./elasticsearch/Dockerfile
-    image: frinx/fm-elasticsearch:1.1
+    image: frinx/fm-elasticsearch
     container_name: elasticsearch
     logging:
         driver: "json-file"
@@ -125,7 +125,7 @@ services:
     build:
       context: ./kibana
       dockerfile: Dockerfile
-    image: frinx/fm-kibana:1.1
+    image: frinx/fm-kibana
     container_name: kibana
     environment:
       - "elasticsearch.url=http://elasticsearch:9200"
@@ -138,7 +138,7 @@ services:
     build:
       context: ./logstash
       dockerfile: Dockerfile
-    image: frinx/fm-logstash:1.1
+    image: frinx/fm-logstash
     logging:
         driver: "json-file"
         options:
@@ -155,7 +155,7 @@ services:
    environment:
        - ODL_HOST=uniconfig:8181
        - WF_SERVER=conductor-server:8080/api/
-   image: frinx/fm-uniconfig-ui:1.1
+   image: frinx/fm-uniconfig-ui
    container_name: uniconfig-ui
    logging:
      driver: "json-file"
@@ -169,7 +169,7 @@ services:
     build:
       context: ./
       dockerfile: ./portainer/Dockerfile
-    image: frinx/fm-portainer:1.1
+    image: frinx/fm-portainer
     container_name: portainer
     logging:
       driver: "json-file"
