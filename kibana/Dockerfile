@@ -12,6 +12,13 @@ COPY favicons/* /usr/share/kibana/src/ui/public/assets/favicons/
 # ------------------------------------------------------------------------------
 
 
+# ------------------------------------------------------------------------------
+# Fix for a Kibana ipv6 related issue
+# ------------------------------------------------------------------------------
+# https://github.com/elastic/kibana/pull/29891
+# This fix is only contained in versions of Kibana higher than 7, so it's added
+# here manually
+COPY angular7.0-ipv6fix.js /usr/share/kibana/src/ui/public/chrome/api/angular.js
 
 # ------------------------------------------------------------------------------
 # SETTING THE FRINX LOGO

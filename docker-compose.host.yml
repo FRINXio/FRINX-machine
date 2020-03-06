@@ -1,5 +1,31 @@
 version: "3.7"
 
+x-extra_hosts: &extra_hosts_entries
+        - "sample-topology:127.0.0.1"
+        - "conductor-server:127.0.0.1"
+        - "uniconfig:127.0.0.1"
+        - "micros:127.0.0.1"
+        - "dynomite:127.0.0.1"
+        - "dyno1:127.0.0.1"
+        - "elasticsearch:127.0.0.1"
+        - "es:127.0.0.1"
+        - "kibana:127.0.0.1"
+        - "logstash:127.0.0.1"
+        - "uniconfig-ui:127.0.0.1"
+        - "portainer:127.0.0.1"
+        - "sample-topology:::1"
+        - "conductor-server:::1"
+        - "uniconfig:::1"
+        - "micros:::1"
+        - "dynomite:::1"
+        - "dyno1:::1"
+        - "elasticsearch:::1"
+        - "es:::1"
+        - "kibana:::1"
+        - "logstash:::1"
+        - "uniconfig-ui:::1"
+        - "portainer:::1"
+
 services:
   uniconfig:
     tty: true
@@ -22,8 +48,7 @@ services:
     ports:
       - 8181:8181
     network_mode: "host"
-    extra_hosts:
-      - "sample-topology:127.0.0.1"
+    extra_hosts: *extra_hosts_entries
 
   micros:
     build:
@@ -40,10 +65,7 @@ services:
       - uniconfig
       - conductor-server
     network_mode: "host"
-    extra_hosts:
-      - "conductor-server:127.0.0.1"
-      - "uniconfig:127.0.0.1"
-      - "elasticsearch:127.0.0.1"
+    extra_hosts: *extra_hosts_entries
     command: ["/home/app/wait_for_it.sh", "-t", "180",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
     volumes:
         - uniconfig_pass:/opt/uniconfig_pass:ro
@@ -62,6 +84,7 @@ services:
             max-file: "3"
             max-size: "10m"
     network_mode: "host"
+    extra_hosts: *extra_hosts_entries
 
   conductor-server:
     build:
@@ -83,11 +106,7 @@ services:
       - dynomite
       - elasticsearch
     network_mode: "host"
-    extra_hosts:
-      - "es:127.0.0.1"
-      - "dyno1:127.0.0.1"
-      - "elasticsearch:127.0.0.1"
-      - "dynomite:127.0.0.1"
+    extra_hosts: *extra_hosts_entries
     command: ["/app/wait_for.sh", "-t", "120",  "elasticsearch:9300", "--", "/app/startup.sh"]
 
   dynomite:
@@ -106,6 +125,7 @@ services:
     volumes:
        - redis_data:/var/lib/redis
     network_mode: "host"
+    extra_hosts: *extra_hosts_entries
 
   elasticsearch:
     build:
@@ -132,6 +152,7 @@ services:
         timeout: 6s
         retries: 1
     network_mode: "host"
+    extra_hosts: *extra_hosts_entries
 
   kibana:
     logging:
@@ -145,14 +166,14 @@ services:
     image: frinx/fm-kibana
     container_name: kibana
     environment:
+      - "NODE_HOST=::"
       - "elasticsearch.url=http://elasticsearch:9200"
     ports:
       - 5601:5601
     depends_on:
       - elasticsearch
     network_mode: "host"
-    extra_hosts:
-      - "elasticsearch:127.0.0.1"
+    extra_hosts: *extra_hosts_entries
 
   logstash:
     build:
@@ -168,12 +189,14 @@ services:
     volumes:
        - uniconfig_logs:/uniconfig-logs:ro
     network_mode: "host"
+    extra_hosts: *extra_hosts_entries
 
   uniconfig-ui:
    build:
      context: ./frinx-uniconfig-ui
      dockerfile: Dockerfile
    environment:
+       - "NODE_HOST=::"
        - ODL_HOST=uniconfig:8181
        - WF_SERVER=conductor-server:8080/api/
    image: frinx/fm-uniconfig-ui
@@ -186,9 +209,7 @@ services:
    ports:
      - 3000:3000
    network_mode: "host"
-   extra_hosts:
-     - "conductor-server:127.0.0.1"
-     - "uniconfig:127.0.0.1"
+   extra_hosts: *extra_hosts_entries
 
   portainer:
     build:
@@ -207,6 +228,7 @@ services:
     ports:
       - 9000:9000
     network_mode: "host"
+    extra_hosts: *extra_hosts_entries
 
 volumes:
   redis_data:
