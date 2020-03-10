@@ -93,6 +93,15 @@ Here is what it does:
 * Starts simulated devices
 * Deploys bridge (default) or host networking (optional)
 
+
+Info about BRIDGE networking:
+https://docs.docker.com/network/bridge/
+
+More info when to use HOST networking:
+https://docs.docker.com/network/host/
+
+
+
 Bridge networking is executed by command:
 
 ```bash
