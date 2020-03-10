@@ -11,7 +11,7 @@ The project is a containerized package of:
 * Device simulation container
 * [Uniconfig-ui]
 * [Portainer]
-
+* [PostgreSQL]
 
 ### Requirements
 * 16GB and 4 CPU
@@ -37,6 +37,7 @@ The project is a containerized package of:
 * uniconfig-ui
 * sample-topology
 * portainer
+* postgresql
 
 ## Installation Guide
 #### Trial license
@@ -177,3 +178,4 @@ docker-compose up -d [service]
 [Logstash]: <https://www.elastic.co/products/logstash>
 [Uniconfig-ui]: <https://github.com/FRINXio/frinx-uniconfig-ui>
 [Portainer]: <https://www.portainer.io/>
+[PostgreSQL]: <https://hub.docker.com/_/postgres>

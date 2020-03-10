@@ -13,7 +13,7 @@ function help {
     echo -e "  -s   Skip given containers"
     echo -e "\n"
     echo -e "ARGUMENTS:"
-    echo -e "uniconfig frinxit micros conductor-server uniconfig-ui dynomite elasticsearch kibana portainer"
+    echo -e "uniconfig frinxit micros conductor-server uniconfig-ui dynomite elasticsearch kibana portainer postgresql"
   example
 }
 
@@ -23,7 +23,7 @@ function example {
 
 
 # all container names
-valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui" "portainer")
+valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui" "portainer" "postgresql")
 containers_to_check=()
 
 curl_uniconfig=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -X POST -d "{\"input\":{\"target-nodes\":{\"node\":[]}}}" 'http://127.0.0.1:8181/rests/operations/uniconfig-manager:calculate-diff' -H "Accept:application/json" -H "Content-Type:application/json")
@@ -174,6 +174,9 @@ for i in "${containers_to_check[@]}"; do
     check_container $i curl_uniconfig_ui
     ;;
     portainer )
+    echo "Skipping health check"
+    ;;
+    postgresql )
     echo "Skipping health check"
     ;;
     * )

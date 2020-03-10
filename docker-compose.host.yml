@@ -127,6 +127,30 @@ services:
     network_mode: "host"
     extra_hosts: *extra_hosts_entries
 
+  postgresql:
+    image: postgres:12.2
+    container_name: postgresql
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+    environment:
+      - POSTGRES_PASSWORD=frinx
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=frinx
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+       - postgresql_data:/var/lib/postgresql/data
+    network_mode: "host"
+
   elasticsearch:
     build:
       context: ./
@@ -243,4 +267,5 @@ volumes:
       name: uniconfig_data
   portainer_data:
       name: portainer_data
-
+  postgresql_data:
+      name: postgresql_data
