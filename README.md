@@ -23,7 +23,7 @@ The project is a containerized package of:
 ### Tested on
 * Ubuntu 16.04 / 18.04 /
 * docker 18.03.1-ce, v18.06.1-ce, 18.09.5
-* docker-compose 1.21.2, v1.22.0
+* docker-compose 1.21.2, v1.22.0 (we had issues with v1.25.0, please don't use this version)
 * Chrome browser
 
 #### Services used in the project
