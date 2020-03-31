@@ -5,6 +5,7 @@ import cli_worker
 import netconf_worker
 import uniconfig_worker
 import common_worker
+import http_worker
 
 
 def main():
@@ -22,6 +23,7 @@ def register_workers(cc):
     netconf_worker.start(cc)
     uniconfig_worker.start(cc)
     common_worker.start(cc)
+    http_worker.start(cc)
 
 
 if __name__ == '__main__':
