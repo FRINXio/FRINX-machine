@@ -18,8 +18,8 @@ mount_template = {
 
             "netconf-node-topology:host": "",
             "netconf-node-topology:port": "",
-            "netconf-node-topology:keepalive-delay":"",
-            "netconf-node-topology:tcp-only":"",
+            "netconf-node-topology:keepalive-delay": "",
+            "netconf-node-topology:tcp-only": "",
             "netconf-node-topology:username": "",
             "netconf-node-topology:password": "",
         }
@@ -39,6 +39,18 @@ def execute_mount_netconf(task):
     mount_body["node"]["netconf-node-topology:tcp-only"] = task['inputData']['tcp-only']
     mount_body["node"]["netconf-node-topology:username"] = task['inputData']['username']
     mount_body["node"]["netconf-node-topology:password"] = task['inputData']['password']
+
+    if 'reconcile' in task['inputData'] and task['inputData']['reconcile'] is not None:
+        mount_body["node"]["node-extension:reconcile"] = task['inputData']['reconcile']
+
+    if 'sleep-factor' in task['inputData'] and task['inputData']['sleep-factor'] is not None:
+        mount_body["node"]["netconf-node-topology:sleep-factor"] = task['inputData']['sleep-factor']
+
+    if 'between-attempts-timeout-millis' in task['inputData'] and task['inputData']['between-attempts-timeout-millis'] is not None:
+        mount_body["node"]["netconf-node-topology:between-attempts-timeout-millis"] = task['inputData']['between-attempts-timeout-millis']
+
+    if 'connection-timeout-millis' in task['inputData'] and task['inputData']['connection-timeout-millis'] is not None:
+        mount_body["node"]["netconf-node-topology:connection-timeout-millis"] = task['inputData']['connection-timeout-millis']
 
     if 'uniconfig-native' in task['inputData'] and task['inputData']['uniconfig-native'] is not None:
         mount_body["node"]["uniconfig-config:uniconfig-native-enabled"] = task['inputData']['uniconfig-native']
@@ -148,6 +160,10 @@ def start(cc):
             "password",
             "uniconfig-native",
             "blacklist",
+            "reconcile"
+            "sleep-factor",
+            "between-attempts-timeout-millis",
+            "connection-timeout-millis",
             "uniconfig_tx_id"
         ],
         "outputKeys": [
