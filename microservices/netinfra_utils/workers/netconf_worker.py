@@ -40,19 +40,24 @@ def execute_mount_netconf(task):
     mount_body["node"]["netconf-node-topology:username"] = task['inputData']['username']
     mount_body["node"]["netconf-node-topology:password"] = task['inputData']['password']
 
-    if 'reconcile' in task['inputData'] and task['inputData']['reconcile'] is not None:
+    if 'reconcile' in task['inputData'] and task['inputData']['reconcile'] is not None\
+            and task['inputData']['reconcile'] is not"":
         mount_body["node"]["node-extension:reconcile"] = task['inputData']['reconcile']
 
-    if 'sleep-factor' in task['inputData'] and task['inputData']['sleep-factor'] is not None:
+    if 'sleep-factor' in task['inputData'] and task['inputData']['sleep-factor'] is not None\
+            and task['inputData']['sleep-factor'] is not "":
         mount_body["node"]["netconf-node-topology:sleep-factor"] = task['inputData']['sleep-factor']
 
-    if 'between-attempts-timeout-millis' in task['inputData'] and task['inputData']['between-attempts-timeout-millis'] is not None:
+    if 'between-attempts-timeout-millis' in task['inputData'] and task['inputData']['between-attempts-timeout-millis'] is not None\
+            and task['inputData']['between-attempts-timeout-millis'] is not "":
         mount_body["node"]["netconf-node-topology:between-attempts-timeout-millis"] = task['inputData']['between-attempts-timeout-millis']
 
-    if 'connection-timeout-millis' in task['inputData'] and task['inputData']['connection-timeout-millis'] is not None:
+    if 'connection-timeout-millis' in task['inputData'] and task['inputData']['connection-timeout-millis'] is not None\
+            and task['inputData']['connection-timeout-millis'] is not "":
         mount_body["node"]["netconf-node-topology:connection-timeout-millis"] = task['inputData']['connection-timeout-millis']
 
-    if 'uniconfig-native' in task['inputData'] and task['inputData']['uniconfig-native'] is not None:
+    if 'uniconfig-native' in task['inputData'] and task['inputData']['uniconfig-native'] is not None\
+            and task['inputData']['uniconfig-native'] is not "":
         mount_body["node"]["uniconfig-config:uniconfig-native-enabled"] = task['inputData']['uniconfig-native']
 
     if 'blacklist' in task['inputData'] and task['inputData']['blacklist'] is not None:
