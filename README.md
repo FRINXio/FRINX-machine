@@ -170,7 +170,18 @@ To replace running service with new one run after updating the image:
 ```
 docker stop [service]
 docker rm [service]
-docker-compose up -d [service]
+docker-compose up -f docker-compose.[networking].yml -d [service]
+```
+e.g. in case of bridge networking
+
+```bash
+docker-compose -f docker-compose.bridge.yml up -d [service]
+```
+
+and in case of host networking
+
+```bash
+docker-compose -f docker-compose.host.yml up -d [service]
 ```
 
 [FRINX UniConfig]: <https://frinx.io/odl_distribution>
