@@ -120,11 +120,13 @@ Go to the Frinx-machine folder and clone the following respoitory:
 
 ```bash
 cd FRINX-machine/
+cd ..
 git clone https://github.com/FRINXio/fm-workflows.git
 ```
 While FRINX Machine is running execute the startup script inside the fm-workflows folder
 ```bash
 cd fm-workflows/
+git checkout 8a611581b3d8b7f75e3348e4723dbf756c3ea02e #valid for downloaded FRINX-machine v1.1
 ./startup.sh
 ```
 The startup script will load sample devices and sample workflows into your FRINX Machine setup.
