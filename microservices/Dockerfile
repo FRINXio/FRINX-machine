@@ -30,6 +30,7 @@ WORKDIR /home/app/conductor/client/python
 RUN pip3 install setuptools
 RUN python3 setup.py install
 RUN pip3 install psycopg2
+RUN pip3 install marshmallow-dataclass
 
 WORKDIR /home/app/netinfra_utils/workers
 CMD [ "python3", "main.py" ]
