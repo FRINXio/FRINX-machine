@@ -179,7 +179,7 @@ To replace running service with new one run after updating the image:
 ```
 docker stop [service]
 docker rm [service]
-docker-compose up -f docker-compose.[networking].yml -d [service]
+docker-compose -f docker-compose.[networking].yml up -d [service]
 ```
 e.g. in case of bridge networking
 
