@@ -116,8 +116,8 @@ fi
 if [ "$dev_flag" = true ]
 then
     # Update submodules
-    git submodule init
-    git submodule update --recursive --remote
+    #git submodule init
+    git submodule update --init --recursive --remote
 
     cd conductor
     echo 'git.root=../../' > gradle.properties
