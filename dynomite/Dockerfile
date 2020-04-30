@@ -2,7 +2,7 @@
 # cd FRINX-machine
 # docker build -f dynomite/Dockerfile -t frinx/dynomite:latest .
 
-FROM ubuntu 
+FROM ubuntu:18.04
  
 
 # Update the repository sources list and Install package Build Essential 
