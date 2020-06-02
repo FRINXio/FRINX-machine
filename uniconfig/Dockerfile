@@ -1,4 +1,4 @@
-FROM frinx/uniconfig:4.2.3.frinx
+FROM frinx/uniconfig:4.2.4.frinx
 
 # copy updated distribution into container (if any available)
 RUN mkdir /opt/uniconfig-frinx-override || true
