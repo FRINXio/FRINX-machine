@@ -19,10 +19,10 @@ def main():
 
 
 def register_workers(cc):
-    # cli_worker.start(cc)
-    # netconf_worker.start(cc)
-    # uniconfig_worker.start(cc)
-    # common_worker.start(cc)
+    cli_worker.start(cc)
+    netconf_worker.start(cc)
+    uniconfig_worker.start(cc)
+    common_worker.start(cc)
     http_worker.start(cc)
 
 
