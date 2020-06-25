@@ -196,6 +196,7 @@ services:
       dockerfile: ./portainer/Dockerfile
     image: frinx/fm-portainer:${RELEASE_VERSION}
     container_name: portainer
+    restart: always
     logging:
       driver: "json-file"
       options:
