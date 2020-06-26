@@ -65,6 +65,9 @@ def execute_mount_netconf(task):
         model_array = [model.strip() for model in task['inputData']['blacklist'].split(',')]
         for model in model_array:
             mount_body["node"]["uniconfig-config:blacklist"]["uniconfig-config:path"].append(model)
+            
+    if 'dry-run-journal-size' in task['inputData'] and task['inputData']['dry-run-journal-size'] is not None:
+        mount_body["node"]["netconf-node-topology:dry-run-journal-size"] = task['inputData']['dry-run-journal-size']
 
     id_url = Template(odl_url_netconf_mount).substitute({"id": device_id})
 
@@ -165,6 +168,7 @@ def start(cc):
             "password",
             "uniconfig-native",
             "blacklist",
+            "dry-run-journal-size",
             "reconcile",
             "sleep-factor",
             "between-attempts-timeout-millis",
