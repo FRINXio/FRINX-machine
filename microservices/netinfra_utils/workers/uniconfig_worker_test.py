@@ -395,13 +395,25 @@ class TestDeleteStructuredData(unittest.TestCase):
 
 
 class TestExecuteCheckUniconfigNodeExists(unittest.TestCase):
-    def test_execute_check_uniconfig_node_exists_with_existing_device(self):
+    def test_execute_check_uniconfig_node_exists_with_existing_device_installed(self):
         with patch('uniconfig_worker.requests.get') as mock:
-            mock.return_value = MockResponse(bytes(json.dumps({"node-id": "xr5"}), encoding='utf-8'), 200, "")
+            mock.return_value = MockResponse(bytes(json.dumps(
+                {"frinx-uniconfig-topology:connection-status": "installed"}), encoding='utf-8'), 200, "")
             request = uniconfig_worker.execute_check_uniconfig_node_exists({"inputData": {"device_id": "xr5"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["response_code"], 200)
-            self.assertEqual(request["output"]["response_body"]["node-id"], "xr5")
+            self.assertEqual(request["output"]["response_body"]["frinx-uniconfig-topology:connection-status"],
+                             "installed")
+
+    def test_execute_check_uniconfig_node_exists_with_existing_device_installing(self):
+        with patch('uniconfig_worker.requests.get') as mock:
+            mock.return_value = MockResponse(bytes(json.dumps(
+                {"frinx-uniconfig-topology:connection-status": "installing"}), encoding='utf-8'), 200, "")
+            request = uniconfig_worker.execute_check_uniconfig_node_exists({"inputData": {"device_id": "xr5"}})
+            self.assertEqual(request["status"], "FAILED")
+            self.assertEqual(request["output"]["response_code"], 200)
+            self.assertEqual(request["output"]["response_body"]["frinx-uniconfig-topology:connection-status"],
+                             "installing")
 
     def test_execute_check_uniconfig_node_exists_with_non_existing_device(self):
         with patch('uniconfig_worker.requests.get') as mock:
