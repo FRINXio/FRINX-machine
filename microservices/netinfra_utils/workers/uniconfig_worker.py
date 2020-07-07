@@ -262,12 +262,12 @@ def execute_check_uniconfig_node_exists(task):
     device_id = task['inputData']['device_id']
     uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
 
-    id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/node-id?content=config"
+    id_url = Template(odl_url_uniconfig_mount).substitute({"id": device_id}) + "/frinx-uniconfig-topology:connection-status?content=nonconfig"
 
     r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
     response_code, response_json = parse_response(r)
 
-    if response_code != requests.codes.not_found:
+    if response_code != requests.codes.not_found and response_json["frinx-uniconfig-topology:connection-status"] == "installed":
         # Mountpoint with such ID already exists
         return {'status': 'COMPLETED', 'output': {'url': id_url,
                                                   'response_code': response_code,
