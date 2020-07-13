@@ -23,7 +23,7 @@ function example {
 
 
 # all container names
-valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "sample-topology" "logstash" "uniconfig-ui" "portainer" "postgresql")
+valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "logstash" "uniconfig-ui" "portainer" "postgresql")
 containers_to_check=()
 
 curl_uniconfig=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -X POST -d "{\"input\":{\"target-nodes\":{\"node\":[]}}}" 'http://127.0.0.1:8181/rests/operations/uniconfig-manager:calculate-diff' -H "Accept:application/json" -H "Content-Type:application/json")
@@ -163,9 +163,6 @@ for i in "${containers_to_check[@]}"; do
     kibana )
     check_container $i curl_kibana
     result+=$?
-    ;;
-    sample-topology )
-    echo "No exposed ports"
     ;;
     logstash )
     echo "No exposed ports"

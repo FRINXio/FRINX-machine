@@ -40,20 +40,6 @@ services:
     volumes:
         - uniconfig_pass:/opt/uniconfig_pass:ro
 
-  sample-topology:
-    build:
-      context: ./
-      dockerfile: ./sample-topology/Dockerfile
-    image: frinx/fm-sample-topology:${RELEASE_VERSION}
-    container_name: sample-topology
-    volumes:
-        - uniconfig_pass:/opt/uniconfig_pass:ro
-    logging:
-        driver: "json-file"
-        options:
-            max-file: "3"
-            max-size: "10m"
-
   conductor-server:
     build:
       context: ./conductor/
@@ -224,3 +210,7 @@ volumes:
       name: portainer_data
   postgresql_data:
       name: postgresql_data
+      
+networks:
+  default:
+    name: FRINX-machine
