@@ -1,6 +1,7 @@
 version: "3.7"
 
 x-extra_hosts: &extra_hosts_entries
+        - "sample-topology:127.0.0.1"
         - "conductor-server:127.0.0.1"
         - "uniconfig:127.0.0.1"
         - "micros:127.0.0.1"
@@ -12,6 +13,7 @@ x-extra_hosts: &extra_hosts_entries
         - "logstash:127.0.0.1"
         - "uniconfig-ui:127.0.0.1"
         - "portainer:127.0.0.1"
+        - "sample-topology:::1"
         - "conductor-server:::1"
         - "uniconfig:::1"
         - "micros:::1"
@@ -67,6 +69,22 @@ services:
     command: ["/home/app/wait_for_it.sh", "-t", "180",  "conductor-server:8080", "--", "python", "/home/app/netinfra_utils/workers/main.py"]
     volumes:
         - uniconfig_pass:/opt/uniconfig_pass:ro
+
+  sample-topology:
+    build:
+      context: ./
+      dockerfile: ./sample-topology/Dockerfile
+    image: frinx/fm-sample-topology:${RELEASE_VERSION}
+    container_name: sample-topology
+    volumes:
+        - uniconfig_pass:/opt/uniconfig_pass:ro
+    logging:
+        driver: "json-file"
+        options:
+            max-file: "3"
+            max-size: "10m"
+    network_mode: "host"
+    extra_hosts: *extra_hosts_entries
 
   conductor-server:
     build:
@@ -252,8 +270,3 @@ volumes:
       name: portainer_data
   postgresql_data:
       name: postgresql_data
-      
-networks:
-  default:
-    name: FRINX-machine
-      

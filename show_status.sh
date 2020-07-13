@@ -10,6 +10,7 @@ valid_containers=(
     "uniconfig-ui"
     "micros"
     "dynomite"
+    "sample-topology"
     "logstash"
     "portainer"
 )
@@ -218,6 +219,11 @@ check_micros() {
 
 check_dynomite() {
     local container_name="dynomite"
+    check_docker_only "$container_name"
+}
+
+check_sample_topology() {
+    local container_name="sample-topology"
     check_docker_only "$container_name"
 }
 

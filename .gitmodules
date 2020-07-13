@@ -2,6 +2,10 @@
 	path = conductor
 	url = https://github.com/FRINXio/conductor.git
 	branch = master
+[submodule "sample-topology/cli-testtool"]
+	path = sample-topology/cli-testtool
+	url = https://github.com/FRINXio/cli-testtool.git
+	branch = master
 [submodule "frinx-uniconfig-ui"]
 	path = frinx-uniconfig-ui
 	url = https://github.com/FRINXio/frinx-uniconfig-ui.git

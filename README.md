@@ -35,6 +35,7 @@ The project is a containerized package of:
 * logstash
 * micros
 * uniconfig-ui
+* sample-topology
 * portainer
 * postgresql
 
