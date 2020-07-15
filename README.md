@@ -125,11 +125,9 @@ Container management(portainer):
 ### Install demo workflows
 After following the steps above you will have a clean installation of FRINX Machine and you can create or load your own workflows. We have created a repository of demo and sample workflows to get familiar with FRINX Machine and to have a starting point for your own work.
 
-Go to the Frinx-machine folder and clone the following respoitory:
+Clone the following respoitory:
 
 ```bash
-cd FRINX-machine/
-cd ..
 git clone https://github.com/FRINXio/fm-workflows.git
 ```
 While FRINX Machine is running execute the startup script inside the fm-workflows folder
