@@ -1,7 +1,9 @@
+import logging
 import uniconfig_worker
 
 # Uniconfig RPCs
 
+logger = logging.getLogger(__name__)
 
 def replace_cfg_with_oper(device_ids):
     return uniconfig_worker.replace_config_with_oper({'inputData': {
@@ -103,7 +105,7 @@ def vccid_filter_strategy(type, vccid):
 
 
 def start(cc):
-    print('Starting common workers')
+    logger.info('Starting common workers')
 
     # cc.register('http_get_generic', {
     #     "name": "http_get_generic",

@@ -4,10 +4,13 @@ import time
 from random import randint
 from datetime import datetime
 
+import logging
 import requests
 from conductor.ConductorWorker import ConductorWorker
 
 from frinx_rest import conductor_url_base, odl_headers
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_TASK_DEFINITION = {
     "name": "",
@@ -34,7 +37,7 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
         if task_definition is None:
             task_definition = DEFAULT_TASK_DEFINITION
 
-        print('Registering task ' + task_type + ' : ' + str(task_definition))
+        logger.debug('Registering task ' + task_type + ' : ' + str(task_definition))
         task_meta = copy.deepcopy(task_definition)
         task_meta["name"] = task_type
         try:
@@ -43,18 +46,18 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
                               headers=odl_headers)
             # response_code = r.status_code
         except Exception as err:
-            print('Error while registering task ' + str(err))
+            logger.error('Error while registering task ' + str(err))
 
     def poll_and_execute(self, taskType, exec_function, domain=None):
         poll_wait = 5000
         while True:
             time.sleep(float(self.polling_interval))
-            print(self.timestamp() + ' Polling for task: ' + taskType + ' with wait ' + str(poll_wait))
+            logger.debug(self.timestamp() + ' Polling for task: ' + taskType + ' with wait ' + str(poll_wait))
             polled = self.taskClient.pollForBatch(taskType, 1, poll_wait, self.worker_id, domain)
             if polled is not None:
-                print(self.timestamp() + ' Polled batch for ' + taskType + ':' + str(len(polled)))
+                logger.debug(self.timestamp() + ' Polled batch for ' + taskType + ':' + str(len(polled)))
                 for task in polled:
-                    print(self.timestamp() + ' Polled ' + taskType + ': ' + task['taskId'])
+                    logger.debug(self.timestamp() + ' Polled ' + taskType + ': ' + task['taskId'])
                     if self.taskClient.ackTask(task['taskId'], self.worker_id):
                         self.execute(task, exec_function)
 
@@ -63,7 +66,7 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
 
     def execute(self, task, exec_function):
         try:
-            print(self.timestamp() + ' Executing task: ' + task['taskId'])
+            logger.info(self.timestamp() + ' Executing task: ' + task['taskId'])
             resp = exec_function(task)
             if resp is None:
                 raise Exception(
@@ -73,7 +76,7 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
             task['logs'] = resp.get('logs', "")
             self.taskClient.updateTask(task)
         except Exception as err:
-            print('Error executing task: ' + str(err))
+            logger.error('Error executing task: ' + str(err))
             task['status'] = 'FAILED'
             task['outputData'] = {'Error executing task:': str(task),
                                   'exec_function': str(exec_function), }
@@ -83,7 +86,7 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
                 self.taskClient.updateTask(task)
             except Exception as err2:
                 # Can happen when task timed out
-                print('Unable to update task: ' + task['taskId'] + ': ' + str(err2))
+                logger.error('Unable to update task: ' + task['taskId'] + ': ' + str(err2))
 
 if __name__ == '__main__':
     main()

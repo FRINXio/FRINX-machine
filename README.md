@@ -182,13 +182,13 @@ docker-compose -f docker-compose.[networking].yml up -d [service]
 e.g. in case of bridge networking
 
 ```bash
-docker-compose -f docker-compose.bridge.yml up -d [service]
+LOG_LEVEL=DEBUG docker-compose -f docker-compose.bridge.yml up -d [service]
 ```
 
 and in case of host networking
 
 ```bash
-docker-compose -f docker-compose.host.yml up -d [service]
+LOG_LEVEL=DEBUG docker-compose -f docker-compose.host.yml up -d [service]
 ```
 
 [FRINX UniConfig]: <https://frinx.io/odl_distribution>

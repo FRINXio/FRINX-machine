@@ -4,9 +4,12 @@ import copy
 import json
 from string import Template
 
+import logging
 import requests
 
 from frinx_rest import odl_url_base, odl_credentials, parse_response, elastic_url_base, elastic_headers, add_uniconfig_tx_cookie
+
+logger = logging.getLogger('workers')
 
 odl_url_netconf_mount = odl_url_base + "/data/network-topology:network-topology/topology=topology-netconf/node=$id"
 odl_url_netconf_mount_oper = odl_url_base + "/data/network-topology:network-topology/topology=topology-netconf/node=$id?content=nonconfig"
@@ -147,7 +150,7 @@ def execute_check_connected_netconf(task):
 
 
 def start(cc):
-    print('Starting Netconf workers')
+    logger.info('Starting Netconf workers')
 
     cc.register('Netconf_mount_netconf', {
         "name": "Netconf_mount_netconf",

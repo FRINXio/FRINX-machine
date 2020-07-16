@@ -6,9 +6,12 @@ import re
 import urllib
 from string import Template
 
+import logging
 import requests
 
 from frinx_rest import odl_url_base, odl_headers, odl_credentials, parse_response, parse_header, add_uniconfig_tx_cookie
+
+logger = logging.getLogger(__name__)
 
 odl_url_uniconfig_config_shallow = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=config&depth=3"
 odl_url_uniconfig_oper = odl_url_base + "/data/network-topology:network-topology/topology=uniconfig?content=nonconfig"
@@ -563,7 +566,7 @@ def close_transaction(task):
 
 
 def start(cc):
-    print('Starting Uniconfig workers')
+    logger.info('Starting Uniconfig workers')
 
     cc.register('UNICONFIG_read_uniconfig_topology_operational', {
         "name": "UNICONFIG_read_uniconfig_topology_operational",

@@ -1,6 +1,7 @@
 import frinx_rest
 frinx_rest.odl_url_base = "http://localhost:8181/rests"
 import json
+import logging
 import time
 
 from flask import Flask, request
@@ -8,6 +9,9 @@ from flask_restful import Resource, Api
 from flask_basicauth import BasicAuth
 
 from main import register_workers
+
+logger = logging.getLogger(__name__)
+
 
 class StandaloneWorker:
 
@@ -19,7 +23,7 @@ class StandaloneWorker:
         pass
 
     def start(self, task_type, exec_function, wait, domain=None, task_definition=None):
-        print('Starting task %s' % task_type)
+        logger.info('Starting task %s' % task_type)
         self.api.add_resource(TaskInvocation, "/" + task_type, endpoint=task_type, resource_class_args=[exec_function])
 
 
@@ -43,7 +47,7 @@ class TaskInvocation(Resource):
             # TODO print logs from function invocation
             return self.func({"inputData": input_dict})
         except Exception as e:
-            print e
+            logger.error(e)
             return {"error": "Invocation failed due to: %s" % str(e.message)}
 
     @staticmethod
@@ -66,7 +70,7 @@ DEFAULT_PASSWD = 'admin'
 
 
 def main():
-    print('Starting FRINX STANDALONE workers')
+    logger.info('Starting FRINX STANDALONE workers')
     app = Flask(__name__)
 
     app.config['BASIC_AUTH_USERNAME'] = DEFAULT_USERNAME
@@ -78,7 +82,7 @@ def main():
     api = Api(app)
     cc = StandaloneWorker(api)
     register_workers(cc)
-    print app.url_map
+    logger.debug(app.url_map)
     app.run("0.0.0.0", 6454, True)
 
     # block

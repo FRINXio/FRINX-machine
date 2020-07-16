@@ -5,9 +5,11 @@ import copy
 from string import Template
 
 import requests
+import logging
 
 from frinx_rest import parse_response
 
+logger = logging.getLogger(__name__)
 
 # Example 1: simple GET request returning HTML
 # {
@@ -145,7 +147,7 @@ def http_task(task):
 
 
 def start(cc):
-    print('Starting HTTP workers')
+    logger.info('Starting HTTP workers')
 
     cc.register('HTTP_task', {
         "name": "HTTP_task",

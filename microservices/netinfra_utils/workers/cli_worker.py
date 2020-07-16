@@ -5,8 +5,11 @@ import copy
 from string import Template
 
 import requests
+import logging
 
 from frinx_rest import odl_url_base, odl_credentials, parse_response, add_uniconfig_tx_cookie
+
+logger = logging.getLogger(__name__)
 
 odl_url_cli_mount = odl_url_base + "/data/network-topology:network-topology/topology=cli/node=$id"
 odl_url_cli_oper = odl_url_base + "/data/network-topology:network-topology/topology=cli?content=nonconfig"
@@ -274,7 +277,7 @@ def execute_get_cli_journal(task):
 
 
 def start(cc):
-    print('Starting CLI workers')
+    logger.info('Starting CLI workers')
 
     cc.register('CLI_mount_cli', {
         "name": "CLI_mount_cli",
