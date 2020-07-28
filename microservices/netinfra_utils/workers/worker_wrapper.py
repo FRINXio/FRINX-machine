@@ -46,15 +46,12 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
             print('Error while registering task ' + str(err))
 
     def poll_and_execute(self, taskType, exec_function, domain=None):
-        poll_wait = 5000
+        poll_wait = 1000
         while True:
             time.sleep(float(self.polling_interval))
-            print(self.timestamp() + ' Polling for task: ' + taskType + ' with wait ' + str(poll_wait))
             polled = self.taskClient.pollForBatch(taskType, 1, poll_wait, self.worker_id, domain)
             if polled is not None:
-                print(self.timestamp() + ' Polled batch for ' + taskType + ':' + str(len(polled)))
                 for task in polled:
-                    print(self.timestamp() + ' Polled ' + taskType + ': ' + task['taskId'])
                     if self.taskClient.ackTask(task['taskId'], self.worker_id):
                         self.execute(task, exec_function)
 
