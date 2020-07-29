@@ -100,28 +100,6 @@ services:
     volumes:
        - postgresql_data:/var/lib/postgresql/data
 
-  postgrest:
-    image: postgrest/postgrest
-    ports:
-      - 4000:4000
-    environment:
-      PGRST_DB_URI: postgres://postgres:frinx@postgresql:5432/frinx
-      PGRST_DB_SCHEMA: public
-      PGRST_DB_ANON_ROLE: codaxy
-      PGRST_SERVER_PORT: 4000
-      PGRST_SERVER_PROXY_URI: "http://127.0.0.1:4000"
-    depends_on:
-      - postgresql
-
-  swagger:
-    image: swaggerapi/swagger-ui
-    ports:
-      - 8080:8080
-    expose:
-      - 8080
-    environment:
-      API_URL: http://localhost:4000/
-
   elasticsearch:
     build:
       context: ./
