@@ -149,7 +149,7 @@ def start(cc):
 
     cc.register('HTTP_task', {
         "name": "HTTP_task",
-        "description": "Generic http task - BASICS,HTTP",
+        "description": "{\"description\": \"Generic http task\", \"labels\": [\"BASICS\",\"HTTP\"]}",
         "retryCount": 0,
         "timeoutSeconds": 360,
         "timeoutPolicy": "TIME_OUT_WF",

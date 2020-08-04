@@ -567,7 +567,7 @@ def start(cc):
 
     cc.register('UNICONFIG_read_uniconfig_topology_operational', {
         "name": "UNICONFIG_read_uniconfig_topology_operational",
-        "description": "Read operational state of Uniconfig - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Read operational state of Uniconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "retryCount": 0,
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
@@ -588,7 +588,7 @@ def start(cc):
 
     cc.register('UNICONFIG_read_uniconfig_topology_config', {
         "name": "UNICONFIG_read_uniconfig_topology_config",
-        "description": "Read config state of Uniconfig - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Read config state of Uniconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "retryCount": 0,
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
@@ -609,7 +609,7 @@ def start(cc):
 
     cc.register('UNICONFIG_get_all_devices_as_dynamic_fork_tasks', {
         "name": "UNICONFIG_get_all_devices_as_dynamic_fork_tasks",
-        "description": "get all devices in uniconfig topology as dynamic fork tasks - BASICS,UNICONFIG",
+        "description": "{\"description\": \"get all devices in uniconfig topology as dynamic fork tasks\", \"labels\": [\"BASICS\"\",\"UNICONFIG\"]}",
         "retryCount": 0,
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
@@ -632,7 +632,7 @@ def start(cc):
 
     cc.register('UNICONFIG_read_structured_device_data', {
         "name": "UNICONFIG_read_structured_device_data",
-        "description": "Read device configuration or operational data in structured format e.g. openconfig - BASICS,UNICONFIG,OPENCONFIG",
+        "description": "{\"description\": \"Read device configuration or operational data in structured format e.g. openconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\",\"OPENCONFIG\"]}",
         "retryCount": 0,
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
@@ -654,7 +654,7 @@ def start(cc):
 
     cc.register('UNICONFIG_write_structured_device_data', {
         "name": "UNICONFIG_write_structured_device_data",
-        "description": "Write device configuration data in structured format e.g. openconfig - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Write device configuration data in structured format e.g. openconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "retryCount": 0,
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
@@ -678,7 +678,7 @@ def start(cc):
 
     cc.register('UNICONFIG_write_structured_data_as_dynamic_fork_tasks', {
         "name": "UNICONFIG_write_structured_data_as_dynamic_fork_tasks",
-        "description": "Write device configuration data in strucuted format e.g. openconfig as a task - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Write device configuration data in strucuted format e.g. openconfig as a task\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "retryCount": 0,
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
@@ -700,7 +700,7 @@ def start(cc):
 
     cc.register('UNICONFIG_delete_structured_device_data', {
         "name": "UNICONFIG_delete_structured_device_data",
-        "description": "Delete device configuration data in structured format e.g. openconfig - BASICS,UNICONFIG,OPENCONFIG",
+        "description": "{\"description\": \"Delete device configuration data in structured format e.g. openconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\",\"OPENCONFIG\"]}",
         "retryCount": 0,
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
@@ -722,7 +722,7 @@ def start(cc):
 
     cc.register('UNICONFIG_commit', {
         "name": "UNICONFIG_commit",
-        "description": "Commit uniconfig - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Commit uniconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "inputKeys": [
             "devices",
             "uniconfig_tx_id"
@@ -739,7 +739,7 @@ def start(cc):
 
     cc.register('UNICONFIG_dryrun_commit', {
         "name": "UNICONFIG_dryrun_commit",
-        "description": "Dryrun Commit uniconfig - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Dryrun Commit uniconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "inputKeys": [
             "devices",
             "uniconfig_tx_id"
@@ -756,7 +756,7 @@ def start(cc):
 
     cc.register('UNICONFIG_checked_commit', {
         "name": "UNICONFIG_checked_commit",
-        "description": "Checked Commit uniconfig - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Checked Commit uniconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "inputKeys": [
             "devices",
             "uniconfig_tx_id"
@@ -773,7 +773,7 @@ def start(cc):
 
     cc.register('UNICONFIG_calculate_diff', {
         "name": "UNICONFIG_calculate_diff",
-        "description": "Calculate uniconfig diff - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Calculate uniconfig diff\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "inputKeys": [
             "devices",
             "uniconfig_tx_id"
@@ -790,7 +790,7 @@ def start(cc):
 
     cc.register('UNICONFIG_sync_from_network', {
         "name": "UNICONFIG_sync_from_network",
-        "description": "Sync uniconfig from network - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Sync uniconfig from network\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "inputKeys": [
             "devices",
             "uniconfig_tx_id"
@@ -807,7 +807,7 @@ def start(cc):
 
     cc.register('UNICONFIG_replace_config_with_oper', {
         "name": "UNICONFIG_replace_config_with_oper",
-        "description": "Replace config with oper in uniconfig - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Replace config with oper in uniconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "inputKeys": [
             "devices",
             "uniconfig_tx_id"
@@ -824,7 +824,7 @@ def start(cc):
 
     cc.register('UNICONFIG_create_snapshot', {
         "name": "UNICONFIG_create_snapshot",
-        "description": "Create snapshot in uniconfig - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Create snapshot in uniconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "inputKeys": [
             "name",
             "devices",
@@ -842,7 +842,7 @@ def start(cc):
 
     cc.register('UNICONFIG_delete_snapshot', {
         "name": "UNICONFIG_delete_snapshot",
-        "description": "Delete snapshot in uniconfig - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Delete snapshot in uniconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "inputKeys": [
             "name",
             "uniconfig_tx_id"
@@ -859,7 +859,7 @@ def start(cc):
 
     cc.register('UNICONFIG_replace_config_with_snapshot', {
         "name": "UNICONFIG_replace_config_with_snapshot",
-        "description": "Replace config with snapshot - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Replace config with snapshot\",  \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "inputKeys": [
             "name",
             "devices",
@@ -892,7 +892,7 @@ def start(cc):
 
     cc.register('UNICONFIG_create_transaction', {
         "name": "UNICONFIG_create_transaction",
-        "description": "Create uniconfig transaction - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Create uniconfig transaction\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "inputKeys": [
             "maxAgeSec"
         ],
@@ -908,7 +908,7 @@ def start(cc):
 
     cc.register('UNICONFIG_close_transaction', {
         "name": "UNICONFIG_close_transaction",
-        "description": "Close uniconfig transaction - BASICS,UNICONFIG",
+        "description": "{\"description\": \"Close uniconfig transaction\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "inputKeys": [
             "uniconfig_tx_id"
         ],
