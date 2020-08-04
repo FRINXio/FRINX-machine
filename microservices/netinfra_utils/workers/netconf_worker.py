@@ -151,7 +151,7 @@ def start(cc):
 
     cc.register('Netconf_mount_netconf', {
         "name": "Netconf_mount_netconf",
-        "description": "mount a Netconf device - BASICS,NETCONF",
+        "description": "{\"description\": \"mount a Netconf device\", \"labels\": [\"BASICS\",\"NETCONF\"]}",
         "retryCount": 0,
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
@@ -186,7 +186,7 @@ def start(cc):
 
     cc.register('Netconf_unmount_netconf', {
         "name": "Netconf_unmount_netconf",
-        "description": "unmount a CLI device - BASICS,NETCONF",
+        "description": "{\"description\": \"unmount a CLI device\", \"labels\": [\"BASICS\",\"NETCONF\"]}",
         "retryCount": 0,
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
@@ -227,7 +227,7 @@ def start(cc):
 
     cc.register('Netconf_check_netconf_id_available', {
         "name": "Netconf_check_netconf_id_available",
-        "description": "checks if netconf device is available - BASICS,NETCONF",
+        "description": "{\"description\": \"checks if netconf device is available\", \"labels\": [\"BASICS\",\"NETCONF\"]}",
         "retryCount": 0,
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
