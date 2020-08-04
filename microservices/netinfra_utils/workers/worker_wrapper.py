@@ -1,6 +1,7 @@
 import copy
 import json
 import time
+import traceback
 from random import randint
 from datetime import datetime
 
@@ -43,7 +44,7 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
                               headers=odl_headers)
             # response_code = r.status_code
         except Exception as err:
-            print('Error while registering task ' + str(err))
+            print('Error while registering task ' + traceback.format_exc())
 
     def poll_and_execute(self, taskType, exec_function, domain=None):
         poll_wait = 5000
@@ -73,17 +74,17 @@ class ExceptionHandlingConductorWrapper(ConductorWorker):
             task['logs'] = resp.get('logs', "")
             self.taskClient.updateTask(task)
         except Exception as err:
-            print('Error executing task: ' + str(err))
+            print('Error executing task: ' + traceback.format_exc())
             task['status'] = 'FAILED'
             task['outputData'] = {'Error executing task:': str(task),
                                   'exec_function': str(exec_function), }
-            task['logs'] = ["Logs: %s" % str(err)]
+            task['logs'] = ["Logs: %s" % traceback.format_exc()]
 
             try:
                 self.taskClient.updateTask(task)
             except Exception as err2:
                 # Can happen when task timed out
-                print('Unable to update task: ' + task['taskId'] + ': ' + str(err2))
+                print('Unable to update task: ' + task['taskId'] + ': ' + traceback.format_exc())
 
 if __name__ == '__main__':
     main()
