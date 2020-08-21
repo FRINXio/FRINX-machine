@@ -162,11 +162,7 @@ services:
    build:
      context: ./frinx-uniconfig-ui
      dockerfile: Dockerfile
-   environment:
-       - NODE_HOST=0.0.0.0
-       - ODL_HOST=uniconfig:8181
-       - WF_SERVER=conductor-server:8080/api/
-   image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+  #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
    container_name: uniconfig-ui
    logging:
      driver: "json-file"
@@ -174,7 +170,89 @@ services:
        max-file: "3"
        max-size: "10m"
    ports:
+     - 4000:4000
+
+  uniconfig-api:
+   build:
+     context: ./frinx-uniconfig-ui/api
+     dockerfile: Dockerfile
+   environment:
+       - UNICONFIG_HOST=uniconfig:8080
+  #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+   container_name: uniconfig-api
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
+     - 4001:4001
+
+  uniflow-ui:
+   build:
+     context: ./frinx-workflow-ui
+     dockerfile: Dockerfile
+  #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+   container_name: uniflow-ui
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
      - 3000:3000
+
+  uniflow-api:
+   build:
+     context: ./frinx-workflow-ui/api
+     dockerfile: Dockerfile
+   environment:
+       - CONDUCTOR_HOST=conductor-server:8080
+  #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+   container_name: uniflow-api
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
+     - 3001:3001
+
+  dashboard:
+   build:
+     context: ./frinx-dashboard
+     dockerfile: Dockerfile
+  #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+   container_name: dashboard
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
+     - 5001:5001
+
+  api-gateway:
+   build:
+     context: ./api-gateway
+     dockerfile: Dockerfile
+   environment:
+       - CONDUCTOR_HOST=conductor-server:8080
+       - API_GATEWAY_HOST=api-gateway:5000
+       - DASHBOARD_HOST=dashboard:5001
+       - UNIFLOW_UI_HOST=uniflow-ui:3000
+       - UNIFLOW_API_HOST=uniflow-api:3001
+       - UNICONFIG_UI_HOST=uniconfig-ui:4000
+       - UNICONFIG_API_HOST=uniconfig-api:4001
+  #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+   container_name: api-gateway
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
+     - 5000:5000
 
   portainer:
     build:
