@@ -3,8 +3,11 @@ from __future__ import print_function
 import json
 import copy
 from string import Template
+import logging
 
 import requests
+
+log = logging.getLogger(__name__)
 
 from frinx_rest import parse_response
 
@@ -145,7 +148,7 @@ def http_task(task):
 
 
 def start(cc):
-    print('Starting HTTP workers')
+    log.info('Starting HTTP workers')
 
     cc.register('HTTP_task', {
         "name": "HTTP_task",

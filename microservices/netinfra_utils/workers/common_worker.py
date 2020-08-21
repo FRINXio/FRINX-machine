@@ -1,4 +1,7 @@
 import uniconfig_worker
+import logging
+
+log = logging.getLogger(__name__)
 
 # Uniconfig RPCs
 
@@ -103,7 +106,7 @@ def vccid_filter_strategy(type, vccid):
 
 
 def start(cc):
-    print('Starting common workers')
+    log.info('Starting common workers')
 
     # cc.register('http_get_generic', {
     #     "name": "http_get_generic",
