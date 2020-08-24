@@ -5,11 +5,9 @@
 [submodule "frinx-workflow-ui"]
 	path = frinx-workflow-ui
 	url = https://github.com/FRINXio/frinx-workflow-ui
-	branch = ui-separation
 [submodule "frinx-uniconfig-ui"]
 	path = frinx-uniconfig-ui
 	url = https://github.com/FRINXio/frinx-uniconfig-ui
-	branch = ui-separation
 [submodule "frinx-dashboard"]
 	path = frinx-dashboard
 	url = https://github.com/FRINXio/frinx-dashboard

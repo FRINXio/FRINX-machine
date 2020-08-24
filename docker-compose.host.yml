@@ -10,7 +10,12 @@ x-extra_hosts: &extra_hosts_entries
         - "es:127.0.0.1"
         - "kibana:127.0.0.1"
         - "logstash:127.0.0.1"
+        - "uniflow-ui:127.0.0.1"
+        - "uniflow-api:127.0.0.1"
         - "uniconfig-ui:127.0.0.1"
+        - "uniconfig-api:127.0.0.1"
+        - "dashboard:127.0.0.1"
+        - "api-gateway:127.0.0.1"
         - "portainer:127.0.0.1"
         - "conductor-server:::1"
         - "uniconfig:::1"
@@ -21,7 +26,12 @@ x-extra_hosts: &extra_hosts_entries
         - "es:::1"
         - "kibana:::1"
         - "logstash:::1"
+        - "uniflow-ui:::1"
+        - "uniflow-api:::1"
         - "uniconfig-ui:::1"
+        - "uniconfig-api:::1"
+        - "dashboard:::1"
+        - "api-gateway:::1"
         - "portainer:::1"
 
 services:
@@ -197,25 +207,122 @@ services:
     network_mode: "host"
     extra_hosts: *extra_hosts_entries
 
-  uniconfig-ui:
-   build:
-     context: ./frinx-uniconfig-ui
-     dockerfile: Dockerfile
-   environment:
-       - "NODE_HOST=::"
-       - ODL_HOST=uniconfig:8181
-       - WF_SERVER=conductor-server:8080/api/
-   image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
-   container_name: uniconfig-ui
-   logging:
-     driver: "json-file"
-     options:
-       max-file: "3"
-       max-size: "10m"
-   ports:
-     - 3000:3000
-   network_mode: "host"
-   extra_hosts: *extra_hosts_entries
+   uniconfig-ui:
+    build:
+      context: ./frinx-uniconfig-ui
+      dockerfile: Dockerfile
+   #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+    container_name: uniconfig-ui
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    ports:
+      - 4000:4000
+    network_mode: "host"
+    extra_hosts: *extra_hosts_entries
+ 
+   uniconfig-api:
+    build:
+      context: ./frinx-uniconfig-ui/api
+      dockerfile: Dockerfile
+    environment:
+        - UNICONFIG_HOST=uniconfig:8181
+   #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+    container_name: uniconfig-api
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    ports:
+      - 4001:4001
+    depends_on: 
+      - uniconfig
+    network_mode: "host"
+    extra_hosts: *extra_hosts_entries
+ 
+   uniflow-ui:
+    build:
+      context: ./frinx-workflow-ui
+      dockerfile: Dockerfile
+   #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+    container_name: uniflow-ui
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    ports:
+      - 3000:3000
+    network_mode: "host"
+    extra_hosts: *extra_hosts_entries
+ 
+   uniflow-api:
+    build:
+      context: ./frinx-workflow-ui/api
+      dockerfile: Dockerfile
+    environment:
+        - CONDUCTOR_HOST=conductor-server:8080/api/
+   #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+    container_name: uniflow-api
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    ports:
+      - 3001:3001
+    depends_on: 
+      - conductor-server
+    network_mode: "host"
+    extra_hosts: *extra_hosts_entries
+ 
+   dashboard:
+    build:
+      context: ./frinx-dashboard
+      dockerfile: Dockerfile
+   #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+    container_name: dashboard
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    ports:
+      - 5001:5001
+    network_mode: "host"
+    extra_hosts: *extra_hosts_entries
+ 
+   api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    environment:
+        - API_GATEWAY_HOST=api-gateway:5000
+        - DASHBOARD_HOST=dashboard:5001
+        - UNIFLOW_UI_HOST=uniflow-ui:3000
+        - UNIFLOW_API_HOST=uniflow-api:3001
+        - UNICONFIG_UI_HOST=uniconfig-ui:4000
+        - UNICONFIG_API_HOST=uniconfig-api:4001
+   #  image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
+    container_name: api-gateway
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    ports:
+      - 5000:5000
+    depends_on: 
+      - dashboard
+      - uniflow-ui
+      - uniflow-api
+      - uniconfig-ui
+      - uniconfig-api
+    network_mode: "host"
+    extra_hosts: *extra_hosts_entries
 
   portainer:
     build:
