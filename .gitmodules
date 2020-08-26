@@ -1,8 +1,6 @@
-[submodule "conductor"]
-	path = conductor
-	url = https://github.com/FRINXio/conductor.git
-	branch = master
 [submodule "frinx-uniconfig-ui"]
 	path = frinx-uniconfig-ui
 	url = https://github.com/FRINXio/frinx-uniconfig-ui.git
-	branch = master
+[submodule "conductor"]
+	path = conductor
+	url = https://github.com/FRINXio/conductor.git
