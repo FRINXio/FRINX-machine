@@ -44,7 +44,7 @@ function start_host_container {
 }
 
 function start_containers {
-local containers_to_start=("dynomite" "postgresql" "elasticsearch" "logstash" "conductor-server" "uniconfig" "micros" "uniconfig-ui" "kibana" "portainer")
+local containers_to_start=("dynomite" "postgresql" "elasticsearch" "logstash" "conductor-server" "uniconfig" "micros" "uniconfig-ui" "uniconfig-api" "uniflow-ui" "uniflow-api" "api-gateway" "dashboard" "kibana" "portainer")
 
 
 for i in "${containers_to_start[@]}"; do

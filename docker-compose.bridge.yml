@@ -162,10 +162,6 @@ services:
    build:
      context: ./frinx-uniconfig-ui
      dockerfile: Dockerfile
-   environment:
-       - NODE_HOST=0.0.0.0
-       - ODL_HOST=uniconfig:8181
-       - WF_SERVER=conductor-server:8080/api/
    image: frinx/fm-uniconfig-ui:${RELEASE_VERSION}
    container_name: uniconfig-ui
    logging:
@@ -174,7 +170,98 @@ services:
        max-file: "3"
        max-size: "10m"
    ports:
+     - 4000:4000
+
+  uniconfig-api:
+   build:
+     context: ./frinx-uniconfig-ui/api
+     dockerfile: Dockerfile
+   image: frinx/fm-uniconfig-api:${RELEASE_VERSION}
+   environment:
+       - UNICONFIG_HOST=uniconfig:8181
+   container_name: uniconfig-api
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
+     - 4001:4001
+   depends_on: 
+     - uniconfig
+
+  uniflow-ui:
+   build:
+     context: ./frinx-workflow-ui
+     dockerfile: Dockerfile
+   image: frinx/fm-uniflow-ui:${RELEASE_VERSION}
+   container_name: uniflow-ui
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
      - 3000:3000
+
+  uniflow-api:
+   build:
+     context: ./frinx-workflow-ui/api
+     dockerfile: Dockerfile
+   image: frinx/fm-uniflow-api:${RELEASE_VERSION}
+   environment:
+       - CONDUCTOR_HOST=conductor-server:8080/api/
+   container_name: uniflow-api
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
+     - 3001:3001
+   depends_on: 
+     - conductor-server
+
+  dashboard:
+   build:
+     context: ./frinx-dashboard
+     dockerfile: Dockerfile
+   image: frinx/fm-dashboard:${RELEASE_VERSION}
+   container_name: dashboard
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
+     - 5001:5001
+
+  api-gateway:
+   build:
+     context: ./api-gateway
+     dockerfile: Dockerfile
+   image: frinx/fm-api-gateway:${RELEASE_VERSION}
+   environment:
+       - API_GATEWAY_HOST=api-gateway:5000
+       - DASHBOARD_HOST=dashboard:5001
+       - UNIFLOW_UI_HOST=uniflow-ui:3000
+       - UNIFLOW_API_HOST=uniflow-api:3001
+       - UNICONFIG_UI_HOST=uniconfig-ui:4000
+       - UNICONFIG_API_HOST=uniconfig-api:4001
+   container_name: api-gateway
+   logging:
+     driver: "json-file"
+     options:
+       max-file: "3"
+       max-size: "10m"
+   ports:
+     - 5000:5000
+   depends_on: 
+     - dashboard
+     - uniflow-ui
+     - uniflow-api
+     - uniconfig-ui
+     - uniconfig-api
 
   portainer:
     build:
