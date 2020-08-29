@@ -23,14 +23,14 @@ function example {
 
 
 # all container names
-valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "elasticsearch" "kibana" "logstash" "uniconfig-ui" "portainer" "postgresql")
+valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "postgresql" "elasticsearch" "kibana" "logstash" "uniconfig-ui" "uniconfig-api" "uniflow-ui" "uniflow-api" "dashboard" "api-gateway" "portainer")
 containers_to_check=()
 
 curl_uniconfig=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -X POST -d "{\"input\":{\"target-nodes\":{\"node\":[]}}}" 'http://127.0.0.1:8181/rests/operations/uniconfig-manager:calculate-diff' -H "Accept:application/json" -H "Content-Type:application/json")
 curl_conductor_server=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/api/metadata/workflow')
 curl_elasticsearch=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:9200/_cluster/health' )
 curl_kibana=( curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:5601/api/status' )
-curl_uniconfig_ui=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:3000')
+curl_uniconfig_ui=(curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:4000')
 
 # skip test bool
 skip=false
@@ -138,19 +138,11 @@ for i in "${containers_to_check[@]}"; do
     check_container $i curl_uniconfig
     result+=$?
     ;;
-    frinxit )
-    check_container $i curl_frinxit
-    result+=$?
-    ;;
     micros )
     echo "No exposed ports"
     ;;
     conductor-server )
     check_container $i curl_conductor_server
-    result+=$?
-    ;;
-    conductor-ui )
-    check_container $i curl_conductor_ui
     result+=$?
     ;;
     dynomite )
@@ -169,6 +161,21 @@ for i in "${containers_to_check[@]}"; do
     ;;
     uniconfig-ui )
     check_container $i curl_uniconfig_ui
+    ;;
+    uniconfig-api )
+    echo "Skipping health check"
+    ;;
+    uniflow-ui )
+    echo "Skipping health check"
+    ;;
+    uniflow-api )
+    echo "Skipping health check"
+    ;;
+    dashboard )
+    echo "Skipping health check"
+    ;;
+    api-gateway )
+    echo "Skipping health check"
     ;;
     portainer )
     echo "Skipping health check"

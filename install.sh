@@ -67,7 +67,7 @@ function valid {
 }
 
 file=uniconfig/frinx.license.cfg
-valid_images=("uniconfig" "micros" "conductor-server" "dynomite" "postgresql" "elasticsearch" "kibana" "logstash" "uniconfig-ui" "portainer")
+valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "postgresql" "elasticsearch" "kibana" "logstash" "uniconfig-ui" "uniconfig-api" "uniflow-ui" "uniflow-api" "dashboard" "api-gateway" "portainer")
 license=
 license_flag=false
 build=false
@@ -93,7 +93,7 @@ case $1 in
    exit
    ;;
    *)
-   valid "$1" "${valid_images[@]}"
+   valid "$1" "${valid_containers[@]}"
     if [[ $? -eq 0 ]];
     then
         input_containers+=( "$1" )
@@ -122,6 +122,11 @@ then
     cd conductor
     echo 'git.root=../../' > gradle.properties
     echo "submodVersion=$(git for-each-ref refs/tags --sort=-taggerdate --format='%(tag)' | grep -v -m 1 'frinx' | cut -d "v" -f 2)" >> gradle.properties
+else
+    # we need to init submodules even when images are just pulled
+    # from docker hub because of the bug in docker-compose
+    # https://github.com/docker/compose/issues/3513
+    git submodule update --init --recursive --remote
 fi
 
 
