@@ -31,7 +31,8 @@ mount_template = {
             "cli-topology:password": "",
 
             "cli-topology:journal-size": 500,
-            "cli-topology:dry-run-journal-size": 180
+            "cli-topology:dry-run-journal-size": 180,
+            "cli-topology:parsing-engine": ""
         }
 }
 
@@ -50,6 +51,8 @@ def execute_mount_cli(task):
     mount_body["network-topology:node"]["cli-topology:device-version"] = task['inputData']['version']
     mount_body["network-topology:node"]["cli-topology:username"] = task['inputData']['username']
     mount_body["network-topology:node"]["cli-topology:password"] = task['inputData']['password']
+    mount_body["network-topology:node"]["cli-topology:parsing-engine"] = task['inputData'].get('parsing-engine',
+                                                                                               "tree-parser")
 
     id_url = Template(odl_url_cli_mount).substitute({"id": device_id})
 
