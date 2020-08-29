@@ -121,7 +121,8 @@ class TestMount(unittest.TestCase):
             mock.return_value = MockResponse(bytes(json.dumps({}), encoding='utf-8'), 201)
             request = cli_worker.execute_mount_cli(
                 {"inputData": {"device_id": "xr5", "host": "192.168.1.1", "port": "22", "protocol": "ssh",
-                               "type": "ios xr", "version": "5.3.4", "username": "name", "password": "password"}})
+                               "type": "ios xr", "version": "5.3.4", "username": "name", "password": "password",
+                               "parsing-engine": "one-line-parser"}})
             self.assertEqual(request["status"], "COMPLETED")
             self.assertEqual(request["output"]["url"], odl_url_base
                              + "/data/network-topology:network-topology/topology=cli/node=xr5")
