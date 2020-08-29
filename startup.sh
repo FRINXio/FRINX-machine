@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -x 
+set -x 
 
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
@@ -115,11 +115,11 @@ start_containers
 import_workflows
 
 echo -e 'Startup finished!\n'
-echo -e 'FRINX UniConfig UI is ready and listening on port 3000. e.g. http://localhost:3000/\n'
+echo -e 'FRINX-machine is ready and listening on port 5000. e.g. http://localhost:5000/\n'
 
 if [ "$browser" = true ]; then
   if which google-chrome > /dev/null
   then
-    google-chrome --disable-gpu http://localhost:3000/
+    google-chrome --disable-gpu http://localhost:5000/
   fi
 fi
