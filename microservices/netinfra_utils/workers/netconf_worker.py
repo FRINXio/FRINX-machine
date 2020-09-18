@@ -146,6 +146,28 @@ def execute_check_connected_netconf(task):
                 'logs': ["Mountpoint with ID %s not yet connected" % device_id]}
 
 
+def read_structured_data(task):
+    device_id = task['inputData']['device_id']
+    uri = task['inputData']['uri']
+    uniconfig_tx_id = task['inputData']['uniconfig_tx_id'] if 'uniconfig_tx_id' in task['inputData'] else ""
+
+    id_url = Template(odl_url_netconf_mount).substitute({"id": device_id}) + "/yang-ext:mount" + (uri if uri else "")
+
+    r = requests.get(id_url, headers=add_uniconfig_tx_cookie(uniconfig_tx_id), auth=odl_credentials)
+    response_code, response_json = parse_response(r)
+
+    if response_code == requests.codes.ok:
+        return {'status': 'COMPLETED', 'output': {'url': id_url,
+                                                  'response_code': response_code,
+                                                  'response_body': response_json},
+                'logs': ["Node with ID %s read successfully" % device_id]}
+    else:
+        return {'status': 'FAILED', 'output': {'url': id_url,
+                                               'response_code': response_code,
+                                               'response_body': response_json},
+                'logs': ["Unable to read device with ID %s" % device_id]}
+
+
 def start(cc):
     print('Starting Netconf workers')
 
@@ -245,3 +267,25 @@ def start(cc):
         ]
     })
     cc.start('Netconf_check_netconf_id_available', execute_check_netconf_id_available, False)
+
+    cc.register('Netconf_read_structured_device_data', {
+        "name": "Netconf_read_structured_device_data",
+        "description": "{\"description\": \"Read device configuration or operational data in structured format e.g. netconf\", \"labels\": [\"BASICS\",\"NETCONF\"]}",
+        "retryCount": 0,
+        "timeoutSeconds": 60,
+        "timeoutPolicy": "TIME_OUT_WF",
+        "retryLogic": "FIXED",
+        "retryDelaySeconds": 0,
+        "responseTimeoutSeconds": 10,
+        "inputKeys": [
+            "device_id",
+            "uri",
+            "uniconfig_tx_id"
+        ],
+        "outputKeys": [
+            "url",
+            "response_code",
+            "response_body"
+        ]
+    })
+    cc.start('Netconf_read_structured_device_data', read_structured_data, False)
