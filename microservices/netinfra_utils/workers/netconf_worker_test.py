@@ -48,6 +48,45 @@ netconf_node_non_exist = {
     }
 }
 
+bad_request_response = {
+    "errors": {
+        "error": [
+            {
+                "error-type": "protocol",
+                "error-tag": "data-missing",
+                "error-message": "Request could not be completed because the relevant data model content does not exist"
+            }
+        ]
+    }
+}
+
+alarms_response = {
+    "alarms":  {
+        "alarm":  [
+            {
+                "id": "302/1",
+                "state": {
+                    "severity": "openconfig-alarm-types:CRITICAL",
+                    "id": "302",
+                    "text": "Physical Port Link Down",
+                    "time-created": 1597308680,
+                    "resource": "GigabitEthernet0/0/1",
+                },
+            },
+            {
+                "id": "387/1",
+                "state": {
+                    "severity": "openconfig-alarm-types:CRITICAL",
+                    "id": "387",
+                    "text": "Transceiver Missing - Link Down",
+                    "time-created": 1597308667,
+                    "resource": "subslot 0/0 transceiver container 2",
+                },
+            }
+        ],
+    },
+}
+
 
 class MockResponse:
     def __init__(self, content, status_code):
@@ -94,6 +133,37 @@ class TestUnmount(unittest.TestCase):
                              + "/data/network-topology:network-topology/topology=topology-netconf/node=xr6")
             self.assertEqual(request["output"]["response_code"], 204)
             self.assertEqual(request["output"]["response_body"], {})
+
+
+class TestReadStructuredData(unittest.TestCase):
+    def test_read_structured_data_with_device(self):
+        with patch('netconf_worker.requests.get') as mock:
+            mock.return_value = MockResponse(bytes(json.dumps(alarms_response), encoding='utf-8'), 200)
+            request = netconf_worker.read_structured_data(
+                {"inputData": {"device_id": "xr5", "uri": "/openconfig-system/system/alarms"}})
+            self.assertEqual(request["status"], "COMPLETED")
+            self.assertEqual(request["output"]["url"],
+                             odl_url_base + "/data/network-topology:network-topology/topology=topology-netconf/node=xr5"
+                                            "/yang-ext:mount/openconfig-system/system/alarms")
+            self.assertEqual(request["output"]["response_code"], 200)
+            self.assertEqual(len(request["output"]["response_body"]["alarms"]["alarm"]), 2)
+            self.assertEqual(request["output"]["response_body"]["alarms"]["alarm"][0]["id"], "302/1")
+            self.assertEqual(request["output"]["response_body"]["alarms"]["alarm"][0]["state"]["text"],
+                             "Physical Port Link Down")
+            self.assertEqual(request["output"]["response_body"]["alarms"]["alarm"][1]["id"], "387/1")
+            self.assertEqual(request["output"]["response_body"]["alarms"]["alarm"][1]["state"]["text"],
+                             "Transceiver Missing - Link Down")
+
+    def test_read_structured_data_no_device(self):
+        with patch('netconf_worker.requests.get') as mock:
+            mock.return_value = MockResponse(bytes(json.dumps(bad_request_response), encoding='utf-8'), 404)
+            request = netconf_worker.read_structured_data(
+                {"inputData": {"device_id": "", "uri": "/openconfig-system/system/alarms"}})
+            self.assertEqual(request["status"], "FAILED")
+            self.assertEqual(request["output"]["response_code"], 404)
+            self.assertEqual(request["output"]["response_body"]['errors']['error'][0]["error-type"], "protocol")
+            self.assertEqual(request["output"]["response_body"]['errors']['error'][0]["error-message"],
+                             "Request could not be completed because the relevant data model content does not exist")
 
 
 class TestCheckCliConnected(unittest.TestCase):
