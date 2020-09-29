@@ -192,7 +192,7 @@ services:
 
   uniflow-ui:
    build:
-     context: ./frinx-workflow-ui
+     context: ./uniflow-ui
      dockerfile: Dockerfile
    image: frinx/fm-uniflow-ui:${RELEASE_VERSION}
    container_name: uniflow-ui
@@ -206,7 +206,7 @@ services:
 
   uniflow-api:
    build:
-     context: ./frinx-workflow-ui/api
+     context: ./uniflow-api
      dockerfile: Dockerfile
    image: frinx/fm-uniflow-api:${RELEASE_VERSION}
    environment:

@@ -2,9 +2,6 @@
 	path = conductor
 	url = https://github.com/FRINXio/conductor.git
 	branch = master
-[submodule "frinx-workflow-ui"]
-	path = frinx-workflow-ui
-	url = https://github.com/FRINXio/frinx-workflow-ui
 [submodule "frinx-uniconfig-ui"]
 	path = frinx-uniconfig-ui
 	url = https://github.com/FRINXio/frinx-uniconfig-ui
@@ -14,3 +11,9 @@
 [submodule "api-gateway"]
 	path = api-gateway
 	url = https://github.com/FRINXio/api-gateway
+[submodule "uniflow-api"]
+	path = uniflow-api
+	url = https://github.com/FRINXio/uniflow-api
+[submodule "uniflow-ui"]
+	path = uniflow-ui
+	url = https://github.com/FRINXio/uniflow-ui
