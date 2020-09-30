@@ -15,6 +15,7 @@ services:
     container_name: uniconfig
     environment:
       - JAVA_MAX_MEM=4G
+      - TOKEN=${TOKEN}
     volumes:
        - uniconfig_logs:/opt/uniconfig-frinx/log
        - uniconfig_pass:/opt/uniconfig-frinx/db-credentials

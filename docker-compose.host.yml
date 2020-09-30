@@ -49,6 +49,7 @@ services:
     container_name: uniconfig
     environment:
       - JAVA_MAX_MEM=4G
+      - TOKEN=${TOKEN}
     volumes:
        - uniconfig_logs:/opt/uniconfig-frinx/log
        - uniconfig_pass:/opt/uniconfig-frinx/db-credentials
@@ -207,7 +208,7 @@ services:
     network_mode: "host"
     extra_hosts: *extra_hosts_entries
 
-   uniconfig-ui:
+  uniconfig-ui:
     build:
       context: ./frinx-uniconfig-ui
       dockerfile: Dockerfile
@@ -223,7 +224,7 @@ services:
     network_mode: "host"
     extra_hosts: *extra_hosts_entries
  
-   uniconfig-api:
+  uniconfig-api:
     build:
       context: ./frinx-uniconfig-ui/api
       dockerfile: Dockerfile
@@ -243,7 +244,7 @@ services:
     network_mode: "host"
     extra_hosts: *extra_hosts_entries
  
-   uniflow-ui:
+  uniflow-ui:
     build:
       context: ./uniflow-ui
       dockerfile: Dockerfile
@@ -259,7 +260,7 @@ services:
     network_mode: "host"
     extra_hosts: *extra_hosts_entries
  
-   uniflow-api:
+  uniflow-api:
     build:
       context: ./uniflow-api
       dockerfile: Dockerfile
@@ -279,7 +280,7 @@ services:
     network_mode: "host"
     extra_hosts: *extra_hosts_entries
  
-   dashboard:
+  dashboard:
     build:
       context: ./frinx-dashboard
       dockerfile: Dockerfile
@@ -295,7 +296,7 @@ services:
     network_mode: "host"
     extra_hosts: *extra_hosts_entries
  
-   api-gateway:
+  api-gateway:
     build:
       context: ./api-gateway
       dockerfile: Dockerfile
