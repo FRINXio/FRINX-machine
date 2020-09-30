@@ -12,7 +12,7 @@ margs=1
 
 # Common functions
 function example {
-    echo -e "example: $script -l license_token -b uniconfig kibana"
+    echo -e "example: $script -b uniconfig kibana"
 }
 
 function usage {
@@ -24,9 +24,6 @@ function usage {
 function help {
   usage
     echo -e "OPTIONS:"
-    echo -e "  -l | --license  <VALUE>    Specify custom license.
-            Saves license token to [PATH to git repo]/uniconfig/frinx.license.cfg.
-            If license file exists, custom uniconfig license is applied after each pull"
     echo -e "  -b | --build               Build specified services locally"
     echo -e "  -d | --dev                 Updates submodules to latest, else does nothing with submodules"
     echo -e "\n"
@@ -66,10 +63,7 @@ function valid {
   return 1
 }
 
-file=uniconfig/frinx.license.cfg
 valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "postgresql" "elasticsearch" "kibana" "logstash" "uniconfig-ui" "uniconfig-api" "uniflow-ui" "uniflow-api" "dashboard" "api-gateway" "portainer")
-license=
-license_flag=false
 build=false
 dev_flag=false
 
@@ -77,11 +71,6 @@ dev_flag=false
 while [ "$1" != "" ];
 do
 case $1 in
-   -l | --license )
-   license_flag=true
-   shift
-   license=$1
-   ;;
    -b | --build )
    build=true
    ;;
@@ -106,12 +95,6 @@ esac
 shift
 done
 
-# Save license to file
-if [ "$license_flag" = true ]
-then
-      echo "token=$license" > $file
-fi
-
 
 if [ "$dev_flag" = true ]
 then
@@ -134,12 +117,6 @@ cd ${DIR}
 if [ "$build" = false ]; then
   echo 'Pull images'
   docker-compose -f docker-compose.bridge.yml pull "${input_containers[@]}"
-
-  # Copy custom license if file exists
-  if [[ -f "$file" ]]; then
-    echo "Apply license from file $file"
-    docker-compose -f docker-compose.bridge.yml build uniconfig
-  fi
 else
   echo 'Build images'
   docker-compose -f docker-compose.bridge.yml build "${input_containers[@]}"
