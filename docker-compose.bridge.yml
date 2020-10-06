@@ -173,24 +173,6 @@ services:
    ports:
      - 4000:4000
 
-  uniconfig-api:
-   build:
-     context: ./frinx-uniconfig-ui/api
-     dockerfile: Dockerfile
-   image: frinx/fm-uniconfig-api:${RELEASE_VERSION}
-   environment:
-       - UNICONFIG_HOST=uniconfig:8181
-   container_name: uniconfig-api
-   logging:
-     driver: "json-file"
-     options:
-       max-file: "3"
-       max-size: "10m"
-   ports:
-     - 4001:4001
-   depends_on: 
-     - uniconfig
-
   uniflow-ui:
    build:
      context: ./uniflow-ui
@@ -248,7 +230,7 @@ services:
        - UNIFLOW_UI_HOST=uniflow-ui:3000
        - UNIFLOW_API_HOST=uniflow-api:3001
        - UNICONFIG_UI_HOST=uniconfig-ui:4000
-       - UNICONFIG_API_HOST=uniconfig-api:4001
+       - UNICONFIG_API_HOST=uniconfig:8181
    container_name: api-gateway
    logging:
      driver: "json-file"
@@ -262,7 +244,7 @@ services:
      - uniflow-ui
      - uniflow-api
      - uniconfig-ui
-     - uniconfig-api
+     - uniconfig
 
   portainer:
     build:
