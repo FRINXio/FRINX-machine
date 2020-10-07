@@ -63,7 +63,7 @@ function valid {
   return 1
 }
 
-valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "postgresql" "elasticsearch" "kibana" "logstash" "uniconfig-ui" "uniconfig-api" "uniflow-ui" "uniflow-api" "dashboard" "api-gateway" "portainer")
+valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "postgresql" "elasticsearch" "kibana" "logstash" "uniconfig-ui" "uniflow-ui" "uniflow-api" "dashboard" "api-gateway" "portainer")
 build=false
 dev_flag=false
 
