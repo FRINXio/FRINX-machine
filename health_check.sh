@@ -23,7 +23,7 @@ function example {
 
 
 # all container names
-valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "postgresql" "elasticsearch" "kibana" "logstash" "uniconfig-ui" "uniflow-ui" "uniflow-api" "dashboard" "api-gateway" "portainer")
+valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "postgresql" "elasticsearch" "kibana" "logstash" "uniconfig-ui" "uniflow-ui" "uniflow-api" "schellar" "mongo" "dashboard" "api-gateway" "portainer")
 containers_to_check=()
 
 curl_uniconfig=( curl --user admin:admin --silent --write-out "HTTPSTATUS:%{http_code}" -X POST -d "{\"input\":{\"target-nodes\":{\"node\":[]}}}" 'http://127.0.0.1:8181/rests/operations/uniconfig-manager:calculate-diff' -H "Accept:application/json" -H "Content-Type:application/json")
@@ -178,6 +178,12 @@ for i in "${containers_to_check[@]}"; do
     echo "Skipping health check"
     ;;
     postgresql )
+    echo "Skipping health check"
+    ;;
+    schellar )
+    echo "Skipping health check"
+    ;;
+    mongo )
     echo "Skipping health check"
     ;;
     * )

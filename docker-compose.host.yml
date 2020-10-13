@@ -16,6 +16,8 @@ x-extra_hosts: &extra_hosts_entries
         - "dashboard:127.0.0.1"
         - "api-gateway:127.0.0.1"
         - "portainer:127.0.0.1"
+        - "schellar:127.0.0.1"
+        - "mongo:127.0.0.1"
         - "conductor-server:::1"
         - "uniconfig:::1"
         - "micros:::1"
@@ -31,6 +33,8 @@ x-extra_hosts: &extra_hosts_entries
         - "dashboard:::1"
         - "api-gateway:::1"
         - "portainer:::1"
+        - "schellar:::1"
+        - "mongo:::1"
 
 services:
   uniconfig:
@@ -320,6 +324,44 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 9000:9000
+    network_mode: "host"
+    extra_hosts: *extra_hosts_entries
+
+schellar:
+  build:
+    context: ./schellar
+    dockerfile: Dockerfile
+  image: frinx/fm-schellar:${RELEASE_VERSION}
+  container_name: schellar
+  environment:
+    - CONDUCTOR_API_URL=http://conductor-server:8080/api
+    - MONGO_ADDRESS=mongo
+    - MONGO_USERNAME=root
+    - MONGO_PASSWORD=root
+    - LOG_LEVEL=info
+  ports:
+    - 7000:3000
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "20MB"
+      max-file: "5"
+  restart: on-failure
+  network_mode: "host"
+  extra_hosts: *extra_hosts_entries
+
+  mongo:
+    build:
+      context: ./mongo
+      dockerfile: Dockerfile
+    image: frinx/fm-mongo:${RELEASE_VERSION}
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+    ports:
+      - 27017-27019:27017-27019
+    restart: on-failure
     network_mode: "host"
     extra_hosts: *extra_hosts_entries
 

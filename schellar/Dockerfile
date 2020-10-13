@@ -1,0 +1,1 @@
+FROM flaviostutz/schellar:1.4.0
