@@ -248,7 +248,8 @@ services:
       dockerfile: Dockerfile
     image: frinx/fm-uniflow-api:${RELEASE_VERSION}
     environment:
-        - CONDUCTOR_HOST=conductor-server:8080/api/
+        - CONDUCTOR_HOST=conductor-server:8080
+        - SCHELLAR_HOST=schellar:3000
     container_name: uniflow-api
     logging:
       driver: "json-file"
@@ -259,6 +260,7 @@ services:
       - 3001:3001
     depends_on: 
       - conductor-server
+      - schellar
     network_mode: "host"
     extra_hosts: *extra_hosts_entries
  
