@@ -1,1 +1,1 @@
-FROM flaviostutz/schellar:1.4.0
+FROM frinx/schellar:1.7.0
