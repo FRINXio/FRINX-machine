@@ -62,6 +62,7 @@ Change to FRINX-machine directory:
 ```bash
 cd /path/to/unzip/to/FRINX-machine
 ```
+Note: alternative way how to get the project is to clone it from the github.
 
 ### Installation
 
@@ -80,6 +81,11 @@ Installation with the trial license token:
 ```
 ./install.sh
 ```
+Note: in bleeding-edge version you can apply the license via -l switch of install.sh command
+```
+./install.sh -l e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643100ccd31052430de1955540cf5ae1e510d657bd2af8ef2fc
+```
+
 
 ##### Use differrent token
 In `.env` file replace the value of the token with your desired one, `token=YOUR_TOKEN`
@@ -123,6 +129,9 @@ Open web page:
 Container management(portainer):
  http://localhost:9000
 
+Note: in bleedeng-edge version works:
+ http://localhost:5000
+
 ### Install demo workflows
 After following the steps above you will have a clean installation of FRINX Machine and you can create or load your own workflows. We have created a repository of demo and sample workflows to get familiar with FRINX Machine and to have a starting point for your own work.
 
@@ -151,6 +160,12 @@ Using docker, also needs privileged mode:
 ```bash
 ./teardown.sh [-v|--volumes] [-i|--images]
 ```
+Note: in bleeding-edge version after issuing the command `./teardown.sh` you can get the error:
+```
+Removing network FRINX-machine
+ERROR: error while removing network: network FRINX-machine id c47a82384025c45a161d03cf0a8334e4727a1954fd142e897486b00ede32b3aa has active endpoints
+```
+To avoid of this error you need to issue the command ./teardown.sh at first in fm-workflows repository and then the command ./teardown.sh in FRINX-machine repository.
 
 #### **Caution all data will be lost if you use the `--volumes` flag!**
 
