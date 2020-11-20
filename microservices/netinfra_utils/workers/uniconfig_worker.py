@@ -569,6 +569,7 @@ def start(cc):
         "name": "UNICONFIG_read_uniconfig_topology_operational",
         "description": "{\"description\": \"Read operational state of Uniconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
         "retryLogic": "FIXED",
@@ -590,6 +591,7 @@ def start(cc):
         "name": "UNICONFIG_read_uniconfig_topology_config",
         "description": "{\"description\": \"Read config state of Uniconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
         "retryLogic": "FIXED",
@@ -611,6 +613,7 @@ def start(cc):
         "name": "UNICONFIG_get_all_devices_as_dynamic_fork_tasks",
         "description": "{\"description\": \"get all devices in uniconfig topology as dynamic fork tasks\", \"labels\": [\"BASICS\"\",\"UNICONFIG\"]}",
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
         "retryLogic": "FIXED",
@@ -634,6 +637,7 @@ def start(cc):
         "name": "UNICONFIG_read_structured_device_data",
         "description": "{\"description\": \"Read device configuration or operational data in structured format e.g. openconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\",\"OPENCONFIG\"]}",
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
         "retryLogic": "FIXED",
@@ -656,6 +660,7 @@ def start(cc):
         "name": "UNICONFIG_write_structured_device_data",
         "description": "{\"description\": \"Write device configuration data in structured format e.g. openconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
         "retryLogic": "FIXED",
@@ -680,6 +685,7 @@ def start(cc):
         "name": "UNICONFIG_write_structured_data_as_dynamic_fork_tasks",
         "description": "{\"description\": \"Write device configuration data in strucuted format e.g. openconfig as a task\", \"labels\": [\"BASICS\",\"UNICONFIG\"]}",
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
         "retryLogic": "FIXED",
@@ -702,6 +708,7 @@ def start(cc):
         "name": "UNICONFIG_delete_structured_device_data",
         "description": "{\"description\": \"Delete device configuration data in structured format e.g. openconfig\", \"labels\": [\"BASICS\",\"UNICONFIG\",\"OPENCONFIG\"]}",
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "timeoutSeconds": 60,
         "timeoutPolicy": "TIME_OUT_WF",
         "retryLogic": "FIXED",
@@ -733,6 +740,7 @@ def start(cc):
             "response_body"
         ],
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_commit', commit, False)
@@ -750,6 +758,7 @@ def start(cc):
             "response_body"
         ],
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_dryrun_commit', dryrun_commit, False)
@@ -767,6 +776,7 @@ def start(cc):
             "response_body"
         ],
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_checked_commit', checked_commit, False)
@@ -784,6 +794,7 @@ def start(cc):
             "response_body"
         ],
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_calculate_diff', calc_diff, False)
@@ -801,6 +812,7 @@ def start(cc):
             "response_body"
         ],
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_sync_from_network', sync_from_network, False)
@@ -818,6 +830,7 @@ def start(cc):
             "response_body"
         ],
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_replace_config_with_oper', replace_config_with_oper, False)
@@ -836,6 +849,7 @@ def start(cc):
             "response_body"
         ],
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_create_snapshot', create_snapshot, False)
@@ -853,6 +867,7 @@ def start(cc):
             "response_body"
         ],
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_delete_snapshot', delete_snapshot, False)
@@ -871,6 +886,7 @@ def start(cc):
             "response_body"
         ],
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_replace_config_with_snapshot', replace_config_with_snapshot, False)
@@ -878,6 +894,7 @@ def start(cc):
     cc.register('UNICONFIG_check_uniconfig_node_exists', {
         "name": "UNICONFIG_check_uniconfig_node_exists",
         "retryCount": 20,
+        "ownerEmail":"example@example.com",
         "timeoutSeconds": 10,
         "timeoutPolicy": "TIME_OUT_WF",
         "retryLogic": "FIXED",
@@ -902,6 +919,7 @@ def start(cc):
             "response_body"
         ],
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_create_transaction', create_transaction, False)
@@ -918,6 +936,7 @@ def start(cc):
             "response_body"
         ],
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "responseTimeoutSeconds": 600
     })
     cc.start('UNICONFIG_close_transaction', close_transaction, False)
