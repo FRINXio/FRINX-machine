@@ -151,6 +151,7 @@ def start(cc):
         "name": "HTTP_task",
         "description": "{\"description\": \"Generic http task\", \"labels\": [\"BASICS\",\"HTTP\"]}",
         "retryCount": 0,
+        "ownerEmail":"example@example.com",
         "timeoutSeconds": 360,
         "timeoutPolicy": "TIME_OUT_WF",
         "retryLogic": "FIXED",

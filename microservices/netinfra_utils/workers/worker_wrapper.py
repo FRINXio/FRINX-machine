@@ -13,6 +13,7 @@ from frinx_rest import conductor_url_base, odl_headers
 DEFAULT_TASK_DEFINITION = {
     "name": "",
     "retryCount": 0,
+    "ownerEmail":"example@example.com",
     "timeoutSeconds": 60,
     "timeoutPolicy": "TIME_OUT_WF",
     "retryLogic": "FIXED",

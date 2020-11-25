@@ -63,5 +63,6 @@
   "outputParameters": {
     "device_id": "${workflow.input.device_id}"
   },
+  "ownerEmail": "example@example.com",
   "schemaVersion": 2
 }
