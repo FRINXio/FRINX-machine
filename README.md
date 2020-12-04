@@ -1,4 +1,4 @@
-# FRINX Machine cluster
+# FRINX Machine
 
 ## Requirements
 Hardware:
