@@ -3,7 +3,7 @@ version: "3.7"
 
 services:
   api-gateway:
-    image: frinx/api-gateway:latest
+    image: frinx/api-gateway:1.0.0
     environment:
       - API_GATEWAY_HOST=api-gateway:5000
       - DASHBOARD_HOST=dashboard:5001
@@ -41,7 +41,7 @@ services:
   conductor-server:
     environment:
       - CONFIG_PROP=config.properties
-    image: frinx/uniflow-conductor-server:latest
+    image: frinx/uniflow-conductor-server:1.0.0
     volumes:
       - ../config/conductor/config.properties:/app/config/config.properties
     logging:
@@ -90,7 +90,7 @@ services:
       replicas: 1
 
   dashboard:
-    image: frinx/frinx-dashboard:latest
+    image: frinx/frinx-dashboard:1.0.0
     logging:
       driver: "json-file"
       options:
@@ -98,7 +98,7 @@ services:
         max-size: "10m"
 
   micros:
-    image: frinx/uniflow-micros:latest
+    image: frinx/uniflow-micros:1.0.3
     logging:
       driver: "json-file"
       options:
@@ -143,7 +143,7 @@ services:
       replicas: 1
 
   schellar:
-    image: frinx/uniflow-schellar:latest
+    image: frinx/uniflow-schellar:1.9.1
     environment:
       - LOG_LEVEL=debug
       - CHECK_INTERVAL_SECONDS=10
@@ -171,7 +171,7 @@ services:
 
   uniconfig-ui:
     # TODO: Make uniconfig-ui able to route to different uniconfig instances
-    image: frinx/uniconfig-ui:latest
+    image: frinx/uniconfig-ui:1.1.9
     logging:
       driver: "json-file"
       options:
@@ -195,7 +195,7 @@ services:
       start_period: 20s
 
   uniflow-api:
-    image: frinx/uniflow-api:latest
+    image: frinx/uniflow-api:1.0.0
     environment:
       - CONDUCTOR_HOST=conductor-server:8080
     logging:
@@ -211,7 +211,7 @@ services:
       replicas: 1
 
   uniflow-ui:
-    image: frinx/uniflow-ui:latest
+    image: frinx/uniflow-ui:1.0.1
     logging:
       driver: "json-file"
       options:

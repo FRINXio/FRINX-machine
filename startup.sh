@@ -194,10 +194,12 @@ fi
 
 startContainers
 
-echo -e "${INFO} Startup finished!"
+echo -e "${INFO} Startup finished"
 echo -e "================================================================================"
-echo -e "Startup complete"
+echo
+echo -e "Use 'docker service ls' to check status of services."
+echo -e "Each service has REPLICAS 1/1 when everything works (it may take several minutes to start all services)."
 echo
 echo -e "Use 'docker stack rm $stackName' to stop all services and"
-echo -e "'docker volume prune' to remove old data if needed"
+echo -e "'docker volume prune' to remove old data if needed."
 echo
