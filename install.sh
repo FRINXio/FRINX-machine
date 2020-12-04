@@ -1,126 +1,190 @@
 #!/bin/bash
-
 set -e
-
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-cd ${DIR}
-
-script="install.sh"
-
-#Declare the number of mandatory args
-margs=1
 
 # Common functions
 function example {
-    echo -e "example: $script -b uniconfig kibana"
+  echo -e "example: $scriptName"
 }
 
+
 function usage {
-    echo -e "usage: $script OPTIONS [services] \n"
-    echo -e "If no services are specified all are pulled or built."
-    echo -e "Services: uniconfig micros conductor-server dynomite postgresql elasticsearch kibana logstash uniconfig-ui"
+  echo -e "usage: $scriptName [OPTIONS]\n"
+  echo -e "Prepares the environment for UniFlow and UniConfig deployment."
 }
+
 
 function help {
   usage
     echo -e "OPTIONS:"
-    echo -e "  -b | --build               Build specified services locally"
-    echo -e "  -d | --dev                 Updates submodules to latest, else does nothing with submodules"
-    echo -e "\n"
+    echo -e " -h | --help        Display this message and exit"
+    echo -e " --no-swarm         Installer will NOT setup docker swarm during the installation"
+    echo -e "                    Useful in cases where you don't want to use default swarm"
+    echo -e "                    configuration and want to setup the swarm on you own."
+    echo -e "                    NOTE: You NEED a working swarm prior to running startup.sh"
+    echo -e ""
   example
 }
 
-# Ensures that the number of passed args are at least equals
-# to the declared number of mandatory args.
-# It also handles the special case of the -h or --help arg.
-function margs_precheck {
-	if [ $2 ] && [ $1 -lt $margs ]; then
-		if [ $2 == "--help" ] || [ $2 == "-h" ]; then
-		    help
-	            exit
-		else
-	    	    usage
-	    	    exit 1 # error
-		fi
-	fi
+
+function argumentsCheck {
+  if [ $1 -eq 0 ]
+  then
+    return
+  fi
+
+  if [ $1 -eq 1 ]
+  then
+    case $2 in
+      -h|--help)
+      help
+      exit
+      ;;
+
+      --no-swarm)
+      skipswarm=1
+      echo -e "${WARNING} Skipping swarm setup"
+      echo -e "${WARNING} Please setup the swarm manually prior to running startup.sh"
+      ;;
+
+      *)
+      echo -e "Uknown argument, see --help for more info \nExiting... \n"
+      exit
+      ;;
+    esac
+  fi
+
+  if [ $1 -gt 1 ]
+  then
+    echo -e "Too many arguments, see --help for more info \nExiting... \n"
+    exit
+  fi
 }
 
-# Ensures that all the mandatory args are not empty
-function margs_check {
-	if [ $# -lt $margs ]; then
-	    help
-	    exit 1 # error
-	fi
-}
 
+function installPrerequisities {
+  echo -e "${INFO} Configuring docker-ce and docker-compose"
+  echo -e "${INFO} Checking curl"
+  apt-get update -qq
+  apt-get install curl -qq -y
 
-# function to check if array contains argument
-#valid element array
-function valid {
-  local e match="$1"
-  shift
-  for e; do [[ "$e" == "$match" ]] && return 0; done
-  return 1
-}
+  if test -f /usr/bin/dockerd; then
+    dockerdVersion=$(/usr/bin/dockerd --version)
+    echo -e "${INFO} $dockerdVersion already installed, skipping..."
+  else
+    echo -e "${INFO} Installing docker-ce"
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    apt-get update -qq
+    apt-get install -qq -y $dockerInstallVersion
 
-valid_containers=("uniconfig" "micros" "conductor-server" "dynomite" "postgresql" "elasticsearch" "kibana" "logstash" "uniconfig-ui" "uniflow-ui" "uniflow-api" "schellar" "mongo" "dashboard" "api-gateway" "portainer")
-build=false
-dev_flag=false
-
-# Args while-loop
-while [ "$1" != "" ];
-do
-case $1 in
-   -b | --build )
-   build=true
-   ;;
-   -d | --dev )
-   dev_flag=true
-   ;;
-   -h | --help )
-   help
-   exit
-   ;;
-   *)
-   valid "$1" "${valid_containers[@]}"
-    if [[ $? -eq 0 ]];
-    then
-        input_containers+=( "$1" )
-    else
-    echo "$script: container '$1' not known"
-        exit 1
+    if [ $skipswarm -eq 0 ]; then
+      echo -e "${INFO} Initializing docker in swarm mode"
+      docker swarm init
     fi
-   ;;
-esac
-shift
-done
+  fi
+
+  if test -f /usr/local/bin/docker-compose; then
+    dockerComposeVersion=$(/usr/local/bin/docker-compose --version)
+    echo -e "${INFO} $dockerComposeVersion already installed, skipping..."
+  else
+    echo -e "${INFO} Installing docker-compose"
+    curl -sS -L "https://github.com/docker/compose/releases/download/$dockerComposeInstallVersion/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+  fi
+}
 
 
-if [ "$dev_flag" = true ]
-then
-    # Update submodules
-    #git submodule init
-    git submodule update --init --recursive --remote
-
-    cd conductor
-    echo 'git.root=../../' > gradle.properties
-    echo "submodVersion=$(git for-each-ref refs/tags --sort=-taggerdate --format='%(tag)' | grep -v -m 1 'frinx' | cut -d "v" -f 2)" >> gradle.properties
-else
-    # we need to init submodules even when images are just pulled
-    # from docker hub because of the bug in docker-compose
-    # https://github.com/docker/compose/issues/3513
-    git submodule update --init --recursive --remote
-fi
+function pullImages {
+  echo -e "${INFO} Pulling UniFlow images"
+  docker-compose --log-level ERROR -f $dockerComposeFileUniflow pull
+  echo -e "${INFO} Pulling UniConfig images"
+  docker-compose --log-level ERROR -f $dockerComposeFileUniconfig pull
+}
 
 
+function cleanup {
+  echo -e "${INFO} Cleanup"
+  docker system prune -f > /dev/null
+}
+
+
+function finishedMessage {
+  echo -e "================================================================================"
+  echo -e "Installation complete"
+  echo
+  echo -e "Continue by running ./startup.sh"
+
+  if [ $skipswarm -eq 1 ]
+  then
+    swarmNote
+  fi
+
+  if [ $dockerNoteEnabled -eq 1 ]
+  then
+    dockerNote
+  fi
+}
+
+
+function dockerNote {
+  echo -e "Current user has been added to the docker group"
+  echo -e "However, for the user to be able to use docker commands, you must logout/login,"
+  echo -e "reboot or run 'newgrp docker' command before running ./startup.sh"
+  echo ""
+}
+
+
+function swarmNote {
+  echo -e "NOTE: Docker swarm not configured!"
+  echo -e "Please setup the swarm manually prior to running startup.sh"
+  echo ""
+}
+
+
+function checkDockerGroup {
+  if [ -z "$(groups $SUDO_USER | grep docker)" ]
+  then
+    dockerNoteEnabled=1
+    echo -e "${INFO} Adding $SUDO_USER to group 'docker'"
+    usermod -aG docker $SUDO_USER
+  else
+    dockerNoteEnabled=0
+    echo -e "${INFO} User $SUDO_USER already in group 'docker'"
+  fi
+}
+
+
+function checkIfRoot {
+  if [ "$EUID" -ne 0 ]
+  then
+    echo -e "${ERROR} Please re-run as root"
+    exit
+  fi
+}
+
+
+# =======================================
+# Program starts here
+# =======================================
+dockerInstallVersion="docker-ce=5:18.09.9~3-0~ubuntu-bionic"
+dockerComposeInstallVersion="1.22.0"
+
+dockerComposeFileUniconfig='composefiles/swarm-uniconfig.yml'
+dockerComposeFileUniflow='composefiles/swarm-uniflow.yml'
+scriptName=$0
+skipswarm=0
+
+ERROR='\033[0;31m[ERROR]:\033[0;0m'
+WARNING='\033[0;33m[WARNING]:\033[0;0m'
+INFO='\033[0;96m[INFO]:\033[0;0m'
+
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
-if [ "$build" = false ]; then
-  echo 'Pull images'
-  docker-compose -f docker-compose.bridge.yml pull "${input_containers[@]}"
-else
-  echo 'Build images'
-  docker-compose -f docker-compose.bridge.yml build "${input_containers[@]}"
-fi
 
-# Clean up
-docker system prune -f
+argumentsCheck $# $@
+checkIfRoot
+installPrerequisities
+checkDockerGroup
+pullImages
+cleanup
+finishedMessage

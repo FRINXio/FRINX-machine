@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration  -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user             -->
+<!--                                                                -->
+<!-- For professional support please see                            -->
+<!--    http://www.qos.ch/shop/products/professionalSupport         -->
+<!--                                                                -->
+<configuration scan="true" debug="true" scanPeriod="5 seconds">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="logs" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>log/logs.log</File>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <maxIndex>20</maxIndex>
+            <FileNamePattern>log/logs.log.%i</FileNamePattern>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>50MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+    <appender name="netconf-notifications" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator class="io.lighty.discriminator.MarkerBasedDiscriminator">
+            <key>deviceName</key>
+            <defaultValue>unknown</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="${deviceName}-netconf-notifications" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>log/netconf-notifications/${deviceName}.log</file>
+                <encoder>
+                    <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
+                </encoder>
+                <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+                    <maxIndex>20</maxIndex>
+                    <FileNamePattern>log/netconf-notifications/${deviceName}.log.%i</FileNamePattern>
+                </rollingPolicy>
+                <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                    <MaxFileSize>16MB</MaxFileSize>
+                </triggeringPolicy>
+            </appender>
+        </sift>
+    </appender>
+    <appender name="netconf-messages" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator class="io.lighty.discriminator.MarkerBasedDiscriminator">
+            <key>deviceName</key>
+            <defaultValue>unknown</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="${deviceName}-netconf-messages" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>log/netconf-messages/${deviceName}.log</file>
+                <encoder>
+                    <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
+                </encoder>
+                <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+                    <maxIndex>20</maxIndex>
+                    <FileNamePattern>log/netconf-messages/${deviceName}.log.%i</FileNamePattern>
+                </rollingPolicy>
+                <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                    <MaxFileSize>16MB</MaxFileSize>
+                </triggeringPolicy>
+            </appender>
+        </sift>
+    </appender>
+    <appender name="netconf-events" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator class="io.lighty.discriminator.MarkerBasedDiscriminator">
+            <key>deviceName</key>
+            <defaultValue>unknown</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="${deviceName}-netconf-events" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>log/netconf-events/${deviceName}.log</file>
+                <encoder>
+                    <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
+                </encoder>
+                <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+                    <maxIndex>20</maxIndex>
+                    <FileNamePattern>log/netconf-events/${deviceName}.log.%i</FileNamePattern>
+                </rollingPolicy>
+                <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                    <MaxFileSize>16MB</MaxFileSize>
+                </triggeringPolicy>
+            </appender>
+        </sift>
+    </appender>
+    <appender name="restconf" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>log/restconf.log</File>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <maxIndex>20</maxIndex>
+            <FileNamePattern>log/restconf.%i</FileNamePattern>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>50MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <!-- root logger -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="logs"/>
+    </root>
+
+    <!-- UniConfig layer part -->
+    <logger name="io.frinx.uniconfig" level="INFO"/>
+
+    <!-- Unified layer part -->
+    <logger name="io.frinx.unitopo" level="INFO"/>
+
+    <!-- NETCONF part -->
+    <logger name="org.opendaylight.netconf" level="INFO"/>
+
+    <!-- CLI part -->
+    <logger name="io.frinx.cli" level="INFO"/>
+
+    <!-- translation unit framework part -->
+    <logger name="io.frinx.translate.unit.commons" level="INFO"/>
+    <logger name="io.fd.honeycomb" level="INFO"/>
+
+    <!-- RESTCONF part -->
+    <logger name="org.opendaylight.restconf" level="INFO"/>
+    <logger name="org.opendaylight.aaa" level="INFO"/>
+
+
+    <!-- controller part -->
+    <logger name="org.opendaylight.daexim" level="INFO"/>
+    <logger name="org.opendaylight.controller" level="INFO"/>
+    <logger name="org.opendaylight.yangtools" level="INFO"/>
+
+    <!-- do not modify this part, we should use RESTCONF RPCs for controlling of logging brokers -->
+    <logger name="org.opendaylight.restconf.nb.rfc8040.jersey.providers.logging.RestconfLoggingBroker" level="TRACE" additivity="false">
+        <appender-ref ref="restconf"/>
+    </logger>
+    <logger name="org.opendaylight.netconf.logging.brokers.NetconfMessagesLoggingBroker" level="TRACE" additivity="false">
+        <appender-ref ref="netconf-messages"/>
+    </logger>
+    <logger name="org.opendaylight.netconf.logging.brokers.NotificationsLoggingBroker" level="TRACE" additivity="false">
+        <appender-ref ref="netconf-notifications"/>
+    </logger>
+    <logger name="org.opendaylight.netconf.logging.brokers.NetconfEventsLoggingBroker" level="TRACE" additivity="false">
+        <appender-ref ref="netconf-events"/>
+    </logger>
+</configuration>

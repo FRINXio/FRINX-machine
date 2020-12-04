@@ -1,6 +1,0 @@
-This is a placeholder folder, which can be left empty or contain a karaf distribution.
-
-If there is a karaf distribution (files directly in this folder e.g. ./run_uniconfig.sh is here) it
-will be used in the uniconfig docker container.
-
-This folder can be used to upload a different distribution into uniconfig container.

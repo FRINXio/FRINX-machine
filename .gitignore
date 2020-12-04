@@ -1,3 +1,5 @@
-*.idea
-*.pyc
-uniconfig/frinx.license.cfg
+/build/**
+!/build/README
+
+/composefiles/uniconfig/**
+!/composefiles/uniconfig/README

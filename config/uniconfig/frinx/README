@@ -1,0 +1,5 @@
+This folder contains default UniConfig configuration.
+Copy the frinx folder and all of it's content into /opt directory prior to running UniConfig.
+
+Configuration, schema and distribution files from /opt/frinx/uniconfig are mounted as volumes into UniConfig container.
+See swarm-uniconfig.yml for more details.
