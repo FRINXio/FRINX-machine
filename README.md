@@ -1,202 +1,149 @@
-# FRINX-machine
-The project is a containerized package of:
+# FRINX Machine cluster
 
-* [FRINX UniConfig]
-* FRINX fork of Netflix's [Conductor]
-* Elastic's
-    * [Elasticsearch]
-    * [Kibana]
-    * [Logstash]
-* FRINX microservices to execute conductor tasks
-* Device simulation container
-* [Uniconfig-ui]
-* [Portainer]
-* [PostgreSQL]
+## Requirements
+Hardware:
+- 16GB RAM
+- 4x CPU
 
-### Requirements
-* 16GB and 4 CPU
-* [Docker](https://www.docker.com/)
-* [Docker Compose](https://github.com/docker/compose)
-* [Manage Docker as a non-root user](https://docs.docker.com/install/linux/linux-postinstall/)
-* License for FRINX UniConfig (you can find a trial license in the "Installation Guide" section below)
+You can deploy the FM either locally with all services running on a single node, or you can split UniFlow and UniConfig instances among multiple nodes. UniFlow is always running on manager node.
 
-### Tested on
-* Ubuntu 16.04 / 18.04 /
-* docker 18.03.1-ce, v18.06.1-ce, 18.09.5
-* docker-compose 1.21.2, v1.22.0 (we had issues with v1.25.0, please don't use this version)
-* Chrome browser
+To deploy a FM swarm cluster you need at least one machine with Ubuntu 18.04 installed.
 
-#### Services used in the project
-* uniconfig
-* dynomite
-* conductor-server
-* elasticsearch
-* kibana
-* logstash
-* micros
-* uniconfig-ui
-* portainer
-* postgresql
+## License
+A 30-day trial license is included, if you would like to use a different one, replace the license string in file `config/uniconfig/uniconfig_license.txt` with your own.
 
-## Installation Guide
-#### Trial license
-We offer a 30 day trial license. No signup needed! Alredy bundled in release.
-License token:
-```
-e326aaa7b1741bb530d201c49f4311d3d0f391893e15393894a77180e6478289cd1709e4afe3a643100ccd31052430de1955540cf5ae1e510d657bd2af8ef2fc
-```
-
-30 days after your first installation, your token will expire and you will see an error message during Uniconfig startup. If you would like to continue with your evaluation, please register as a user on our homepage, where you will find another 30 day token under the section "My License Information". After the second trial period has expired, you can continue with a commercial license that has no time limitations.
-
-
-
-#### Get the project
-Download zip of release v1.1:
-https://github.com/FRINXio/FRINX-machine/releases/download/v1.1/FRINX-machine_v1.1.zip
-
-Unzip:
-```bash
-unzip FRINX-machine_v1.1.zip -d /path/to/unzip/to
-```
-Change to FRINX-machine directory:
-```bash
-cd /path/to/unzip/to/FRINX-machine
-```
-
+## Deployment
 ### Installation
-
-The installation script `install.sh` is in the FRINX-machine folder.
-
-The installation script does the following things:
-* Copies license token
-* Pulls conductor project parts from maven repository
-* Builds conductor-server .jar file
-* Pulls and creates docker images
-* Creates external volumes for data persistence
-
-
-We recommend to run the install script as regular user and not as sudo, so all files can be edited by the regular user later.
-Installation with the trial license token:
+Run the install script, this will check and download neccessary prerequisities:
+```sh
+$ sudo ./install.sh
 ```
-./install.sh
+Automatically installed software:
+- curl
+- docker-compse 1.22.0
+- docker-ce 18.09
+
+NOTE: As FM is designed to run as non-root user, you need the user to be in `docker` group, this is done automatically during the installation process. Use newgrp or reboot the system for changes to take effect **BEFORE** running ```./startup.sh```
+See: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
+
+### Multi-node setup
+Skip these commands for single-node setup.
+Run following command on manager node to determine the swarm token
+```sh
+$ docker swarm join-token worker
 ```
 
-##### Use differrent token
-In `.env` file replace the value of the token with your desired one, `token=YOUR_TOKEN`
+Install and set-up docker-ce on remote node:
+```sh
+$ sudo apt-get install curl
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+$ sudo apt-get update
+$ sudo apt-get install docker-ce=5:18.09.9~3-0~ubuntu-bionic
+$ sudo usermod -aG docker $USER
+$ newgrp docker
+```
 
+And then join the the node to the swarm with token provided by the manager:
+```sh
+$ docker swarm join --token SWMTKN-<TOKEN> IP:PORT
+```
 
 ### Startup
-The startup script `startup.sh` can be found in the FRINX-machine folder.
-Here is what it does:
-* Creates the docker containers from the images and starts them.
-* Imports workflow definitions.
-* Adds sample devices to inventory
-* Starts simulated devices
-* Deploys bridge (default) or host networking (optional)
-
-
-Info about BRIDGE networking:
-https://docs.docker.com/network/bridge/
-
-More info when to use HOST networking:
-https://docs.docker.com/network/host/
-
-
-
-Bridge networking is executed by command:
-
-```bash
-./startup.sh
+To deploy both UniFlow and UniConfig locally (for testing and demo purposes), run `startup.sh`:
+```sh
+$ ./startup.sh
 ```
 
-Host networking is executed by command:
-
-```bash
-./startup.sh -n host
+To only deploy UniFlow services on a local node (when deploying in mutinode environment) use `--uniflow-only` flag:
+```sh
+$ ./startup.sh --uniflow-only
 ```
 
-
-#### Web interface
-Open web page:
- http://localhost:3000
-
-Container management(portainer):
- http://localhost:9000
-
-### Install demo workflows
-After following the steps above you will have a clean installation of FRINX Machine and you can create or load your own workflows. We have created a repository of demo and sample workflows to get familiar with FRINX Machine and to have a starting point for your own work.
-
-Clone the following respoitory:
-
-```bash
-git clone https://github.com/FRINXio/fm-workflows.git
-```
-While FRINX Machine is running execute the startup script inside the fm-workflows folder
-```bash
-cd fm-workflows/
-git checkout 8a611581b3d8b7f75e3348e4723dbf756c3ea02e #valid for downloaded FRINX-machine v1.1
-./startup.sh
-```
-The startup script will load sample devices and sample workflows into your FRINX Machine setup.
-
-## Documentation & Use Cases
-More detailed documentation and use cases can be found at https://docs.frinx.io/FRINX_Machine/index.html.
-
-### Teardown
-The `teardown.sh` script in the FRINX-machine folder:
-* Stops and removes containers
-* Optionially removes volumes and images used by services in the `docker-compose.*.yml` file.
-
-Using docker, also needs privileged mode:
-```bash
-./teardown.sh [-v|--volumes] [-i|--images]
+### Shutdown
+To stop all services, simply remove the stack from the swarm:
+```sh
+$ docker stack rm STACKNAME
 ```
 
-#### **Caution all data will be lost if you use the `--volumes` flag!**
-
-
-### For developers
-
-Once images were downloaded, to update images from Docker Hub:
-```
-./install.sh [service]
+To remove all persistent data, purge the volumes (useful for debugging):
+```sh
+$ docker volume prune
 ```
 
-To build image from cloned repository:
+### Deploying UniConfig services
+To deploy UniConfig to a worker node, distribute the default UniConfig configuration to `/opt` directory on the remote node (SCP used as an example) and use `--deploy-uniconfig NODENAME` flag:
+From the manager node:
+```sh
+$ scp -r ./config/uniconfig/frinx username@host:/home/username/
 ```
-./install.sh -b [service]
+Log into remote node and copy the files:
+```sh
+$ sudo cp -r /home/username/frinx /opt
 ```
-If no container is specified all are updated.
+From the manager node, deploy uniconfig instance to a worker:
+```sh
+$ ./startup.sh --deploy-uniconfig NODENAME
+```
+NODENAME must be a valid docker swarm worker name, to get a list of current workers, issue `docker node ls`
+Each deployment creates a unique per-worker YAML file stored in folder `./uniconfig/composefiles/` which is then used for actual service deployment.
 
+NOTE: The deployment might take a while as the worker node needs to download all neccessary images first.
 
-To use latest version of submodules for locally built images:
+## Checking
+You can check the status of the swarm cluster by running:
+```sh
+$ docker service ls
+$ docker stack ps fm
 ```
-./install.sh --dev -b [service]
-```
+Where 'fm' (FRINX Machine) is the name of the swarm stack configured during deployment, the name is assigned automatically.
 
-To replace running service with new one run after updating the image:
-```
-docker stop [service]
-docker rm [service]
-docker-compose -f docker-compose.[networking].yml up -d [service]
-```
-e.g. in case of bridge networking
-
-```bash
-docker-compose -f docker-compose.bridge.yml up -d [service]
-```
-
-and in case of host networking
-
-```bash
-docker-compose -f docker-compose.host.yml up -d [service]
+## For developers
+If you need to modify and rebuild modules, you can use `pullmodules.sh` script to download up-to-date modules from FRINX's public GitHub repositories. Then you can use standard docker utilities to build and distribute them, e.g.:
+```sh
+$ cd build/uniconfig
+$ docker build .
 ```
 
-[FRINX UniConfig]: <https://frinx.io/odl_distribution>
-[Conductor]: <https://github.com/FRINXio/conductor>
-[Elasticsearch]: <https://www.elastic.co/products/elasticsearch>
-[Kibana]: <https://www.elastic.co/products/kibana>
-[Logstash]: <https://www.elastic.co/products/logstash>
-[Uniconfig-ui]: <https://github.com/FRINXio/frinx-uniconfig-ui>
-[Portainer]: <https://www.portainer.io/>
-[PostgreSQL]: <https://hub.docker.com/_/postgres>
+### Building and distribution of custom images
+In case you need to test a custom image you've built on a remote node, follow these steps:
+
+Build an image with an unique name
+```sh
+$ docker build . -t domain/imagename:version
+```
+Export the image to .tar archive
+```sh
+$ docker save --output image.tar domain/imagename:version
+```
+(Optional) Compress the image - images can get quite big
+```sh
+$ tar -cjf image.tar.bz2 image.tar
+```
+Copy the file to remote node (for example via SCP)
+```sh
+$ scp image.tar.bz2 username@remotehost:/path/to/folder
+```
+On the remote node:
+
+(Optional) Decompress the image
+```sh
+$ tar -xvf image.tar.bz2
+```
+Load the image into local repository
+```sh
+$ docker load --input image.tar
+```
+Update the service
+```sh
+$ docker service update --image domain/imagename:version
+```
+
+NOTE: If the service has any healthchecks, make sure they also work in the new version of the image, otherwise the service will appear as unhealthy and refuse to start. In such case you will need to remove or modify the healthcheck.
+
+### Log collections
+To collect logs, run:
+```sh
+$ ./collectlogs.sh
+```
+This will collect all docker related logs and compresses it into an archive. Logs are collected from local machine only, if you want logs from remote node (e.g. worker) you must copy and run the script on the remote node.

@@ -1,3 +1,0 @@
-- pipeline.id: odl_logs
-  path.config: "/usr/share/logstash/pipeline/logstash.conf"
-  pipeline.workers: 2

@@ -1,0 +1,6 @@
+This folder is empty by default.
+
+To download modules, use pullmodules.sh in root directory and modify/build them as neccessary.
+All files in the folder except for this README are ignored by git as specified in .gitignore.
+
+NOTE: uniconfig-ui and uniconfig modules are not pulled as they are stored on Frinx private gerrit repository.

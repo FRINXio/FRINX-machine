@@ -1,0 +1,79 @@
+# THIS FILE IS USED AS A TEMPLATE FOR UNICONFIG SERVICES
+# DO NOT DEPLOY SERVICES USING THIS FILE
+# USE ./startup.sh SCRIPT TO DO IT FOR YOU
+# ${UC_CONFIG_PATH} and ${LICENSE} ARE SET BY THE ./startup.sh SCRIPT
+
+version: "3.7"
+
+services:
+  TEMPLATE-HOSTNAME_uniconfig:
+    image: frinx/uniconfig:4.2.5.frinx
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    environment:
+      - JAVA_MAX_MEM=4G
+      - dbPersistence_enabled=true
+      - dbPersistence_connection_dbName=uniconfig
+      - dbPersistence_connection_username=postgres
+      - dbPersistence_connection_password=postgres
+      - dbPersistence_connection_databaseLocations_host=TEMPLATE-HOSTNAME_uniconfig-postgres
+      - dbPersistence_connection_databaseLocations_port=5432
+    volumes:
+      - uniconfig_logs:/opt/uniconfig-frinx/log
+      - ${UC_CONFIG_PATH}/config/lighty-uniconfig-config.json:/opt/uniconfig-frinx/config/lighty-uniconfig-config.json
+      - ${UC_CONFIG_PATH}/config/logback.xml:/opt/uniconfig-frinx/config/logback.xml
+      - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache
+      - ${UC_CONFIG_PATH}/config/.keystore:/opt/uniconfig-frinx/config/.keystore
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == TEMPLATE-HOSTNAME
+      mode: replicated
+      replicas: 1
+    command: -l ${LICENSE}
+    healthcheck:
+      test: curl --insecure -o /dev/null --user admin:admin --silent --write-out "%{http_code}" -X POST -d "{\"input\":{\"target-nodes\":{\"node\":[]}}}" 'https://127.0.0.1:8181/rests/operations/uniconfig-manager:calculate-diff' -H "Accept:application/json" -H "Content-Type:application/json" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 1m
+
+  TEMPLATE-HOSTNAME_uniconfig-postgres:
+    image: postgres:12.2
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=uniconfig
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - uniconfig_postgresql_data:/var/lib/postgresql/data
+      - ${UC_CONFIG_PATH}/init_schema.sql:/docker-entrypoint-initdb.d/init_schema.sql
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == TEMPLATE-HOSTNAME
+      mode: replicated
+      replicas: 1
+
+volumes:
+  uniconfig_logs:
+    name: uniconfig_logs
+  uniconfig_postgresql_data:
+    name: uniconfig_postgresql_data
+
+networks:
+  default:
+    name: frinx-machine
