@@ -98,7 +98,7 @@ services:
         max-size: "10m"
 
   micros:
-    image: frinx/uniflow-micros:1.0.3
+    image: frinx/uniflow-micros:latest
     logging:
       driver: "json-file"
       options:
@@ -106,6 +106,12 @@ services:
         max-size: "10m"
     environment:
       - UNICONFIG_URL_BASE=https://${CONSTRAINT_HOSTNAME}_uniconfig:8181/rests
+    healthcheck:
+      test: cat /home/app/healthcheck
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     deploy:
       restart_policy:
         delay: 10s
