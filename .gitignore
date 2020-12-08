@@ -3,3 +3,4 @@
 
 /composefiles/uniconfig/**
 !/composefiles/uniconfig/README
+/config/uniconfig/frinx/uniconfig/cache/**
