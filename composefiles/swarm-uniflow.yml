@@ -203,6 +203,12 @@ services:
       options:
         max-file: "3"
         max-size: "10m"
+    healthcheck:
+      test: curl -X GET 'http://127.0.0.1:3001/health'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     deploy:
       placement:
         constraints:
