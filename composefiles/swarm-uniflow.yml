@@ -223,7 +223,7 @@ services:
       replicas: 1
 
   uniflow-ui:
-    image: frinx/uniflow-ui:1.0.1
+    image: frinx/uniflow-ui:1.0.2
     logging:
       driver: "json-file"
       options:
