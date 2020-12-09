@@ -90,12 +90,18 @@ services:
       replicas: 1
 
   dashboard:
-    image: frinx/frinx-dashboard:1.0.1
+    image: frinx/frinx-dashboard:latest
     logging:
       driver: "json-file"
       options:
         max-file: "3"
         max-size: "10m"
+    healthcheck:
+      test: curl --silent -o /dev/null  --write-out 'HTTPSTATUS:%{http_code}\n' -X GET 'http://127.0.0.1:5001' || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   postgresql:
     image: postgres:12.2
