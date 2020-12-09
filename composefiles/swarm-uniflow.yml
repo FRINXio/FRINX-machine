@@ -98,7 +98,7 @@ services:
         max-size: "10m"
 
   micros:
-    image: frinx/uniflow-micros:latest
+    image: frinx/uniflow-micros:1.0.4
     logging:
       driver: "json-file"
       options:
