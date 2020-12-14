@@ -15,6 +15,8 @@ function usage {
  echo -e "If you do not wish to use the default UniConfig 30 day trial license, change
 the license key in $licenseKeyFile before running this script."
  echo -e ""
+ echo -e "To start without micros container use --no-micros. For local and uniflow deployment"
+ echo -e ""
 }
 
 
@@ -22,7 +24,8 @@ function help {
   usage
     echo -e "OPTIONS:"
     echo -e " -h | --help                    Display this message and exit"
-    echo -e " --uniflow-only                 Deploy UniFlow services locally"
+    echo -e "[--no-micros]                   Do not start micros container"
+    echo -e " --uniflow-only [--no-micros]   Deploy UniFlow services locally"
     echo -e " --deploy-uniconfig <hostname>  Deploy UniConfig services on swarm worker node"
     echo -e ""
   example
@@ -34,6 +37,7 @@ function argumentsCheck {
   then
     startupType="local"
     nodeName=$(hostname)
+    noMicros="false"
     return
   fi
 
@@ -45,12 +49,22 @@ function argumentsCheck {
         exit
       ;;
 
+      --no-micros)
+        startupType="local"
+        nodeName=$(hostname)
+        noMicros="true"
+      ;;
+
       --uniflow-only)
+        startupType="uniflow"
+        nodeName=$(hostname)
         if [ -z $3 ]
+        then  
+          noMicros="false"
+        elif [ "$3" = "--no-micros" ]
         then
-          startupType="uniflow"
-          nodeName=$(hostname)
-        else
+          noMicros="true"
+        else 
           echo -e "Option --uniflow-only does not accept any arguments"
           exit
         fi
@@ -81,6 +95,13 @@ function argumentsCheck {
   fi
 }
 
+function startUniflow {
+  if [ "$noMicros" = "true" ]; then
+    docker stack deploy --compose-file composefiles/$dockerSwarmUniflow $stackName
+  else 
+    docker stack deploy --compose-file composefiles/$dockerSwarmUniflow --compose-file composefiles/$dockerSwarmMicros $stackName
+  fi 
+}
 
 function startContainers {
   checkSwarmMode
@@ -90,7 +111,7 @@ function startContainers {
         export CONSTRAINT_HOSTNAME=$nodeName
 
         echo -e "${INFO} Starting UniFlow on local node $(hostname)"
-        docker stack deploy --compose-file composefiles/$dockerSwarmUniflow $stackName
+        startUniflow
       ;;
 
       uniconfig)
@@ -116,7 +137,7 @@ function startContainers {
         generateUniconfigComposeFile
 
         echo -e "${INFO} Starting UniFlow and UniConfig services locally"
-        docker stack deploy --compose-file composefiles/$dockerSwarmUniflow $stackName
+        startUniflow
         docker stack deploy --compose-file $uniconfigServiceFilesPath/$dockerSwarmUniconfig'.'$nodeName $stackName
       ;;
 
@@ -172,6 +193,7 @@ stackName="fm"
 licenseKeyFile='./config/uniconfig/uniconfig_license.txt'
 dockerSwarmUniconfig='swarm-uniconfig.yml'
 dockerSwarmUniflow='swarm-uniflow.yml'
+dockerSwarmMicros='swarm-uniflow-micros.yml'
 uniconfigServiceFilesPath='composefiles/uniconfig'
 scriptName=$0
 maxArgs=2
