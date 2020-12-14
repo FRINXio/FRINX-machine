@@ -1,0 +1,26 @@
+version: "3.7"
+
+services:
+  micros:
+    image: frinx/uniflow-micros:1.0.4
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    environment:
+      - UNICONFIG_URL_BASE=https://${CONSTRAINT_HOSTNAME}_uniconfig:8181/rests
+    healthcheck:
+      test: cat /home/app/healthcheck
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      restart_policy:
+        delay: 10s
+      placement:
+        constraints:
+          - node.hostname == ${CONSTRAINT_HOSTNAME}
+      mode: replicated
+      replicas: 1
