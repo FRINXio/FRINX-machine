@@ -38,6 +38,11 @@ $ docker service ls
 
 Each service will show as 'REPLICAS 1/1' when the service is up (it may take several minutes to start all services).
 
+UniFlow dashboard is accessible via web browser by visiting:
+```sh
+https://<IP_of_node_running_FM>
+```
+
 ### Demo workflows & sample topology
 Once all services are started, please clone https://github.com/FRINXio/fm-workflows and follow the instructions to load demo workflows and a sample topolgy. You can find a collection of demo use cases here https://docs.frinx.io/frinx-machine/use-cases/index.html
 
