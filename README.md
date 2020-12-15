@@ -5,11 +5,12 @@ Hardware:
 - 16GB RAM
 - 4x CPU
 
-You can deploy the FM either locally with all services running on a single node, or you can split UniFlow and UniConfig instances among multiple nodes. UniFlow is always running on the manager node.
+You can deploy the FM either locally with all services running on a single node, or you can split UniFlow and UniConfig instances among multiple nodes. UniFlow is always running on the docker swarm manager node.
 
 To deploy an FM swarm cluster you need at least one machine with Ubuntu 18.04 installed.
 
-## Deployment
+## Single-node deployment
+Installation and running of UniFlow and UniConfig on the same machine.
 ### Installation
 Run the install script, this will check and download the neccessary prerequisities:
 ```sh
@@ -28,13 +29,14 @@ To deploy both UniFlow and UniConfig locally (for testing and demo purposes), ru
 ```sh
 $ ./startup.sh
 ```
-The FRINX Machine services will now be started.  Use 'docker service ls' to check the status of all services.
-Each service will show as 'REPLICAS 1/1' when the service is up (it may take several minutes to start all services).
+The FRINX Machine services will now be started. 
 
-To only deploy UniFlow services on a local node (when deploying in mutinode environment) use `--uniflow-only` flag:
+To check the status of all services use
 ```sh
-$ ./startup.sh --uniflow-only
+$ docker service ls
 ```
+
+Each service will show as 'REPLICAS 1/1' when the service is up (it may take several minutes to start all services).
 
 ### Demo workflows & sample topology
 Once all services are started, please clone https://github.com/FRINXio/fm-workflows and follow the instructions to load demo workflows and a sample topolgy. You can find a collection of demo use cases here https://docs.frinx.io/frinx-machine/use-cases/index.html
@@ -51,7 +53,7 @@ To remove all persistent data, purge the volumes (ATTENTION!!! ALL USER DATA WIL
 $ docker volume prune
 ```
 
-## Checking
+### Checking
 You can check the status of the swarm cluster by running:
 ```sh
 $ docker service ls
@@ -66,14 +68,31 @@ $ ./collectlogs.sh
 ```
 This will collect all docker related logs and compresses it into an archive. Logs are collected from local machine only, if you want logs from remote node (e.g. worker) you must copy and run the script on the remote node.
 
-### Multi-node setup
-Skip these commands for single-node setup.
+## Multi-node deployment
+UniFlow services are deployed on swarm manager node and UniConifig services are deployed on swarm worker node.
+
+### Deploying UniFlow services
+Run the installation on manager node as for Single-node deployment.
+
+To only deploy UniFlow services on a manager node use `--uniflow-only` flag:
+```sh
+$ ./startup.sh --uniflow-only
+```
+
+It is possible to deploy UniFlow services without service "micros" (default UniConfig workers and workflows):
+```sh
+$ ./startup.sh --uniflow-only --no-micros
+```
+
+NOTE: Flag `--no-micros` can be also used in single-node deployment.
+
 Run following command on manager node to determine the swarm token
 ```sh
 $ docker swarm join-token worker
 ```
 
-Install and set-up docker-ce on remote node:
+### Deploying UniConfig services
+Install and set-up docker-ce on worker node:
 ```sh
 $ sudo apt-get install curl
 $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
@@ -84,13 +103,13 @@ $ sudo usermod -aG docker $USER
 $ newgrp docker
 ```
 
-And then join the the node to the swarm with token provided by the manager:
+And then join the worker node to the swarm with token provided by the manager:
 ```sh
 $ docker swarm join --token SWMTKN-<TOKEN> IP:PORT
 ```
 
-### Deploying UniConfig services
-To deploy UniConfig to a worker node, distribute the default UniConfig configuration to `/opt` directory on the remote node (SCP used as an example) and use `--deploy-uniconfig NODENAME` flag:
+To deploy UniConfig to a worker node, distribute the default UniConfig configuration to `/opt` directory on the worker node (SCP used as an example) and use `--deploy-uniconfig NODENAME` flag.
+
 From the manager node:
 ```sh
 $ scp -r ./config/uniconfig/frinx username@host:/home/username/
@@ -103,7 +122,7 @@ From the manager node, deploy uniconfig instance to a worker:
 ```sh
 $ ./startup.sh --deploy-uniconfig NODENAME
 ```
-NODENAME must be a valid docker swarm worker name, to get a list of current workers, issue `docker node ls`
+NODENAME must be a valid docker swarm worker name, to get a list of current workers, issue `docker node ls`.
 Each deployment creates a unique per-worker YAML file stored in folder `./uniconfig/composefiles/` which is then used for actual service deployment.
 
 NOTE: The deployment might take a while as the worker node needs to download all neccessary images first.
