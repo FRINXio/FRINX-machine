@@ -18,7 +18,7 @@ $ sudo ./install.sh
 ```
 Automatically installed software:
 - curl
-- docker-compse 1.22.0
+- docker-compose 1.22.0
 - docker-ce 18.09
 
 NOTE: As FM is designed to run as non-root user, you need the user to be in `docker` group, this is done automatically during the installation process. Use newgrp or reboot the system for changes to take effect **BEFORE** running ```./startup.sh```
