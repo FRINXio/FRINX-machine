@@ -42,6 +42,7 @@ UniFlow dashboard is accessible via web browser by visiting:
 ```sh
 https://<IP_of_node_running_FM>
 ```
+In some cases the self signed certificate of the FM dashboard creates an NET_ERR_CERT_INVALID error message in your browser. Follow [these](https://stackoverflow.com/questions/35274659/does-using-badidea-or-thisisunsafe-to-bypass-a-chrome-certificate-hsts-error) steps to proceed.
 
 ### Demo workflows & sample topology
 Once all services are started, please clone https://github.com/FRINXio/fm-workflows and follow the instructions to load demo workflows and a sample topolgy. You can find a collection of demo use cases here https://docs.frinx.io/frinx-machine/use-cases/index.html
