@@ -21,12 +21,9 @@ Automatically installed software:
 - docker-compose 1.22.0
 - docker-ce 18.09
 
-The install script sets up swarm as well, if you want to do a custom config it possible to ommit the step by.
-```sh
-$ sudo ./install.sh --no-swarm
-```
-And then init swarm based on your setup. In case of mutiple interfaces: `docker swarm init --advertise-addr <ip-addr>`
-
+NOTE: It may happen that swarm initialization will fail during install. Most likely due to multiple network interfaces present. 
+In that case run `docker swarm init --advertise-addr <ip-addr>` command to tell swarm which to use for 
+inter-manager communication and overlay networking
 
 NOTE: As FM is designed to run as non-root user, you need the user to be in `docker` group, this is done automatically during the installation process. Use newgrp or reboot the system for changes to take effect **BEFORE** running ```./startup.sh```
 See: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
