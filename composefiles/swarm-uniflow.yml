@@ -233,3 +233,4 @@ volumes:
 networks:
   default:
     name: frinx-machine
+    attachable: true
