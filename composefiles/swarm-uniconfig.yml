@@ -7,7 +7,7 @@ version: "3.7"
 
 services:
   TEMPLATE-HOSTNAME_uniconfig:
-    image: frinx/uniconfig:4.2.5.frinx
+    image: frinx/uniconfig:4.2.6.frinx
     logging:
       driver: "json-file"
       options:

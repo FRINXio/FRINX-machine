@@ -25,7 +25,6 @@ CREATE TABLE node
     node_id                text    NOT NULL,
     is_native              boolean NOT NULL,
     mount_request          jsonb   NOT NULL,
-    native_prefix          text    NULL,
     config                 jsonb   NULL,
     config_fingerprint     text    NULL
 );
