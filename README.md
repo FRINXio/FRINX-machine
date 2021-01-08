@@ -22,7 +22,7 @@ Automatically installed software:
 - docker-ce 18.09
 
 NOTE: It may happen that swarm initialization will fail during install. Most likely due to multiple network interfaces present. 
-In that case run `docker swarm init --advertise-addr <ip-addr>` command to tell swarm which to use for 
+In that case run `docker swarm init --advertise-addr <ip-addr>` command to tell swarm which ip address to use for 
 inter-manager communication and overlay networking
 
 NOTE: As FM is designed to run as non-root user, you need the user to be in `docker` group, this is done automatically during the installation process. Use newgrp or reboot the system for changes to take effect **BEFORE** running ```./startup.sh```
