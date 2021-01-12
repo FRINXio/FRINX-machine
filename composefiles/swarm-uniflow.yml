@@ -13,7 +13,7 @@ services:
       - UNICONFIG_API_HOST=${CONSTRAINT_HOSTNAME}_uniconfig:8181
       # TODO: Make uniconfig-ui able to route to multiple UNICONFIG_API_HOSTs, see uniconfig-ui service
       # Currently working on local deployment only
-      - API_GATEWAY_HTTPS=true
+      - API_GATEWAY_HTTPS=${API_GATEWAY_HTTPS}
       - UNICONFIG_UI_PROTOCOL=https
       - UNICONFIG_API_PROTOCOL=https
     volumes:
@@ -24,7 +24,7 @@ services:
         max-file: "3"
         max-size: "10m"
     ports:
-      - 443:5000
+      - ${API_GATEWAY_PORT}:5000
     deploy:
       placement:
         constraints:
@@ -32,7 +32,7 @@ services:
       mode: replicated
       replicas: 1
     healthcheck:
-      test: curl --insecure --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'https://127.0.0.1:5000/uniflow/ui'
+      test: curl --insecure --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET '${API_GATEWAY_HEALTHCHECK_PROTOCOL}://127.0.0.1:5000/uniflow/ui'
       interval: 10s
       timeout: 5s
       retries: 5
