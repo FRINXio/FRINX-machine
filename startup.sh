@@ -24,8 +24,8 @@ function help {
   usage
     echo -e "OPTIONS:"
     echo -e " -h | --help                    Display this message and exit"
-    echo -e "[--no-micros]                   Do not start micros container"
-    echo -e " --uniflow-only [--no-micros]   Deploy UniFlow services locally"
+    echo -e "[--no-micros --http]                   Do not start micros container/ Deploy in http mode"
+    echo -e " --uniflow-only [--no-micros --http]   Deploy UniFlow services locally"
     echo -e " --deploy-uniconfig <hostname>  Deploy UniConfig services on swarm worker node"
     echo -e ""
   example
@@ -33,66 +33,66 @@ function help {
 
 
 function argumentsCheck {
-  if [ $1 -eq 0 ]
-  then
-    startupType="local"
-    nodeName=$(hostname)
-    noMicros="false"
-    return
-  fi
 
-  if [ $1 -le $maxArgs ]
-  then
-    case $2 in
-      -h|--help)
-        help
+  # Default start values
+  startupType="local"
+  nodeName=$(hostname)
+  noMicros="false"
+  API_GATEWAY_HTTPS="true"
+  API_GATEWAY_HEALTHCHECK_PROTOCOL="https"
+  API_GATEWAY_PORT=443
+
+
+  case $1 in
+    -h|--help)
+      help
+      exit
+    ;;
+
+    --uniflow-only)
+      startupType="uniflow"
+      shift
+      parseAdditionalArgs $@
+    ;;
+
+    --deploy-uniconfig)
+      if [ -z $2 ]
+      then
+        echo -e "Option --deploy-uniconfig requires a hostname"
         exit
-      ;;
+      else
+        startupType="uniconfig"
+        nodeName=$3
+      fi
+    ;;
 
-      --no-micros)
-        startupType="local"
-        nodeName=$(hostname)
+    *)
+      parseAdditionalArgs $@
+    ;;
+  esac
+}
+
+function parseAdditionalArgs {
+  until [ -z "$1" ]  # Until all parameters used up . . .
+  do
+    case $1 in
+     --no-micros)
         noMicros="true"
       ;;
-
-      --uniflow-only)
-        startupType="uniflow"
-        nodeName=$(hostname)
-        if [ -z $3 ]
-        then  
-          noMicros="false"
-        elif [ "$3" = "--no-micros" ]
-        then
-          noMicros="true"
-        else 
-          echo -e "Option --uniflow-only does not accept any arguments"
-          exit
-        fi
-      ;;
-
-      --deploy-uniconfig)
-        if [ -z $3 ]
-        then
-          echo -e "Option --deploy-uniconfig requires a hostname"
-          exit
-        else
-          startupType="uniconfig"
-          nodeName=$3
-        fi
+     
+     --http)
+       API_GATEWAY_HTTPS="false"
+       API_GATEWAY_HEALTHCHECK_PROTOCOL="http"
+       API_GATEWAY_PORT=80
       ;;
 
       *)
-        echo -e "Uknown argument, see --help for more info"
+        echo -e "Uknown argument $1, see --help for more info"
         exit
       ;;
     esac
-  fi
-
-  if [ $1 -gt $maxArgs ]
-  then
-    echo -e "Too many arguments, see --help for more info"
-    exit
-  fi
+    shift
+  done
 }
 
 function startUniflow {
@@ -196,7 +196,6 @@ dockerSwarmUniflow='swarm-uniflow.yml'
 dockerSwarmMicros='swarm-uniflow-micros.yml'
 uniconfigServiceFilesPath='composefiles/uniconfig'
 scriptName=$0
-maxArgs=2
 
 ERROR='\033[0;31m[ERROR]:\033[0;0m'
 WARNING='\033[0;33m[WARNING]:\033[0;0m'
@@ -206,13 +205,15 @@ OK='\033[0;92m[OK]:\033[0;0m'
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
-argumentsCheck $# $@
+argumentsCheck $@
 
 if [ "$startupType" = "local" ]; then
   export UC_CONFIG_PATH="$DIR/config/uniconfig/frinx/uniconfig"
 else
   export UC_CONFIG_PATH='/opt/frinx/uniconfig'
 fi
+
+export API_GATEWAY_HTTPS API_GATEWAY_HEALTHCHECK_PROTOCOL API_GATEWAY_PORT
 
 startContainers
 
