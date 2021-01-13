@@ -184,6 +184,9 @@ INFO='\033[0;96m[INFO]:\033[0;0m'
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
+# Workaround to fix composefile when installing
+export API_GATEWAY_PORT=443
+
 argumentsCheck $# $@
 checkIfRoot
 installPrerequisities
