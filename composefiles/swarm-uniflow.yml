@@ -17,7 +17,7 @@ services:
       - UNICONFIG_UI_PROTOCOL=https
       - UNICONFIG_API_PROTOCOL=https
     volumes:
-      - ../config/api-gateway:/api-gateway/certificates
+      - ${UF_CONFIG_PATH}/api-gateway:/api-gateway/certificates
     logging:
       driver: "json-file"
       options:
@@ -43,7 +43,7 @@ services:
       - CONFIG_PROP=config.properties
     image: frinx/uniflow-conductor-server:1.0.0
     volumes:
-      - ../config/conductor/config.properties:/app/config/config.properties
+      -  ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties
     logging:
       driver: "json-file"
       options:
@@ -74,8 +74,8 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx1024m"
     volumes:
       - uniflow_elastic_data:/usr/share/elasticsearch/data
-      - ../config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      - ../config/elasticsearch/backup.sh:/usr/share/elasticsearch/backup.sh
+      -  ${UF_CONFIG_PATH}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      -  ${UF_CONFIG_PATH}/elasticsearch/backup.sh:/usr/share/elasticsearch/backup.sh
     healthcheck:
       test: curl -X GET 'localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s'
       interval: 10s
@@ -122,7 +122,7 @@ services:
       start_period: 10s
     volumes:
       - uniflow_postgresql_data:/var/lib/postgresql/data
-      - ../config/uniflow-postgres:/docker-entrypoint-initdb.d
+      -  ${UF_CONFIG_PATH}/uniflow-postgres:/docker-entrypoint-initdb.d
     deploy:
       placement:
         constraints:

@@ -213,6 +213,8 @@ else
   export UC_CONFIG_PATH='/opt/frinx/uniconfig'
 fi
 
+export UF_CONFIG_PATH="$DIR/config"
+
 export API_GATEWAY_HTTPS API_GATEWAY_HEALTHCHECK_PROTOCOL API_GATEWAY_PORT
 
 startContainers
