@@ -1,0 +1,168 @@
+{
+    "endpoint": "/uniflow/api/conductor/schedule/queue/data",
+    "querystring_params": ["*"],
+    "method": "GET",
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
+    "backend": [
+    {
+        "encoding": "no-op",
+        "sd": "static",
+        "disable_host_sanitize": false,
+        "url_pattern": "/schedule/queue/data",
+        "extra_config": {
+            "github.com/devopsfaith/krakend-martian": {
+                "fifo.Group": {
+                    "scope": ["request", "response"],
+                    "aggregateErrors": true,
+                    "modifiers": [
+                        {
+                            "header.Modifier": {
+                                "scope": ["request"],
+                                "name": "Accept-Encoding",
+                                "value": "identity"
+                            }
+                        },
+                        {
+                            "header.Modifier": {
+                                "scope": ["response"],
+                                "name": "Content-Type",
+                                "value": "application/json; charset=utf-8"
+                            }
+                        }
+                    ]
+                }
+              }
+        },
+        "host": [
+            "uniflow-api:3001"
+        ]
+    }
+]
+},
+{
+    "endpoint": "/uniflow/api/conductor/queue/data",
+    "querystring_params": ["*"],
+    "method": "GET",
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
+    "backend": [
+    {
+        "encoding": "no-op",
+        "sd": "static",
+        "disable_host_sanitize": false,
+        "url_pattern": "/queue/data",
+        "extra_config": {
+            "github.com/devopsfaith/krakend-martian": {
+                "fifo.Group": {
+                    "scope": ["request", "response"],
+                    "aggregateErrors": true,
+                    "modifiers": [
+                        {
+                            "header.Modifier": {
+                                "scope": ["request"],
+                                "name": "Accept-Encoding",
+                                "value": "identity"
+                            }
+                        },
+                        {
+                            "header.Modifier": {
+                                "scope": ["response"],
+                                "name": "Content-Type",
+                                "value": "application/json; charset=utf-8"
+                            }
+                        }
+                    ]
+                }
+              }
+        },
+        "host": [
+            "uniflow-api:3001"
+        ]
+    }
+]
+},
+{
+    "endpoint": "/uniflow/api/conductor/schedule/event",
+    "querystring_params": ["*"],
+    "method": "GET",
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
+    "backend": [
+    {
+        "encoding": "no-op",
+        "sd": "static",
+        "disable_host_sanitize": false,
+        "url_pattern": "/schedule/event",
+        "extra_config": {
+            "github.com/devopsfaith/krakend-martian": {
+                "fifo.Group": {
+                    "scope": ["request", "response"],
+                    "aggregateErrors": true,
+                    "modifiers": [
+                        {
+                            "header.Modifier": {
+                                "scope": ["request"],
+                                "name": "Accept-Encoding",
+                                "value": "identity"
+                            }
+                        },
+                        {
+                            "header.Modifier": {
+                                "scope": ["response"],
+                                "name": "Content-Type",
+                                "value": "application/json; charset=utf-8"
+                            }
+                        }
+                    ]
+                }
+              }
+        },
+        "host": [
+            "uniflow-api:3001"
+        ]
+    }
+]
+},
+{
+    "endpoint": "/uniflow/api/conductor/hierarchical",
+    "querystring_params": ["*"],
+    "method": "GET",
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
+    "backend": [
+    {
+        "encoding": "no-op",
+        "sd": "static",
+        "disable_host_sanitize": false,
+        "url_pattern": "/hierarchical",
+        "extra_config": {
+            "github.com/devopsfaith/krakend-martian": {
+                "fifo.Group": {
+                    "scope": ["request", "response"],
+                    "aggregateErrors": true,
+                    "modifiers": [
+                        {
+                            "header.Modifier": {
+                                "scope": ["request"],
+                                "name": "Accept-Encoding",
+                                "value": "identity"
+                            }
+                        },
+                        {
+                            "header.Modifier": {
+                                "scope": ["response"],
+                                "name": "Content-Type",
+                                "value": "application/json; charset=utf-8"
+                            }
+                        }
+                    ]
+                }
+              }
+        },
+        "host": [
+            "uniflow-api:3001"
+        ]
+    }
+]
+},

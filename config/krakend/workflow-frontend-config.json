@@ -1,0 +1,54 @@
+{
+    "endpoint": "/static/{a}",
+    "querystring_params": ["*"],
+    "method": "GET",
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
+    "backend": [
+    {
+        "encoding": "no-op",
+        "sd": "static",
+        "disable_host_sanitize": false,
+        "url_pattern": "/static/{a}",
+        "host": [
+            "dashboard:8888"
+        ]
+    }
+]
+},
+{
+    "endpoint": "/uniflow/{a}",
+    "querystring_params": ["*"],
+    "method": "GET",
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
+    "backend": [
+    {
+        "encoding": "no-op",
+        "sd": "static",
+        "disable_host_sanitize": false,
+        "url_pattern": "/uniflow/{a}",
+        "host": [
+            "dashboard:8888"
+        ]
+    }
+]
+},
+{
+    "endpoint": "/uniflow/{a}/{b}",
+    "querystring_params": ["*"],
+    "method": "GET",
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
+    "backend": [
+    {
+        "encoding": "no-op",
+        "sd": "static",
+        "disable_host_sanitize": false,
+        "url_pattern": "/uniflow/{a}/{b}",
+        "host": [
+            "dashboard:8888"
+        ]
+    }
+]
+},

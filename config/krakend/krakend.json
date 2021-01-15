@@ -1,0 +1,51 @@
+{
+  "version": 2,
+  "name": "krakend for FM",
+  "port": 8080,
+  "cache_ttl": "3600s",
+  "timeout": "5s",
+  "plugin": {
+    "pattern": ".so",
+    "folder": "/usr/local/lib/krakend/"
+  },
+  "extra_config": {
+    "github_com/devopsfaith/krakend-cors": {
+      "allow_origins": [
+        "*"
+      ],
+      "allow_methods": [
+        "GET",
+        "HEAD",
+        "POST"
+      ],
+      "allow_credentials": true
+    },
+    "github_com/devopsfaith/krakend-gologging": {
+      "level": "WARNING",
+      "prefix": "[KRAKEND]",
+      "syslog": false,
+      "stdout": true
+    }
+  },
+  "endpoints": [
+    {{ include "workflow-frontend-config.json" }}
+    {
+      "endpoint": "/",
+      "querystring_params": ["*"],
+      "method": "GET",
+      "output_encoding": "no-op",
+      "headers_to_pass": ["*"],
+      "backend": [
+        {
+          "encoding": "no-op",
+          "sd": "static",
+          "disable_host_sanitize": false,
+          "url_pattern": "/",
+          "host": [
+            "dashboard:8888"
+          ]
+        }
+      ]
+    }
+  ]
+}

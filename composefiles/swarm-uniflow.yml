@@ -6,7 +6,7 @@ services:
     image: frinx/api-gateway:1.0.0
     environment:
       - API_GATEWAY_HOST=api-gateway:5000
-      - DASHBOARD_HOST=dashboard:5001
+      - DASHBOARD_HOST=dashboard:8888
       - UNIFLOW_UI_HOST=uniflow-ui:3000
       - UNIFLOW_API_HOST=uniflow-api:3001
       - UNICONFIG_UI_HOST=uniconfig-ui:4000
@@ -62,6 +62,21 @@ services:
       retries: 6
       start_period: 60s
 
+  krakend:
+    environment:
+      - FC_ENABLE=1
+    image: frinx/krakend:1.2.0
+    volumes:
+      - ../config/krakend:/etc/krakend
+    ports:
+      - 8080:8080
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${CONSTRAINT_HOSTNAME}
+      mode: replicated
+      replicas: 1
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.1
     logging:
@@ -90,14 +105,19 @@ services:
       replicas: 1
 
   dashboard:
-    image: frinx/frinx-dashboard:latest
+    # TODO: make stable release and change 'latest' version to a stable one
+    image: frinx/frinx-frontend:latest
+    ports:
+      - 8888:8888
+    volumes:
+      - ../config/frinx-frontend/config.json:/usr/share/nginx/html/config.json
     logging:
       driver: "json-file"
       options:
         max-file: "3"
         max-size: "10m"
     healthcheck:
-      test: curl --silent -o /dev/null  --write-out 'HTTPSTATUS:%{http_code}\n' -X GET 'http://127.0.0.1:5001' || exit 1
+      test: curl --silent -o /dev/null  --write-out 'HTTPSTATUS:%{http_code}\n' -X GET 'http://127.0.0.1:8888' || exit 1
       interval: 10s
       timeout: 5s
       retries: 5
