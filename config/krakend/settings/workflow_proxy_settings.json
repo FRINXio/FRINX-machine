@@ -1,0 +1,134 @@
+{
+    "endpoints": [
+        {
+            "endpoint": "/api/uniflow/metadata/taskdefs",
+            "method": "GET",
+            "url_pattern": "/metadata/taskdefs"
+        },
+        {
+            "endpoint": "/api/uniflow/metadata/taskdefs",
+            "method": "POST",
+            "url_pattern": "/metadata/taskdefs"
+        },
+        {
+            "endpoint": "/api/uniflow/metadata/taskdefs/{name}",
+            "method": "GET",
+            "url_pattern": "/metadata/taskdefs/{name}"
+        },
+        {
+            "endpoint": "/api/uniflow/metadata/taskdefs/{name}",
+            "method": "DELETE",
+            "url_pattern": "/metadata/taskdefs/{name}"
+        },
+        {
+            "endpoint": "/api/uniflow/metadata/workflow",
+            "method": "GET",
+            "url_pattern": "/metadata/workflow"
+        },
+        {
+            "endpoint": "/api/uniflow/metadata/workflow/{name}/{version}",
+            "method": "GET",
+            "url_pattern": "/metadata/workflow/{name}/{version}"
+        },
+        {
+            "endpoint": "/api/uniflow/metadata/workflow/{name}/{version}",
+            "method": "DELETE",
+            "url_pattern": "/metadata/workflow/{name}/{version}"
+        },
+        {
+            "endpoint": "/api/uniflow/metadata",
+            "method": "PUT",
+            "url_pattern": "/metadata"
+        },
+        {
+            "endpoint": "/api/uniflow/event",
+            "method": "POST",
+            "url_pattern": "/event"
+        },
+        {
+            "endpoint": "/api/uniflow/workflow",
+            "method": "POST",
+            "url_pattern": "/workflow"
+        },
+        {
+            "endpoint": "/api/uniflow/executions",
+            "method": "GET",
+            "url_pattern": "/executions"
+        },
+        {
+            "endpoint": "/api/uniflow/bulk/terminate",
+            "method": "DELETE",
+            "url_pattern": "/bulk/terminate"
+        },
+        {
+            "endpoint": "/api/uniflow/bulk/pause",
+            "method": "PUT",
+            "url_pattern": "/bulk/pause"
+        },
+        {
+            "endpoint": "/api/uniflow/bulk/resume",
+            "method": "PUT",
+            "url_pattern": "/bulk/resume"
+        },
+        {
+            "endpoint": "/api/uniflow/bulk/retry",
+            "method": "POST",
+            "url_pattern": "/bulk/retry"
+        },
+        {
+            "endpoint": "/api/uniflow/bulk/restart",
+            "method": "POST",
+            "url_pattern": "/bulk/restart"
+        },
+        {
+            "endpoint": "/api/uniflow/workflow/{workflowId}",
+            "method": "GET",
+            "url_pattern": "/workflow/{workflowId}"
+        },
+        {
+            "endpoint": "/api/uniflow/hierarchical",
+            "method": "GET",
+            "url_pattern": "/hierarchical"
+        },
+        {
+            "endpoint": "/api/uniflow/schedule",
+            "method": "GET",
+            "url_pattern": "/schedule"
+        },
+        {
+            "endpoint": "/api/uniflow/schedule",
+            "method": "PUT",
+            "url_pattern": "/schedule"
+        },
+        {
+            "endpoint": "/api/uniflow/schedule",
+            "method": "DELETE",
+            "url_pattern": "/schedule"
+        },
+        {
+            "endpoint": "/api/uniflow/schedule/{name}",
+            "method": "GET",
+            "url_pattern": "/schedule/{name}"
+        },
+        {
+            "endpoint": "/api/uniflow/event",
+            "method": "GET",
+            "url_pattern": "/event"
+        },
+        {
+            "endpoint": "/api/uniflow/event/{name}",
+            "method": "DELETE",
+            "url_pattern": "/event/{name}"
+        },
+        {
+            "endpoint": "/api/uniflow/queue/data",
+            "method": "GET",
+            "url_pattern": "/queue/data"
+        },
+        {
+            "endpoint": "/api/uniflow/editableworkflows",
+            "method": "GET",
+            "url_pattern": "/editableworkflows"
+        }
+    ]
+}
