@@ -2,29 +2,24 @@
 version: "3.7"
 
 services:
-  api-gateway:
-    image: frinx/api-gateway:2.0.0
+  krakend:
+    # user: root
     environment:
-      - API_GATEWAY_HOST=api-gateway:5000
-      - DASHBOARD_HOST=dashboard:8888
-      - UNIFLOW_UI_HOST=uniflow-ui:3000
-      - UNIFLOW_API_HOST=uniflow-api:3001
-      - UNICONFIG_UI_HOST=uniconfig-ui:4000
-      - UNICONFIG_API_HOST=${CONSTRAINT_HOSTNAME}_uniconfig:8181
-      # TODO: Make uniconfig-ui able to route to multiple UNICONFIG_API_HOSTs, see uniconfig-ui service
-      # Currently working on local deployment only
-      - API_GATEWAY_HTTPS=${API_GATEWAY_HTTPS}
-      - UNICONFIG_UI_PROTOCOL=https
-      - UNICONFIG_API_PROTOCOL=https
+      - FC_ENABLE=1
+      - FC_SETTINGS=/etc/krakend/settings
+      - FC_PARTIALS=/etc/krakend/partials
+      - FC_TEMPLATES=/etc/krakend/templates
+      # - FC_OUT=/etc/krakend/output.json
+    image: frinx/krakend:1.2.0
     volumes:
-      - ${UF_CONFIG_PATH}/api-gateway:/api-gateway/certificates
+      - ${UF_CONFIG_PATH}/krakend:/etc/krakend
     logging:
       driver: "json-file"
       options:
         max-file: "3"
         max-size: "10m"
     ports:
-      - target: 5000
+      - target: 8080
         published: ${API_GATEWAY_PORT}
         mode: host # This makes host to listen on 0.0.0.0:${API_GATEWAY_PORT} 
                    # It is the same as you would expect when publishing a port when not running in swarm mode. 
@@ -35,12 +30,12 @@ services:
           - node.hostname == ${CONSTRAINT_HOSTNAME}
       mode: replicated
       replicas: 1
-    healthcheck:
-      test: curl --insecure --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET '${API_GATEWAY_HEALTHCHECK_PROTOCOL}://127.0.0.1:5000/uniflow/ui'
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+    # healthcheck:
+    #   test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/__health' || exit 1
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 20s
 
   conductor-server:
     environment:
@@ -96,8 +91,6 @@ services:
   dashboard:
     # TODO: make stable release and change 'latest' version to a stable one
     image: frinx/frinx-frontend:latest
-    ports:
-      - 8888:8888
     volumes:
       - ${UF_CONFIG_PATH}/frinx-frontend/config.json:/usr/share/nginx/html/config.json
     logging:
@@ -195,4 +188,3 @@ volumes:
 networks:
   default:
     name: frinx-machine
-    attachable: true
