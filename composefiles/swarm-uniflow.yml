@@ -176,17 +176,15 @@ services:
       retries: 5
       start_period: 20s
 
-  uniflow-api:
-    image: frinx/uniflow-api:1.0.1
-    environment:
-      - CONDUCTOR_HOST=conductor-server:8080
+  workflow-proxy:
+    image: frinx/workflow-proxy:1.0.0
     logging:
       driver: "json-file"
       options:
         max-file: "3"
         max-size: "10m"
     healthcheck:
-      test: curl -X GET 'http://127.0.0.1:3001/health'
+      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/liveness'
       interval: 10s
       timeout: 5s
       retries: 5
