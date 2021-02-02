@@ -153,7 +153,7 @@ services:
 
   uniconfig-ui:
     # TODO: Make uniconfig-ui able to route to different uniconfig instances
-    image: frinx/uniconfig-ui:2.0.0
+    image: frinx/uniconfig-ui:2.0.1
     logging:
       driver: "json-file"
       options:
@@ -199,7 +199,7 @@ services:
       replicas: 1
 
   uniflow-ui:
-    image: frinx/uniflow-ui:2.0.0
+    image: frinx/uniflow-ui:2.0.1
     logging:
       driver: "json-file"
       options:
