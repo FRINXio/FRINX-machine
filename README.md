@@ -44,7 +44,7 @@ Each service will show as 'REPLICAS 1/1' when the service is up (it may take sev
 
 UniFlow dashboard is accessible via web browser by visiting:
 ```sh
-https://<IP_of_node_running_FM>
+http://<IP_of_node_running_FM>
 ```
 In some cases the self signed certificate of the FM dashboard creates an NET_ERR_CERT_INVALID error message in your browser. Follow [these](https://stackoverflow.com/questions/35274659/does-using-badidea-or-thisisunsafe-to-bypass-a-chrome-certificate-hsts-error) steps to proceed.
 

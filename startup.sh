@@ -24,8 +24,8 @@ function help {
   usage
     echo -e "OPTIONS:"
     echo -e " -h | --help                    Display this message and exit"
-    echo -e "[--no-micros --http]                   Do not start micros container/ Deploy in http mode"
-    echo -e " --uniflow-only [--no-micros --http]   Deploy UniFlow services locally"
+    echo -e "[--no-micros --https]                   Do not start micros container/ Deploy in https mode"
+    echo -e " --uniflow-only [--no-micros --https]   Deploy UniFlow services locally"
     echo -e " --deploy-uniconfig <hostname>  Deploy UniConfig services on swarm worker node"
     echo -e ""
   example
@@ -38,9 +38,9 @@ function argumentsCheck {
   startupType="local"
   nodeName=$(hostname)
   noMicros="false"
-  API_GATEWAY_HTTPS="true"
-  API_GATEWAY_HEALTHCHECK_PROTOCOL="https"
-  API_GATEWAY_PORT=443
+  API_GATEWAY_HTTPS="false"
+  API_GATEWAY_HEALTHCHECK_PROTOCOL="http"
+  API_GATEWAY_PORT=80
 
 
   case $1 in
@@ -80,10 +80,10 @@ function parseAdditionalArgs {
         noMicros="true"
       ;;
      
-     --http)
-       API_GATEWAY_HTTPS="false"
-       API_GATEWAY_HEALTHCHECK_PROTOCOL="http"
-       API_GATEWAY_PORT=80
+     --https)
+       API_GATEWAY_HTTPS="true"
+       API_GATEWAY_HEALTHCHECK_PROTOCOL="https"
+       API_GATEWAY_PORT=443
       ;;
 
       *)
