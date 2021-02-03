@@ -157,7 +157,7 @@ services:
 
   uniconfig-ui:
     # TODO: Make uniconfig-ui able to route to different uniconfig instances
-    image: frinx/uniconfig-ui:2.0.1
+    image: frinx/uniconfig-ui:2.0.2
     logging:
       driver: "json-file"
       options:
