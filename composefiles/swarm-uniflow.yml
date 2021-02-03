@@ -24,7 +24,11 @@ services:
         max-file: "3"
         max-size: "10m"
     ports:
-      - ${API_GATEWAY_PORT}:5000
+      - target: 5000
+        published: ${API_GATEWAY_PORT}
+        mode: host # This makes host to listen on 0.0.0.0:${API_GATEWAY_PORT} 
+                   # It is the same as you would expect when publishing a port when not running in swarm mode. 
+                   # It is NOT host networking in plain docker.
     deploy:
       placement:
         constraints:
