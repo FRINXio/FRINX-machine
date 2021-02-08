@@ -56,10 +56,10 @@ services:
       mode: replicated
       replicas: 1
     healthcheck:
-      test: wget -O- localhost:8080/api/health
+      test: wget --spider localhost:8080/api/health
       interval: 10s
       timeout: 5s
-      retries: 6
+      retries: 3
       start_period: 60s
 
   elasticsearch:
@@ -154,7 +154,7 @@ services:
       mode: replicated
       replicas: 1
     healthcheck:
-      test: wget -O /dev/null -q conductor-server:8080 && nc -z postgresql:5432
+      test: wget --spider -q conductor-server:8080/api/health && wget --spider -q 127.0.0.1:3000/schedule && nc -z postgresql:5432
       interval: 10s
       timeout: 5s
       retries: 5
@@ -168,7 +168,7 @@ services:
         max-file: "3"
         max-size: "10m"
     healthcheck:
-      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/liveness'
+      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/readiness'
       interval: 10s
       timeout: 5s
       retries: 5

@@ -11,7 +11,7 @@ services:
     environment:
       - UNICONFIG_URL_BASE=https://${CONSTRAINT_HOSTNAME}_uniconfig:8181/rests
     healthcheck:
-      test: cat /home/app/healthcheck
+      test: cat /home/app/healthcheck && curl --insecure --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET http://conductor-server:8080/api/health
       interval: 10s
       timeout: 5s
       retries: 5
