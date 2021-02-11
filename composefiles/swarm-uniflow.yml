@@ -6,7 +6,7 @@ services:
     image: frinx/api-gateway:2.0.0
     environment:
       - API_GATEWAY_HOST=api-gateway:5000
-      - DASHBOARD_HOST=dashboard:5001
+      - DASHBOARD_HOST=dashboard:8888
       - UNIFLOW_UI_HOST=uniflow-ui:3000
       - UNIFLOW_API_HOST=uniflow-api:3001
       - UNICONFIG_UI_HOST=uniconfig-ui:4000
@@ -94,12 +94,23 @@ services:
       replicas: 1
 
   dashboard:
-    image: frinx/frinx-dashboard:1.0.1
+    # TODO: make stable release and change 'latest' version to a stable one
+    image: frinx/frinx-frontend:latest
+    ports:
+      - 8888:8888
+    volumes:
+      - ${UF_CONFIG_PATH}/frinx-frontend/config.json:/usr/share/nginx/html/config.json
     logging:
       driver: "json-file"
       options:
         max-file: "3"
         max-size: "10m"
+    healthcheck:
+      test: curl --silent -o /dev/null  --write-out 'HTTPSTATUS:%{http_code}\n' -X GET 'http://127.0.0.1:8888' || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   postgresql:
     image: postgres:12.2
@@ -155,31 +166,6 @@ services:
       retries: 5
       start_period: 20s
 
-  uniconfig-ui:
-    # TODO: Make uniconfig-ui able to route to different uniconfig instances
-    image: frinx/uniconfig-ui:2.0.2
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
-    deploy:
-      placement:
-        constraints:
-          - node.hostname == ${CONSTRAINT_HOSTNAME}
-      mode: replicated
-      replicas: 1
-    environment:
-      - HTTPS=true
-      - OPENSSL_COMMAND_TO_GEN_CERT=openssl req -nodes -new -x509 -days 360 -keyout key.pem -out cert.pem -subj "/C=US/ST=Oregon/L=Portland/O=Company Name/OU=Org/CN=www.example.com"
-      - RENEW_PERIOD=30000
-    healthcheck:
-      test: curl --insecure --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'https://127.0.0.1:4000'
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-
   uniflow-api:
     image: frinx/uniflow-api:1.0.1
     environment:
@@ -201,26 +187,6 @@ services:
           - node.hostname == ${CONSTRAINT_HOSTNAME}
       mode: replicated
       replicas: 1
-
-  uniflow-ui:
-    image: frinx/uniflow-ui:2.0.1
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
-    deploy:
-      placement:
-        constraints:
-          - node.hostname == ${CONSTRAINT_HOSTNAME}
-      mode: replicated
-      replicas: 1
-    healthcheck:
-      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:3000'
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
 
 volumes:
   uniflow_elastic_data:
