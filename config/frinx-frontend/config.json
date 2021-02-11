@@ -1,0 +1,14 @@
+{
+  "public_url":"/dashboard",
+  "auth_enabled":"false",
+  "auth_client_id":"",
+  "auth_redirect_url":"",
+  "inventory_enabled":"false",
+  "uniconfig_enabled":"true",
+  "uniflow_enabled":"true",
+  "usermanagement_enabled":"false",
+  "url_inventory":"/inventory",
+  "url_uniconfig":"/uniconfig/ui",
+  "url_uniflow":"/uniflow/ui",
+  "url_usermanagement":"/none"
+}
