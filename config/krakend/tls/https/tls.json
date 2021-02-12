@@ -1,5 +1,5 @@
 {
-    "public_key": "/etc/krakend/tls/cert.pem",
-    "private_key": "/etc/krakend/tls/key.pem",
+    "public_key": "/etc/krakend/partials/tls/cert.pem",
+    "private_key": "/etc/krakend/partials/tls/key.pem",
     "disabled": false
 }

@@ -38,9 +38,9 @@ function argumentsCheck {
   startupType="local"
   nodeName=$(hostname)
   noMicros="false"
-  API_GATEWAY_HTTPS="false"
-  API_GATEWAY_HEALTHCHECK_PROTOCOL="http"
-  API_GATEWAY_PORT=80
+  KRAKEND_HTTPS="false"
+  KRAKEND_TLS_PROTOCOL="http"
+  KRAKEND_PORT=80
 
 
   case $1 in
@@ -81,9 +81,9 @@ function parseAdditionalArgs {
       ;;
      
      --https)
-       API_GATEWAY_HTTPS="true"
-       API_GATEWAY_HEALTHCHECK_PROTOCOL="https"
-       API_GATEWAY_PORT=443
+       KRAKEND_HTTPS="true"
+       KRAKEND_TLS_PROTOCOL="https"
+       KRAKEND_PORT=443
       ;;
 
       *)
@@ -215,7 +215,7 @@ fi
 
 export UF_CONFIG_PATH="$DIR/config"
 
-export API_GATEWAY_HTTPS API_GATEWAY_HEALTHCHECK_PROTOCOL API_GATEWAY_PORT
+export KRAKEND_HTTPS KRAKEND_TLS_PROTOCOL KRAKEND_PORT
 
 startContainers
 
