@@ -3,6 +3,7 @@
   "name": "krakend for FM",
   "port": 8080,
   "cache_ttl": "3600s",
+  "tls": {{ include "tls/tls.json"}},
   "timeout": "5s",
   "plugin": {
     "pattern": ".so",

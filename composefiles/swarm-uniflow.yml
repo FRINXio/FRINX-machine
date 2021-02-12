@@ -13,6 +13,7 @@ services:
     image: frinx/krakend:1.2.0
     volumes:
       - ${UF_CONFIG_PATH}/krakend:/etc/krakend
+      - ${UF_CONFIG_PATH}/krakend/tls/${KRAKEND_TLS_PROTOCOL}:/etc/krakend/partials/tls
     logging:
       driver: "json-file"
       options:
@@ -20,8 +21,8 @@ services:
         max-size: "10m"
     ports:
       - target: 8080
-        published: ${API_GATEWAY_PORT}
-        mode: host # This makes host to listen on 0.0.0.0:${API_GATEWAY_PORT} 
+        published: ${KRAKEND_PORT}
+        mode: host # This makes host to listen on 0.0.0.0:${KRAKEND_PORT} 
                    # It is the same as you would expect when publishing a port when not running in swarm mode. 
                    # It is NOT host networking in plain docker.
     deploy:
