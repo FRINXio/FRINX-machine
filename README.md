@@ -1,6 +1,5 @@
 # FRINX Machine latest release
-Please deploy the latest release of FRINX Machine. See below:
-
+Please deploy the latest release of FRINX Machine. Follow the link below and copy the zip or tar file to your host where you will run FRINX Machine. Unzip or untar and follow the installation instructions below.
 https://github.com/FRINXio/FRINX-machine/releases
 
 > Master branch is used for development and not recommended for deployment
