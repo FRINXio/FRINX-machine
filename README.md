@@ -1,7 +1,9 @@
 # FRINX Machine latest release
-> please deploy the latest release of FRINX Machine. See below: 
+Please deploy the latest release of FRINX Machine. See below:
+
 https://github.com/FRINXio/FRINX-machine/releases
-> master branch is used for development and not recommended for deployment
+
+> Master branch is used for development and not recommended for deployment
 
 
 ## Requirements
