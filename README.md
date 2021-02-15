@@ -1,4 +1,7 @@
-# FRINX Machine
+# FRINX Machine latest release
+https://github.com/FRINXio/FRINX-machine/releases
+> master branch is not recommended for usage
+
 
 ## Requirements
 Hardware:
