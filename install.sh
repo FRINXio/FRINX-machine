@@ -185,7 +185,7 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${DIR}
 
 # Workaround to fix composefile when installing
-export API_GATEWAY_PORT=443
+export KRAKEND_PORT=443
 
 argumentsCheck $# $@
 checkIfRoot

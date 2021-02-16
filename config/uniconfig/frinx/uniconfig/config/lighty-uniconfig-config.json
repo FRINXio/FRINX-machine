@@ -142,11 +142,13 @@
             "backupMonitoringInterval": 10000,
             "maxInstanceAge": 5000
         }
-    },
+    }
+    /*
     "tls": {
         "enabledTls": true,
         "enabledClientAuthentication": false,
         "keystorePath": "config/.keystore",
         "keystorePassword": "password"
     }
+    */
 }
