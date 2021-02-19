@@ -6,6 +6,7 @@
     {
         "url_pattern": "{{ .operations_endpoint.url_pattern }}",
         {{ include "uniconfig_partial_2.tmpl" }}
+        {{ include "uniconfig_host/host.txt" }}
     }
 ]
 },
@@ -24,6 +25,7 @@
     {
         "url_pattern": "/rests/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
         {{ include "uniconfig_partial_2.tmpl" }}
+        {{ include "uniconfig_host/host.txt" }}
     }
 ]
 }

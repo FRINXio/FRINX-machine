@@ -42,7 +42,6 @@ function argumentsCheck {
   export KRAKEND_TLS_PROTOCOL="http"
   export KRAKEND_PORT=80
 
-
   while [ $# -gt 0 ]
   do
     case "${1}" in
@@ -120,7 +119,9 @@ function startContainers {
         echo -e "${INFO} Starting UniConfig on worker node $nodeName"
         echo -e "${INFO} Make sure the UniConfig configuration files are present on remote node in $UC_CONFIG_PATH folder"
 
+        generateUniconfigKrakendFile
         generateUniconfigComposeFile
+
         docker stack deploy --compose-file $uniconfigServiceFilesPath/$dockerSwarmUniconfig'.'$nodeName $stackName
       ;;
 
@@ -130,6 +131,8 @@ function startContainers {
 
         echo -e "${INFO} Deploying UniConfig with license:"
         echo -e "$LICENSE"
+
+        generateUniconfigKrakendFile
         generateUniconfigComposeFile
 
         echo -e "${INFO} Starting UniFlow and UniConfig services locally"
@@ -169,6 +172,14 @@ function generateUniconfigComposeFile {
   sed "s/TEMPLATE-HOSTNAME/$nodeName/g" composefiles/$dockerSwarmUniconfig | grep -v '#' > $uniconfigServiceFilesPath/$dockerSwarmUniconfig'.'$nodeName
 }
 
+function generateUniconfigKrakendFile {
+mkdir -p ${krakendUnicnfigNode}
+cat << EOF > "${krakendUnicnfigNode}/host.txt"
+"host": [
+  "${nodeName}_uniconfig:8181"
+]
+EOF
+}
 
 function checkSwarmMode {
     if [ "$(docker info --format '{{.Swarm.LocalNodeState}}')" == "inactive" ]
@@ -192,6 +203,8 @@ dockerSwarmUniflow='swarm-uniflow.yml'
 dockerSwarmMicros='swarm-uniflow-micros.yml'
 uniconfigServiceFilesPath='composefiles/uniconfig'
 scriptName=$0
+
+krakendUnicnfigNode='./config/krakend/partials/uniconfig_host/'
 
 ERROR='\033[0;31m[ERROR]:\033[0;0m'
 WARNING='\033[0;33m[WARNING]:\033[0;0m'
