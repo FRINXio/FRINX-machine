@@ -1,0 +1,29 @@
+{
+    "endpoints": [
+        {
+            "endpoint": "/",
+            "method": "GET",
+            "url_pattern": "/"
+        },
+        {
+            "endpoint": "/static/{a}",
+            "method": "GET",
+            "url_pattern": "/static/{a}"
+        },
+        {
+            "endpoint": "/static/{a}/{b}",
+            "method": "GET",
+            "url_pattern": "/static/{a}/{b}"
+        },
+        {
+            "endpoint": "/favicon.ico",
+            "method": "GET",
+            "url_pattern": "/favicon.ico"
+        },
+        {
+            "endpoint": "/logo192.png",
+            "method": "GET",
+            "url_pattern": "/logo192.png"
+        }
+    ]
+}

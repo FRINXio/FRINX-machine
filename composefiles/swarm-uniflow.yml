@@ -89,16 +89,21 @@ services:
       mode: replicated
       replicas: 1
 
-  # dashboard:
-  #   # TODO: make stable release and change 'latest' version to a stable one
-  #   image: frinx/frinx-frontend:latest
-  #   volumes:
-  #     - ${UF_CONFIG_PATH}/frinx-frontend/config.json:/usr/share/nginx/html/config.json
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-file: "3"
-  #       max-size: "10m"
+  dashboard:
+    # TODO: make stable release and change 'latest' version to a stable one
+    image: frinx/frinx-dashboard:1.0.1
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${CONSTRAINT_HOSTNAME}
+      mode: replicated
+      replicas: 1
+
   #   healthcheck:
   #     test: curl --silent -o /dev/null  --write-out 'HTTPSTATUS:%{http_code}\n' -X GET 'http://127.0.0.1:8888' || exit 1
   #     interval: 10s

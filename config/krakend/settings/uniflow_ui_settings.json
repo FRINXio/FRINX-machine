@@ -1,0 +1,24 @@
+{
+    "endpoints": [
+        {
+            "endpoint": "/uniflow/ui",
+            "method": "GET",
+            "url_pattern": "/"
+        },
+        {
+            "endpoint": "/uniflow/ui/{a}",
+            "method": "GET",
+            "url_pattern": "/{a}"
+        },
+        {
+            "endpoint": "/uniflow/ui/{a}/{b}",
+            "method": "GET",
+            "url_pattern": "/{a}/{b}"
+        },
+        {
+            "endpoint": "/uniflow/ui/{a}/{b}/{c}",
+            "method": "GET",
+            "url_pattern": "/{a}/{b}/{c}"
+        }
+    ]
+}

@@ -3,7 +3,7 @@
   "name": "krakend for FM",
   "port": 8080,
   "cache_ttl": "3600s",
-  "tls": {{ include "tls/tls.json"}},
+  "tls": {{ include "tls/tls.json" }},
   "timeout": "5s",
   "plugin": {
     "pattern": ".so",
@@ -29,8 +29,12 @@
     }
   },
   "endpoints": [
-    {{ template "workflow_frontend.tmpl" .workflow_frontend_settings.endpoints }},
     {{ template "workflow_proxy.tmpl" .workflow_proxy_settings.endpoints }},
-    {{ template "uniconfig.tmpl" .uniconfig_settings }}
+    {{ template "workflow_proxy.tmpl" .workflow_proxy_settings_deprecated.endpoints }},
+    {{ template "uniconfig.tmpl" .uniconfig_settings }},
+    {{ template "uniconfig_deprecated.tmpl" .uniconfig_settings_deprecated }},
+    {{ template "uniconfig_ui.tmpl" .uniconfig_ui_settings.endpoints }},
+    {{ template "uniflow_ui.tmpl" .uniflow_ui_settings.endpoints }},
+    {{ template "dashboard.tmpl" .dashboard_settings.endpoints }}
   ]
 }

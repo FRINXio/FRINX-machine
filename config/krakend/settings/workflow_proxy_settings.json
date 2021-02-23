@@ -11,6 +11,11 @@
             "url_pattern": "/metadata/taskdefs"
         },
         {
+            "endpoint": "/api/uniflow/metadata/taskdefs",
+            "method": "PUT",
+            "url_pattern": "/metadata/taskdefs"
+        },
+        {
             "endpoint": "/api/uniflow/metadata/taskdefs/{name}",
             "method": "GET",
             "url_pattern": "/metadata/taskdefs/{name}"
@@ -26,24 +31,29 @@
             "url_pattern": "/metadata/workflow"
         },
         {
-            "endpoint": "/api/uniflow/metadata/workflow/{name}/{version}",
-            "method": "GET",
-            "url_pattern": "/metadata/workflow/{name}/{version}"
-        },
-        {
-            "endpoint": "/api/uniflow/metadata/workflow/{name}/{version}",
-            "method": "DELETE",
-            "url_pattern": "/metadata/workflow/{name}/{version}"
-        },
-        {
-            "endpoint": "/api/uniflow/metadata",
+            "endpoint": "/api/uniflow/metadata/workflow",
             "method": "PUT",
-            "url_pattern": "/metadata"
+            "url_pattern": "/metadata/workflow"
         },
         {
-            "endpoint": "/api/uniflow/event",
+            "endpoint": "/api/uniflow/metadata/workflow",
             "method": "POST",
-            "url_pattern": "/event"
+            "url_pattern": "/metadata/workflow"
+        },   
+        {
+            "endpoint": "/api/uniflow/metadata/workflow/{name}",
+            "method": "GET",
+            "url_pattern": "/metadata/workflow/{name}"
+        },
+        {
+            "endpoint": "/api/uniflow/metadata/workflow/{a}/{b}",
+            "method": "DELETE",
+            "url_pattern": "/metadata/workflow/{a}/{b}"
+        },
+        {
+            "endpoint": "/api/uniflow/workflow/{a}",
+            "method": "GET",
+            "url_pattern": "/workflow/{a}"
         },
         {
             "endpoint": "/api/uniflow/workflow",
@@ -51,39 +61,24 @@
             "url_pattern": "/workflow"
         },
         {
-            "endpoint": "/api/uniflow/executions",
+            "endpoint": "/api/uniflow/event",
             "method": "GET",
-            "url_pattern": "/executions"
+            "url_pattern": "/event"
         },
         {
-            "endpoint": "/api/uniflow/bulk/terminate",
+            "endpoint": "/api/uniflow/event",
+            "method": "POST",
+            "url_pattern": "/event"
+        },
+        {
+            "endpoint": "/api/uniflow/event/{name}",
             "method": "DELETE",
-            "url_pattern": "/bulk/terminate"
+            "url_pattern": "/event/{name}"
         },
         {
-            "endpoint": "/api/uniflow/bulk/pause",
-            "method": "PUT",
-            "url_pattern": "/bulk/pause"
-        },
-        {
-            "endpoint": "/api/uniflow/bulk/resume",
-            "method": "PUT",
-            "url_pattern": "/bulk/resume"
-        },
-        {
-            "endpoint": "/api/uniflow/bulk/retry",
-            "method": "POST",
-            "url_pattern": "/bulk/retry"
-        },
-        {
-            "endpoint": "/api/uniflow/bulk/restart",
-            "method": "POST",
-            "url_pattern": "/bulk/restart"
-        },
-        {
-            "endpoint": "/api/uniflow/workflow/{workflowId}",
+            "endpoint": "/api/uniflow/event/{event}",
             "method": "GET",
-            "url_pattern": "/workflow/{workflowId}"
+            "url_pattern": "/event/{event}"
         },
         {
             "endpoint": "/api/uniflow/hierarchical",
@@ -91,34 +86,39 @@
             "url_pattern": "/hierarchical"
         },
         {
+            "endpoint": "/api/uniflow/id/{workflowId}",
+            "method": "GET",
+            "url_pattern": "/id/{workflowId}"
+        },
+        {
             "endpoint": "/api/uniflow/schedule",
             "method": "GET",
             "url_pattern": "/schedule"
         },
         {
             "endpoint": "/api/uniflow/schedule",
-            "method": "PUT",
+            "method": "POST",
             "url_pattern": "/schedule"
         },
         {
-            "endpoint": "/api/uniflow/schedule",
-            "method": "DELETE",
-            "url_pattern": "/schedule"
+            "endpoint": "/api/uniflow/schedule/{a}",
+            "method": "GET",
+            "url_pattern": "/schedule/{a}"
+        },
+        {
+            "endpoint": "/api/uniflow/schedule/{a}/workflow",
+            "method": "GET",
+            "url_pattern": "/schedule/{a}/workflow"
         },
         {
             "endpoint": "/api/uniflow/schedule/{name}",
-            "method": "GET",
+            "method": "PUT",
             "url_pattern": "/schedule/{name}"
         },
         {
-            "endpoint": "/api/uniflow/event",
-            "method": "GET",
-            "url_pattern": "/event"
-        },
-        {
-            "endpoint": "/api/uniflow/event/{name}",
+            "endpoint": "/api/uniflow/schedule/{name}",
             "method": "DELETE",
-            "url_pattern": "/event/{name}"
+            "url_pattern": "/schedule/{name}"
         },
         {
             "endpoint": "/api/uniflow/queue/data",
@@ -129,6 +129,31 @@
             "endpoint": "/api/uniflow/editableworkflows",
             "method": "GET",
             "url_pattern": "/editableworkflows"
+        },
+        {
+            "endpoint": "/api/uniflow/workflow/{a}/{b}",
+            "method": "DELETE",
+            "url_pattern": "/workflow/{a}/{b}"
+        },
+        {
+            "endpoint": "/api/uniflow/workflow/bulk/pause",
+            "method": "PUT",
+            "url_pattern": "/bulk/pause"
+        },
+        {
+            "endpoint": "/api/uniflow/workflow/bulk/resume",
+            "method": "PUT",
+            "url_pattern": "/bulk/resume"
+        },
+        {
+            "endpoint": "/api/uniflow/workflow/bulk/retry",
+            "method": "POST",
+            "url_pattern": "/bulk/retry"
+        },
+        {
+            "endpoint": "/api/uniflow/workflow/bulk/restart",
+            "method": "POST",
+            "url_pattern": "/bulk/restart"
         }
     ]
 }
