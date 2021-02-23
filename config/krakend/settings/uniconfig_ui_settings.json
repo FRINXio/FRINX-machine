@@ -1,0 +1,24 @@
+{
+    "endpoints": [
+        {
+            "endpoint": "/uniconfig/ui",
+            "method": "GET",
+            "url_pattern": "/"
+        },
+        {
+            "endpoint": "/uniconfig/ui/{a}",
+            "method": "GET",
+            "url_pattern": "/{a}"
+        },
+        {
+            "endpoint": "/uniconfig/ui/{a}/{b}",
+            "method": "GET",
+            "url_pattern": "/{a}/{b}"
+        },
+        {
+            "endpoint": "/uniconfig/ui/{a}/{b}/{c}",
+            "method": "GET",
+            "url_pattern": "/{a}/{b}/{c}"
+        }
+    ]
+}

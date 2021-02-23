@@ -1,0 +1,21 @@
+{{range $index, $element := .}}
+{{if gt $index 0}}, {{end}}
+{
+    "endpoint": "{{ .endpoint }}",
+    "method": "{{ .method }}",
+    "querystring_params": ["*"],
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
+    "backend": [
+    {
+        "url_pattern": "{{ .url_pattern }}",
+        "encoding": "no-op",
+        "sd": "static",
+        "disable_host_sanitize": false,
+        "host": [
+            "uniflow-ui:3000"
+        ]
+    }
+]
+}
+{{end}}
