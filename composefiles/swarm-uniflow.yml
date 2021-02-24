@@ -181,7 +181,7 @@ services:
       replicas: 1
 
   uniconfig-ui:
-    image: frinx/uniconfig-ui:2.0.2
+    image: frinx/uniconfig-ui:latest
     logging:
       driver: "json-file"
       options:
@@ -206,7 +206,7 @@ services:
 
 
   uniflow-ui:
-    image: frinx/uniflow-ui:2.0.1
+    image: frinx/uniflow-ui:latest
     logging:
       driver: "json-file"
       options:
