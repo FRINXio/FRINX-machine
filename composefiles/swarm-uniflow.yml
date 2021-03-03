@@ -196,6 +196,33 @@ services:
       retries: 5
       start_period: 20s
 
+  uniresource:
+    image: frinx/resource-manager:latest
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    environment:
+      - RM_DB_CONNECTION_STRING=postgres://postgres:postgres@postgresql:5432/postgres?sslmode=disable
+      - RM_API_PORT=8884
+      - RM_ADMIN_ROLES=OWNER
+      - RM_ADMIN_GROUPS=network-admin
+      - RM_LOG_PATH=/var/log/rm.log
+      - RM_LOG_LEVEL=warn
+      - WASMER_MAX_TIMEOUT_MILLIS=10000
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${CONSTRAINT_HOSTNAME}
+      mode: replicated
+      replicas: 1
+    healthcheck:
+      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://0.0.0.0:8884/healthz/readiness'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
 volumes:
   uniflow_elastic_data:

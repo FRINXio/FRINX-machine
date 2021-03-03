@@ -1,0 +1,66 @@
+{{range $index, $element := .}}
+{{if gt $index 0}},{{end}}
+{
+    "endpoint": "{{ .endpoint }}",
+    "method": "{{ .method }}",
+    "querystring_params": ["*"],
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
+    "backend": [
+    {
+        "url_pattern": "{{ .url_pattern }}",
+        "encoding": "no-op",
+        "sd": "static",
+        "disable_host_sanitize": false,
+        "extra_config": {
+            "github.com/devopsfaith/krakend-martian": {
+                "fifo.Group": {
+                    "scope": ["request", "response"],
+                    "aggregateErrors": true,
+                    "modifiers": [
+                        {
+                            "header.Modifier": {
+                                "scope": ["request"],
+                                "name": "Accept-Encoding",
+                                "value": "identity"
+                            }
+                        },
+                        {
+                            "header.Modifier": {
+                                "scope": ["response"],
+                                "name": "Content-Type",
+                                "value": "application/json; charset=utf-8"
+                            }
+                        },
+                        {
+                            "header.Modifier": {
+                                "scope": ["request"],
+                                "name": "x-tenant-id",
+                                "value":  "frinx"
+                            }
+                        },
+                        {
+                            "header.Modifier": {
+                                "scope": ["request"],
+                                "name": "from",
+                                "value": "admin-user"
+                            }
+                        },
+                        {
+                            "header.Modifier": {
+                                "scope": ["request"],
+                                "name": "x-auth-user-groups",
+                                "value": "network-admin"
+                            }
+                        }
+                    ]
+                }
+              }
+        },
+        "host": [
+            "uniresource:8884"
+        ]
+    }
+]
+}
+{{end}}

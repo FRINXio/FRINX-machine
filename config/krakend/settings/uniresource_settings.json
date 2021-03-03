@@ -1,0 +1,9 @@
+{
+    "endpoints": [
+        {
+            "endpoint": "/resourcemanager/graphql/query",
+            "method": "POST",
+            "url_pattern": "/query"
+        }
+    ]
+}
