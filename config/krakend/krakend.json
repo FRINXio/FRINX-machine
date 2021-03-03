@@ -35,6 +35,7 @@
     {{ template "uniconfig_deprecated.tmpl" .uniconfig_settings_deprecated }},
     {{ template "uniconfig_ui.tmpl" .uniconfig_ui_settings.endpoints }},
     {{ template "uniflow_ui.tmpl" .uniflow_ui_settings.endpoints }},
-    {{ template "dashboard.tmpl" .dashboard_settings.endpoints }}
+    {{ template "dashboard.tmpl" .dashboard_settings.endpoints }},
+    {{ template "uniresource.tmpl" .uniresource_settings.endpoints }}
   ]
 }
