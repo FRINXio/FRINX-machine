@@ -173,7 +173,7 @@ services:
         max-file: "3"
         max-size: "10m"
     healthcheck:
-      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/readiness'
+      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/readiness' && curl --insecure --write-out 'HTTPSTATUS:%{http_code}' --silent --fail -X GET http://conductor-server:8080/api/health
       interval: 10s
       timeout: 5s
       retries: 5
