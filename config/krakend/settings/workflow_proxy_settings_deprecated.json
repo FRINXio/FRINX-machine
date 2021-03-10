@@ -6,11 +6,6 @@
             "url_pattern": "/metadata"
         },
         {
-            "endpoint": "/api/uniflow/metadata/workflow/{name}/{version}",
-            "method": "GET",
-            "url_pattern": "/metadata/workflow/{name}/{version}"
-        },
-        {
             "endpoint": "/api/uniflow/bulk/terminate",
             "method": "DELETE",
             "url_pattern": "/bulk/terminate"
@@ -46,9 +41,9 @@
             "url_pattern": "/executions"
         },
         {
-            "endpoint": "/api/uniflow/workflow/{a}",
-            "method": "DELETE",
-            "url_pattern": "/workflow/{a}"
+            "endpoint": "/api/uniflow/schedule/{name}/{b}",
+            "method": "GET",
+            "url_pattern": "/schedule/{name}/{b}"
         }
     ]
 }
