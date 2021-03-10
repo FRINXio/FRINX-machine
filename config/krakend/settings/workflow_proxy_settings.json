@@ -46,14 +46,24 @@
             "url_pattern": "/metadata/workflow/{name}"
         },
         {
-            "endpoint": "/api/uniflow/metadata/workflow/{a}/{b}",
+            "endpoint": "/api/uniflow/metadata/workflow/{name}/{version}",
             "method": "DELETE",
-            "url_pattern": "/metadata/workflow/{a}/{b}"
+            "url_pattern": "/metadata/workflow/{name}/{version}"
         },
         {
             "endpoint": "/api/uniflow/workflow/{a}",
             "method": "GET",
             "url_pattern": "/workflow/{a}"
+        },
+        {
+            "endpoint": "/api/uniflow/workflow/{a}",
+            "method": "DELETE",
+            "url_pattern": "/workflow/{a}"
+        },
+        {
+            "endpoint": "/api/uniflow/workflow/{a}/{b}",
+            "method": "DELETE",
+            "url_pattern": "/workflow/{a}/{b}"
         },
         {
             "endpoint": "/api/uniflow/workflow",
@@ -101,14 +111,9 @@
             "url_pattern": "/schedule"
         },
         {
-            "endpoint": "/api/uniflow/schedule/{a}",
+            "endpoint": "/api/uniflow/schedule/{name}",
             "method": "GET",
-            "url_pattern": "/schedule/{a}"
-        },
-        {
-            "endpoint": "/api/uniflow/schedule/{a}/workflow",
-            "method": "GET",
-            "url_pattern": "/schedule/{a}/workflow"
+            "url_pattern": "/schedule/{name}"
         },
         {
             "endpoint": "/api/uniflow/schedule/{name}",
@@ -129,11 +134,6 @@
             "endpoint": "/api/uniflow/editableworkflows",
             "method": "GET",
             "url_pattern": "/editableworkflows"
-        },
-        {
-            "endpoint": "/api/uniflow/workflow/{a}/{b}",
-            "method": "DELETE",
-            "url_pattern": "/workflow/{a}/{b}"
         },
         {
             "endpoint": "/api/uniflow/workflow/bulk/pause",
