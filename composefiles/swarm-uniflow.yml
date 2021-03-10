@@ -166,7 +166,7 @@ services:
       start_period: 20s
 
   workflow-proxy:
-    image: frinx/workflow-proxy:1.0.2
+    image: frinx/workflow-proxy:1.0.3
     logging:
       driver: "json-file"
       options:
