@@ -166,7 +166,7 @@ services:
       start_period: 20s
 
   workflow-proxy:
-    image: frinx/workflow-proxy:1.0.0
+    image: frinx/workflow-proxy:1.0.2
     logging:
       driver: "json-file"
       options:
@@ -186,7 +186,7 @@ services:
       replicas: 1
 
   uniconfig-ui:
-    image: frinx/uniconfig-ui:latest
+    image: frinx/uniconfig-ui:2.0.3
     logging:
       driver: "json-file"
       options:
@@ -211,7 +211,7 @@ services:
 
 
   uniflow-ui:
-    image: frinx/uniflow-ui:latest
+    image: frinx/uniflow-ui:2.0.2
     logging:
       driver: "json-file"
       options:
