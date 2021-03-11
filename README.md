@@ -7,7 +7,15 @@ https://github.com/FRINXio/FRINX-machine/releases
 
 
 ## Requirements
-Hardware:
+Minimal hardware requirements (See [resource limitation](#resource-limitation))
+
+Production: (default)
+
+- 24GB RAM
+- 4x CPU
+
+Development:
+
 - 16GB RAM
 - 4x CPU
 
@@ -21,6 +29,7 @@ You can deploy the FM either locally with all services running on a single node,
 * [Installation](#installation)
 * [Single-node deployment](#single-node-deployment)
 * [Multi-node deployment](#multi-node-deployment)
+* [Resource limitation](#resource-limitation) 
 * [Maintaining](#maintaining)
 * [TLS Certificated](#tls-certificates) 
 
@@ -90,6 +99,8 @@ Installation and running of UniFlow and UniConfig on the same machine.
 To deploy both UniFlow and UniConfig locally (for testing and demo purposes), run `startup.sh`:
 ```sh
 $ ./startup.sh
+# To use development resource limitation, use:
+$ ./startup.sh --dev 
 ```
 The FRINX Machine services will now be started. 
 
@@ -138,9 +149,6 @@ $ docker swarm join-token worker
 
 ### Deploying UniConfig services
 
-
-  
-
 Install and set-up docker-ce on worker node:
 ```sh
 $ sudo apt-get install curl
@@ -176,6 +184,14 @@ Each deployment creates a unique per-worker YAML file stored in folder `./unicon
 
 NOTE: The deployment might take a while as the worker node needs to download all necessary images first.
 
+## Resource limitation
+
+Default resource limitation is configured for production but can be changed to development.
+```sh
+$ ./startup.sh --dev
+```
+Template for production settings is stored in `./config/prod_settings.txt`. <br> In this file, these values can be changed by profiled requirements.
+
 ## Maintaining
 
 ### Checking
@@ -185,6 +201,26 @@ $ docker service ls
 $ docker stack ps fm
 ```
 Where 'fm' (FRINX Machine) is the name of the swarm stack configured during deployment, the name is assigned automatically.
+
+### Bench Security
+
+For security improvement of dockerized Frinx Machine, therse docker settings can be configured to `/etc/docker/daemon.json`. 
+
+```sh
+$ cat /etc/docker/daemon.json
+
+{
+    "icc": false,
+    "log-driver": "syslog",
+    "userland-proxy": false,
+    "no-new-privileges": true
+}
+```
+Config file is stored in `./config/docker-security/` folder. <br>
+Bench security analysis can be performed with this command
+```sh
+$ ./config/docker-security/bench_security.sh
+```
 
 ### Shutdown
 To stop all services, simply remove the stack from the swarm:

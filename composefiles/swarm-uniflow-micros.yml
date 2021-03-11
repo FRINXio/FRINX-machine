@@ -16,11 +16,26 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    ulimits:
+      nofile:
+        soft: ${MC_ULIMIT_NOFILE_SOFT}
+        hard: ${MC_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${MC_ULIMIT_NPROC_SOFT}
+        hard: ${MC_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
     deploy:
-      restart_policy:
-        delay: 10s
       placement:
         constraints:
           - node.hostname == ${CONSTRAINT_HOSTNAME}
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        window: 10s
       mode: replicated
       replicas: 1
+      resources:
+        limits:
+          cpus: ${MC_RES_LIMIT_CPUS}
+          memory: ${MC_RES_LIMIT_MEM}

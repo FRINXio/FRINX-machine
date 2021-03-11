@@ -100,7 +100,7 @@ cat << EOF > "${__PROXY_PATH}/${__PROXY_FILE}"
 }
 EOF
 
-chown ${defUser} ${__PROXY_PATH}/${__PROXY_FILE}
+chown ${defUser}:${defUser} ${__PROXY_PATH}/${__PROXY_FILE}
 
 if [ $? -ne 0 ] || [ ! -f ${__PROXY_PATH}/${__PROXY_FILE} ] ; then
   echo -e ${ERROR} "Problem during creating config file ${__PROXY_PATH}/${__PROXY_FILE}"
@@ -239,6 +239,9 @@ function installPrerequisities {
 
 
 function pullImages {
+
+  setVariableFile "${dockerPerformSettings}"
+
   echo -e "${INFO} Pulling UniFlow images"
   docker-compose --log-level ERROR -f $dockerComposeFileUniflow pull
   docker-compose --log-level ERROR -f $dockerComposeFileMicros pull
@@ -325,7 +328,7 @@ function selectDockerVersion {
 function createEnvFile {
   if [[ ! -f ${stackEnvFile} ]]; then
     cp "${stackEnvFile}.template" ${stackEnvFile}
-    chown ${defUser} ${stackEnvFile}
+    chown ${defUser}:${defUser} ${stackEnvFile}
   fi
 }
 
@@ -350,10 +353,12 @@ function addEnvToFile {
 }
 
 
-function setVariableEnvFile {
-  if [[ -f ${stackEnvFile} ]]; then
-    source ${stackEnvFile}
-    local __name=$(grep ^[a-Z] ${stackEnvFile})
+
+function setVariableFile {
+  local __filePath="${1}"
+  if [[ -f ${__filePath} ]]; then
+    source "${__filePath}"
+    local __name=$(grep ^[[:alpha:]] ${__filePath})
     for ((i=0; i< ${#__name[@]}; i++ ))
     do
       export $(echo "${__name[$i]}" | cut -d '=' -f1)
@@ -362,9 +367,10 @@ function setVariableEnvFile {
 }
 
 
-function unsetVariableEnvFile {
-  if [[ -f ${stackEnvFile} ]]; then
-    local __name=$(grep ^[a-Z] ${stackEnvFile})
+function unsetVariableFile {
+  local __filePath="${1}"
+  if [[ -f ${__filePath} ]]; then
+    local __name=$(grep ^[[:alpha:]] ${__filePath})
     for ((i=0; i< ${#__name[@]}; i++ ))
     do
       unset $(echo "${__name[$i]}" | cut -d '=' -f1)
@@ -381,6 +387,8 @@ dockerComposeInstallVersion="1.22.0"
 dockerComposeFileUniconfig='composefiles/swarm-uniconfig.yml'
 dockerComposeFileUniflow='composefiles/swarm-uniflow.yml'
 dockerComposeFileMicros='composefiles/swarm-uniflow-micros.yml'
+dockerPerformSettings='./config/dev_settings.txt'
+
 scriptName=$0
 skipswarm=0
 defUser=$(who | awk '{print $1;}')
@@ -400,7 +408,7 @@ export KRAKEND_PORT=443
 argumentsCheck "$@"
 checkIfRoot
 createEnvFile
-setVariableEnvFile
+setVariableFile "${stackEnvFile}"
 proxy_config
 installPrerequisities
 checkDockerGroup
@@ -408,4 +416,5 @@ pullImages
 buildKrakendImage
 cleanup
 finishedMessage
-unsetVariableEnvFile
+unsetVariableFile "${stackEnvFile}"
+unsetVariableFile "${dockerPerformSettings}"
