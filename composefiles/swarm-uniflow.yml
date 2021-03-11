@@ -4,32 +4,52 @@ version: "3.7"
 services:
 
   conductor-server:
-    environment:
-      - CONFIG_PROP=config.properties
-      - _JAVA_OPTIONS="-Xmx4g"
     image: frinx/uniflow-conductor-server:1.0.0
-    volumes:
-      -  ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties
+    user: guest
     logging:
       driver: "json-file"
       options:
         max-file: "3"
         max-size: "10m"
-    deploy:
-      placement:
-        constraints:
-          - node.hostname == ${CONSTRAINT_HOSTNAME}
-      mode: replicated
-      replicas: 1
+    environment:
+      - CONFIG_PROP=config.properties
+      - _JAVA_OPTIONS="-Xmx${CS_RES_LIMIT_MEM}"
+    volumes:
+      - ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties:ro
     healthcheck:
       test: wget --spider localhost:8080/api/health
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 60s
+    ulimits:
+      nofile:
+        soft: ${CS_ULIMIT_NOFILE_SOFT}
+        hard: ${CS_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${CS_ULIMIT_NPROC_SOFT}
+        hard: ${CS_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${CONSTRAINT_HOSTNAME}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${CS_RES_LIMIT_CPUS}
+          memory: ${CS_RES_LIMIT_MEM}
+
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.1
+    user: elasticsearch
     logging:
       driver: "json-file"
       options:
@@ -40,46 +60,81 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx4096m"
     volumes:
       - uniflow_elastic_data:/usr/share/elasticsearch/data
-      -  ${UF_CONFIG_PATH}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      -  ${UF_CONFIG_PATH}/elasticsearch/backup.sh:/usr/share/elasticsearch/backup.sh
+      - ${UF_CONFIG_PATH}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ${UF_CONFIG_PATH}/elasticsearch/backup.sh:/usr/share/elasticsearch/backup.sh:ro
     healthcheck:
       test: curl -X GET 'localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s'
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
+    ulimits:
+      nofile:
+        soft: ${ES_ULIMIT_NOFILE_SOFT}
+        hard: ${ES_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${ES_ULIMIT_NPROC_SOFT}
+        hard: ${ES_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
     deploy:
       placement:
         constraints:
           - node.hostname == ${CONSTRAINT_HOSTNAME}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
       mode: replicated
       replicas: 1
+      resources:
+        limits:
+          cpus: ${ES_RES_LIMIT_CPUS}
+          memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
     # TODO: make stable release and change 'latest' version to a stable one
     image: frinx/frinx-frontend:latest
-    volumes:
-      - ${UF_CONFIG_PATH}/frinx-frontend/config.json:/usr/share/nginx/html/config.json
     logging:
       driver: "json-file"
       options:
         max-file: "3"
         max-size: "10m"
+    volumes:
+      - ${UF_CONFIG_PATH}/frinx-frontend/config.json:/usr/share/nginx/html/config.json:ro
     healthcheck:
       test: curl --silent -o /dev/null  --write-out 'HTTPSTATUS:%{http_code}\n' -X GET 'http://127.0.0.1:8888' || exit 1
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+    ulimits:
+      nofile:
+        soft: ${FF_ULIMIT_NOFILE_SOFT}
+        hard: ${FF_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${FF_ULIMIT_NPROC_SOFT}
+        hard: ${FF_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
     deploy:
       placement:
         constraints:
           - node.hostname == ${CONSTRAINT_HOSTNAME}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
       mode: replicated
       replicas: 1
+      resources:
+        limits:
+          cpus: ${FF_RES_LIMIT_CPUS}
+          memory: ${FF_RES_LIMIT_MEM}
 
   postgresql:
     image: postgres:12.2
+    user: postgres
     logging:
       driver: "json-file"
       options:
@@ -89,24 +144,47 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_MULTIPLE_DATABASES=conductor,frinx,schellar
+    volumes:
+      - uniflow_postgresql_data:/var/lib/postgresql/data
+      - ${UF_CONFIG_PATH}/uniflow-postgres:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: pg_isready -U postgres
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
-    volumes:
-      - uniflow_postgresql_data:/var/lib/postgresql/data
-      -  ${UF_CONFIG_PATH}/uniflow-postgres:/docker-entrypoint-initdb.d
+    ulimits:
+      nofile:
+        soft: ${PG_ULIMIT_NOFILE_SOFT}
+        hard: ${PG_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${PG_ULIMIT_NPROC_SOFT}
+        hard: ${PG_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
     deploy:
       placement:
         constraints:
           - node.hostname == ${CONSTRAINT_HOSTNAME}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
       mode: replicated
       replicas: 1
+      resources:
+        limits:
+          cpus: ${PG_RES_LIMIT_CPUS}
+          memory: ${PG_RES_LIMIT_MEM}
 
   schellar:
     image: frinx/uniflow-schellar:1.9.2
+    user: guest
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
     environment:
       - LOG_LEVEL=debug
       - CHECK_INTERVAL_SECONDS=10
@@ -114,26 +192,39 @@ services:
       - BACKEND=postgres
       - POSTGRES_MIGRATIONS_DIR=migrations
       - POSTGRES_DATABASE_URL=host=postgresql port=5432 user=postgres password=postgres database=schellar
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
-    deploy:
-      placement:
-        constraints:
-          - node.hostname == ${CONSTRAINT_HOSTNAME}
-      mode: replicated
-      replicas: 1
     healthcheck:
       test: wget --spider -q conductor-server:8080/api/health && wget --spider -q 127.0.0.1:3000/schedule && nc -z postgresql:5432
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
+    ulimits:
+      nofile:
+        soft: ${SC_ULIMIT_NOFILE_SOFT}
+        hard: ${SC_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${SC_ULIMIT_NPROC_SOFT}
+        hard: ${SC_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${CONSTRAINT_HOSTNAME}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${SC_RES_LIMIT_CPUS}
+          memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
     image: frinx/workflow-proxy:1.0.3
+    user: node
     logging:
       driver: "json-file"
       options:
@@ -145,12 +236,29 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    ulimits:
+      nofile:
+        soft: ${WP_ULIMIT_NOFILE_SOFT}
+        hard: ${WP_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${WP_ULIMIT_NPROC_SOFT}
+        hard: ${WP_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
     deploy:
       placement:
         constraints:
           - node.hostname == ${CONSTRAINT_HOSTNAME}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
       mode: replicated
       replicas: 1
+      resources:
+        limits:
+          cpus: ${WP_RES_LIMIT_CPUS}
+          memory: ${WP_RES_LIMIT_MEM}
 
   uniresource:
     image: frinx/resource-manager:latest
@@ -167,19 +275,36 @@ services:
       - RM_LOG_PATH=/var/log/rm.log
       - RM_LOG_LEVEL=warn
       - WASMER_MAX_TIMEOUT_MILLIS=10000
-    deploy:
-      placement:
-        constraints:
-          - node.hostname == ${CONSTRAINT_HOSTNAME}
-      mode: replicated
-      replicas: 1
     healthcheck:
       test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://0.0.0.0:8884/healthz/readiness'
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
-
+    ulimits:
+      nofile:
+        soft: ${UR_ULIMIT_NOFILE_SOFT}
+        hard: ${UR_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${UR_ULIMIT_NPROC_SOFT}
+        hard: ${UR_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${CONSTRAINT_HOSTNAME}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${UR_RES_LIMIT_CPUS}
+          memory: ${UR_RES_LIMIT_MEM}
+      
 volumes:
   uniflow_elastic_data:
     name: uniflow_elastic_data

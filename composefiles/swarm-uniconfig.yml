@@ -14,9 +14,9 @@ services:
         max-file: "3"
         max-size: "10m"
     environment:
-      - JAVA_MAX_MEM=10G
+      - JAVA_MAX_MEM=${UC_RES_LIMIT_MEM}
       # Enable G1GC and GC logging 
-      - _JAVA_OPTIONS=-Xmx10G -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xloggc:/opt/uniconfig-frinx/log/gc.log -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintTenuringDistribution -XX:+PrintGCCause -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=5M -XX:+PrintGCDateStamps -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1 ${UC_PROXY_HTTP_ENV} ${UC_PROXY_HTTP_PORT_ENV} ${UC_PROXY_HTTPS_ENV} ${UC_PROXY_HTTPS_PORT_ENV} ${UC_PROXY_NOPROXY_ENV}
+      - _JAVA_OPTIONS=-Xmx${UC_RES_LIMIT_MEM} -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xloggc:/opt/uniconfig-frinx/log/gc.log -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintTenuringDistribution -XX:+PrintGCCause -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=5M -XX:+PrintGCDateStamps -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1 ${UC_PROXY_HTTP_ENV} ${UC_PROXY_HTTP_PORT_ENV} ${UC_PROXY_HTTPS_ENV} ${UC_PROXY_HTTPS_PORT_ENV} ${UC_PROXY_NOPROXY_ENV}
       - dbPersistence_enabled=true
       - dbPersistence_connection_dbName=uniconfig
       - dbPersistence_connection_username=postgres
@@ -25,26 +25,46 @@ services:
       - dbPersistence_connection_databaseLocations_port=5432
     volumes:
       - uniconfig_logs:/opt/uniconfig-frinx/log
-      - ${UC_CONFIG_PATH}/config/lighty-uniconfig-config.json:/opt/uniconfig-frinx/config/lighty-uniconfig-config.json
-      - ${UC_CONFIG_PATH}/config/logback.xml:/opt/uniconfig-frinx/config/logback.xml
+      - ${UC_CONFIG_PATH}/config/lighty-uniconfig-config.json:/opt/uniconfig-frinx/config/lighty-uniconfig-config.json:ro
+      - ${UC_CONFIG_PATH}/config/logback.xml:/opt/uniconfig-frinx/config/logback.xml:ro
       - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache
-      - ${UC_CONFIG_PATH}/config/.keystore:/opt/uniconfig-frinx/config/.keystore
-    deploy:
-      placement:
-        constraints:
-          - node.hostname == TEMPLATE-HOSTNAME
-      mode: replicated
-      replicas: 1
-    command: -l ${LICENSE}
+      - ${UC_CONFIG_PATH}/config/.keystore:/opt/uniconfig-frinx/config/.keystore:ro
     healthcheck:
       test: curl --insecure -o /dev/null --user admin:admin --silent --write-out "%{http_code}" -X POST 'https://127.0.0.1:8181/rests/operations/uniconfig-manager:health' -H "Content-Type:application/json" | grep 200 || exit 1
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 1m30s
+      start_period: ${UC_HEALTH_START_TIME}
+    command: -l ${LICENSE} 
+    ulimits:
+      nofile:
+        soft: ${UC_ULIMIT_NOFILE_SOFT}
+        hard: ${UC_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${UC_ULIMIT_NPROC_SOFT}
+        hard: ${UC_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    cap_add:
+      - CAP_NET_BIND_SERVICE
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == TEMPLATE-HOSTNAME
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${UC_RES_LIMIT_CPUS}
+          memory: ${UC_RES_LIMIT_MEM}
 
   TEMPLATE-SERVICENAME-postgres:
     image: postgres:12.2
+    user: postgres
     logging:
       driver: "json-file"
       options:
@@ -54,21 +74,39 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=uniconfig
+    volumes:
+      - uniconfig_postgresql_data:/var/lib/postgresql/data
+      - ${UC_CONFIG_PATH}/init_schema.sql:/docker-entrypoint-initdb.d/init_schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
-    volumes:
-      - uniconfig_postgresql_data:/var/lib/postgresql/data
-      - ${UC_CONFIG_PATH}/init_schema.sql:/docker-entrypoint-initdb.d/init_schema.sql
+    ulimits:
+      nofile:
+        soft: ${UP_ULIMIT_NOFILE_SOFT}
+        hard: ${UP_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${UP_ULIMIT_NPROC_SOFT}
+        hard: ${UP_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
     deploy:
       placement:
         constraints:
           - node.hostname == TEMPLATE-HOSTNAME
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
       mode: replicated
       replicas: 1
+      resources:
+        limits:
+          cpus: ${UP_RES_LIMIT_CPUS}
+          memory: ${UP_RES_LIMIT_MEM}
+
 
 volumes:
   uniconfig_logs:

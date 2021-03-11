@@ -1,0 +1,6 @@
+{
+    "icc": false,
+    "log-driver": "syslog",
+    "userland-proxy": false,
+    "no-new-privileges": true
+}

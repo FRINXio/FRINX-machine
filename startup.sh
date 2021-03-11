@@ -1,33 +1,60 @@
 #!/bin/bash
 # set -e
 
-# Common functions
-function example {
-    echo -e "example: $scriptName"
-}
+show_help()
+{
+local ___script_name="$(basename "${0}")"
+cat << EOF
+DESCRIPTION:
+ This script can be used for starting Frinx-Machine (FM) in specific modes.
+  
+  - If no options are specified, starts UniFlow and UniConfig services on local single node 
+    with development resources allocation and http protocol.
 
+  - For starting FM in multi-node, change value of UNICONFIG_HOSTNAME in .env file and use
+    --uniflow-only for deploy Uniflow on swarm manager node and
+    --deploy-uniconfig for deploy Uniconfig on swarm worker node.
 
-function usage {
- echo -e "usage: $scriptName [OPTION]\n"
- echo -e "If no options are specified, starts UniFlow and UniConfig services on local node."
- echo -e "To only start UniFlow services locally, use --uniflow-only option."
- echo -e "To deploy UniConfig to a swarm worker node, use --deploy-uniconfig option."
- echo -e "If you do not wish to use the default UniConfig 30 day trial license, change
-the license key in $licenseKeyFile before running this script.\n"
- echo -e "To start without micros container use --no-micros. For local and uniflow deployment"
- echo -e ""
-}
+  - If you do not wish to use the default UniConfig 30 day trial license, change
+    the license key in ${licenseKeyFile} before running this script.
 
+  - To start without micros container use --no-micros. For local and uniflow deployment
 
-function show_help {
-  usage
-    echo -e "OPTIONS:\n"
-    echo -e "  --no-micros \t\t\t Deploy Frinx-Machine without uniflow-micros service"
-    echo -e "  --https \t\t\t Deploy Frinx-Machine without in https mode"
-    echo -e "  --uniflow-only \t\t Deploy UniFlow services locally\n"
-    echo -e "  --deploy-uniconfig \t Deploy UniConfig services on swarm worker node \n"
-    echo -e "  -h | --help \t\t\t Display this message and exit\n"
-  example
+  - To use FM with production resource allocation settings, you can use own settings
+    stored in ${productPerformSettingFile} or use predefined. 
+    For enabling use --prod option. 
+  
+  For more info see README
+
+OPTIONS:
+
+ ${___script_name} [OPTIONS]
+
+  FRINX-MACHINE CONFIGURATION
+
+   --no-micros   Deploy Frinx-Machine without uniflow-micros service
+
+   --https       Deploy Frinx-Machine in https mode 
+                  - KrakenD with certificates
+                  - https://127.0.0.1
+
+   --prod|--dev  Deploy Frinx-Machine in production or development mode
+                  - different allocation of resources
+                  - default: production
+
+  MULTI-NODE DEPLOYMENT
+
+   For more info about multi-node deployment see README
+
+   --uniflow-only      Deploy UniFlow services on swarm manager node
+   --deploy-uniconfig  Deploy UniConfig services on swarm worker node
+                          
+  COMMON SETTINGS
+
+   -h|--help    Print this help and exit
+   -d|--debug   Enable verbose
+
+EOF
 }
 
 
@@ -55,6 +82,21 @@ function argumentsCheck {
 
         --no-micros)
             noMicros="true";;
+
+        --prod|--dev)
+            if [ -z ${__only_one_perf_config} ]; then
+              if [ ${1} == "--prod" ]; then
+                __only_one_perf_config="true"
+                performSettings="${productPerformSettingFile}"
+              elif [ ${1} == "--dev" ]; then
+                __only_one_perf_config="true";
+                performSettings="${devPerformSettingFile}"
+              fi
+            else 
+                echo -e "Conflict parameters: --prod--dev !!! Just one can be selected !!!"
+                echo -e "Use '${scriptName} --help' for more details"
+                exit 1
+            fi;;
 
         --uniflow-only|--deploy-uniconfig)
             if [ -z ${__only_one_config} ]; then
@@ -94,7 +136,7 @@ function startUniflow {
 function startContainers {
   checkSwarmMode
   # load env file
-  setVariableEnvFile
+  setVariableFile "${stackEnvFile}"
 
   case $startupType in
       uniflow)
@@ -216,6 +258,7 @@ function generateUniconfigComposeFile {
 
 function generateUniconfigKrakendFile {
 
+  mkdir -p ${FM_DIR}/config/krakend/partials/tls
   local __service_name=${1}
   mkdir -p ${krakendUniconfigNode}
 
@@ -267,10 +310,11 @@ function addEnvToFile {
 }
 
 
-function setVariableEnvFile {
-  if [[ -f ${stackEnvFile} ]]; then
-    source ${stackEnvFile}
-    local __name=$(grep ^[a-Z] ${stackEnvFile})
+function setVariableFile {
+  local __filePath="${1}"
+  if [[ -f ${__filePath} ]]; then
+    source "${__filePath}"
+    local __name=$(grep ^[[:alpha:]] ${__filePath})
     for ((i=0; i< ${#__name[@]}; i++ ))
     do
       export $(echo "${__name[$i]}" | cut -d '=' -f1)
@@ -281,7 +325,7 @@ function setVariableEnvFile {
 
 function unsetVariableEnvFile {
   if [[ -f ${stackEnvFile} ]]; then
-    local __name=$(grep ^[a-Z] ${stackEnvFile})
+    local __name=$(grep ^[[:alpha:]] ${stackEnvFile})
     for ((i=0; i< ${#__name[@]}; i++ ))
     do
       unset $(echo "${__name[$i]}" | cut -d '=' -f1)
@@ -307,6 +351,10 @@ uniconfigServiceFilesPath='composefiles/uniconfig'
 
 krakendUniconfigNode='./config/krakend/partials/uniconfig_host'
 krakendUniconfigNodeFile="${krakendUniconfigNode}/host.txt"
+devPerformSettingFile='./config/dev_settings.txt'
+productPerformSettingFile='./config/prod_settings.txt'
+performSettings="${productPerformSettingFile}"
+
 ERROR='\033[0;31m[ERROR]:\033[0;0m'
 WARNING='\033[0;33m[WARNING]:\033[0;0m'
 INFO='\033[0;96m[INFO]:\033[0;0m'
@@ -317,6 +365,7 @@ cd ${FM_DIR}
 createEnvFile
 argumentsCheck "$@"
 
+setVariableFile "${performSettings}"
 
 if [ "${startupType}" = "local" ]; then
   addEnvToFile "UC_CONFIG_PATH" "'${FM_DIR}/config/uniconfig/frinx/uniconfig'"
