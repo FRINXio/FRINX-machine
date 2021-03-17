@@ -13,7 +13,7 @@ Hardware:
 
 You can deploy the FM either locally with all services running on a single node, or you can split UniFlow and UniConfig instances among multiple nodes. UniFlow is always running on the docker swarm manager node.
 
-To deploy an FM swarm cluster you need at least one machine with Ubuntu 18.04 installed.
+To deploy an FM swarm cluster you need at least one machine with Ubuntu 18.04/20.04 installed.
 
 ## Single-node deployment
 Installation and running of UniFlow and UniConfig on the same machine.
