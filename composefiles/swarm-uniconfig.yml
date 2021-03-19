@@ -14,7 +14,7 @@ services:
         max-file: "3"
         max-size: "10m"
     environment:
-      - JAVA_MAX_MEM=4G
+      - JAVA_MAX_MEM=10G
       # Enable G1GC and GC logging 
       - _JAVA_OPTIONS=-Xmx10G -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xloggc:/opt/uniconfig-frinx/log/gc.log -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintTenuringDistribution -XX:+PrintGCCause -XX:+UseGCLogFileRotation -XX:NumberOfGCLogFiles=10 -XX:GCLogFileSize=5M -XX:+PrintGCDateStamps -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1
       - dbPersistence_enabled=true
