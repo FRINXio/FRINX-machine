@@ -41,6 +41,7 @@ services:
   conductor-server:
     environment:
       - CONFIG_PROP=config.properties
+      - _JAVA_OPTIONS="-Xmx4g"
     image: frinx/uniflow-conductor-server:1.0.0
     volumes:
       -  ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties
@@ -71,7 +72,7 @@ services:
         max-size: "10m"
     environment:
       - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms512m -Xmx1024m"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx4096m"
     volumes:
       - uniflow_elastic_data:/usr/share/elasticsearch/data
       -  ${UF_CONFIG_PATH}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
