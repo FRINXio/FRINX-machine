@@ -37,11 +37,11 @@ services:
       replicas: 1
     command: -l ${LICENSE}
     healthcheck:
-      test: curl --insecure -o /dev/null --user admin:admin --silent --write-out "%{http_code}" -X POST 'http://127.0.0.1:8181/rests/operations/uniconfig-manager:health' -H "Content-Type:application/json" | grep 200 || exit 1
+      test: curl --insecure -o /dev/null --user admin:admin --silent --write-out "%{http_code}" -X POST 'https://127.0.0.1:8181/rests/operations/uniconfig-manager:health' -H "Content-Type:application/json" | grep 200 || exit 1
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 1m
+      start_period: 1m30s
 
   TEMPLATE-HOSTNAME_uniconfig-postgres:
     image: postgres:12.2

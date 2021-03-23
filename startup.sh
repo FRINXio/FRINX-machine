@@ -1,6 +1,8 @@
 #!/bin/bash
 # set -e
 
+. constants.sh
+
 # Common functions
 function example {
     echo -e "example: $scriptName"
@@ -92,9 +94,9 @@ function argumentsCheck {
 
 function startUniflow {
   if [ "$noMicros" = "true" ]; then
-    docker stack deploy --compose-file composefiles/$dockerSwarmUniflow $stackName
+    docker stack deploy --compose-file composefiles/$dockerSwarmUniflow --compose-file composefiles/$dokcerSwarmKrakend $stackName
   else 
-    docker stack deploy --compose-file composefiles/$dockerSwarmUniflow --compose-file composefiles/$dockerSwarmMicros $stackName
+    docker stack deploy --compose-file composefiles/$dockerSwarmUniflow --compose-file composefiles/$dockerSwarmMicros --compose-file composefiles/$dokcerSwarmKrakend $stackName
   fi 
 }
 
@@ -176,7 +178,7 @@ function generateUniconfigKrakendFile {
 mkdir -p ${krakendUnicnfigNode}
 cat << EOF > "${krakendUnicnfigNode}/host.txt"
 "host": [
-  "${nodeName}_uniconfig:8181"
+  "https://${nodeName}_uniconfig:8181"
 ]
 EOF
 }
@@ -200,6 +202,7 @@ stackName="fm"
 licenseKeyFile='./config/uniconfig/uniconfig_license.txt'
 dockerSwarmUniconfig='swarm-uniconfig.yml'
 dockerSwarmUniflow='swarm-uniflow.yml'
+dokcerSwarmKrakend='swarm-uniflow-krakend.yml'
 dockerSwarmMicros='swarm-uniflow-micros.yml'
 uniconfigServiceFilesPath='composefiles/uniconfig'
 scriptName=$0
@@ -223,7 +226,6 @@ else
 fi
 
 export UF_CONFIG_PATH="$DIR/config"
-
 startContainers
 
 echo -e "${INFO} Startup finished"

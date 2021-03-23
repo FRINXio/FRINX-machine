@@ -141,7 +141,30 @@ $ ./startup.sh --deploy-uniconfig NODENAME
 NODENAME must be a valid docker swarm worker name, to get a list of current workers, issue `docker node ls`.
 Each deployment creates a unique per-worker YAML file stored in folder `./uniconfig/composefiles/` which is then used for actual service deployment.
 
-NOTE: The deployment might take a while as the worker node needs to download all neccessary images first.
+NOTE: The deployment might take a while as the worker node needs to download all necessary images first.
+
+# TLS certificates
+
+In the demo deployment the setup has already been done and uniconfig is running under https(not suitable for production).
+To set it up with own certificates please follow the next steps:
+
+1.
+    ```
+    rm /home/test/FRINX-machine/config/uniconfig/frinx/uniconfig/config/.keystore
+    rm krakend/certs/*
+    ```
+2.
+    See `TLS-based authentication` on https://docs.frinx.io/frinx-odl-distribution/oxygen/user-guide/restconf.html
+    Now you can set up the new keystore in `/home/test/FRINX-machine/config/uniconfig/frinx/uniconfig/config/`. 
+
+    In case a new certificate is generated for uniconfig When prompted for `What is your first and last name?` put docker dns name of uniconfig container.
+    Getting the dns name:
+        - run `echo $(hostname)` on the node to which uniconfig will be deployed to
+        - the dns name is <output of previous command>_uniconfig
+
+    Also will need to modify `/home/test/FRINX-machine/config/uniconfig/frinx/uniconfig/config/lighty-uniconfig-config.json` based on the new keystore setup.  
+3.  In case self signed certificate is used please add ca's certificate to `karakend/certs` folder in `.crt` format.  
+    For changes to be propagated run `install.sh` in case of deployed stack `startup.sh` as well. 
 
 ## For developers
 If you need to modify and rebuild modules, you can use `pullmodules.sh` script to download up-to-date modules from FRINX's public GitHub repositories. Then you can use standard docker utilities to build and distribute them, e.g.:

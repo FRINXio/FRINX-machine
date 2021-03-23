@@ -9,7 +9,7 @@ services:
         max-file: "3"
         max-size: "10m"
     environment:
-      - UNICONFIG_URL_BASE=http://${CONSTRAINT_HOSTNAME}_uniconfig:8181/rests
+      - UNICONFIG_URL_BASE=https://${CONSTRAINT_HOSTNAME}_uniconfig:8181/rests
     healthcheck:
       test: cat /home/app/healthcheck && curl --insecure --write-out 'HTTPSTATUS:%{http_code}' --silent --fail -X GET http://conductor-server:8080/api/health && curl --silent --fail --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://workflow-proxy:8088/probe/readiness'
       interval: 10s
