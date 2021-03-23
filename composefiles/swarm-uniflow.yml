@@ -2,41 +2,6 @@
 version: "3.7"
 
 services:
-  krakend:
-    # user: root
-    environment:
-      - FC_ENABLE=1
-      - FC_SETTINGS=/etc/krakend/settings
-      - FC_PARTIALS=/etc/krakend/partials
-      - FC_TEMPLATES=/etc/krakend/templates
-      # - FC_OUT=/etc/krakend/output.json
-    image: frinx/krakend:1.2.0
-    volumes:
-      - ${UF_CONFIG_PATH}/krakend:/etc/krakend
-      - ${UF_CONFIG_PATH}/krakend/tls/${KRAKEND_TLS_PROTOCOL}:/etc/krakend/partials/tls
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
-    ports:
-      - target: 8080
-        published: ${KRAKEND_PORT}
-        mode: host # This makes host to listen on 0.0.0.0:${KRAKEND_PORT} 
-                   # It is the same as you would expect when publishing a port when not running in swarm mode. 
-                   # It is NOT host networking in plain docker.
-    deploy:
-      placement:
-        constraints:
-          - node.hostname == ${CONSTRAINT_HOSTNAME}
-      mode: replicated
-      replicas: 1
-    # healthcheck:
-    #   test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/__health' || exit 1
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
-    #   start_period: 20s
 
   conductor-server:
     environment:

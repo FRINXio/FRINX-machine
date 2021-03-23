@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+. constants.sh
+
 # Common functions
 function example {
   echo -e "example: $scriptName"
@@ -109,6 +111,11 @@ function cleanup {
   docker system prune -f > /dev/null
 }
 
+function buildKrakendImage {
+  echo -e "${INFO} Building krakend image"
+  docker build -t frinx/krakend:$LOCAL_KRAKEND_IMAGE_TAG ./krakend
+}
+
 
 function finishedMessage {
   echo -e "================================================================================"
@@ -192,5 +199,6 @@ checkIfRoot
 installPrerequisities
 checkDockerGroup
 pullImages
+buildKrakendImage
 cleanup
 finishedMessage
