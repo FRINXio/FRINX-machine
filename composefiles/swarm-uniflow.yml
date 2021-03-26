@@ -58,8 +58,6 @@ services:
   frinx-frontend:
     # TODO: make stable release and change 'latest' version to a stable one
     image: frinx/frinx-frontend:latest
-    ports:
-      - 8888:8888
     volumes:
       - ${UF_CONFIG_PATH}/frinx-frontend/config.json:/usr/share/nginx/html/config.json
     logging:
@@ -73,6 +71,12 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    deploy:
+      placement:
+        constraints:
+          - node.hostname == ${CONSTRAINT_HOSTNAME}
+      mode: replicated
+      replicas: 1
 
   postgresql:
     image: postgres:12.2
