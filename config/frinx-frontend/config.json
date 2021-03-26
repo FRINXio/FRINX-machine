@@ -1,14 +1,12 @@
 {
-  "public_url":"/dashboard",
-  "auth_enabled":"false",
-  "auth_client_id":"",
-  "auth_redirect_url":"",
-  "inventory_enabled":"false",
-  "uniconfig_enabled":"true",
-  "uniflow_enabled":"true",
-  "usermanagement_enabled":"false",
-  "url_inventory":"/inventory",
-  "url_uniconfig":"/uniconfig/ui",
-  "url_uniflow":"/uniflow/ui",
-  "url_usermanagement":"/none"
+  "auth_enabled": false,
+  "auth_client_id": "",
+  "auth_redirect_url": "",
+  "conductor_api_url": "/api/uniflow", 
+  "uniconfig_api_url": "/api/uniconfig",
+  "uniconfig_auth": "Basic YWRtaW46YWRtaW4=",
+  "uniresource_enabled": true,
+  "uniconfig_enabled": true,
+  "uniflow_enabled": true,
+  "usermanagement_enabled": false
 }
