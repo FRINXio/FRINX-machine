@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-. constants.sh
-
 # Common functions
 function example {
   echo -e "example: $scriptName"
@@ -128,8 +126,8 @@ if [ -n ${__HTTP_PROXY} ] && [ "${__HTTP_PROXY}" != '' ]; then
       exit 1
     fi
   done
-  addEnvToFile "UC_PROXY_HTTP_ENV" "-Dhttp.proxyHost=${__HTTP_HOST%?} "
-  addEnvToFile "UC_PROXY_HTTP_PORT_ENV" "-Dhttp.proxyPort=${__HTTP_PORT%?}"
+  addEnvToFile "UC_PROXY_HTTP_ENV" "'-Dhttp.proxyHost=${__HTTP_HOST%?}'"
+  addEnvToFile "UC_PROXY_HTTP_PORT_ENV" "'-Dhttp.proxyPort=${__HTTP_PORT%?}'"
   echo -e ${INFO} "HTTP proxy env settins:" $(cat ${stackEnvFile} | grep "UC_PROXY_HTTP_ENV=\|UC_PROXY_HTTP_PORT_ENV=")
 fi
 
@@ -151,8 +149,8 @@ if [ -n ${__HTTPS_PROXY} ] && [ "${__HTTPS_PROXY}" != '' ]; then
       exit 1
     fi
   done
-  addEnvToFile "UC_PROXY_HTTPS_ENV" "-Dhttps.proxyHost=${__HTTPS_HOST%?}"
-  addEnvToFile "UC_PROXY_HTTPS_PORT_ENV" "-Dhttps.proxyPort=${__HTTPS_PORT%?}"
+  addEnvToFile "UC_PROXY_HTTPS_ENV" "'-Dhttps.proxyHost=${__HTTPS_HOST%?}'"
+  addEnvToFile "UC_PROXY_HTTPS_PORT_ENV" "'-Dhttps.proxyPort=${__HTTPS_PORT%?}'"
   echo -e ${INFO} "HTTPS proxy env settins:" $(cat ${stackEnvFile} | grep "UC_PROXY_HTTPS_ENV=\|UC_PROXY_HTTPS_PORT_ENV=")
 fi
 
@@ -163,7 +161,7 @@ if [ -n ${__NO_PROXY} ] && [ "${__NO_PROXY}" != '' ]; then
   do
    __NO_HOSTS="${__NO_HOSTS}$(echo "${array[i]}")|"
   done
-  addEnvToFile "UC_PROXY_NOPROXY_ENV" "-Dhttp.nonProxyHosts=${__NO_HOSTS%?}"
+  addEnvToFile "UC_PROXY_NOPROXY_ENV" "'-Dhttp.nonProxyHosts=${__NO_HOSTS%?}'"
   echo -e ${INFO} "NO proxy env settins:" $(cat ${stackEnvFile} | grep UC_PROXY_NOPROXY_ENV=) 
 fi
 
@@ -333,18 +331,44 @@ function createEnvFile {
 
 
 function addEnvToFile {
+  unset __old_env_var
+  unset __new_env_var
   if [[ -f ${stackEnvFile} ]]; then
     if grep -Fq ${1} ${stackEnvFile}
     then
-      __old_env_var=$(grep ${1}= ${stackEnvFile})
-      sed  "/^${1}=/d" ${stackEnvFile} > "${stackEnvFile}_tmp" && \
-      mv ${stackEnvFile}_tmp ${stackEnvFile}
-      echo "${1}=${2}" >> ${stackEnvFile}
+      __old_env_var=$(grep -n ^${1}= ${stackEnvFile} | cut -d':' -f1)
+      __new_env_var="${1}=${2}"
+      sed -i "${__old_env_var}d"  "${stackEnvFile}"
+      __old_env_var=$((__old_env_var-1))
+      sed -i "${__old_env_var}a ${__new_env_var}"  "${stackEnvFile}"
       chown ${defUser} ${stackEnvFile}
     else
-      echo "${1}=${2}" >> ${stackEnvFile} 
+      echo "${1}=${2}" >> ${stackEnvFile}
       chown ${defUser} ${stackEnvFile}
     fi 
+  fi
+}
+
+
+function setVariableEnvFile {
+  if [[ -f ${stackEnvFile} ]]; then
+    source ${stackEnvFile}
+    local __name=$(grep ^[a-Z] ${stackEnvFile})
+    for ((i=0; i< ${#__name[@]}; i++ ))
+    do
+      export $(echo "${__name[$i]}" | cut -d '=' -f1)
+    done
+  fi
+}
+
+
+function unsetVariableEnvFile {
+  if [[ -f ${stackEnvFile} ]]; then
+    local __name=$(grep ^[a-Z] ${stackEnvFile})
+    for ((i=0; i< ${#__name[@]}; i++ ))
+    do
+      unset $(echo "${__name[$i]}" | cut -d '=' -f1)
+    done
   fi
 }
 
@@ -373,13 +397,15 @@ cd ${DIR}
 # Workaround to fix composefile when installing
 export KRAKEND_PORT=443
 
-createEnvFile
 argumentsCheck "$@"
-proxy_config
 checkIfRoot
+createEnvFile
+setVariableEnvFile
+proxy_config
 installPrerequisities
 checkDockerGroup
 pullImages
 buildKrakendImage
 cleanup
 finishedMessage
+unsetVariableEnvFile
