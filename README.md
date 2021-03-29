@@ -22,6 +22,14 @@ Run the install script, this will check and download the neccessary prerequisiti
 ```sh
 $ sudo ./install.sh
 ```
+
+If you want to configure docker to use a proxy server, use:
+```sh
+$ sudo ./install.sh --proxy-conf "USER_HOME_DIR/.docker/config.json" --http-proxy "ip:port" --https-proxy "ip:port" --no-proxy "ip:port,ip:port,..."
+```
+For disabling proxy, the config.json must be removed and UC_PROXY_* settings must be erased from .env file. 
+For more info see: https://docs.docker.com/network/proxy/
+
 Automatically installed software:
 - curl
 - docker-compose 1.22.0
