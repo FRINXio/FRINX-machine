@@ -123,7 +123,7 @@ function startContainers {
 
         generateUniconfigKrakendFile
         generateUniconfigComposeFile
-
+        env $(cat ${DIR}/.env | grep ^[A-Z] | xargs) \
         docker stack deploy --compose-file $uniconfigServiceFilesPath/$dockerSwarmUniconfig'.'$nodeName $stackName
       ;;
 
@@ -139,6 +139,7 @@ function startContainers {
 
         echo -e "${INFO} Starting UniFlow and UniConfig services locally"
         startUniflow
+        env $(cat ${DIR}/.env | grep ^[A-Z] | xargs) \
         docker stack deploy --compose-file $uniconfigServiceFilesPath/$dockerSwarmUniconfig'.'$nodeName $stackName
       ;;
 
