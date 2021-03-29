@@ -6,7 +6,7 @@
 version: "3.7"
 
 services:
-  TEMPLATE-HOSTNAME_uniconfig:
+  TEMPLATE-SERVICENAME:
     image: frinx/uniconfig:4.2.6.frinx
     logging:
       driver: "json-file"
@@ -21,7 +21,7 @@ services:
       - dbPersistence_connection_dbName=uniconfig
       - dbPersistence_connection_username=postgres
       - dbPersistence_connection_password=postgres
-      - dbPersistence_connection_databaseLocations_host=TEMPLATE-HOSTNAME_uniconfig-postgres
+      - dbPersistence_connection_databaseLocations_host=TEMPLATE-SERVICENAME-postgres
       - dbPersistence_connection_databaseLocations_port=5432
     volumes:
       - uniconfig_logs:/opt/uniconfig-frinx/log
@@ -43,7 +43,7 @@ services:
       retries: 5
       start_period: 1m30s
 
-  TEMPLATE-HOSTNAME_uniconfig-postgres:
+  TEMPLATE-SERVICENAME-postgres:
     image: postgres:12.2
     logging:
       driver: "json-file"

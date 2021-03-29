@@ -11,38 +11,82 @@ Hardware:
 - 16GB RAM
 - 4x CPU
 
-You can deploy the FM either locally with all services running on a single node, or you can split UniFlow and UniConfig instances among multiple nodes. UniFlow is always running on the docker swarm manager node.
-
 To deploy an FM swarm cluster you need at least one machine with Ubuntu 18.04/20.04 installed.
 
-## Single-node deployment
-Installation and running of UniFlow and UniConfig on the same machine.
-### Installation
-Run the install script, this will check and download the neccessary prerequisities:
+# Starting Frinx Machine
+You can deploy the FM either locally with all services running on a single node, or you can split UniFlow and UniConfig instances among multiple nodes. UniFlow is always running on the docker swarm manager node. In the case of multi-node deployment, it is necessary to modify the .env file ( Follow [Preparing Environment](#preparing-environment) ).
+
+
+* [Preparing Environment](#preparing-environment)
+* [Installation](#installation)
+* [Single-node deployment](#single-node-deployment)
+* [Multi-node deployment](#multi-node-deployment)
+* [Maintaining](#maintaining)
+* [TLS Certificated](#tls-certificates) 
+
+## Preparing Environment
+The FRINX-Machine repository contains a **.env** file in which the default configuration settings are stored. In this file, the settings are divided into three groups:
+
+* **Common setting** 
+>   * LOCAL_KRAKEND_IMAGE_TAG : KrakenD local image tag settings
+>       * Can be changed by user before starting ./install.sh 
+* **Multi-node settings** 
+>   * UNICONFIG_HOSTNAME : hostname of swarm node, where uniconfig will be deployed
+>       * Must be changed by user before multi-node deployment
+>   * UNICONFIG_SERVICENAME : name for uniconfig service
+>       * define container name
+>       * define hostname, connection URL 
+>       * **Do not use special characters** (allowed: - _ ) **and CAPITAL LETTERS**
+* **Temporary settings** - Created by FM scripts, **do not change them**
+>   * UC_PROXY_* : use docker proxy in Uniconfig Service ( See [Installation](#installation) )
+>   * UC_CONFIG_PATH : path to uniconfig settings
+
+Default settings are prepared for single-node deployment.
+
+For multi-node deployment, you must set hostname of worker node to UNICONFIG_HOSTNAME variable. 
+
+```sh
+# How to list swarm nodes
+$ docker node ls
+```
+In situations, when your hostname contain special characters or capital letters, you can have a problem with correct working of Uniconfig service. Default name can be redefined by UNICONFIG_SERVICENAME variable.
+## Installation
+Run the install script, this will check and download the neccessary prerequisities.
+
 ```sh
 $ sudo ./install.sh
 ```
-
-If you want to configure docker to use a proxy server, use:
-```sh
-$ sudo ./install.sh --proxy-conf "USER_HOME_DIR/.docker/config.json" --http-proxy "ip:port" --https-proxy "ip:port" --no-proxy "ip:port,ip:port,..."
-```
-For disabling proxy, the config.json must be removed and UC_PROXY_* settings must be erased from .env file. 
-For more info see: https://docs.docker.com/network/proxy/
 
 Automatically installed software:
 - curl
 - docker-compose 1.22.0
 - docker-ce 18.09
+ 
 
 NOTE: It may happen that swarm initialization will fail during install. Most likely due to multiple network interfaces present. 
-In that case run `docker swarm init --advertise-addr <ip-addr>` command to tell swarm which ip address to use for 
-inter-manager communication and overlay networking
+In that case run `docker swarm init --advertise-addr <ip-addr>` command to tell swarm which ip address to use for inter-manager communication and overlay networking
 
 NOTE: As FM is designed to run as non-root user, you need the user to be in `docker` group, this is done automatically during the installation process. Use newgrp or reboot the system for changes to take effect **BEFORE** running ```./startup.sh```
 See: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
 
-### Startup
+If you want to configure docker to use a proxy server, use:
+
+```sh
+# Create folder for docker proxy config file
+$ mkdir "${USER}/.docker"
+
+$ sudo ./install.sh \
+--proxy-conf "${USER}/.docker/config.json" \ 
+--http-proxy "ip:port" \
+--https-proxy "ip:port" \
+--no-proxy "ip:port,ip:port,..."
+```
+For disabling proxy, the config.json must be removed and content of UC_PROXY_* variables in .env file must be erased! For example: UC_PROXY_HTTP_ENV="".
+
+For more info see: https://docs.docker.com/network/proxy/
+
+## Single-node deployment
+Installation and running of UniFlow and UniConfig on the same machine.
 To deploy both UniFlow and UniConfig locally (for testing and demo purposes), run `startup.sh`:
 ```sh
 $ ./startup.sh
@@ -65,35 +109,12 @@ In some cases the self signed certificate of the FM dashboard creates an NET_ERR
 ### Demo workflows & sample topology
 Once all services are started, please clone https://github.com/FRINXio/fm-workflows and follow the instructions to load demo workflows and a sample topolgy. You can find a collection of demo use cases here https://docs.frinx.io/frinx-machine/use-cases/index.html
 
-### Shutdown
-To stop all services, simply remove the stack from the swarm:
-```sh
-$ docker stack rm fm
-```
-Where 'fm' (FRINX Machine) is the name of the swarm stack configured during deployment, the name is assigned automatically.
 
-To remove all persistent data, purge the volumes (ATTENTION!!! ALL USER DATA WILL BE LOST):
-```sh
-$ docker volume prune
-```
-
-### Checking
-You can check the status of the swarm cluster by running:
-```sh
-$ docker service ls
-$ docker stack ps fm
-```
-Where 'fm' (FRINX Machine) is the name of the swarm stack configured during deployment, the name is assigned automatically.
-
-### Log collections
-To collect logs, run:
-```sh
-$ ./collectlogs.sh
-```
-This will collect all docker related logs and compresses it into an archive. Logs are collected from local machine only, if you want logs from remote node (e.g. worker) you must copy and run the script on the remote node.
 
 ## Multi-node deployment
 UniFlow services are deployed on swarm manager node and UniConifig services are deployed on swarm worker node.
+
+NOTE: Before starting multi-node deployment, it is **necessary to set the ENVIRONMENT variables** in the .env file! [Preparing Environment](#preparing-environment)
 
 ### Deploying UniFlow services
 Run the installation on manager node as for Single-node deployment.
@@ -116,6 +137,10 @@ $ docker swarm join-token worker
 ```
 
 ### Deploying UniConfig services
+
+
+  
+
 Install and set-up docker-ce on worker node:
 ```sh
 $ sudo apt-get install curl
@@ -132,7 +157,7 @@ And then join the worker node to the swarm with token provided by the manager:
 $ docker swarm join --token SWMTKN-<TOKEN> IP:PORT
 ```
 
-To deploy UniConfig to a worker node, distribute the default UniConfig configuration to `/opt` directory on the worker node (SCP used as an example) and use `--deploy-uniconfig NODENAME` flag.
+To deploy UniConfig to a worker node, distribute the default UniConfig configuration to `/opt` directory on the worker node (SCP used as an example) and use `--deploy-uniconfig` flag.
 
 From the manager node:
 ```sh
@@ -144,12 +169,45 @@ $ sudo cp -r /home/username/frinx /opt
 ```
 From the manager node, deploy uniconfig instance to a worker:
 ```sh
-$ ./startup.sh --deploy-uniconfig NODENAME
+$ ./startup.sh --deploy-uniconfig
 ```
-NODENAME must be a valid docker swarm worker name, to get a list of current workers, issue `docker node ls`.
+
 Each deployment creates a unique per-worker YAML file stored in folder `./uniconfig/composefiles/` which is then used for actual service deployment.
 
 NOTE: The deployment might take a while as the worker node needs to download all necessary images first.
+
+## Maintaining
+
+### Checking
+You can check the status of the swarm cluster by running:
+```sh
+$ docker service ls
+$ docker stack ps fm
+```
+Where 'fm' (FRINX Machine) is the name of the swarm stack configured during deployment, the name is assigned automatically.
+
+### Shutdown
+To stop all services, simply remove the stack from the swarm:
+```sh
+$ ./teardown.sh
+```
+
+To remove all persistent data, purge the volumes (ATTENTION!!! ALL USER DATA WILL BE LOST):
+```sh
+$ ./teardown.sh -v
+```
+For see more options run:
+```sh
+$ ./teardown.sh -h
+```
+
+
+### Log collections
+To collect logs, run:
+```sh
+$ ./collectlogs.sh
+```
+This will collect all docker related logs and compresses it into an archive. Logs are collected from local machine only, if you want logs from remote node (e.g. worker) you must copy and run the script on the remote node.
 
 # TLS certificates
 
@@ -165,10 +223,17 @@ To set it up with own certificates please follow the next steps:
     See `TLS-based authentication` on https://docs.frinx.io/frinx-odl-distribution/oxygen/user-guide/restconf.html
     Now you can set up the new keystore in `/home/test/FRINX-machine/config/uniconfig/frinx/uniconfig/config/`. 
 
-    In case a new certificate is generated for uniconfig When prompted for `What is your first and last name?` put docker dns name of uniconfig container.
+    In case a new certificate is generated for uniconfig When prompted for `What is your first and last name?` put docker dns name of uniconfig container (Defined as UNICONFIG_SERVICENAME in .env file).
     Getting the dns name:
-        - run `echo $(hostname)` on the node to which uniconfig will be deployed to
-        - the dns name is <output of previous command>_uniconfig
+
+    ```sh
+    # For single-node deployment 
+    docker node ls --filter role=manager --format {{.Hostname}}
+    # For sulti-node deployment 
+    # From FRINX-machine repository folder
+    $ echo $(source .env && echo $UNICONFIG_SERVICENAME)
+    ```
+    The dns name is output of previous command
 
     Also will need to modify `/home/test/FRINX-machine/config/uniconfig/frinx/uniconfig/config/lighty-uniconfig-config.json` based on the new keystore setup.  
 3.  In case self signed certificate is used please add ca's certificate to `karakend/certs` folder in `.crt` format.  
