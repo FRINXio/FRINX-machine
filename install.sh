@@ -359,7 +359,7 @@ dockerComposeFileUniflow='composefiles/swarm-uniflow.yml'
 dockerComposeFileMicros='composefiles/swarm-uniflow-micros.yml'
 scriptName=$0
 skipswarm=0
-defUser=$(logname)
+defUser=$(who | awk '{print $1;}')
 
 ERROR='\033[0;31m[ERROR]:\033[0;0m'
 WARNING='\033[0;33m[WARNING]:\033[0;0m'
