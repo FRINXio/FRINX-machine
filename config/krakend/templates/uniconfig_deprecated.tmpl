@@ -18,7 +18,7 @@
 {{if gt $index_in_range 0}},{{end}}
 
 {
-    "endpoint": "/api/rests/uniconfig/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+    "endpoint": "/api/uniconfig/rests/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
     "method": "{{$method}}",
     {{ include "uniconfig_partial_1.tmpl" }}
     "backend": [
