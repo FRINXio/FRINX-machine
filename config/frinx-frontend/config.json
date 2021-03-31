@@ -8,5 +8,6 @@
   "uniresource_enabled": true,
   "uniconfig_enabled": true,
   "uniflow_enabled": true,
-  "usermanagement_enabled": false
+  "usermanagement_enabled": false,
+  "url_basename": "/frinxui"
 }
