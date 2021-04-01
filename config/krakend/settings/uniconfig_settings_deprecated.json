@@ -1,6 +1,6 @@
 {
     "operations_endpoint": {
-        "endpoint": "/api/rests/uniconfig/operations/{action}",
+        "endpoint": "/api/uniconfig/rests/operations/{action}",
         "method": "POST",
         "url_pattern": "/rests/operations/{action}"
     },
