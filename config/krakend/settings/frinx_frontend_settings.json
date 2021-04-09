@@ -2,15 +2,11 @@
     "endpoints": [
         {
             "endpoint": "/",
-            "url_pattern": "/frinxui"
+            "url_pattern": "/"
         },
         {
             "endpoint": "/favicon.ico",
             "url_pattern": "/favicon.ico"
-        },
-        {
-            "endpoint": "/static/{a}",
-            "url_pattern": "/static/{a}"
         }
     ],
     "range": [
