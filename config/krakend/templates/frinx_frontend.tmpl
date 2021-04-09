@@ -31,7 +31,7 @@
     "headers_to_pass": ["*"],
     "backend": [
     {
-        "url_pattern": "/frinxui",
+        "url_pattern": "{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if lt $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
         "encoding": "no-op",
         "sd": "static",
         "disable_host_sanitize": false,
