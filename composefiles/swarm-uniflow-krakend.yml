@@ -30,9 +30,9 @@ services:
           - node.hostname == ${CONSTRAINT_HOSTNAME}
       mode: replicated
       replicas: 1
-    # healthcheck:
-    #   test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/__health' || exit 1
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
-    #   start_period: 20s
+    healthcheck:
+      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/__health' || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
