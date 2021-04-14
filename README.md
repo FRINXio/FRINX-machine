@@ -25,7 +25,7 @@ You can deploy the FM either locally with all services running on a single node,
 * [TLS Certificated](#tls-certificates) 
 
 ## Preparing Environment
-The FRINX-Machine repository contains a **.env** file in which the default configuration settings are stored. In this file, the settings are divided into three groups:
+The FRINX-Machine repository contains a **.env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to three groups:
 
 * **Common setting** 
 >   * LOCAL_KRAKEND_IMAGE_TAG : KrakenD local image tag settings

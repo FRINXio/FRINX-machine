@@ -244,7 +244,7 @@ function checkUniconfigFiles {
 
 function createEnvFile {
   if [[ ! -f ${stackEnvFile} ]]; then
-    touch ${stackEnvFile} 
+    cp "${stackEnvFile}.template" ${stackEnvFile}
   fi
 }
 
