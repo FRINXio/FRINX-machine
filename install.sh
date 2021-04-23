@@ -44,6 +44,7 @@ DESCRIPTION:
   COMMON SETTINGS
 
     -h|--help     Print help
+    -d|--debug    Enable verbose
 
 EOF
 }
@@ -195,6 +196,10 @@ do
             if [[ ${2} != "-"* ]] && [[ ! -z ${2} ]]; then
                 __NO_PROXY="${2}"; shift
             fi;;
+
+        -d|--debug) 
+            set -x;;
+            
         *) 
             echo -e "Unknown argument option! ${1} \nSee '${__SCRIPT_NAME} --help'"
             exit 1;;
@@ -391,7 +396,7 @@ dockerPerformSettings='./config/dev_settings.txt'
 
 scriptName=$0
 skipswarm=0
-defUser=$(who | awk '{print $1;}')
+defUser=$(who | awk 'NR==1{print $1;}')
 
 ERROR='\033[0;31m[ERROR]:\033[0;0m'
 WARNING='\033[0;33m[WARNING]:\033[0;0m'
