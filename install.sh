@@ -332,7 +332,7 @@ function selectDockerVersion {
 
 function createEnvFile {
   if [[ ! -f ${stackEnvFile} ]]; then
-    cp "${stackEnvFile}.template" ${stackEnvFile}
+    cp "${DIR}/env.template" ${stackEnvFile}
     chown ${defUser}:${defUser} ${stackEnvFile}
   fi
 }

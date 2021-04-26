@@ -11,7 +11,7 @@ DESCRIPTION:
   - If no options are specified, starts UniFlow and UniConfig services on local single node 
     with development resources allocation and http protocol.
 
-  - For starting FM in multi-node, change value of UNICONFIG_HOSTNAME in .env file and use
+  - For starting FM in multi-node, change value of UNICONFIG_ID in .env file and use
     --uniflow-only for deploy Uniflow on swarm manager node and
     --deploy-uniconfig for deploy Uniconfig on swarm worker node.
 
@@ -62,7 +62,7 @@ function argumentsCheck {
 
   # Default start values
   startupType="local"
-  nodeName=$(docker node ls --filter role=manager --format {{.Hostname}})
+  nodeID=$(docker node ls --filter role=manager --format {{.ID}})
   noMicros="false"
 
   export KRAKEND_HTTPS="false"
@@ -142,16 +142,16 @@ function startContainers {
   case $startupType in
       uniflow)
       
-        export CONSTRAINT_HOSTNAME=${nodeName}
+        export CONSTRAINT_ID=${nodeID}
 
         echo -e "${INFO} Preparing Uniconfig files for multinode deployment"
-        isNodeInSwarm "${UNICONFIG_HOSTNAME}"
+        isNodeInSwarm "${UNICONFIG_ID}"
         checkUniconfigServiceName "${UNICONFIG_SERVICENAME}"
-        generateUniconfigComposeFile "${UNICONFIG_HOSTNAME}" "${UNICONFIG_SERVICENAME}"
+        generateUniconfigComposeFile "${UNICONFIG_ID}" "${UNICONFIG_SERVICENAME}"
         generateUniconfigKrakendFile "${UNICONFIG_SERVICENAME}"
 
-        echo -e "${INFO} Uniconfig worker node: ${UNICONFIG_HOSTNAME}"
-        echo -e "${INFO} Starting UniFlow on local node ${CONSTRAINT_HOSTNAME}"
+        echo -e "${INFO} Uniconfig worker node: ${UNICONFIG_ID}"
+        echo -e "${INFO} Starting UniFlow on local node ${CONSTRAINT_ID}"
         startUniflow
       ;;
 
@@ -160,12 +160,12 @@ function startContainers {
         export LICENSE=$(cat $licenseKeyFile)
 
         echo -e "${INFO} Verifying Uniconfig settings for multinode deployment"
-        isNodeInSwarm "${UNICONFIG_HOSTNAME}"
+        isNodeInSwarm "${UNICONFIG_ID}"
         checkUniconfigServiceName "${UNICONFIG_SERVICENAME}"
         checkUniconfigFiles "${UNICONFIG_SERVICENAME}"
 
         echo -e "${INFO} Deploying UniConfig with license:\n${LICENSE}"
-        echo -e "${INFO} Starting UniConfig on worker node ${UNICONFIG_HOSTNAME}"
+        echo -e "${INFO} Starting UniConfig on worker node ${UNICONFIG_ID}"
         echo -e "${INFO} Make sure the UniConfig configuration files are present on remote node in ${UC_CONFIG_PATH} folder"
 
         docker stack deploy --compose-file "${uniconfigServiceFilesPath}/${dockerSwarmUniconfig}.${UNICONFIG_SERVICENAME}" $stackName
@@ -173,19 +173,19 @@ function startContainers {
 
       local)
 
-        export CONSTRAINT_HOSTNAME="${nodeName}"
+        export CONSTRAINT_ID="${nodeID}"
         export LICENSE=$(cat $licenseKeyFile)
 
         # change env variabled for single-node deployment
-        export UNICONFIG_HOSTNAME="${nodeName}" 
-        export UNICONFIG_SERVICENAME="${UNICONFIG_HOSTNAME,,}_uniconfig"
+        export UNICONFIG_ID="${nodeID}" 
+        # export UNICONFIG_SERVICENAME="${UNICONFIG_ID,,}_uniconfig"
 
         checkUniconfigServiceName "${UNICONFIG_SERVICENAME}"
-        generateUniconfigComposeFile "${nodeName}" "${UNICONFIG_SERVICENAME}"
+        generateUniconfigComposeFile "${nodeID}" "${UNICONFIG_SERVICENAME}"
         generateUniconfigKrakendFile "${UNICONFIG_SERVICENAME}"
 
         echo -e "${INFO} Deploying UniConfig with license:\n${LICENSE}"
-        echo -e "${INFO} Swarm node: ${nodeName}"
+        echo -e "${INFO} Swarm node id: ${nodeID}"
         echo -e "${INFO} Starting UniFlow and UniConfig services locally"
 
         startUniflow
@@ -215,7 +215,7 @@ function isNodeInSwarm {
   if [ -z "$(docker node ls | grep ${1})" ]
   then
     echo -e "${ERROR} Node ${1} not in swarm!"
-    echo -e "${ERROR} Change UNICONFIG_HOSTNAME variable in .env file or add node to swarm!"
+    echo -e "${ERROR} Change UNICONFIG_ID variable in .env file or add node to swarm!"
     docker swarm join-token worker
     exit 1
   fi
@@ -256,7 +256,7 @@ function generateUniconfigComposeFile {
   local __node_name=${1}
   local __service_name=${2}
   
-  sed "s/TEMPLATE-SERVICENAME/$__service_name/g;s/TEMPLATE-HOSTNAME/$__node_name/g" composefiles/$dockerSwarmUniconfig | \
+  sed "s/TEMPLATE-SERVICENAME/$__service_name/g;s/TEMPLATE-ID/$__node_name/g" composefiles/$dockerSwarmUniconfig | \
     grep -v '#' > $uniconfigServiceFilesPath/$dockerSwarmUniconfig'.'$__service_name
 }
 
@@ -292,7 +292,7 @@ function checkUniconfigFiles {
 
 function createEnvFile {
   if [[ ! -f ${stackEnvFile} ]]; then
-    cp "${stackEnvFile}.template" ${stackEnvFile}
+    cp "${FM_DIR}/env.template" ${stackEnvFile}
   fi
 }
 

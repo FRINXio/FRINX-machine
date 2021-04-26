@@ -34,31 +34,35 @@ You can deploy the FM either locally with all services running on a single node,
 * [TLS Certificated](#tls-certificates) 
 
 ## Preparing Environment
-The FRINX-Machine repository contains a **.env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to three groups:
+The FRINX-Machine repository contains a **env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to three groups:
 
 * **Common setting** 
 >   * LOCAL_KRAKEND_IMAGE_TAG : KrakenD local image tag settings
 >       * Can be changed by user before starting ./install.sh 
-* **Multi-node settings** 
->   * UNICONFIG_HOSTNAME : hostname of swarm node, where uniconfig will be deployed
->       * Must be changed by user before multi-node deployment
 >   * UNICONFIG_SERVICENAME : name for uniconfig service
->       * define container name
+>       * define uniconfig container name
 >       * define hostname, connection URL 
+>       * default is 'uniconfig'
+>       * Can be changed by user before starting ./startup.sh 
 >       * **Do not use special characters** (allowed: - _ ) **and CAPITAL LETTERS**
+* **Multi-node settings** 
+>   * UNICONFIG_ID : ID of swarm node, where uniconfig will be deployed
+>       * Must be defined by user before multi-node deployment
+
 * **Temporary settings** - Created by FM scripts, **do not change them**
 >   * UC_PROXY_* : use docker proxy in Uniconfig Service ( See [Installation](#installation) )
 >   * UC_CONFIG_PATH : path to uniconfig settings
 
 Default settings are prepared for single-node deployment.
 
-For multi-node deployment, you must set hostname of worker node to UNICONFIG_HOSTNAME variable. 
+For multi-node deployment, you must set ID of worker node to UNICONFIG_ID variable.
 
 ```sh
 # How to list swarm nodes
 $ docker node ls
+# Print ID of worker
+$ docker node ls --filter role=worker --format {{.ID}}
 ```
-In situations, when your hostname contain special characters or capital letters, you can have a problem with correct working of Uniconfig service. Default name can be redefined by UNICONFIG_SERVICENAME variable.
 ## Installation
 Run the install script, this will check and download the neccessary prerequisities.
 
@@ -259,7 +263,7 @@ To set it up with own certificates please follow the next steps:
     See `TLS-based authentication` on https://docs.frinx.io/frinx-odl-distribution/oxygen/user-guide/restconf.html
     Now you can set up the new keystore in `/home/test/FRINX-machine/config/uniconfig/frinx/uniconfig/config/`. 
 
-    In case a new certificate is generated for uniconfig When prompted for `What is your first and last name?` put docker dns name of uniconfig container (Defined as UNICONFIG_SERVICENAME in .env file).
+    In case a new certificate is generated for uniconfig When prompted for `What is your first and last name?` put docker dns name of uniconfig container (Defined as UNICONFIG_SERVICENAME in .env file, default uniconfig).
     Getting the dns name:
 
     ```sh
