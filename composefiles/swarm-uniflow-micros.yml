@@ -28,7 +28,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == ${CONSTRAINT_HOSTNAME}
+          - node.id == ${CONSTRAINT_ID}
       restart_policy:
         condition: on-failure
         delay: 10s

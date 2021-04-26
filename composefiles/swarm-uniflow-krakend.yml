@@ -42,7 +42,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == ${CONSTRAINT_HOSTNAME}
+          - node.id == ${CONSTRAINT_ID}
       mode: replicated
       replicas: 1
       resources:
