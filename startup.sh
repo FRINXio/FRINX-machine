@@ -137,6 +137,7 @@ function startContainers {
   checkSwarmMode
   # load env file
   setVariableFile "${stackEnvFile}"
+  uniconfigCachePermission
 
   case $startupType in
       uniflow)
@@ -246,6 +247,10 @@ function checkUniconfigServiceName {
   fi
 }
 
+function uniconfigCachePermission {
+    # for uniconfig non root user
+    chmod a+w "${UC_CONFIG_PATH}/cache"
+}
 
 function generateUniconfigComposeFile {
   local __node_name=${1}

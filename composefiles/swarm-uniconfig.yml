@@ -27,7 +27,7 @@ services:
       - uniconfig_logs:/opt/uniconfig-frinx/log
       - ${UC_CONFIG_PATH}/config/lighty-uniconfig-config.json:/opt/uniconfig-frinx/config/lighty-uniconfig-config.json:ro
       - ${UC_CONFIG_PATH}/config/logback.xml:/opt/uniconfig-frinx/config/logback.xml:ro
-      - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache
+      - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache:rw
       - ${UC_CONFIG_PATH}/config/.keystore:/opt/uniconfig-frinx/config/.keystore:ro
     healthcheck:
       test: curl --insecure -o /dev/null --user admin:admin --silent --write-out "%{http_code}" -X POST 'https://127.0.0.1:8181/rests/operations/uniconfig-manager:health' -H "Content-Type:application/json" | grep 200 || exit 1
