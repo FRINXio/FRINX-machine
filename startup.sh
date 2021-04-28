@@ -11,7 +11,7 @@ DESCRIPTION:
   - If no options are specified, starts UniFlow and UniConfig services on local single node 
     with development resources allocation and http protocol.
 
-  - For starting FM in multi-node, change value of UC_SWARM_NODE_ID in .env file and use
+  - For starting FM in multi-node, change value of UNICONFIG_ID in .env file and use
     --uniflow-only for deploy Uniflow on swarm manager node and
     --deploy-uniconfig for deploy Uniconfig on swarm worker node.
 
@@ -42,12 +42,16 @@ OPTIONS:
                   - different allocation of resources
                   - default: production
 
+   --uniflow      Deploy UniFlow services
+   --uniconfig    Deploy UniConfig services
+
   MULTI-NODE DEPLOYMENT
 
+   --multinode    Deploy FM in multinode mode
+                    - Uniflow on manager node
+                    - Uniconfig on worker node
+                    
    For more info about multi-node deployment see README
-
-   --uniflow-only      Deploy UniFlow services on swarm manager node
-   --deploy-uniconfig  Deploy UniConfig services on swarm worker node
                           
   COMMON SETTINGS
 
@@ -58,16 +62,22 @@ EOF
 }
 
 
+show_last_info()
+{
+echo -e "${INFO} Startup finished:"
+cat << EOF
+================================================================================
+
+Use 'docker service ls' to check status of services.
+Each service has REPLICAS 1/1 when everything works (it may take several minutes to start all services).
+
+Use './teardown.sh' to stop all services
+or  './teardown.sh -v' to remove also old data if needed.
+EOF
+}
+
+
 function argumentsCheck {
-
-  # Default start values
-  startupType="local"
-  nodeID=$(docker node ls --filter role=manager --format {{.ID}})
-  noMicros="false"
-
-  export KRAKEND_HTTPS="false"
-  export KRAKEND_TLS_PROTOCOL="http"
-  export KRAKEND_PORT=80
 
   while [ $# -gt 0 ]
   do
@@ -93,31 +103,35 @@ function argumentsCheck {
                 performSettings="${devPerformSettingFile}"
               fi
             else 
-                echo -e "Conflict parameters: --prod--dev !!! Just one can be selected !!!"
+                echo -e "Conflict parameters: --prod|--dev !!! Just one can be selected !!!"
                 echo -e "Use '${scriptName} --help' for more details"
                 exit 1
             fi;;
 
-        --uniflow-only|--deploy-uniconfig)
+        --uniflow|--uniconfig)
             if [ -z ${__only_one_config} ]; then
-              if [ ${1} == "--uniflow-only" ]; then
+              if [ ${1} == "--uniflow" ]; then
                 __only_one_config="true"
                 startupType="uniflow"
-              elif [ ${1} == "--deploy-uniconfig" ]; then
+              elif [ ${1} == "--uniconfig" ]; then
                 __only_one_config="true";
                 startupType="uniconfig"
               fi
             else 
-                echo -e "Conflict parameters: --uniflow-only|--deploy-uniconfig !!! Just one can be selected !!!"
+                echo -e "Conflict parameters: --uniflow|--uniconfig !!! Just one can be selected !!!"
                 echo -e "Use '${scriptName} --help' for more details"
                 exit 1
             fi;;
+        
+        --multinode)
+            export UC_CONFIG_PATH="/opt/frinx/uniconfig"
+            __multinode="true";;
 
         -d|--debug) 
             set -x;;
 
         *) 
-            echo "Unknow option: ${1}"
+            echo -e "${ERROR} Unknow option: ${1}"
             show_help
             exit 1;;
     esac
@@ -134,68 +148,32 @@ function startUniflow {
 }
 
 function startContainers {
-  checkSwarmMode
-  # load env file
-  setVariableFile "${stackEnvFile}"
-  uniconfigCachePermission
 
   case $startupType in
       uniflow)
-      
-        export UF_SWARM_NODE_ID=${nodeID}
-
-        echo -e "${INFO} Preparing Uniconfig files for multinode deployment"
-        isNodeInSwarm "${UC_SWARM_NODE_ID}"
-        checkUniconfigServiceName "${UNICONFIG_SERVICENAME}"
-        generateUniconfigComposeFile "${UC_SWARM_NODE_ID}" "${UNICONFIG_SERVICENAME}"
-        generateUniconfigKrakendFile "${UNICONFIG_SERVICENAME}"
-
-        echo -e "${INFO} Uniconfig worker node: ${UC_SWARM_NODE_ID}"
-        echo -e "${INFO} Starting UniFlow on local node ${UF_SWARM_NODE_ID}"
+        echo -e "${INFO} Deploying Uniflow"
         startUniflow
       ;;
 
       uniconfig)
-
         export LICENSE=$(cat $licenseKeyFile)
-
-        echo -e "${INFO} Verifying Uniconfig settings for multinode deployment"
-        isNodeInSwarm "${UC_SWARM_NODE_ID}"
-        checkUniconfigServiceName "${UNICONFIG_SERVICENAME}"
-        checkUniconfigFiles "${UNICONFIG_SERVICENAME}"
-
         echo -e "${INFO} Deploying UniConfig with license:\n${LICENSE}"
-        echo -e "${INFO} Starting UniConfig on worker node ${UC_SWARM_NODE_ID}"
-        echo -e "${INFO} Make sure the UniConfig configuration files are present on remote node in ${UC_CONFIG_PATH} folder"
-
-        docker stack deploy --compose-file "${uniconfigServiceFilesPath}/${dockerSwarmUniconfig}.${UNICONFIG_SERVICENAME}" $stackName
+        docker stack deploy --compose-file "composefiles/${dockerSwarmUniconfig}" $stackName
       ;;
 
-      local)
+      full)
 
-        export UF_SWARM_NODE_ID="${nodeID}"
         export LICENSE=$(cat $licenseKeyFile)
-
-        # change env variabled for single-node deployment
-        export UC_SWARM_NODE_ID="${nodeID}" 
-        # export UNICONFIG_SERVICENAME="${UC_SWARM_NODE_ID,,}_uniconfig"
-
-        checkUniconfigServiceName "${UNICONFIG_SERVICENAME}"
-        generateUniconfigComposeFile "${nodeID}" "${UNICONFIG_SERVICENAME}"
-        generateUniconfigKrakendFile "${UNICONFIG_SERVICENAME}"
-
+        echo -e "${INFO} Deploying Uniflow and Uniconfig"
         echo -e "${INFO} Deploying UniConfig with license:\n${LICENSE}"
-        echo -e "${INFO} Swarm node id: ${nodeID}"
-        echo -e "${INFO} Starting UniFlow and UniConfig services locally"
-
         startUniflow
-
-        docker stack deploy --compose-file $uniconfigServiceFilesPath/$dockerSwarmUniconfig'.'${UNICONFIG_SERVICENAME} $stackName
+        docker stack deploy --compose-file "composefiles/${dockerSwarmUniconfig}" $stackName
       ;;
 
       *)
-        echo -e "${ERROR} This should not happen, exiting..."
-        exit 1
+            echo -e "${ERROR} Unknow option: ${startupType}"
+            show_help
+            exit 1
       ;;
   esac
 }
@@ -215,7 +193,7 @@ function isNodeInSwarm {
   if [ -z "$(docker node ls | grep ${1})" ]
   then
     echo -e "${ERROR} Node ${1} not in swarm!"
-    echo -e "${ERROR} Change UC_SWARM_NODE_ID variable in .env file or add node to swarm!"
+    echo -e "${ERROR} Change UNICONFIG_ID variable in .env file or add node to swarm!"
     docker swarm join-token worker
     exit 1
   fi
@@ -234,16 +212,19 @@ function checkSwarmMode {
 }
 
 
-function checkUniconfigServiceName {
-  local __service_name="${1}"
-  local regex='^[a-z0-9_-]*$'
-  echo -e "${INFO} Verify Uniconfig service name: ${__service_name}"
-  if [[ "${__service_name}" =~ ${regex} ]]; then
-    echo -e "${OK} Uniconfig service name: ${__service_name}"
-  else
-    echo -e "${ERROR} Uniconfig service name '${__service_name}' contain illegal characters"
-    echo -e "${ERROR} Change UNICONFIG_SERVICENAME setting in .env file!!!"
-    exit 1
+function swarmNode {
+  checkSwarmMode
+  if [ -z "${__multinode}" ]; then
+    export UNICONFIG_ID="${nodeID}" 
+  fi
+  isNodeInSwarm "${UNICONFIG_ID}"
+  export CONSTRAINT_ID="${nodeID}"
+
+  echo -e "${INFO} Uniflow swarm worker node id: ${CONSTRAINT_ID}"
+  echo -e "${INFO} Uniconfig swarm worker node id: ${UNICONFIG_ID}"
+
+  if [ -n "${__multinode}" ]; then
+    echo -e "${INFO} Make sure the UniConfig configuration files are present on remote node in ${UC_CONFIG_PATH} folder"
   fi
 }
 
@@ -251,44 +232,6 @@ function uniconfigCachePermission {
     # for uniconfig non root user
     chmod a+w "${UC_CONFIG_PATH}/cache"
 }
-
-function generateUniconfigComposeFile {
-  local __node_name=${1}
-  local __service_name=${2}
-  
-  sed "s/TEMPLATE-SERVICENAME/$__service_name/g;s/TEMPLATE_UC_SWARM_NODE_ID/$__node_name/g" composefiles/$dockerSwarmUniconfig | \
-    grep -v '#' > $uniconfigServiceFilesPath/$dockerSwarmUniconfig'.'$__service_name
-}
-
-
-function generateUniconfigKrakendFile {
-
-  mkdir -p ${FM_DIR}/config/krakend/partials/tls
-  local __service_name=${1}
-  mkdir -p ${krakendUniconfigNode}
-
-cat << EOF > "${krakendUniconfigNodeFile}"
-"host": [
-  "https://${__service_name}:8181"
-]
-EOF
-}
-
-function checkUniconfigFiles {
-  local __service_name="${1}"
-  if [[ ! -f "${uniconfigServiceFilesPath}/${dockerSwarmUniconfig}.${__service_name}" ]]; then
-    echo -e "${ERROR} Uniconfig compose file is not created, first run --uniflow-only"
-    exit 1
-  fi
-  if [[ ! -f "${krakendUniconfigNodeFile}" ]]; then
-    echo -e "${ERROR} KrakendD config file with Uniconfig host name is not created, first run --uniflow-only"
-    exit 1
-  fi
-  grep -q "${__service_name}" "${krakendUniconfigNodeFile}" || \
-    ( echo -e "${ERROR} KrakendD config file with Uniconfig host name is not created, first run --uniflow-only" && \
-    exit 1 )
-}
-
 
 function createEnvFile {
   if [[ ! -f ${stackEnvFile} ]]; then
@@ -341,53 +284,64 @@ function unsetVariableEnvFile {
 # =======================================
 # Program starts here
 # =======================================
-scriptName=$0
-export FM_DIR="$(dirname "$(readlink -f "${scriptName}")")"
 
-stackName="fm"
+# COMMON SETTINGS
+scriptName="$(basename "${0}")"
+FM_DIR="$(dirname "$(readlink -f "${scriptName}")")"
 stackEnvFile="${FM_DIR}/.env"
 
+ERROR="\033[0;31m[ERROR]:\033[0;0m"
+WARNING="\033[0;33m[WARNING]:\033[0;0m"
+INFO="\033[0;96m[INFO]:\033[0;0m"
+OK="\033[0;92m[OK]:\033[0;0m"
+
+# DEFAULT COMPOSE SETTINGS
+stackName="fm"
 licenseKeyFile='./config/uniconfig/uniconfig_license.txt'
+
 dockerSwarmUniconfig='swarm-uniconfig.yml'
 dockerSwarmUniflow='swarm-uniflow.yml'
 dokcerSwarmKrakend='swarm-uniflow-krakend.yml'
 dockerSwarmMicros='swarm-uniflow-micros.yml'
 uniconfigServiceFilesPath='composefiles/uniconfig'
 
+# DEFAULT KRAKEND SETTINGS
 krakendUniconfigNode='./config/krakend/partials/uniconfig_host'
 krakendUniconfigNodeFile="${krakendUniconfigNode}/host.txt"
+mkdir -p ${FM_DIR}/config/krakend/partials/tls
+
+## Default http 
+export KRAKEND_HTTPS="false"    
+export KRAKEND_TLS_PROTOCOL="http"
+export KRAKEND_PORT=80
+
+# DEFAULT PERFORM SETTINGS
 devPerformSettingFile='./config/dev_settings.txt'
 productPerformSettingFile='./config/prod_settings.txt'
 performSettings="${productPerformSettingFile}"
 
-ERROR='\033[0;31m[ERROR]:\033[0;0m'
-WARNING='\033[0;33m[WARNING]:\033[0;0m'
-INFO='\033[0;96m[INFO]:\033[0;0m'
-OK='\033[0;92m[OK]:\033[0;0m'
+# DEFAULT FM START SETTINGS
+startupType="full"
+nodeID=$(docker node ls --filter role=manager --format {{.ID}})
+noMicros="false"
+export UC_CONFIG_PATH="${FM_DIR}/config/uniconfig/frinx/uniconfig"
+export UF_CONFIG_PATH="${FM_DIR}/config"
 
-cd ${FM_DIR}
+
+# =======================================
+# FM starting
+# =======================================
+
+pushd ${FM_DIR} > /dev/null
 
 createEnvFile
 argumentsCheck "$@"
 
-setVariableFile "${performSettings}"
-
-if [ "${startupType}" = "local" ]; then
-  addEnvToFile "UC_CONFIG_PATH" "'${FM_DIR}/config/uniconfig/frinx/uniconfig'"
-else
-  addEnvToFile "UC_CONFIG_PATH" '"/opt/frinx/uniconfig"'
-fi
-
-export UF_CONFIG_PATH="${FM_DIR}/config"
+echo -e "${INFO} Selected resource configuration: ${performSettings}"
+setVariableFile "${performSettings}"  # load performance settings
+setVariableFile "${stackEnvFile}"     # load .env settings
+swarmNode
 
 startContainers
-
-echo -e "${INFO} Startup finished"
-echo -e "================================================================================"
-echo
-echo -e "Use 'docker service ls' to check status of services."
-echo -e "Each service has REPLICAS 1/1 when everything works (it may take several minutes to start all services)."
-echo
-echo -e "Use './teardown.sh' to stop all services"
-echo -e "or  './teardown.sh -v' to remove also old data if needed."
-echo
+show_last_info
+popd > /dev/null

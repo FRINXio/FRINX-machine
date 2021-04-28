@@ -6,5 +6,4 @@
 /config/uniconfig/frinx/uniconfig/cache/**
 /config/krakend/output.json
 /config/krakend/partials/tls/**
-/config/krakend/partials/uniconfig_host/host.txt
 .env
