@@ -6,7 +6,7 @@
 version: "3.7"
 
 services:
-  TEMPLATE-SERVICENAME:
+  uniconfig:
     image: frinx/uniconfig:4.2.6.frinx
     logging:
       driver: "json-file"
@@ -21,7 +21,7 @@ services:
       - dbPersistence_connection_dbName=uniconfig
       - dbPersistence_connection_username=postgres
       - dbPersistence_connection_password=postgres
-      - dbPersistence_connection_databaseLocations_host=TEMPLATE-SERVICENAME-postgres
+      - dbPersistence_connection_databaseLocations_host=uniconfig-postgres
       - dbPersistence_connection_databaseLocations_port=5432
     volumes:
       - uniconfig_logs:/opt/uniconfig-frinx/log
@@ -50,7 +50,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == TEMPLATE_UC_SWARM_NODE_ID
+          - node.id == ${UNICONFIG_ID}
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -62,7 +62,7 @@ services:
           cpus: ${UC_RES_LIMIT_CPUS}
           memory: ${UC_RES_LIMIT_MEM}
 
-  TEMPLATE-SERVICENAME-postgres:
+  uniconfig-postgres:
     image: postgres:12.2
     user: postgres
     logging:
@@ -95,7 +95,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == TEMPLATE_UC_SWARM_NODE_ID
+          - node.id == ${UNICONFIG_ID}
       restart_policy:
         condition: on-failure
         delay: 5s

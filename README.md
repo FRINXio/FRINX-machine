@@ -39,19 +39,12 @@ The FRINX-Machine repository contains a **env.template** (used for creating .env
 * **Common setting** 
 >   * LOCAL_KRAKEND_IMAGE_TAG : KrakenD local image tag settings
 >       * Can be changed by user before starting ./install.sh 
->   * UNICONFIG_SERVICENAME : name for uniconfig service
->       * define uniconfig container name
->       * define hostname, connection URL 
->       * default is 'uniconfig'
->       * Can be changed by user before starting ./startup.sh 
->       * **Do not use special characters** (allowed: - _ ) **and CAPITAL LETTERS**
 * **Multi-node settings** 
->   * UC_SWARM_NODE_ID : ID of swarm node, where uniconfig will be deployed
+>   * UC_SWARM_NODE_ID : ID of swarm worker node, where uniconfig will be deployed
 >       * Must be defined by user before multi-node deployment
 
 * **Temporary settings** - Created by FM scripts, **do not change them**
 >   * UC_PROXY_* : use docker proxy in Uniconfig Service ( See [Installation](#installation) )
->   * UC_CONFIG_PATH : path to uniconfig settings
 
 Default settings are prepared for single-node deployment.
 
@@ -79,7 +72,7 @@ Automatically installed software:
 NOTE: It may happen that swarm initialization will fail during install. Most likely due to multiple network interfaces present. 
 In that case run `docker swarm init --advertise-addr <ip-addr>` command to tell swarm which ip address to use for inter-manager communication and overlay networking
 
-NOTE: As FM is designed to run as non-root user, you need the user to be in `docker` group, this is done automatically during the installation process. Use newgrp or reboot the system for changes to take effect **BEFORE** running ```./startup.sh```
+NOTE: As FM is designed to run as non-root user, you need the user to be in `docker` group, this is done automatically during the installation process. Use newgrp or reboot the system for changes to take effect **BEFORE** running ```./startup.sh``` <br>
 See: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
 
 If you want to configure docker to use a proxy server, use:
@@ -103,8 +96,18 @@ Installation and running of UniFlow and UniConfig on the same machine.
 To deploy both UniFlow and UniConfig locally (for testing and demo purposes), run `startup.sh`:
 ```sh
 $ ./startup.sh
+
 # To use development resource limitation, use:
 $ ./startup.sh --dev 
+
+# To uniflow only, use:
+$ ./startup.sh --uniflow 
+
+# To uniconfig only, use:
+$ ./startup.sh --uniconfig 
+
+# FM without micros, use:
+$ ./startup.sh --no-micros 
 ```
 The FRINX Machine services will now be started. 
 
@@ -122,7 +125,7 @@ http://<IP_of_node_running_FM>
 In some cases the self signed certificate of the FM dashboard creates an NET_ERR_CERT_INVALID error message in your browser. Follow [these](https://stackoverflow.com/questions/35274659/does-using-badidea-or-thisisunsafe-to-bypass-a-chrome-certificate-hsts-error) steps to proceed.
 
 ### Demo workflows & sample topology
-Once all services are started, please clone https://github.com/FRINXio/fm-workflows and follow the instructions to load demo workflows and a sample topolgy. You can find a collection of demo use cases here https://docs.frinx.io/frinx-machine/use-cases/index.html
+Once all services are started, please clone https://github.com/FRINXio/fm-workflows and follow the instructions to load demo workflows and a sample topolgy. <br>You can find a collection of demo use cases here https://docs.frinx.io/frinx-machine/use-cases/index.html
 
 
 
@@ -131,27 +134,7 @@ UniFlow services are deployed on swarm manager node and UniConifig services are 
 
 NOTE: Before starting multi-node deployment, it is **necessary to set the ENVIRONMENT variables** in the .env file! [Preparing Environment](#preparing-environment)
 
-### Deploying UniFlow services
-Run the installation on manager node as for Single-node deployment.
-
-To only deploy UniFlow services on a manager node use `--uniflow-only` flag:
-```sh
-$ ./startup.sh --uniflow-only
-```
-
-It is possible to deploy UniFlow services without service "micros" (default UniConfig workers and workflows):
-```sh
-$ ./startup.sh --uniflow-only --no-micros
-```
-
-NOTE: Flag `--no-micros` can be also used in single-node deployment.
-
-Run following command on manager node to determine the swarm token
-```sh
-$ docker swarm join-token worker
-```
-
-### Deploying UniConfig services
+### Preparing worker node for UniConfig services
 
 Install and set-up docker-ce on worker node:
 ```sh
@@ -159,17 +142,27 @@ $ sudo apt-get install curl
 $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 $ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 $ sudo apt-get update
+# For Ubuntu 18-*
 $ sudo apt-get install docker-ce=5:18.09.9~3-0~ubuntu-bionic
+# For Ubuntu 20-*
+$ sudo apt-get install docker-ce=5:20.10.5~3-0~ubuntu-focal
 $ sudo usermod -aG docker $USER
 $ newgrp docker
 ```
 
+Run following command on manager node to determine the swarm token
+```sh
+# on manager node
+$ docker swarm join-token worker
+```
+
 And then join the worker node to the swarm with token provided by the manager:
 ```sh
+# on worker node
 $ docker swarm join --token SWMTKN-<TOKEN> IP:PORT
 ```
 
-To deploy UniConfig to a worker node, distribute the default UniConfig configuration to `/opt` directory on the worker node (SCP used as an example) and use `--deploy-uniconfig` flag.
+To deploy UniConfig to a worker node, distribute the default UniConfig configuration to `/opt` directory on the worker node (SCP used as an example).
 
 From the manager node:
 ```sh
@@ -179,14 +172,29 @@ Log into remote node and copy the files:
 ```sh
 $ sudo cp -r /home/username/frinx /opt
 ```
-From the manager node, deploy uniconfig instance to a worker:
+
+### Deploying services
+
+Now is possible to check swarm nodes with and find worker node ID
 ```sh
-$ ./startup.sh --deploy-uniconfig
+$ docker node ls
+$ docker node ls --filter role=worker --format {{.ID}} 
+```
+Worker node ID `must be stored` into UNICONFIG_ID variable in .env file. <br>
+Then Frinx Machine services can be started with command.
+
+```sh
+$ ./startup.sh --multinode
 ```
 
-Each deployment creates a unique per-worker YAML file stored in folder `./uniconfig/composefiles/` which is then used for actual service deployment.
-
 NOTE: The deployment might take a while as the worker node needs to download all necessary images first.
+
+It is possible to deploy UniFlow services without service "micros" (default UniConfig workers and workflows):
+```sh
+$ ./startup.sh --multinode --no-micros
+```
+
+NOTE: Flag `--no-micros` can be also used in single-node deployment.
 
 ## Resource limitation
 
@@ -263,17 +271,7 @@ To set it up with own certificates please follow the next steps:
     See `TLS-based authentication` on https://docs.frinx.io/frinx-odl-distribution/oxygen/user-guide/restconf.html
     Now you can set up the new keystore in `/home/test/FRINX-machine/config/uniconfig/frinx/uniconfig/config/`. 
 
-    In case a new certificate is generated for uniconfig When prompted for `What is your first and last name?` put docker dns name of uniconfig container (Defined as UNICONFIG_SERVICENAME in .env file, default uniconfig).
-    Getting the dns name:
-
-    ```sh
-    # For single-node deployment 
-    docker node ls --filter role=manager --format {{.Hostname}}
-    # For sulti-node deployment 
-    # From FRINX-machine repository folder
-    $ echo $(source .env && echo $UNICONFIG_SERVICENAME)
-    ```
-    The dns name is output of previous command
+    In case a new certificate is generated for uniconfig When prompted for `What is your first and last name?` put docker dns name of uniconfig container (Default: uniconfig).
 
     Also will need to modify `/home/test/FRINX-machine/config/uniconfig/frinx/uniconfig/config/lighty-uniconfig-config.json` based on the new keystore setup.  
 3.  In case self signed certificate is used please add ca's certificate to `karakend/certs` folder in `.crt` format.  
