@@ -18,8 +18,6 @@ DESCRIPTION:
   - If you do not wish to use the default UniConfig 30 day trial license, change
     the license key in ${licenseKeyFile} before running this script.
 
-  - To start without micros container use --no-micros. For local and uniflow deployment
-
   - To use FM with production resource allocation settings, you can use own settings
     stored in ${productPerformSettingFile} or use predefined. 
     For enabling use --prod option. 
@@ -31,8 +29,6 @@ OPTIONS:
  ${___script_name} [OPTIONS]
 
   FRINX-MACHINE CONFIGURATION
-
-   --no-micros   Deploy Frinx-Machine without uniflow-micros service
 
    --https       Deploy Frinx-Machine in https mode 
                   - KrakenD with certificates
@@ -63,7 +59,6 @@ function argumentsCheck {
   # Default start values
   startupType="local"
   nodeName=$(docker node ls --filter role=manager --format {{.Hostname}})
-  noMicros="false"
 
   export KRAKEND_HTTPS="false"
   export KRAKEND_TLS_PROTOCOL="http"
@@ -79,9 +74,6 @@ function argumentsCheck {
             export KRAKEND_HTTPS="true"
             export KRAKEND_TLS_PROTOCOL="https"
             export KRAKEND_PORT=443;;
-
-        --no-micros)
-            noMicros="true";;
 
         --prod|--dev)
             if [ -z ${__only_one_perf_config} ]; then
@@ -126,11 +118,7 @@ function argumentsCheck {
 }
 
 function startUniflow {
-  if [ "$noMicros" = "true" ]; then
-    docker stack deploy --compose-file composefiles/$dockerSwarmUniflow --compose-file composefiles/$dokcerSwarmKrakend $stackName
-  else 
-    docker stack deploy --compose-file composefiles/$dockerSwarmUniflow --compose-file composefiles/$dockerSwarmMicros --compose-file composefiles/$dokcerSwarmKrakend $stackName
-  fi 
+  docker stack deploy --compose-file composefiles/$dockerSwarmUniflow --compose-file composefiles/$dokcerSwarmKrakend $stackName
 }
 
 function startContainers {
@@ -351,7 +339,6 @@ licenseKeyFile='./config/uniconfig/uniconfig_license.txt'
 dockerSwarmUniconfig='swarm-uniconfig.yml'
 dockerSwarmUniflow='swarm-uniflow.yml'
 dokcerSwarmKrakend='swarm-uniflow-krakend.yml'
-dockerSwarmMicros='swarm-uniflow-micros.yml'
 uniconfigServiceFilesPath='composefiles/uniconfig'
 
 krakendUniconfigNode='./config/krakend/partials/uniconfig_host'

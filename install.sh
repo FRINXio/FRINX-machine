@@ -244,7 +244,6 @@ function pullImages {
 
   echo -e "${INFO} Pulling UniFlow images"
   docker-compose --log-level ERROR -f $dockerComposeFileUniflow pull
-  docker-compose --log-level ERROR -f $dockerComposeFileMicros pull
   echo -e "${INFO} Pulling UniConfig images"
   docker-compose --log-level ERROR -f $dockerComposeFileUniconfig pull
 }
@@ -386,7 +385,6 @@ dockerComposeInstallVersion="1.22.0"
 
 dockerComposeFileUniconfig='composefiles/swarm-uniconfig.yml'
 dockerComposeFileUniflow='composefiles/swarm-uniflow.yml'
-dockerComposeFileMicros='composefiles/swarm-uniflow-micros.yml'
 dockerPerformSettings='./config/dev_settings.txt'
 
 scriptName=$0

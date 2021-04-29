@@ -135,13 +135,6 @@ To only deploy UniFlow services on a manager node use `--uniflow-only` flag:
 $ ./startup.sh --uniflow-only
 ```
 
-It is possible to deploy UniFlow services without service "micros" (default UniConfig workers and workflows):
-```sh
-$ ./startup.sh --uniflow-only --no-micros
-```
-
-NOTE: Flag `--no-micros` can be also used in single-node deployment.
-
 Run following command on manager node to determine the swarm token
 ```sh
 $ docker swarm join-token worker
