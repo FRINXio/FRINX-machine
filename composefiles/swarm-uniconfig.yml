@@ -50,7 +50,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == TEMPLATE-ID
+          - node.id == TEMPLATE_UC_SWARM_NODE_ID
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -95,7 +95,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == TEMPLATE-ID
+          - node.id == TEMPLATE_UC_SWARM_NODE_ID
       restart_policy:
         condition: on-failure
         delay: 5s
