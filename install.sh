@@ -396,6 +396,8 @@ dockerPerformSettings='./config/dev_settings.txt'
 
 scriptName=$0
 skipswarm=0
+
+# TODO find better way to obrain username
 defUser=$(who | awk 'NR==1{print $1;}')
 
 ERROR='\033[0;31m[ERROR]:\033[0;0m'

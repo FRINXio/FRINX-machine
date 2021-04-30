@@ -11,7 +11,7 @@ DESCRIPTION:
   - If no options are specified, starts UniFlow and UniConfig services on local single node 
     with development resources allocation and http protocol.
 
-  - For starting FM in multi-node, change value of UNICONFIG_ID in .env file and use
+  - For starting FM in multi-node, change value of UC_SWARM_NODE_ID in .env file and use
     --uniflow-only for deploy Uniflow on swarm manager node and
     --deploy-uniconfig for deploy Uniconfig on swarm worker node.
 
@@ -193,7 +193,7 @@ function isNodeInSwarm {
   if [ -z "$(docker node ls | grep ${1})" ]
   then
     echo -e "${ERROR} Node ${1} not in swarm!"
-    echo -e "${ERROR} Change UNICONFIG_ID variable in .env file or add node to swarm!"
+    echo -e "${ERROR} Change UC_SWARM_NODE_ID variable in .env file or add node to swarm!"
     docker swarm join-token worker
     exit 1
   fi
@@ -215,19 +215,20 @@ function checkSwarmMode {
 function swarmNode {
   checkSwarmMode
   if [ -z "${__multinode}" ]; then
-    export UNICONFIG_ID="${nodeID}" 
+    export UC_SWARM_NODE_ID="${nodeID}" 
   fi
-  isNodeInSwarm "${UNICONFIG_ID}"
-  export CONSTRAINT_ID="${nodeID}"
+  isNodeInSwarm "${UC_SWARM_NODE_ID}"
+  export UF_SWARM_NODE_ID="${nodeID}"
 
-  echo -e "${INFO} Uniflow swarm worker node id: ${CONSTRAINT_ID}"
-  echo -e "${INFO} Uniconfig swarm worker node id: ${UNICONFIG_ID}"
+  echo -e "${INFO} Uniflow swarm worker node id: ${UF_SWARM_NODE_ID}"
+  echo -e "${INFO} Uniconfig swarm worker node id: ${UC_SWARM_NODE_ID}"
 
   if [ -n "${__multinode}" ]; then
     echo -e "${INFO} Make sure the UniConfig configuration files are present on remote node in ${UC_CONFIG_PATH} folder"
   fi
 }
 
+# TODO when uniconfig image will be changed to non root
 function uniconfigCachePermission {
     # for uniconfig non root user
     chmod a+w "${UC_CONFIG_PATH}/cache"

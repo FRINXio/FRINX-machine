@@ -180,7 +180,7 @@ Now is possible to check swarm nodes with and find worker node ID
 $ docker node ls
 $ docker node ls --filter role=worker --format {{.ID}} 
 ```
-Worker node ID `must be stored` into UNICONFIG_ID variable in .env file. <br>
+Worker node ID `must be stored` into UC_SWARM_NODE_ID variable in .env file. <br>
 Then Frinx Machine services can be started with command.
 
 ```sh
