@@ -34,7 +34,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${CONSTRAINT_ID}
+          - node.id == ${UF_SWARM_NODE_ID}
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -80,7 +80,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${CONSTRAINT_ID}
+          - node.id == ${UF_SWARM_NODE_ID}
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -120,7 +120,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${CONSTRAINT_ID}
+          - node.id == ${UF_SWARM_NODE_ID}
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -165,7 +165,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${CONSTRAINT_ID}
+          - node.id == ${UF_SWARM_NODE_ID}
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -210,7 +210,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${CONSTRAINT_ID}
+          - node.id == ${UF_SWARM_NODE_ID}
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -248,7 +248,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${CONSTRAINT_ID}
+          - node.id == ${UF_SWARM_NODE_ID}
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -293,7 +293,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${CONSTRAINT_ID}
+          - node.id == ${UF_SWARM_NODE_ID}
       restart_policy:
         condition: on-failure
         delay: 5s

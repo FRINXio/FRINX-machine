@@ -46,7 +46,7 @@ The FRINX-Machine repository contains a **env.template** (used for creating .env
 >       * Can be changed by user before starting ./startup.sh 
 >       * **Do not use special characters** (allowed: - _ ) **and CAPITAL LETTERS**
 * **Multi-node settings** 
->   * UNICONFIG_ID : ID of swarm node, where uniconfig will be deployed
+>   * UC_SWARM_NODE_ID : ID of swarm node, where uniconfig will be deployed
 >       * Must be defined by user before multi-node deployment
 
 * **Temporary settings** - Created by FM scripts, **do not change them**
@@ -55,7 +55,7 @@ The FRINX-Machine repository contains a **env.template** (used for creating .env
 
 Default settings are prepared for single-node deployment.
 
-For multi-node deployment, you must set ID of worker node to UNICONFIG_ID variable.
+For multi-node deployment, you must set ID of worker node to UC_SWARM_NODE_ID variable.
 
 ```sh
 # How to list swarm nodes
