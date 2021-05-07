@@ -93,8 +93,7 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    # TODO: make stable release and change 'latest' version to a stable one
-    image: frinx/frinx-frontend:latest
+    image: frinx/frinx-frontend:1.0.0
     logging:
       driver: "json-file"
       options:
@@ -261,7 +260,7 @@ services:
           memory: ${WP_RES_LIMIT_MEM}
 
   uniresource:
-    image: frinx/resource-manager:latest
+    image: frinx/resource-manager:1.0.0
     logging:
       driver: "json-file"
       options:
