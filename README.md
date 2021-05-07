@@ -25,37 +25,14 @@ To deploy an FM swarm cluster you need at least one machine with Ubuntu 18.04/20
 You can deploy the FM either locally with all services running on a single node, or you can split UniFlow and UniConfig instances among multiple nodes. UniFlow is always running on the docker swarm manager node. In the case of multi-node deployment, it is necessary to modify the .env file ( Follow [Preparing Environment](#preparing-environment) ).
 
 
-* [Preparing Environment](#preparing-environment)
 * [Installation](#installation)
 * [Single-node deployment](#single-node-deployment)
 * [Multi-node deployment](#multi-node-deployment)
+* [Preparing Environment](#preparing-environment)
 * [Resource limitation](#resource-limitation) 
 * [Maintaining](#maintaining)
 * [TLS Certificated](#tls-certificates) 
 
-## Preparing Environment
-The FRINX-Machine repository contains a **env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to three groups:
-
-* **Common setting** 
->   * LOCAL_KRAKEND_IMAGE_TAG : KrakenD local image tag settings
->       * Can be changed by user before starting ./install.sh 
-* **Multi-node settings** 
->   * UC_SWARM_NODE_ID : ID of swarm worker node, where uniconfig will be deployed
->       * Must be defined by user before multi-node deployment
-
-* **Temporary settings** - Created by FM scripts, **do not change them**
->   * UC_PROXY_* : use docker proxy in Uniconfig Service ( See [Installation](#installation) )
-
-Default settings are prepared for single-node deployment.
-
-For multi-node deployment, you must set ID of worker node to UC_SWARM_NODE_ID variable.
-
-```sh
-# How to list swarm nodes
-$ docker node ls
-# Print ID of worker
-$ docker node ls --filter role=worker --format {{.ID}}
-```
 ## Installation
 Run the install script, this will check and download the neccessary prerequisities.
 
@@ -196,6 +173,29 @@ $ ./startup.sh --multinode --no-micros
 
 NOTE: Flag `--no-micros` can be also used in single-node deployment.
 
+## Preparing Environment
+The FRINX-Machine repository contains a **env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to three groups:
+
+* **Common setting** 
+>   * LOCAL_KRAKEND_IMAGE_TAG : KrakenD local image tag settings
+>       * Can be changed by user before starting ./install.sh 
+* **Multi-node settings** 
+>   * UC_SWARM_NODE_ID : ID of swarm worker node, where uniconfig will be deployed
+>       * Must be defined by user before multi-node deployment
+
+* **Temporary settings** - Created by FM scripts, **do not change them**
+>   * UC_PROXY_* : use docker proxy in Uniconfig Service ( See [Installation](#installation) )
+
+Default settings are prepared for single-node deployment.
+
+For multi-node deployment, you must set ID of worker node to UC_SWARM_NODE_ID variable.
+
+```sh
+# How to list swarm nodes
+$ docker node ls
+# Print ID of worker
+$ docker node ls --filter role=worker --format {{.ID}}
+```
 ## Resource limitation
 
 Default resource limitation is configured for production but can be changed to development.
