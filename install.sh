@@ -56,9 +56,10 @@ if [ -z ${__HTTP_PROXY} ] && [ -z ${__HTTPS_PROXY} ] && [ -z ${__NO_PROXY} ]; th
   echo -e ${INFO} "HTTP proxy env settings:" ${__CURRENT_HTTP_PROXY} || true
   __CURRENT_HTTPS_PROXY=$(cat ${stackEnvFile} | grep UC_PROXY_HTTPS_ENV=) && \
   echo -e ${INFO} "HTTPS proxy env settings:" ${__CURRENT_HTTPS_PROXY} || true
-  if [ -n "${__CURRENT_HTTP_PROXY}" ] && [ -n "${__CURRENT_HTTPS_PROXY}" ]; then
-    echo -e ${WARNING} "Previous proxy configuration was found. For more info see help!"
-  fi
+  # TODO improve notification about previous proxy settings
+  # if [ -n "${__CURRENT_HTTP_PROXY}" ] && [ -n "${__CURRENT_HTTPS_PROXY}" ]; then
+  #   echo -e ${WARNING} "Previous proxy configuration was found. For more info see help!"
+  # fi
  return
 else
   if [ -z ${__PROXY_PATH} ]; then
