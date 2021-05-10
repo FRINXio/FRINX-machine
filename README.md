@@ -148,6 +148,7 @@ $ scp -r ./config/uniconfig/frinx username@host:/home/username/
 Log into remote node and copy the files:
 ```sh
 $ sudo cp -r /home/username/frinx /opt
+$ sudo chmod a+w /opt/frinx/uniconfig/cache/
 ```
 
 ### Deploying services

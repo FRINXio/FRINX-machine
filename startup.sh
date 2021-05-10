@@ -212,10 +212,18 @@ function checkSwarmMode {
 }
 
 
+# TODO when uniconfig image will be changed to non root
+function uniconfigCachePermission {
+    # for uniconfig non root user
+    chmod a+w "${UC_CONFIG_PATH}/cache"
+}
+
+
 function swarmNode {
   checkSwarmMode
   if [ -z "${__multinode}" ]; then
-    export UC_SWARM_NODE_ID="${nodeID}" 
+    export UC_SWARM_NODE_ID="${nodeID}"
+    uniconfigCachePermission
   fi
   isNodeInSwarm "${UC_SWARM_NODE_ID}"
   export UF_SWARM_NODE_ID="${nodeID}"
@@ -228,11 +236,6 @@ function swarmNode {
   fi
 }
 
-# TODO when uniconfig image will be changed to non root
-function uniconfigCachePermission {
-    # for uniconfig non root user
-    chmod a+w "${UC_CONFIG_PATH}/cache"
-}
 
 function createEnvFile {
   if [[ ! -f ${stackEnvFile} ]]; then
