@@ -15,6 +15,8 @@ services:
       - FC_PARTIALS=/etc/krakend/partials
       - FC_TEMPLATES=/etc/krakend/templates
       # - FC_OUT=/etc/krakend/output.json
+    # TODO fix x509 certificate errors
+      - GODEBUG="x509ignoreCN=0"
     volumes:
       - ${UF_CONFIG_PATH}/krakend:/etc/krakend:ro
       - ${UF_CONFIG_PATH}/krakend/tls/${KRAKEND_TLS_PROTOCOL}:/etc/krakend/partials/tls:ro
