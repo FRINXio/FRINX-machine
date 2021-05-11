@@ -253,6 +253,7 @@ function pullImages {
   docker-compose --log-level ERROR -f $dockerComposeFileMicros pull
   echo -e "${INFO} Pulling UniConfig images"
   docker-compose --log-level ERROR -f $dockerComposeFileUniconfig pull
+  docker pull $(cat krakend/Dockerfile | grep "FROM" | cut -d ' ' -f2)
 }
 
 
