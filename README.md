@@ -83,8 +83,6 @@ $ ./startup.sh --uniflow
 # To uniconfig only, use:
 $ ./startup.sh --uniconfig 
 
-# FM without micros, use:
-$ ./startup.sh --no-micros 
 ```
 The FRINX Machine services will now be started. 
 
@@ -166,13 +164,6 @@ $ ./startup.sh --multinode
 ```
 
 NOTE: The deployment might take a while as the worker node needs to download all necessary images first.
-
-It is possible to deploy UniFlow services without service "micros" (default UniConfig workers and workflows):
-```sh
-$ ./startup.sh --multinode --no-micros
-```
-
-NOTE: Flag `--no-micros` can be also used in single-node deployment.
 
 ## Preparing Environment
 The FRINX-Machine repository contains a **env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to three groups:
