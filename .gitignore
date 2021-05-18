@@ -7,3 +7,4 @@
 /config/krakend/output.json
 /config/krakend/partials/tls/**
 .env
+config/krakend/settings/uniconfig_settings.json

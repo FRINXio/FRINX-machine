@@ -1,9 +1,7 @@
 {
-    "operations_endpoint": {
-        "endpoint": "/api/uniconfig/operations/{action}",
-        "method": "POST",
-        "url_pattern": "/rests/operations/{action}"
-    },
+    "hosts": [
+        "UNICONFIG-NAME"
+    ],
     "methods": [
         "PUT",
         "GET",

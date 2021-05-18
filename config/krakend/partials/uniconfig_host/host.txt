@@ -1,3 +1,0 @@
-"host": [
-  "https://uniconfig:8181"
-]
