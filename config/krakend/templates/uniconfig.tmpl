@@ -1,12 +1,15 @@
-{{range $host_index, $host := .hosts}}
+{{range $index_in_range, $not_used_element := $.range}}
+{{if gt $index_in_range 0}},{{end}}
+
+{{range $host_index, $host := $.hosts}}
 {{if gt $host_index 0}},{{end}}
 {
-    "endpoint": "/api/{{$host}}/operations/{action}",
+    "endpoint": "/api/{{$host}}/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
     "method": "POST",
     {{ include "uniconfig_partial_1.tmpl" }}
     "backend": [
     {
-        "url_pattern": "/rests/operations/{action}",
+        "url_pattern": "/rests/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
         {{ include "uniconfig_partial_2.tmpl" }}
         "host": [
 	        "https://{{$host}}:8181"
@@ -14,6 +17,7 @@
     }
     ]
 }
+{{end}}
 {{end}}
 ,
 
@@ -60,7 +64,3 @@
         }
     }
 }
-
-
-
-
