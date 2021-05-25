@@ -43,7 +43,7 @@ $ sudo ./install.sh
 Automatically installed software:
 - curl
 - docker-compose 1.22.0
-- docker-ce 18.09
+- docker-ce 18.09 / 20.10
  
 
 NOTE: It may happen that swarm initialization will fail during install. Most likely due to multiple network interfaces present. 
@@ -105,11 +105,10 @@ Once all services are started, please clone https://github.com/FRINXio/fm-workfl
 
 
 ## Multi-node deployment
-UniFlow services are deployed on swarm manager node and UniConifig services are deployed on swarm worker node.
+UniFlow services are deployed on swarm manager node and UniConifig services are deployed on swarm worker nodes.
 
-NOTE: Before starting multi-node deployment, it is **necessary to set the ENVIRONMENT variables** in the .env file! [Preparing Environment](#preparing-environment)
-
-### Preparing worker node for UniConfig services
+NOTE: Before starting multi-node deployment, it is **necessary to generate uniconfig compose files** with `generate_uc_compose.sh` script!
+### Preparing worker nodes for UniConfig services
 
 Install and set-up docker-ce on worker node:
 ```sh
@@ -149,45 +148,49 @@ $ sudo cp -r /home/username/frinx /opt
 $ sudo chmod a+w /opt/frinx/uniconfig/cache/
 ```
 
+### Generating uniconfig compose files
+
+Now is possible to check all swarm nodes with and find worker node IDs.
+```sh
+#List all swarm nodes
+$ docker node ls
+```
+
+For generating of uniconfig (uniconfig-postgresql) compose files use `generate_uc_compose.sh`.  
+You need to define:
+- uniconfig service name: must be unique name 
+- swarm node-id: where will be deployed (find from previous command output)
+- folder path:  where are stored composefiles for multinode deployment
+
+Preffered folder path is `./composefiles/uniconfig`, but can be differend (outside from FM repo folder).
+```sh
+$ ./generate_uc_compose.sh -s <service_name> -n <node_id> -f <path_to_folder>
+```
+
 ### Deploying services
 
-Now is possible to check swarm nodes with and find worker node ID
 ```sh
-$ docker node ls
-$ docker node ls --filter role=worker --format {{.ID}} 
-```
-Worker node ID `must be stored` into UC_SWARM_NODE_ID variable in .env file. <br>
-Then Frinx Machine services can be started with command.
-
-```sh
-$ ./startup.sh --multinode
+# If composefiles path is ./composefiles/uniconfig 
+$ ./startup.sh --multinode 
+# For different composefiles path
+$ ./startup.sh --multinode 'path/to/your/folder'
+# Can be aslo combined with another options 
+$ ./startup.sh --multinode --uniconfig --dev
 ```
 
 NOTE: The deployment might take a while as the worker node needs to download all necessary images first.
 
 ## Preparing Environment
-The FRINX-Machine repository contains a **env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to three groups:
+The FRINX-Machine repository contains a **env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to these groups:
 
 * **Common setting** 
 >   * LOCAL_KRAKEND_IMAGE_TAG : KrakenD local image tag settings
 >       * Can be changed by user before starting ./install.sh 
-* **Multi-node settings** 
->   * UC_SWARM_NODE_ID : ID of swarm worker node, where uniconfig will be deployed
->       * Must be defined by user before multi-node deployment
 
 * **Temporary settings** - Created by FM scripts, **do not change them**
 >   * UC_PROXY_* : use docker proxy in Uniconfig Service ( See [Installation](#installation) )
 
-Default settings are prepared for single-node deployment.
-
-For multi-node deployment, you must set ID of worker node to UC_SWARM_NODE_ID variable.
-
-```sh
-# How to list swarm nodes
-$ docker node ls
-# Print ID of worker
-$ docker node ls --filter role=worker --format {{.ID}}
-```
+Default settings are prepared for deployment without docker proxy.
 ## Resource limitation
 
 Default resource limitation is configured for production but can be changed to development.
@@ -224,6 +227,14 @@ Config file is stored in `./config/docker-security/` folder. <br>
 Bench security analysis can be performed with this command
 ```sh
 $ ./config/docker-security/bench_security.sh
+```
+
+### List of deployed uniconfig services
+KrakenD provice API, which return list of deployed uniconfig services:
+
+```sh
+$ curl -X GET 127.0.0.1/static/list/uniconfig
+{"instances":["uniconfig1","uniconfig2"]}
 ```
 
 ### Shutdown
