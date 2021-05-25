@@ -13,7 +13,6 @@ DESCRIPTION:
 
   - For starting FM in multi-node is need to generate uniconfig compose files with script:
     ./generate_uc_compose.sh --service-name <arg> --node-id <arg> --folder-path <arg>
-    //TODO
     Then you can use ./startup.sh --multinode for start 
     For more info see './generate_uc_compose.sh -h' or README
                           

@@ -32,6 +32,7 @@
     {{ template "workflow_proxy.tmpl" .workflow_proxy_settings.endpoints }},
     {{ template "workflow_proxy.tmpl" .workflow_proxy_settings_deprecated.endpoints }},
     {{ template "uniconfig.tmpl" .uniconfig_settings }},
+    {{ template "uniconfig_deprecated.tmpl" .uniconfig_settings }},
     {{ template "uniresource.tmpl" .uniresource_settings.endpoints }},
     {{ template "frinx_frontend.tmpl" .frinx_frontend_settings}}
   ]
