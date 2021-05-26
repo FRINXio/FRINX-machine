@@ -4,7 +4,7 @@
   "port": 8080,
   "cache_ttl": "3600s",
   "tls": {{ include "tls/tls.json" }},
-  "timeout": "5s",
+  "timeout": "2m",
   "plugin": {
     "pattern": ".so",
     "folder": "/usr/local/lib/krakend/"
