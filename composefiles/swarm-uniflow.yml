@@ -4,8 +4,8 @@ version: "3.7"
 services:
 
   conductor-server:
-    image: frinx/uniflow-conductor-server:1.0.0
-    user: guest
+    image: frinx/uniflow-conductor-server:latest
+    # user: guest
     logging:
       driver: "json-file"
       options:
@@ -17,7 +17,7 @@ services:
     volumes:
       - ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties:ro
     healthcheck:
-      test: wget --spider localhost:8080/api/health
+      test: curl -I -XGET http://localhost:8080/health
       interval: 10s
       timeout: 5s
       retries: 3
@@ -93,7 +93,7 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:1.0.0
+    image: frinx/frinx-frontend:latest
     logging:
       driver: "json-file"
       options:
@@ -192,7 +192,7 @@ services:
       - POSTGRES_MIGRATIONS_DIR=migrations
       - POSTGRES_DATABASE_URL=host=postgresql port=5432 user=postgres password=postgres database=schellar
     healthcheck:
-      test: wget --spider -q conductor-server:8080/api/health && wget --spider -q 127.0.0.1:3000/schedule && nc -z postgresql:5432
+      test: wget --spider -q conductor-server:8080/health && wget --spider -q 127.0.0.1:3000/schedule && nc -z postgresql:5432
       interval: 10s
       timeout: 5s
       retries: 5
@@ -222,7 +222,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:1.0.3
+    image: frinx/workflow-proxy:latest
     user: node
     logging:
       driver: "json-file"
@@ -230,7 +230,7 @@ services:
         max-file: "3"
         max-size: "10m"
     healthcheck:
-      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/readiness' && curl --insecure --write-out 'HTTPSTATUS:%{http_code}' --silent --fail -X GET http://conductor-server:8080/api/health
+      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/readiness' && curl -I -XGET http://conductor-server:8080/health || exit 1
       interval: 10s
       timeout: 5s
       retries: 5
