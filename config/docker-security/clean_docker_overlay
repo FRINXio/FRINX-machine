@@ -1,0 +1,11 @@
+#!/bin/bash
+
+__FREE_SPACE_MB=$(df --output=avail -BM /var/lib/docker | sed 's/[^0-9]*//g')
+if [[ ${__FREE_SPACE_MB} -lt 1024 ]]; then
+    __DOCKER_SERVICES=$(docker stack ls --format {{.Name}})
+    if [[ ${__DOCKER_SERVICES} == *'fm'* ]]; then
+        echo "Cleaning docker systes and docker volumes"
+        docker system prune -f
+        docker image prune -f
+    fi
+fi
