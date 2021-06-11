@@ -140,6 +140,7 @@ function argumentsCheck {
 }
 
 function startUniflow {
+  setKrakendComposeTag
   echo -e "${INFO} Uniflow swarm worker node id: ${UF_SWARM_NODE_ID}"
   docker stack deploy --compose-file composefiles/$dockerSwarmUniflow --compose-file composefiles/$dokcerSwarmKrakend $stackName
   status=$?
@@ -289,6 +290,15 @@ function generateUniconfigKrakendFile {
   fi
     sed "s/\"UNICONFIG-NAME\"/${name}/" ${krakendUniconfigTmplFile} > ${krakendUniconfigFile}
 }
+
+function setKrakendComposeTag {
+  if [[ ${LOCAL_KRAKEND_IMAGE_TAG} == '' ]]; then
+    LOCAL_KRAKEND_IMAGE_TAG=${BASE_KRAKEND_IMAGE_TAG}
+    export LOCAL_KRAKEND_IMAGE_TAG
+    echo -e "${INFO} KrakenD image tag: ${LOCAL_KRAKEND_IMAGE_TAG}"
+  fi
+}
+
 
 function createEnvFile {
   if [[ ! -f ${stackEnvFile} ]]; then

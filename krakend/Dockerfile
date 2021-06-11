@@ -1,9 +1,8 @@
-FROM frinx/krakend:1.2.0
+ARG KRAKEND_TAG=latest
+FROM frinx/krakend:${KRAKEND_TAG}
 
 USER root
 COPY certs /usr/local/share/ca-certificates
-RUN  apt-get -y update && \
-     apt-get -y install curl && \
-     update-ca-certificates
+RUN  update-ca-certificates
 
 USER krakend
