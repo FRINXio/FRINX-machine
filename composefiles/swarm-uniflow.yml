@@ -57,7 +57,7 @@ services:
         max-size: "10m"
     environment:
       - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms512m -Xmx4096m"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx3584m"
     volumes:
       - uniflow_elastic_data:/usr/share/elasticsearch/data
       - ${UF_CONFIG_PATH}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
