@@ -42,7 +42,7 @@ DESCRIPTION:
                                     - port can be defined
 
   COMMON SETTINGS
-
+    -s|--skip     Skip installation of dependencies
     -h|--help     Print help
     -d|--debug    Enable verbose
 
@@ -176,7 +176,10 @@ do
         -h|--help) 
             show_help
             exit 0;;
-        
+      
+        -s|--skip)
+            __SKIP_DEP=true;;
+            
         --no-swarm)
             echo -e "${WARNING} Skipping swarm setup"
             echo -e "${WARNING} Please setup the swarm manually prior to running startup.sh" 
@@ -211,35 +214,37 @@ done
 
 
 function installPrerequisities {
-  echo -e "${INFO} Configuring docker-ce and docker-compose"
-  echo -e "${INFO} Checking curl"
-  apt-get update -qq
-  apt-get install curl -qq -y
-
-  if test -f /usr/bin/dockerd; then
-    dockerdVersion=$(/usr/bin/dockerd --version)
-    echo -e "${INFO} $dockerdVersion already installed, skipping..."
-  else
-    echo -e "${INFO} Installing docker-ce"
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-    apt-get install software-properties-common
-    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  if [[ "${__SKIP_DEP}" != 'true' ]]; then
+    echo -e "${INFO} Configuring docker-ce and docker-compose"
+    echo -e "${INFO} Checking curl"
     apt-get update -qq
-    apt-get install -qq -y $dockerInstallVersion
+    apt-get install curl -qq -y
 
-    if [ $skipswarm -eq 0 ]; then
-      echo -e "${INFO} Initializing docker in swarm mode"
-      docker swarm init
+    if test -f /usr/bin/dockerd; then
+      dockerdVersion=$(/usr/bin/dockerd --version)
+      echo -e "${INFO} $dockerdVersion already installed, skipping..."
+    else
+      echo -e "${INFO} Installing docker-ce"
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+      apt-get install software-properties-common
+      add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      apt-get update -qq
+      apt-get install -qq -y $dockerInstallVersion
+
+      if [ $skipswarm -eq 0 ]; then
+        echo -e "${INFO} Initializing docker in swarm mode"
+        docker swarm init
+      fi
     fi
-  fi
 
-  if test -f /usr/local/bin/docker-compose; then
-    dockerComposeVersion=$(/usr/local/bin/docker-compose --version)
-    echo -e "${INFO} $dockerComposeVersion already installed, skipping..."
-  else
-    echo -e "${INFO} Installing docker-compose"
-    curl -sS -L "https://github.com/docker/compose/releases/download/$dockerComposeInstallVersion/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
+    if test -f /usr/local/bin/docker-compose; then
+      dockerComposeVersion=$(/usr/local/bin/docker-compose --version)
+      echo -e "${INFO} $dockerComposeVersion already installed, skipping..."
+    else
+      echo -e "${INFO} Installing docker-compose"
+      curl -sS -L "https://github.com/docker/compose/releases/download/$dockerComposeInstallVersion/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+      chmod +x /usr/local/bin/docker-compose
+    fi
   fi
 }
 
