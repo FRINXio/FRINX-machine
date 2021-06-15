@@ -11,6 +11,8 @@ services:
       options:
         max-file: "3"
         max-size: "10m"
+    labels:
+      - traefik.enable=false  
     environment:
       - CONFIG_PROP=config.properties
       - _JAVA_OPTIONS="-Xmx${CS_RES_LIMIT_MEM}"
@@ -55,6 +57,8 @@ services:
       options:
         max-file: "3"
         max-size: "10m"
+    labels:
+      - traefik.enable=false  
     environment:
       - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms512m -Xmx3584m"
@@ -99,6 +103,8 @@ services:
       options:
         max-file: "3"
         max-size: "10m"
+    labels:
+      - traefik.enable=false  
     volumes:
       - ${UF_CONFIG_PATH}/frinx-frontend/config.json:/usr/share/nginx/html/config.json:ro
     healthcheck:
@@ -139,6 +145,8 @@ services:
       options:
         max-file: "3"
         max-size: "10m"
+    labels:
+      - traefik.enable=false  
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
@@ -183,6 +191,8 @@ services:
       options:
         max-file: "3"
         max-size: "10m"
+    labels:
+      - traefik.enable=false  
     environment:
       - LOG_LEVEL=debug
       - CHECK_INTERVAL_SECONDS=10
@@ -228,6 +238,8 @@ services:
       options:
         max-file: "3"
         max-size: "10m"
+    labels:
+      - traefik.enable=false  
     healthcheck:
       test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/readiness' && curl -I -XGET http://conductor-server:8080/health || exit 1
       interval: 10s
@@ -265,6 +277,8 @@ services:
       options:
         max-file: "3"
         max-size: "10m"
+    labels:
+      - traefik.enable=false  
     environment:
       - RM_DB_CONNECTION_STRING=postgres://postgres:postgres@postgresql:5432/postgres?sslmode=disable
       - RM_API_PORT=8884

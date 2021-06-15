@@ -1,0 +1,58 @@
+version: "3.7"
+
+services:
+  uniconfig-postgres:
+    image: postgres:12.2
+    user: postgres
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    labels:
+      - traefik.enable=false  
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=uniconfig
+    volumes:
+      - uniconfig_postgresql_data:/var/lib/postgresql/data
+      - ${UC_CONFIG_PATH}/init_schema.sql:/docker-entrypoint-initdb.d/init_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    ulimits:
+      nofile:
+        soft: ${UP_ULIMIT_NOFILE_SOFT}
+        hard: ${UP_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${UP_ULIMIT_NPROC_SOFT}
+        hard: ${UP_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    deploy:
+      placement:
+        constraints:
+          - node.id == ${UC_SWARM_NODE_ID}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${UP_RES_LIMIT_CPUS}
+          memory: ${UP_RES_LIMIT_MEM}
+
+
+volumes:
+  uniconfig_postgresql_data:
+    name: uniconfig_postgresql_data
+
+networks:
+  default:
+    name: frinx-machine

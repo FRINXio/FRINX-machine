@@ -158,21 +158,21 @@ function startUniconfig {
   if [[ ${__multinode} == "true" ]]; then
     echo -e "${INFO} Multi-node deployment - compose files are stored on this path: ${uniconfigServiceFilesPath}"
     echo -e "${INFO} Make sure the UniConfig configuration files are present on remote node in /opt/frinx folder"
-
-    for compose_name in $(ls ${uniconfigServiceFilesPath})
-    do
+    shopt -s lastpipe
+    find ${uniconfigServiceFilesPath} -iname "swarm-*.yml" -print0 | \
+    while IFS= read -r -d '' compose_name; do 
       echo -e "${INFO} Checking swarm nodes for ${compose_name} uniconfig deployment"
-      node_id=($(grep node.id "${uniconfigServiceFilesPath}/${compose_name}" | sed -e 's/- node.id//;s/==//;s/^[[:space:]]*//'))
+      node_id=($(grep node.id "${compose_name}" | sed -e 's/- node.id//;s/==//;s/^[[:space:]]*//'))
       for node in "${node_id[@]}"
       do 
         checkSwarmNodeActive "${node_id}"
       done
-      docker stack deploy --compose-file "${uniconfigServiceFilesPath}/${compose_name}" $stackName
+      docker stack deploy --compose-file ${compose_name} $stackName    
     done
   else
     echo -e "${INFO} Single-node deployment - composefiles/${dockerSwarmUniconfig}"
     echo -e "${INFO} Uniconfig swarm worker node id: ${UC_SWARM_NODE_ID}"
-    docker stack deploy --compose-file "composefiles/${dockerSwarmUniconfig}" $stackName
+    docker stack deploy --compose-file "composefiles/${dockerSwarmUniconfig}" --compose-file "composefiles/${dockerSwarmUniconfigPsql}" --compose-file "composefiles/${dokcerSwarmTraefik}" $stackName
   fi
 }
 
@@ -274,21 +274,22 @@ function setNodeIdLocalDeploy {
 function generateUniconfigKrakendFile {
 
   if [[ ${__multinode} == "true" ]]; then
-    for i in $(ls ${uniconfigServiceFilesPath})
-    do
-        if [[ "${i}" == "swarm-"*".yml" ]]; then
-          if [[ -z $name ]]; then
-            name="\"$(echo ${i} | grep "swarm-" | cut -d "-" -f 2-  | cut -d "." -f 1)\""    
-          else
-            name="\"$(echo ${i} | grep "swarm-" | cut -d "-" -f 2-  | cut -d "." -f 1)\",\n\t\t${name}"    
-          fi       
-        fi
+    shopt -s lastpipe
+    find ${uniconfigServiceFilesPath} -iname "swarm-*traefik.yml" -print0 | \
+    while IFS= read -r -d '' traefik_name; do 
+      if [[ -z $name ]]; then
+        line_num=$(($(cat ${traefik_name} | grep -n "services:" | cut -d ':' -f 1)+1))
+        name="\"$(sed -n ${line_num}p ${traefik_name} | cut -d ':' -f 1 | sed 's/ //g')\"" 
+      else
+        line_num=$(($(cat ${traefik_name} | grep -n "services:" | cut -d ':' -f 1)+1))
+        name="\"$(sed -n ${line_num}p ${traefik_name} | cut -d ':' -f 1 | sed 's/ //g')\",\n\t\t${name}"
+      fi
     done
-      name=${name}
+    name=${name}
   else
     name='"uniconfig"'
   fi
-    sed "s/\"UNICONFIG-NAME\"/${name}/" ${krakendUniconfigTmplFile} > ${krakendUniconfigFile}
+  sed "s/\"UNICONFIG-NAME\"/${name}/" ${krakendUniconfigTmplFile} > ${krakendUniconfigFile}
 }
 
 function setKrakendComposeTag {
@@ -366,9 +367,11 @@ OK="\033[0;92m[OK]:\033[0;0m"
 stackName="fm"
 licenseKeyFile='./config/uniconfig/uniconfig_license.txt'
 
-dockerSwarmUniconfig='swarm-uniconfig.yml'
 dockerSwarmUniflow='swarm-uniflow.yml'
 dokcerSwarmKrakend='swarm-uniflow-krakend.yml'
+dokcerSwarmTraefik='swarm-uniconfig-traefik.yml'
+dockerSwarmUniconfig='swarm-uniconfig.yml'
+dockerSwarmUniconfigPsql='swarm-uniconfig-postgres.yml'
 
 uniconfigServiceFilesPath="${FM_DIR}/composefiles/uniconfig"
 

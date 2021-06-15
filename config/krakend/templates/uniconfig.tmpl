@@ -12,7 +12,7 @@
         "url_pattern": "/rests/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
         {{ include "uniconfig_partial_2.tmpl" }}
         "host": [
-	        "https://{{$host}}:8181"
+	        "http://{{$host}}:8181"
         ]
     }
     ]
@@ -29,6 +29,7 @@
 
 {{range $host_range, $host := $.hosts}}
 {{if gt $host_range 0}},{{end}}
+
 {
     "endpoint": "/api/{{$host}}/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
     "method": "{{$method}}",
@@ -38,7 +39,7 @@
         "url_pattern": "/rests/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
         {{ include "uniconfig_partial_2.tmpl" }}
         "host": [
-            "https://{{$host}}:8181"
+            "http://{{$host}}:8181"
         ]
     }
 ]
