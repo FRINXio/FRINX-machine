@@ -9,6 +9,8 @@ services:
       options:
         max-file: "3"
         max-size: "10m"
+    labels:
+      - traefik.enable=false  
     environment:
       - FC_ENABLE=1
       - FC_SETTINGS=/etc/krakend/settings

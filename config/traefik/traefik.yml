@@ -1,0 +1,9 @@
+api:
+  insecure: true
+
+entryPoints:
+  uniconfig:
+    address: ":8181"
+
+providers:
+  docker: {}
