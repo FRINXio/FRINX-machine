@@ -231,7 +231,7 @@ function installPrerequisities {
       apt-get update -qq
       apt-get install -qq -y $dockerInstallVersion
 
-      if [ $skipswarm -eq 0 ]; then
+      if [[ ${__NO_SWARM} == "false" ]]; then
         echo -e "${INFO} Initializing docker in swarm mode"
         docker swarm init
       fi
@@ -274,7 +274,7 @@ function finishedMessage {
   echo
   echo -e "Continue by running ./startup.sh"
 
-  if [ $skipswarm -eq 1 ]
+  if [[ $__NO_SWARM == "true" ]]
   then
     swarmNote
   fi
@@ -396,7 +396,7 @@ dockerComposeFileUniflow='composefiles/swarm-uniflow.yml'
 dockerPerformSettings='./config/dev_settings.txt'
 
 scriptName=$0
-skipswarm=0
+__NO_SWARM="false"
 
 # TODO find better way to obrain username
 defUser=$(who | awk 'NR==1{print $1;}')
