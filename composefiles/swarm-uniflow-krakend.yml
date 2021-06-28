@@ -20,6 +20,9 @@ services:
     volumes:
       - ${UF_CONFIG_PATH}/krakend:/etc/krakend:ro
       - ${UF_CONFIG_PATH}/krakend/tls/${KRAKEND_TLS_PROTOCOL}:/etc/krakend/partials/tls:ro
+    secrets:
+      - frinx_krakend_tls_cert.pem
+      - frinx_krakend_tls_key.pem
     healthcheck:
       test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/__health' || exit 1
       interval: 10s
@@ -51,3 +54,8 @@ services:
         limits:
           cpus: ${KD_RES_LIMIT_CPUS}
           memory: ${KD_RES_LIMIT_MEM}
+secrets:
+  frinx_krakend_tls_cert.pem:
+    external: true
+  frinx_krakend_tls_key.pem:
+    external: true

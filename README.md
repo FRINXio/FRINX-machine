@@ -68,6 +68,8 @@ For disabling proxy, the config.json must be removed and content of UC_PROXY_* v
 
 For more info see: https://docs.docker.com/network/proxy/
 
+### Install/Update docker secrets (KrakenD HTTPS/TLS)
+During installation, docker secrets are created and are used for establishing HTTPS/TLS connections. These secrets contain private and public keys and are generated from files in the ./config/certificates folder. These certificates can be replaced by custom certificates (use the same name) before execution of installation script or re-execution with the `--update-secrets` flag.
 ## Single-node deployment
 Installation and running of UniFlow and UniConfig on the same machine.
 To deploy both UniFlow and UniConfig locally (for testing and demo purposes), run `startup.sh`:
