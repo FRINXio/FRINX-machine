@@ -22,6 +22,12 @@ DESCRIPTION:
           configuration and want to setup the swarm on you own.
           NOTE: You NEED a working swarm prior to running startup.sh
 
+    --update-secrets      
+          Update/create docker secrets for Frinx services from  ./config/certificates
+          Default names for KrakenD TLS are:
+          - frinx_krakend_tls_cert.pem
+          - frinx_krakend_tls_key.pem
+
   DOCKER PROXY CONFIGURATION
 
     --proxy-conf [path] - path to USER_HOME_DIR/.docker/config.json
@@ -184,6 +190,11 @@ do
             echo -e "${WARNING} Skipping swarm setup"
             echo -e "${WARNING} Please setup the swarm manually prior to running startup.sh" 
             __NO_SWARM="true";;
+
+        --update-secrets)
+            echo -e "${WARNING} Updating docker frinx secrets"
+            __UPDATE_SECRETS="true";;
+
         --proxy-conf)
             if [[ ${2} != "-"* ]] && [[ ! -z ${2} ]]; then
                 __PROXY_PATH="${2}"; shift
@@ -246,6 +257,30 @@ function installPrerequisities {
       chmod +x /usr/local/bin/docker-compose
     fi
   fi
+}
+
+
+function updateDockerSecrets {
+
+  for i in $(ls ${dockerCertSettings} )
+  do
+    local secret_exist=$(docker secret ls -f name=${i} --format {{.Name}})
+    if [[ ${secret_exist} != '' ]]; then
+      if [ "${__UPDATE_SECRETS}" == "true" ]; then
+        echo -e "${INFO} Docker Secrets: Updating docker secret with name ${i}"
+        (docker secret rm "${i}" > /dev/null && echo -e "${INFO} Docker Secrets: Remove old secret ${i}") || \
+          (echo -e "${ERROR} Docker Secrets: Problem with removing old docker secrets ${i}" && exit 1)
+        (docker secret create "${i}" "${dockerCertSettings}/${i}" > /dev/null && echo -e "${INFO} Docker Secrets: Set new secret ${i}") || \
+          (echo -e "${ERROR} Docker Secrets: Problem during updating docker secret ${i}" && exit 1)
+      else
+        echo -e "${INFO} Docker Secrets: Skipping docker secret update with name ${i}"
+      fi
+    else
+      echo -e "${INFO} Docker Secrets: Creating docker secret with name ${i}"
+      docker secret create "${i}" "${dockerCertSettings}/${i}" > /dev/null || echo -e "${ERROR} Docker secret not imported" | exit 1
+    fi
+  done
+
 }
 
 
@@ -336,6 +371,8 @@ function createEnvFile {
   if [[ ! -f ${stackEnvFile} ]]; then
     cp "${DIR}/env.template" ${stackEnvFile}
     chown ${defUser}:${defUser} ${stackEnvFile}
+  else
+    echo -e "${WARNING} Used ${stackEnvFile} from previous installation!"
   fi
 }
 
@@ -394,6 +431,7 @@ dockerComposeInstallVersion="1.22.0"
 dockerComposeFileUniconfig='composefiles/swarm-uniconfig.yml'
 dockerComposeFileUniflow='composefiles/swarm-uniflow.yml'
 dockerPerformSettings='./config/dev_settings.txt'
+dockerCertSettings='./config/certificates'
 
 scriptName=$0
 __NO_SWARM="false"
@@ -420,6 +458,7 @@ setVariableFile "${stackEnvFile}"
 proxy_config
 installPrerequisities
 checkDockerGroup
+updateDockerSecrets
 pullImages
 cleanup
 finishedMessage
