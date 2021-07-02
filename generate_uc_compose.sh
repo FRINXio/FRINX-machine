@@ -111,7 +111,7 @@ function generateUcTraefikCompose {
     local __CONFIG_PATH="${__DEF_CONFIG_PATH}/traefik"
 
     mkdir -p "${__FOLDER_PATH}/${__CONFIG_PATH}"
-    cp ${FM_DIR}/config/traefik/traefik.yml "${__FOLDER_PATH}/${__CONFIG_PATH}"
+    cp ${FM_DIR}/config/traefik/* "${__FOLDER_PATH}/${__CONFIG_PATH}"
 
     cp "${FM_COMPOSE_DIR}/${__UC_TRAEFIK_COMPOSE_NAME}" "${__COMPOSE_PATH}"
     sed -i "s/ uniconfig:/ ${__SERVICE_NAME}:/g" "${__COMPOSE_PATH}"

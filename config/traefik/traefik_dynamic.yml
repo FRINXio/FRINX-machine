@@ -1,0 +1,6 @@
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /run/secrets/frinx_uniconfig_tls_cert.pem
+        keyFile: /run/secrets/frinx_uniconfig_tls_key.pem
