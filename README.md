@@ -303,6 +303,12 @@ $ cd build/uniconfig
 $ docker build .
 ```
 
+### ElasticSearch disk flood stage prevention 
+ElasticSearch changes the disk permissions to read-only if the disk free space drops below 512Mb.. This setting is a last resort to prevent nodes from running out of disk space. The index block must be released manually when the disk utilization falls below the high watermark.
+```sh
+# from fm_elasticsearch container
+curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index.blocks.read_only_allow_delete": null}'
+```
 ### Building and distribution of custom images
 In case you need to test a custom image you've built on a remote node, follow these steps:
 

@@ -108,14 +108,15 @@ function isNodeInSwarm {
 function generateUcTraefikCompose {
     
     local __COMPOSE_PATH="${__FOLDER_PATH}/${__UC_TRAEFIK_COMPOSE_NAME}"
-    local __CONFIG_PATH="${__DEF_CONFIG_PATH}/traefik"
+    local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}/traefik"
 
     mkdir -p "${__FOLDER_PATH}/${__CONFIG_PATH}"
     cp ${FM_DIR}/config/traefik/* "${__FOLDER_PATH}/${__CONFIG_PATH}"
+    sed -i "s/  uniconfig:/  ${__SERVICE_NAME}:/g" "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik.yml"
 
     cp "${FM_COMPOSE_DIR}/${__UC_TRAEFIK_COMPOSE_NAME}" "${__COMPOSE_PATH}"
     sed -i "s/ uniconfig:/ ${__SERVICE_NAME}:/g" "${__COMPOSE_PATH}"
-    sed -i 's|${UF_CONFIG_PATH}|'"/${__DEF_CONFIG_PATH}|g" "${__COMPOSE_PATH}"
+    sed -i 's|${UF_CONFIG_PATH}/traefik|'"/${__CONFIG_PATH}|g" "${__COMPOSE_PATH}"
     sed -i 's|${UF_SWARM_NODE_ID}|'"${__NODE_ID}|g" "${__COMPOSE_PATH}"
 }
 
@@ -123,7 +124,7 @@ function generateUcTraefikCompose {
 function generateUcPostgresCompose {
     
     local __COMPOSE_PATH="${__FOLDER_PATH}/${__UC_POSTGRES_COMPOSE_NAME}"
-    local __CONFIG_PATH="${__DEF_CONFIG_PATH}/uniconfig"
+    local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}/uniconfig"
 
     mkdir -p "${__FOLDER_PATH}/${__CONFIG_PATH}"
     cp ${FM_DIR}/config/uniconfig/frinx/uniconfig/init_schema.sql "${__FOLDER_PATH}/${__CONFIG_PATH}"
@@ -139,7 +140,7 @@ function generateUcCompose {
 
     for ((i=1;i<=__UC_INSTANCES;i++)); do
         local __COMPOSE_PATH="${__FOLDER_PATH}/swarm-uniconfig_${i}.yml"
-        local __CONFIG_PATH="${__DEF_CONFIG_PATH}/uniconfig_${i}"
+        local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}/uniconfig_${i}"
         local __DEF_UC_CONFIG_MIDDLE_PATH="config/uniconfig/frinx/uniconfig"
         local __SERVICE_FULL_NAME="${__SERVICE_NAME}_${i}"
 
@@ -148,10 +149,13 @@ function generateUcCompose {
         cp "${FM_COMPOSE_DIR}/${__UC_COMPOSE_NAME}" "${__COMPOSE_PATH}"
         sed -i 's|_instanceName=uniconfig_1|'"_instanceName=${__SERVICE_FULL_NAME}|g" "${__COMPOSE_PATH}"
         sed -i 's| uniconfig_1:|'" ${__SERVICE_FULL_NAME}:|g" "${__COMPOSE_PATH}"
-        sed -i 's|\${UC_CONFIG_PATH}|'"/opt/frinx/uniconfig_${i}|g" "${__COMPOSE_PATH}"
+        sed -i 's|\${UC_CONFIG_PATH}|'"/opt/frinx/${__SERVICE_NAME}/uniconfig_${i}|g" "${__COMPOSE_PATH}"
         sed -i 's|${UC_SWARM_NODE_ID}|'"${__NODE_ID}|g" "${__COMPOSE_PATH}"
         sed -i 's|uniconfig_logs|'"${__SERVICE_FULL_NAME}_logs|g" "${__COMPOSE_PATH}"
         sed -i 's|_host=uniconfig-postgres|'"_host=${__SERVICE_NAME}-postgres|g" "${__COMPOSE_PATH}"
+        sed -i 's|entrypoints=https,uniconfig|'"entrypoints=https,${__SERVICE_NAME}|g" "${__COMPOSE_PATH}"
+        sed -i 's|\.uniconfig\.|'"\.${__SERVICE_NAME}\.|g" "${__COMPOSE_PATH}"
+
     done
 }
 
