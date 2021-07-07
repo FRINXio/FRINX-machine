@@ -177,8 +177,7 @@ services:
           memory: ${PG_RES_LIMIT_MEM}
 
   schellar:
-    image: frinx/uniflow-schellar:1.9.2
-    user: guest
+    image: frinx/uniflow-schellar:latest
     logging:
       driver: "json-file"
       options:
@@ -192,7 +191,7 @@ services:
       - POSTGRES_MIGRATIONS_DIR=migrations
       - POSTGRES_DATABASE_URL=host=postgresql port=5432 user=postgres password=postgres database=schellar
     healthcheck:
-      test: wget --spider -q conductor-server:8080/health && wget --spider -q 127.0.0.1:3000/schedule && nc -z postgresql:5432
+      test: wget --spider -q conductor-server:8080/health && wget --spider -q 127.0.0.1:3000/liveness && nc -z postgresql:5432
       interval: 10s
       timeout: 5s
       retries: 5
