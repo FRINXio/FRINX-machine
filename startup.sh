@@ -244,7 +244,7 @@ function checkSwarmMode {
 
 
 # TODO when uniconfig image will be changed to non root
-function uniconfigCachePermission {
+function uniconfigMountedVolumePermission {
     # for uniconfig non root user
     chmod a+w "${UC_CONFIG_PATH}/cache"
 }
@@ -265,7 +265,7 @@ function checkSwarmNodeActive {
 function setNodeIdLocalDeploy {
   if [ -z "${__multinode}" ]; then
     export UC_SWARM_NODE_ID="${nodeID}"
-    uniconfigCachePermission
+    uniconfigMountedVolumePermission
   fi
   export UF_SWARM_NODE_ID="${nodeID}"
 }
@@ -369,6 +369,7 @@ licenseKeyFile='./config/uniconfig/uniconfig_license.txt'
 dockerSwarmUniconfig='swarm-uniconfig.yml'
 dockerSwarmUniflow='swarm-uniflow.yml'
 dokcerSwarmKrakend='swarm-uniflow-krakend.yml'
+
 uniconfigServiceFilesPath="${FM_DIR}/composefiles/uniconfig"
 
 # DEFAULT KRAKEND SETTINGS
