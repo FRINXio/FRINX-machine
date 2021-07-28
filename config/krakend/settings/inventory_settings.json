@@ -1,0 +1,14 @@
+{
+    "endpoints": [
+        {
+            "endpoint": "/api/inventory",
+            "method": "GET",
+            "url_pattern": "/graphql"
+        },
+        {
+            "endpoint": "/api/inventory",
+            "method": "POST",
+            "url_pattern": "/graphql"
+        }
+    ]
+}

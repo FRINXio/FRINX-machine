@@ -302,7 +302,43 @@ services:
         limits:
           cpus: ${UR_RES_LIMIT_CPUS}
           memory: ${UR_RES_LIMIT_MEM}
-      
+
+  inventory:
+    image: frinx/frinx-inventory-server:latest
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@uniconfig-postgres:5432/inventory?sslmode=disable
+      - UNICONFIG_API_URL=https://uniconfig:8181/rests
+    # healthcheck:
+    #   test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://0.0.0.0:8884/healthz/readiness'
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 5
+    #   start_period: 20s
+    ulimits:
+      nofile:
+        soft: ${IV_ULIMIT_NOFILE_SOFT}
+        hard: ${IV_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${IV_ULIMIT_NPROC_SOFT}
+        hard: ${IV_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    deploy:
+      placement:
+        constraints:
+          - node.id == ${UF_SWARM_NODE_ID}
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${IV_RES_LIMIT_CPUS}
+          memory: ${IV_RES_LIMIT_MEM}
+
 volumes:
   uniflow_elastic_data:
     name: uniflow_elastic_data

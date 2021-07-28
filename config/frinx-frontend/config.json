@@ -4,6 +4,7 @@
   "auth_redirect_url": "",
   "conductor_api_url": "/api/uniflow", 
   "uniconfig_api_url": "/api/uniconfig",
+  "inventory_api_url": "/api/inventory",
   "uniconfig_auth": "Basic YWRtaW46YWRtaW4=",
   "uniresource_enabled": true,
   "uniconfig_enabled": true,

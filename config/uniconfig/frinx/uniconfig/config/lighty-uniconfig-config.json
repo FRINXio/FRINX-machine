@@ -72,7 +72,7 @@
             "factoryAkkaConfigPath":"config/factory-akka.conf"
         },
         "schemaServiceConfig":{
-            "topLevelModels":[]
+            "topLevelModules":[]
         }
     },
     "restconf":{
@@ -112,7 +112,14 @@
     dbPersistence_uniconfigInstance_instanceName=uc-0
     */
     "dbPersistence": {
-        "enabled": false,
+        "embeddedDatabase": {
+            // Flag that determines if embedded database will be started or not.
+            "enabled": false,
+            // A parameter that specifies the name of the subdirectory in which the embedded database is stored.
+            "dataDir": "./data/pg_dir",
+            // A parameter that determines if the 'dataDir' directory will be deleted after uniconfig is turned off.
+            "cleanDataDir": true
+        },
         "connection": {
             "dbName": "uniconfig",
             "username": "uniremote",
