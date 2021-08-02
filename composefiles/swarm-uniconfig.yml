@@ -73,6 +73,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
+      - POSTGRES_DB=uniconfig
     volumes:
       - uniconfig_postgresql_data:/var/lib/postgresql/data
       - ${UC_CONFIG_PATH}/init_schema.sql:/docker-entrypoint-initdb.d/init_schema.sql:ro

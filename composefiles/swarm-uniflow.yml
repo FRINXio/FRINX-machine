@@ -311,8 +311,10 @@ services:
         max-file: "3"
         max-size: "10m"
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@uniconfig-postgres:5432/inventory?sslmode=disable
-      - UNICONFIG_API_URL=https://uniconfig:8181/rests
+      - DATABASE_URL=postgres://postgres:postgres@inventory-postgres:5432/inventory?sslmode=disable
+      # In case of multi-node deployment, set correct INVENTORY_UNICONFIG_URL_ENV to .evn file.
+      # Work with 1 uc-zone only
+      - UNICONFIG_API_URL=https://${INVENTORY_UNICONFIG_URL_ENV:-uniconfig}:8181/rests
     # healthcheck:
     #   test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://0.0.0.0:8884/healthz/readiness'
     #   interval: 10s
@@ -339,11 +341,59 @@ services:
           cpus: ${IV_RES_LIMIT_CPUS}
           memory: ${IV_RES_LIMIT_MEM}
 
+  inventory-postgres:
+    image: postgres:12.2
+    user: postgres
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=inventory
+    volumes:
+      - inventory_postgresql_data:/var/lib/postgresql/data
+      - ${UF_CONFIG_PATH}/inventory-postgres:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    ulimits:
+      nofile:
+        soft: ${IP_ULIMIT_NOFILE_SOFT}
+        hard: ${IP_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${IP_ULIMIT_NPROC_SOFT}
+        hard: ${IP_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    deploy:
+      placement:
+        constraints:
+          - node.id == ${UF_SWARM_NODE_ID}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${IP_RES_LIMIT_CPUS}
+          memory: ${IP_RES_LIMIT_MEM}
+
+
 volumes:
   uniflow_elastic_data:
     name: uniflow_elastic_data
   uniflow_postgresql_data:
     name: uniflow_postgresql_data
+  inventory_postgresql_data:
+    name: inventory_postgresql_data
 
 networks:
   default:

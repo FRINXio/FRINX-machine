@@ -25,25 +25,12 @@
                                 "value":  "application/json"
                             }
                         },
-                        {
-                            "header.Modifier": {
-                                "scope": ["request"],
-                                "name": "x-tenant-id",
-                                "value":  "frinx"
-                            }
-                        },
+                        {{ include "default_tenant_headers.tmpl" }},
                         {
                             "header.Modifier": {
                                 "scope": ["request"],
                                 "name": "from",
                                 "value": "inventory"
-                            }
-                        },
-                        {
-                            "header.Modifier": {
-                                "scope": ["request"],
-                                "name": "x-auth-user-groups",
-                                "value": "network-admin"
                             }
                         }
                     ]
