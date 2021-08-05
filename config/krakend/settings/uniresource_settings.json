@@ -1,12 +1,7 @@
 {
     "endpoints": [
         {
-            "endpoint": "/resourcemanager/graphql/query",
-            "method": "POST",
-            "url_pattern": "/query"
-        },
-        {
-            "endpoint": "/api/uniresource/query",
+            "endpoint": "/api/uniresource",
             "method": "POST",
             "url_pattern": "/query"
         }
