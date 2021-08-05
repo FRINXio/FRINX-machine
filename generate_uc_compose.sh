@@ -55,6 +55,7 @@ do
 
         -s|--service-name)
             if [[ ${2} != "-"* ]] && [[ ! -z ${2} ]]; then
+                checkUniconfigServiceName "${2}"
                 __SERVICE_NAME="${2}"; shift
             else
                 echo "Service name not defined. See help!"
@@ -79,6 +80,7 @@ do
             fi;;
 
         -f|--folder-path)
+
             if [[ ${2} != "-"* ]] && [[ ! -z ${2} ]] && [[ -d ${2} ]] ; then
                 __FOLDER_PATH="$(readlink -f ${2})"; shift
             else
@@ -95,6 +97,20 @@ do
     esac
     shift
 done
+}
+
+
+function checkUniconfigServiceName {
+  local __service_name="${1}"
+  local regex='^[a-z0-9_-]*$'
+  echo -e "${INFO} Verify Uniconfig service name: ${__service_name}"
+  if [[ "${__service_name}" =~ ${regex} ]]; then
+    echo -e "${OK} Uniconfig service name: ${__service_name}"
+  else
+    echo -e "${ERROR} Uniconfig service name '${__service_name}' contain illegal characters"
+    echo -e "${ERROR} Allowed characters are:   a-z 0-9 _- "
+    exit 1
+  fi
 }
 
 function isNodeInSwarm {
@@ -145,7 +161,8 @@ function generateUcCompose {
         local __SERVICE_FULL_NAME="${__SERVICE_NAME}_${i}"
 
         cp -r ${FM_DIR}/${__DEF_UC_CONFIG_MIDDLE_PATH}/ "${__FOLDER_PATH}/${__CONFIG_PATH}"
-
+        chmod a+w "${__FOLDER_PATH}/${__CONFIG_PATH}/cache"
+        
         cp "${FM_COMPOSE_DIR}/${__UC_COMPOSE_NAME}" "${__COMPOSE_PATH}"
         sed -i 's|_instanceName=uniconfig_1|'"_instanceName=${__SERVICE_FULL_NAME}|g" "${__COMPOSE_PATH}"
         sed -i 's| uniconfig_1:|'" ${__SERVICE_FULL_NAME}:|g" "${__COMPOSE_PATH}"
@@ -179,6 +196,8 @@ OK="\033[0;92m[OK]:\033[0;0m"
 scriptName="$(basename "${0}")"
 FM_DIR="$(dirname "$(readlink -f "${scriptName}")")"
 FM_COMPOSE_DIR="${FM_DIR}/composefiles"
+
+__FOLDER_PATH="${FM_COMPOSE_DIR}/uniconfig"
 
 __UC_COMPOSE_NAME="swarm-uniconfig.yml"
 __UC_POSTGRES_COMPOSE_NAME="swarm-uniconfig-postgres.yml"
