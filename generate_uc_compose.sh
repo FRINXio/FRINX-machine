@@ -75,7 +75,7 @@ do
             if [[ ${2} =~ ${regex} ]]; then
                 __UC_INSTANCES="${2}"; shift
             else
-                echo "Bad instances input defined. See help!"
+                echo -e "${ERROR} Bad instances input defined. See help!"
                 exit 1
             fi;;
 
@@ -84,7 +84,7 @@ do
             if [[ ${2} != "-"* ]] && [[ ! -z ${2} ]] && [[ -d ${2} ]] ; then
                 __FOLDER_PATH="$(readlink -f ${2})"; shift
             else
-                echo "Bad folder path defined. See help!"
+                echo -e "${ERROR} Bad folder path defined. See help!"
                 exit 1
             fi;;
 
@@ -157,7 +157,7 @@ function generateUcCompose {
         local __DEF_UC_CONFIG_MIDDLE_PATH="config/uniconfig/frinx/uniconfig"
         local __SERVICE_FULL_NAME="${__SERVICE_NAME}_${i}"
 
-        rsync -r --verbose --exclude "cache/scheme-*" ${FM_DIR}/${__DEF_UC_CONFIG_MIDDLE_PATH}/* "${__FOLDER_PATH}/${__CONFIG_PATH}"
+        rsync -r --exclude "cache/*" ${FM_DIR}/${__DEF_UC_CONFIG_MIDDLE_PATH}/* "${__FOLDER_PATH}/${__CONFIG_PATH}"
         chmod a+w "${__FOLDER_PATH}/${__CONFIG_PATH}/cache"
         
         cp "${FM_COMPOSE_DIR}/${__UC_COMPOSE_NAME}" "${__COMPOSE_PATH}"
@@ -190,8 +190,7 @@ WARNING="\033[0;33m[WARNING]:\033[0;0m"
 INFO="\033[0;96m[INFO]:\033[0;0m"
 OK="\033[0;92m[OK]:\033[0;0m"
 
-scriptName="$(basename "${0}")"
-FM_DIR="$(dirname "$(readlink -f "${scriptName}")")"
+FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 FM_COMPOSE_DIR="${FM_DIR}/composefiles"
 
 __FOLDER_PATH="${FM_COMPOSE_DIR}/uniconfig"
