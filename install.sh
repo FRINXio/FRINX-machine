@@ -234,8 +234,8 @@ function checkInstallPrerequisities {
 function installPrerequisities {
   echo -e "${INFO} Configuring docker-ce and docker-compose"
   echo -e "${INFO} Checking curl"
-  apt-get update -qq
-  apt-get install curl -qq -y
+  apt-get update > /dev/null
+  apt-get install curl -y
 
   if test -f /usr/bin/dockerd; then
     dockerdVersion=$(/usr/bin/dockerd --version)
@@ -248,7 +248,7 @@ function installPrerequisities {
     apt-get update -qq
     apt-get install -qq -y $dockerInstallVersion
 
-    if [[ ${__NO_SWARM} == "false" ]]; then
+    if [[ "${__NO_SWARM}" == "false" ]]; then
       echo -e "${INFO} Initializing docker in swarm mode"
       docker swarm init
     fi
@@ -297,11 +297,13 @@ function pullImages {
   docker-compose --log-level ERROR -f $dockerComposeFileUniflow pull
   echo -e "${INFO} Pulling UniConfig images"
   docker-compose --log-level ERROR -f $dockerComposeFileUniconfig pull
-  docker-compose --log-level ERROR -f $dockerComposeFileUniconfigPostgres pull
-  docker-compose --log-level ERROR -f $dockerComposeFileUniconfigTraefik pull
+
+  echo -e "${INFO} Pulling Monitoring images"
+  docker-compose --log-level ERROR -f $dockerComposeFileMonitor pull
 
   echo -e "${INFO} Pulling Krakend base image"
   docker pull frinx/krakend:${BASE_KRAKEND_IMAGE_TAG}
+
 }
 
 
@@ -341,6 +343,13 @@ function swarmNote {
   echo -e "NOTE: Docker swarm not configured!"
   echo -e "Please setup the swarm manually prior to running startup.sh"
   echo ""
+}
+
+
+function installLokiPlugin {
+  echo -e "${INFO} Checking Loki logging driver plugin"
+  docker plugin inspect loki:latest > /dev/null 2>&1 || \
+  (docker plugin install grafana/loki-docker-driver:main-20515a2 --alias loki --grant-all-permissions || true)
 }
 
 
@@ -430,9 +439,9 @@ FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 stackEnvFile="${FM_DIR}/.env"
 
 dockerComposeFileUniconfig="${FM_DIR}/composefiles/swarm-uniconfig.yml"
-dockerComposeFileUniconfigTraefik="${FM_DIR}/composefiles/swarm-uniconfig-traefik.yml"
-dockerComposeFileUniconfigPostgres="${FM_DIR}/composefiles/swarm-uniconfig-postgres.yml"
 dockerComposeFileUniflow="${FM_DIR}/composefiles/swarm-uniflow.yml"
+dockerComposeFileMonitor="${FM_DIR}/composefiles/support/swarm-monitoring.yml"
+
 dockerPerformSettings="${FM_DIR}/config/dev_settings.txt"
 dockerCertSettings="${FM_DIR}/config/certificates"
 
@@ -455,6 +464,7 @@ createEnvFile
 setVariableFile "${stackEnvFile}"
 proxy_config
 checkInstallPrerequisities
+installLokiPlugin
 checkDockerGroup
 updateDockerSecrets
 pullImages

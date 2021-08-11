@@ -22,10 +22,14 @@
       "allow_credentials": true
     },
     "github_com/devopsfaith/krakend-gologging": {
-      "level": "WARNING",
+      "level": "INFO",
       "prefix": "[KRAKEND]",
       "syslog": false,
       "stdout": true
+    },
+    "github_com/ifaisalalam/krakend-gin-logger": {
+      "enabled": true,
+      "skip_paths": ["/__health"]
     }
   },
   "endpoints": [

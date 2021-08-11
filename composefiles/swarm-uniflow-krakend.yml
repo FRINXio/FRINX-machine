@@ -1,14 +1,26 @@
 version: "3.7"
 
+x-logging: &logging_loki
+    driver: loki
+    options:
+      loki-url: "http://${MANAGER_IP_ADDR}:3100/loki/api/v1/push"
+      loki-retries: "1"
+      loki-batch-size: "1500"
+      loki-relabel-config: |
+        - action: labelmap
+          regex: swarm_(service)
+
+x-logging: &logging_json
+    driver: "json-file"
+    options:
+      max-file: "3"
+      max-size: "10m"
+
 services:
   krakend:
     image: frinx/krakend:${LOCAL_KRAKEND_IMAGE_TAG}
     # user: root
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
       - traefik.enable=false  
     environment:
@@ -49,7 +61,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${UF_SWARM_NODE_ID}
+          - node.role == manager
       mode: replicated
       replicas: 1
       resources:
@@ -61,3 +73,7 @@ secrets:
     external: true
   frinx_krakend_tls_key.pem:
     external: true
+
+networks:
+    default:
+      name: frinx-machine

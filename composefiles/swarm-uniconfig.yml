@@ -5,14 +5,26 @@
 
 version: "3.7"
 
+x-logging: &logging_loki
+    driver: loki
+    options:
+      loki-url: "http://${MANAGER_IP_ADDR}:3100/loki/api/v1/push"
+      loki-retries: "1"
+      loki-batch-size: "1500"
+      loki-relabel-config: |
+        - action: labelmap
+          regex: swarm_(service)
+
+x-logging: &logging_json
+    driver: "json-file"
+    options:
+      max-file: "3"
+      max-size: "10m"
+
 services:
   uniconfig:
     image: traefik:v2.4
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     volumes:
       - ${UF_CONFIG_PATH}/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
       - ${UF_CONFIG_PATH}/traefik/traefik_dynamic.yml:/etc/traefik/traefik_dynamic.yml:ro
@@ -49,11 +61,7 @@ services:
 
   uniconfig-controller:
     image: frinx/uniconfig:4.2.8
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
       - traefik.enable=true
       - traefik.http.routers.uniconfig.entrypoints=https,uniconfig
@@ -74,7 +82,7 @@ services:
       - dbPersistence_connection_databaseLocations_host=uniconfig-postgres
       - dbPersistence_connection_databaseLocations_port=5432
     volumes:
-      - frinx_uniconfig_logs:/opt/uniconfig-frinx/log
+      - frinx_uniconfig-controller_logs:/opt/uniconfig-frinx/log
       - ${UC_CONFIG_PATH}/config/lighty-uniconfig-config.json:/opt/uniconfig-frinx/config/lighty-uniconfig-config.json:ro
       - ${UC_CONFIG_PATH}/config/logback.xml:/opt/uniconfig-frinx/config/logback.xml:ro
       - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache:rw
@@ -116,11 +124,7 @@ services:
   uniconfig-postgres:
     image: postgres:12.2
     user: postgres
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
       - traefik.enable=false  
     environment:
@@ -128,7 +132,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=uniconfig
     volumes:
-      - frinx_uniconfig_postgresql_data:/var/lib/postgresql/data
+      - frinx_uniconfig-postgresql_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -163,10 +167,10 @@ services:
           memory: ${UP_RES_LIMIT_MEM}
 
 volumes:
-  frinx_uniconfig_logs:
-    name: frinx_uniconfig_logs
-  frinx_uniconfig_postgresql_data:
-    name: frinx_uniconfig_postgresql_data
+  frinx_uniconfig-controller_logs:
+    name: frinx_uniconfig-controller_logs
+  frinx_uniconfig-postgresql_data:
+    name: frinx_uniconfig-postgresql_data
 
 secrets:
   frinx_uniconfig_tls_cert.pem:
