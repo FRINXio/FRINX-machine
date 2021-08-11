@@ -142,9 +142,6 @@ function generateUcPostgresCompose {
     local __COMPOSE_PATH="${__FOLDER_PATH}/${__UC_POSTGRES_COMPOSE_NAME}"
     local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}/uniconfig"
 
-    mkdir -p "${__FOLDER_PATH}/${__CONFIG_PATH}"
-    cp ${FM_DIR}/config/uniconfig/frinx/uniconfig/init_schema.sql "${__FOLDER_PATH}/${__CONFIG_PATH}"
-
     cp "${FM_COMPOSE_DIR}/${__UC_POSTGRES_COMPOSE_NAME}" "${__COMPOSE_PATH}"
     sed -i "s/ uniconfig-postgres:/ ${__SERVICE_NAME}-postgres:/g" "${__COMPOSE_PATH}"
     sed -i 's|${UC_CONFIG_PATH}|'"/${__CONFIG_PATH}|g" "${__COMPOSE_PATH}"
@@ -160,7 +157,7 @@ function generateUcCompose {
         local __DEF_UC_CONFIG_MIDDLE_PATH="config/uniconfig/frinx/uniconfig"
         local __SERVICE_FULL_NAME="${__SERVICE_NAME}_${i}"
 
-        cp -r ${FM_DIR}/${__DEF_UC_CONFIG_MIDDLE_PATH}/ "${__FOLDER_PATH}/${__CONFIG_PATH}"
+        rsync -r --verbose --exclude "cache/scheme-*" ${FM_DIR}/${__DEF_UC_CONFIG_MIDDLE_PATH}/* "${__FOLDER_PATH}/${__CONFIG_PATH}"
         chmod a+w "${__FOLDER_PATH}/${__CONFIG_PATH}/cache"
         
         cp "${FM_COMPOSE_DIR}/${__UC_COMPOSE_NAME}" "${__COMPOSE_PATH}"
