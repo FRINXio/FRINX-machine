@@ -39,8 +39,10 @@ OPTIONS:
                   - different allocation of resources
                   - default: production
 
-   --uniflow      Deploy UniFlow services
-   --uniconfig    Deploy UniConfig services
+   --uniflow        Deploy UniFlow services
+   --uniconfig      Deploy UniConfig services
+   --monitoring     Deploy Monitoring services
+   --no-monitoring  Deploy UniFlow and UniConfig services
 
   MULTI-NODE DEPLOYMENT
 
@@ -104,17 +106,23 @@ function argumentsCheck {
                 exit 1
             fi;;
 
-        --uniflow|--uniconfig)
+        --uniflow|--uniconfig|--monitoring|--no-monitoring)
             if [ -z ${__only_one_config} ]; then
               if [ ${1} == "--uniflow" ]; then
                 __only_one_config="true"
                 startupType="uniflow"
               elif [ ${1} == "--uniconfig" ]; then
-                __only_one_config="true";
+                __only_one_config="true"
                 startupType="uniconfig"
+              elif [ ${1} == "--monitoring" ]; then
+                __only_one_config="true"
+                startupType="monitoring"
+              elif [ ${1} == "--no-monitoring" ]; then
+                __only_one_config="true"
+                startupType="nomonitoring"
               fi
             else 
-                echo -e "Conflict parameters: --uniflow|--uniconfig !!! Just one can be selected !!!"
+                echo -e "Conflict parameters: --uniflow|--uniconfig|--monitoring !!! Just one can be selected !!!"
                 echo -e "Use '${scriptName} --help' for more details"
                 exit 1
             fi;;
@@ -140,6 +148,11 @@ function argumentsCheck {
     esac
     shift
   done
+}
+
+function startMonitoring {
+  echo -e "${INFO} Monitoring swarm node id: ${UF_SWARM_NODE_ID}"
+  docker stack deploy --compose-file composefiles/$dockerSwarmMetrics $stackName
 }
 
 function startUniflow {
@@ -183,7 +196,8 @@ function startContainers {
 
   generateUniconfigKrakendFile
   setNodeIdLocalDeploy
-
+  setManagerIpAddrEnv
+  
   case $startupType in
       uniflow)
         echo -e "${INFO} Deploying Uniflow only"
@@ -195,8 +209,20 @@ function startContainers {
         startUniconfig
       ;;
 
+      monitoring)
+        echo -e "${INFO} Deploying Monitoring services only"
+        startMonitoring
+      ;;
+
+      nomonitoring)
+        echo -e "${INFO} Deploying Uniflow and Uniconfig services only"
+        startUniflow
+        startUniconfig
+      ;;
+
       full)
-        echo -e "${INFO} Deploying Uniflow and Uniconfig"
+        echo -e "${INFO} Deploying Uniflow, Uniconfig and Monitoring services"
+        startMonitoring
         startUniflow
         startUniconfig
       ;;
@@ -303,6 +329,11 @@ function setKrakendComposeTag {
   fi
 }
 
+function setManagerIpAddrEnv {
+  MANAGER_IP_ADDR=$(hostname -I | cut -d ' ' -f 1)
+  export MANAGER_IP_ADDR
+}
+
 
 function createEnvFile {
   if [[ ! -f ${stackEnvFile} ]]; then
@@ -374,6 +405,8 @@ licenseKeyFile="${FM_DIR}/config/uniconfig/uniconfig_license.txt"
 dockerSwarmUniflow='swarm-uniflow.yml'
 dokcerSwarmKrakend='swarm-uniflow-krakend.yml'
 dockerSwarmUniconfig='swarm-uniconfig.yml'
+
+dockerSwarmMetrics='support/swarm-monitoring.yml'
 
 uniconfigServiceFilesPath="${FM_DIR}/composefiles/uniconfig"
 

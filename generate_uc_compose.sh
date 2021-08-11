@@ -167,8 +167,8 @@ function generateUcCompose {
     sed -i 's|${UF_CONFIG_PATH}/traefik|'"/${__CONFIG_PATH}/traefik|g" "${__COMPOSE_PATH}"
 
     # swarm persistant volume paths
-    sed -i 's|uniconfig_logs|'"${__SERVICE_FULL_NAME}_logs|g" "${__COMPOSE_PATH}"
-    sed -i "s/uniconfig_postgresql_data/${__SERVICE_NAME}_postgresql_data/g" "${__COMPOSE_PATH}"
+    sed -i 's|uniconfig-controller_logs|'"${__SERVICE_FULL_NAME}_logs|g" "${__COMPOSE_PATH}"
+    sed -i "s/uniconfig-postgresql_data/${__SERVICE_NAME}-postgresql_data/g" "${__COMPOSE_PATH}"
 
     # swarm uniconfig-controller replicas
     sed -i 's|replicas: ${UC_CONTROLLER_REPLICAS:-1}|'"replicas: ${__UC_INSTANCES}|g" "${__COMPOSE_PATH}"
@@ -205,8 +205,6 @@ __SERVICE_NAME="uniconfig-controller"
 __FOLDER_PATH="${FM_COMPOSE_DIR}/uniconfig"
 
 __UC_COMPOSE_NAME="swarm-uniconfig.yml"
-__UC_POSTGRES_COMPOSE_NAME="swarm-uniconfig-postgres.yml"
-__UC_TRAEFIK_COMPOSE_NAME="swarm-uniconfig-traefik.yml"
 
 __DEF_CONFIG_PATH="opt/frinx"
 

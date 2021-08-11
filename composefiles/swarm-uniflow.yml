@@ -1,16 +1,27 @@
 # UniFlow containers
 version: "3.7"
 
-services:
+x-logging: &logging_loki
+    driver: loki
+    options:
+      loki-url: "http://${MANAGER_IP_ADDR}:3100/loki/api/v1/push"
+      loki-retries: "1"
+      loki-batch-size: "1500"
+      loki-relabel-config: |
+        - action: labelmap
+          regex: swarm_(service)
 
+x-logging: &logging_json
+    driver: "json-file"
+    options:
+      max-file: "3"
+      max-size: "10m"
+
+services:
   conductor-server:
     image: frinx/uniflow-conductor-server:latest
     # user: guest
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
       - traefik.enable=false  
     environment:
@@ -36,7 +47,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${UF_SWARM_NODE_ID}
+          - node.role == manager
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -52,13 +63,9 @@ services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.7.1
     user: elasticsearch
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
-      - traefik.enable=false  
+      - traefik.enable=false 
     environment:
       - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms512m -Xmx3584m"
@@ -84,7 +91,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${UF_SWARM_NODE_ID}
+          - node.role == manager
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -98,11 +105,7 @@ services:
 
   frinx-frontend:
     image: frinx/frinx-frontend:latest
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
       - traefik.enable=false  
     volumes:
@@ -125,7 +128,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${UF_SWARM_NODE_ID}
+          - node.role == manager
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -140,11 +143,7 @@ services:
   postgresql:
     image: postgres:12.2
     user: postgres
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
       - traefik.enable=false  
     environment:
@@ -172,7 +171,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${UF_SWARM_NODE_ID}
+          - node.role == manager
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -186,11 +185,7 @@ services:
 
   schellar:
     image: frinx/uniflow-schellar:latest
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
       - traefik.enable=false  
     environment:
@@ -218,7 +213,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${UF_SWARM_NODE_ID}
+          - node.role == manager
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -233,11 +228,7 @@ services:
   workflow-proxy:
     image: frinx/workflow-proxy:latest
     user: node
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
       - traefik.enable=false  
     healthcheck:
@@ -258,7 +249,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${UF_SWARM_NODE_ID}
+          - node.role == manager
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -272,11 +263,7 @@ services:
 
   uniresource:
     image: frinx/resource-manager:latest
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
       - traefik.enable=false  
     environment:
@@ -305,7 +292,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${UF_SWARM_NODE_ID}
+          - node.role == manager
       restart_policy:
         condition: on-failure
         delay: 5s
@@ -319,11 +306,7 @@ services:
 
   inventory:
     image: frinx/frinx-inventory-server:latest
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
       - traefik.enable=false  
     environment:
@@ -352,7 +335,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${UF_SWARM_NODE_ID}
+          - node.role == manager
       mode: replicated
       replicas: 1
       resources:
@@ -363,11 +346,7 @@ services:
   inventory-postgres:
     image: postgres:12.2
     user: postgres
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "3"
-        max-size: "10m"
+    logging: *logging_loki
     labels:
       - traefik.enable=false  
     environment:
@@ -394,7 +373,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.id == ${UF_SWARM_NODE_ID}
+          - node.role == manager
       restart_policy:
         condition: on-failure
         delay: 5s

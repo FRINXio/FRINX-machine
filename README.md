@@ -44,7 +44,7 @@ Automatically installed software:
 - curl
 - docker-compose 1.22.0
 - docker-ce 18.09 / 20.10
- 
+- loki-docker-driver
 
 NOTE: It may happen that swarm initialization will fail during install. Most likely due to multiple network interfaces present. 
 In that case run `docker swarm init --advertise-addr <ip-addr>` command to tell swarm which ip address to use for inter-manager communication and overlay networking
@@ -85,6 +85,9 @@ $ ./startup.sh --uniflow
 # To uniconfig only, use:
 $ ./startup.sh --uniconfig 
 
+# To metric services only, use:
+$ ./startup.sh --monitoring 
+
 ```
 The FRINX Machine services will now be started. 
 
@@ -124,6 +127,7 @@ $ sudo apt-get install docker-ce=5:18.09.9~3-0~ubuntu-bionic
 $ sudo apt-get install docker-ce=5:20.10.5~3-0~ubuntu-focal
 $ sudo usermod -aG docker $USER
 $ newgrp docker
+$ docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
 ```
 
 Run following command on manager node to determine the swarm token
@@ -238,6 +242,16 @@ Bench security analysis can be performed with this command
 $ ./config/docker-security/bench_security.sh
 ```
 
+### Monitoring services
+
+Frinx Machine is collecting logs and metrics/statistics from services.
+* Metrics: Prometheus
+* Logs: Loki
+* Node monitoring: node-exporter
+* Swarm monitoring: google/cadvisor
+* Visualization: Grafana (url 127.0.0.1:3000)
+<br>
+
 ### ElasticSearch disk flood stage prevention 
 ElasticSearch changes the disk permissions to read-only if the disk free space drops below 512Mb.. This setting is a last resort to prevent nodes from running out of disk space. The index block must be released manually when the disk utilization falls below the high watermark.
 ```sh
@@ -261,7 +275,9 @@ $ ./teardown.sh
 
 To remove all persistent data, purge the volumes (ATTENTION!!! ALL USER DATA WILL BE LOST):
 ```sh
-$ ./teardown.sh -v
+$ ./teardown.sh -v # remove Frinx Machine uniflow/uniconfig data
+$ ./teardown.sh -m # remove Monitoring data
+$ ./teardown.sh -a # remove all Frinx docker volumes
 ```
 For see more options run:
 ```sh

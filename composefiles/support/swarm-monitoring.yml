@@ -1,0 +1,234 @@
+version: "3.7"
+
+x-logging: &logging_loki
+    driver: loki
+    options:
+      loki-url: "http://${MANAGER_IP_ADDR}:3100/loki/api/v1/push"
+      loki-retries: "1"
+      loki-batch-size: "1500"
+      loki-relabel-config: |
+        - action: labelmap
+          regex: swarm_(service)
+
+x-logging: &logging_json
+    driver: "json-file"
+    options:
+      max-file: "3"
+      max-size: "10m"
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.29.1
+    logging: *logging_loki
+    volumes:
+      - frinx-monitoring-prometheus:/prometheus
+      - ${UF_CONFIG_PATH}/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider localhost:9090/-/healthy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    ulimits:
+      nofile:
+        soft: ${MP_ULIMIT_NOFILE_SOFT}
+        hard: ${MP_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${MP_ULIMIT_NPROC_SOFT}
+        hard: ${MP_ULIMIT_NPROC_HARD}
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      - '--storage.tsdb.retention.time=3d'
+      - '--storage.tsdb.retention.size=512MB'
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${MP_RES_LIMIT_CPUS}
+          memory: ${MP_RES_LIMIT_MEM}
+
+  grafana:
+    image: grafana/grafana:8.1.2
+    logging: *logging_loki
+    environment:
+      - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
+    volumes: 
+      - frinx-monitoring-grafana:/var/lib/grafana
+      - ${UF_CONFIG_PATH}/monitoring/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+      - ${UF_CONFIG_PATH}/monitoring/grafana/default.yml:/etc/grafana/provisioning/dashboards/default.yml
+      - ${UF_CONFIG_PATH}/monitoring/grafana/grafana.ini:/etc/grafana/grafana.ini
+      # dashboards
+      - ${UF_CONFIG_PATH}/monitoring/grafana/db_loki_search.json:/etc/grafana/provisioning/dashboards/db_loki_search.json
+      - ${UF_CONFIG_PATH}/monitoring/grafana/db_node_monitoring.json:/etc/grafana/provisioning/dashboards/db_node_monitoring.json
+      - ${UF_CONFIG_PATH}/monitoring/grafana/db_swarm_monitoring.json:/etc/grafana/provisioning/dashboards/db_swarm_monitoring.json
+      - ${UF_CONFIG_PATH}/monitoring/grafana/db_wf_monitoring.json:/etc/grafana/provisioning/dashboards/db_wf_monitoring.json
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider localhost:3000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    ulimits:
+      nofile:
+        soft: ${MG_ULIMIT_NOFILE_SOFT}
+        hard: ${MG_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${MG_ULIMIT_NPROC_SOFT}
+        hard: ${MG_ULIMIT_NPROC_HARD}
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${MG_RES_LIMIT_CPUS}
+          memory: ${MG_RES_LIMIT_MEM}
+    ports:
+    - 3000:3000
+
+  swarm-node-info:       
+    image: prom/node-exporter:v1.2.2
+    logging: *logging_loki
+    volumes:       
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q localhost:9100"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s 
+    command:       
+      - '--path.procfs=/host/proc'       
+      - '--path.sysfs=/host/sys'       
+      - '--path.rootfs=/host'       
+      - '--collector.filesystem.ignored-mount-points="^(/rootfs|/host|)/(sys|proc|dev|host|etc)($$|/)"'       
+      - '--collector.filesystem.ignored-fs-types="^(sys|proc|auto|cgroup|devpts|ns|au|fuse\.lxc|mqueue)(fs|)$$"'
+    ulimits:
+      nofile:
+        soft: ${MN_ULIMIT_NOFILE_SOFT}
+        hard: ${MN_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${MN_ULIMIT_NPROC_SOFT}
+        hard: ${MN_ULIMIT_NPROC_HARD}
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${MN_RES_LIMIT_CPUS}
+          memory: ${MN_RES_LIMIT_MEM}
+
+  swarm-services-info:
+    image: google/cadvisor:v0.33.0
+    logging: *logging_loki
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -X GET 0.0.0.0:8080/api/v2.0/version"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    ulimits:
+      nofile:
+        soft: ${MS_ULIMIT_NOFILE_SOFT}
+        hard: ${MS_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${MS_ULIMIT_NPROC_SOFT}
+        hard: ${MS_ULIMIT_NPROC_HARD}
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${MS_RES_LIMIT_CPUS}
+          memory: ${MS_RES_LIMIT_MEM}
+
+  loki:
+    image: grafana/loki:2.2.1
+    logging: *logging_json
+    volumes:
+      - frinx-monitoring-loki:/loki
+      - ${UF_CONFIG_PATH}/monitoring/loki/loki-config.yaml:/etc/loki/loki-local-config.yaml
+    command: -config.file=/etc/loki/loki-local-config.yaml
+    healthcheck:
+        test: ["CMD-SHELL", "wget --spider 0.0.0.0:3100/ready"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
+        start_period: 20s
+    ulimits:
+      nofile:
+        soft: ${ML_ULIMIT_NOFILE_SOFT}
+        hard: ${ML_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${ML_ULIMIT_NPROC_SOFT}
+        hard: ${ML_ULIMIT_NPROC_HARD}
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        prometheus.enable: "true"
+        prometheus.port: "9090"
+        prometheus.path: "/metrics"
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${ML_RES_LIMIT_CPUS}
+          memory: ${ML_RES_LIMIT_MEM}
+    ports:
+    - 3100:3100
+
+volumes:
+  frinx-monitoring-prometheus:
+      name: frinx-monitoring-prometheus
+  frinx-monitoring-grafana:
+      name: frinx-monitoring-grafana
+  frinx-monitoring-loki:
+      name: frinx-monitoring-loki
+
+networks:
+    default:
+      name: frinx-machine

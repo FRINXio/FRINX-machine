@@ -1,0 +1,16 @@
+# my global config       
+
+global:       
+  scrape_interval:     15s # set the scrape interval to every 15 seconds. default is every 1 minute.       
+  evaluation_interval: 15s # evaluate rules every 15 seconds. the default is every 1 minute.                       
+    
+scrape_configs:       
+  - job_name: 'swarm-node-info'       
+    static_configs:       
+      # the targets listed here must match the service names from the docker-compose file       
+      - targets: ['swarm-node-info:9100']       
+
+  - job_name: 'swarm-services-info'       
+    static_configs:                       
+      # the targets listed here must match the service names from the docker-compose file       
+      - targets: ['swarm-services-info:8080']
