@@ -103,7 +103,7 @@ function createEnvFile {
 # DEFAULT VARIABLES
 
 __SCRIPT_NAME="$(basename "${0}")"
-__SCRIPT_PATH="$(dirname "$(readlink -f "$0")")"
+__SCRIPT_PATH="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 __ENV_BASE_KRAKEND_IMAGE_TAG="BASE_KRAKEND_IMAGE_TAG"
 __ENV_LOCAL_KRAKEND_IMAGE_TAG="LOCAL_KRAKEND_IMAGE_TAG"

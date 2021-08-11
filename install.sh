@@ -292,6 +292,9 @@ function pullImages {
   docker-compose --log-level ERROR -f $dockerComposeFileUniflow pull
   echo -e "${INFO} Pulling UniConfig images"
   docker-compose --log-level ERROR -f $dockerComposeFileUniconfig pull
+  docker-compose --log-level ERROR -f $dockerComposeFileUniconfigPostgres pull
+  docker-compose --log-level ERROR -f $dockerComposeFileUniconfigTraefik pull
+
   echo -e "${INFO} Pulling Krakend base image"
   docker pull frinx/krakend:${BASE_KRAKEND_IMAGE_TAG}
 }
@@ -369,7 +372,7 @@ function selectDockerVersion {
 
 function createEnvFile {
   if [[ ! -f ${stackEnvFile} ]]; then
-    cp "${DIR}/env.template" ${stackEnvFile}
+    cp "${FM_DIR}/env.template" ${stackEnvFile}
     chown ${defUser}:${defUser} ${stackEnvFile}
   else
     echo -e "${WARNING} Used ${stackEnvFile} from previous installation!"
@@ -428,12 +431,17 @@ function unsetVariableFile {
 selectDockerVersion
 dockerComposeInstallVersion="1.22.0"
 
-dockerComposeFileUniconfig='composefiles/swarm-uniconfig.yml'
-dockerComposeFileUniflow='composefiles/swarm-uniflow.yml'
-dockerPerformSettings='./config/dev_settings.txt'
-dockerCertSettings='./config/certificates'
+scriptName="$(basename "${0}")"
+FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+stackEnvFile="${FM_DIR}/.env"
 
-scriptName=$0
+dockerComposeFileUniconfig="${FM_DIR}/composefiles/swarm-uniconfig.yml"
+dockerComposeFileUniconfigTraefik="${FM_DIR}/composefiles/swarm-uniconfig-traefik.yml"
+dockerComposeFileUniconfigPostgres="${FM_DIR}/composefiles/swarm-uniconfig-postgres.yml"
+dockerComposeFileUniflow="${FM_DIR}/composefiles/swarm-uniflow.yml"
+dockerPerformSettings="${FM_DIR}/config/dev_settings.txt"
+dockerCertSettings="${FM_DIR}/config/certificates"
+
 __NO_SWARM="false"
 
 # TODO find better way to obrain username
@@ -443,10 +451,7 @@ ERROR='\033[0;31m[ERROR]:\033[0;0m'
 WARNING='\033[0;33m[WARNING]:\033[0;0m'
 INFO='\033[0;96m[INFO]:\033[0;0m'
 
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-stackEnvFile="${DIR}/.env"
-
-cd ${DIR}
+cd ${FM_DIR}
 
 # Workaround to fix composefile when installing
 export KRAKEND_PORT=443

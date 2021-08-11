@@ -121,11 +121,14 @@ function argumentsCheck {
         
         -m|--multinode)
             if [[ ${2} != '-'* ]] || [[ ${2} != '' ]]; then 
-              __multinode="true";
               if [[ -d ${2} ]]; then
+                __multinode="true";
                 # todo check is one or more uc composes exist
-                uniconfigServiceFilesPath="${2}"; shift
-              fi
+                uniconfigServiceFilesPath="${2}"
+              else
+                  echo -e "${ERROR} Wrong path to folder with uniconfig composefiles: '${2}'"
+                  exit 1
+              fi; shift
             fi;;
            
         -d|--debug) 
@@ -355,7 +358,8 @@ function unsetVariableEnvFile {
 
 # COMMON SETTINGS
 scriptName="$(basename "${0}")"
-FM_DIR="$(dirname "$(readlink -f "${scriptName}")")"
+
+FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 stackEnvFile="${FM_DIR}/.env"
 
 ERROR="\033[0;31m[ERROR]:\033[0;0m"
@@ -365,7 +369,7 @@ OK="\033[0;92m[OK]:\033[0;0m"
 
 # DEFAULT COMPOSE SETTINGS
 stackName="fm"
-licenseKeyFile='./config/uniconfig/uniconfig_license.txt'
+licenseKeyFile="${FM_DIR}/config/uniconfig/uniconfig_license.txt"
 
 dockerSwarmUniflow='swarm-uniflow.yml'
 dokcerSwarmKrakend='swarm-uniflow-krakend.yml'
@@ -376,7 +380,7 @@ dockerSwarmUniconfigPsql='swarm-uniconfig-postgres.yml'
 uniconfigServiceFilesPath="${FM_DIR}/composefiles/uniconfig"
 
 # DEFAULT KRAKEND SETTINGS
-krakendUniconfigNode='./config/krakend/settings'
+krakendUniconfigNode="${FM_DIR}/config/krakend/settings"
 krakendUniconfigTmplFile="${krakendUniconfigNode}/uniconfig_settings_template.json"
 krakendUniconfigFile="${krakendUniconfigNode}/uniconfig_settings.json"
 mkdir -p ${FM_DIR}/config/krakend/partials/tls
