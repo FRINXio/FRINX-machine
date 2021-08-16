@@ -328,15 +328,15 @@ services:
       - traefik.enable=false  
     environment:
       - DATABASE_URL=postgres://postgres:postgres@inventory-postgres:5432/inventory?sslmode=disable
-      # In case of multi-node deployment, set correct INVENTORY_UNICONFIG_URL_ENV to .evn file.
-      # Work with 1 uc-zone only
-      - UNICONFIG_API_URL=https://${INVENTORY_UNICONFIG_URL_ENV:-uniconfig}:8181/rests
-    # healthcheck:
-    #   test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://0.0.0.0:8884/healthz/readiness'
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
-    #   start_period: 20s
+      - UNICONFIG_API_PROTOCOL=https
+      - UNICONFIG_API_PORT=8181
+      - UNICONFIG_LIST_URL=http://krakend:8080/static/list/uniconfig    
+    healthcheck:
+      test: wget --spider -q '0.0.0.0:8000/.well-known/apollo/server-health'
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     ulimits:
       nofile:
         soft: ${IV_ULIMIT_NOFILE_SOFT}
