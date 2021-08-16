@@ -108,7 +108,6 @@ cat << EOF > "${__PROXY_PATH}/${__PROXY_FILE}"
 }
 EOF
 
-chown ${defUser}:${defUser} ${__PROXY_PATH}/${__PROXY_FILE}
 
 if [ $? -ne 0 ] || [ ! -f ${__PROXY_PATH}/${__PROXY_FILE} ] ; then
   echo -e ${ERROR} "Problem during creating config file ${__PROXY_PATH}/${__PROXY_FILE}"
@@ -224,38 +223,44 @@ done
 }
 
 
-function installPrerequisities {
+function checkInstallPrerequisities {
   if [[ "${__SKIP_DEP}" != 'true' ]]; then
-    echo -e "${INFO} Configuring docker-ce and docker-compose"
-    echo -e "${INFO} Checking curl"
+    FUNC=$(declare -f installPrerequisities)
+    sudo bash -c "$FUNC; installPrerequisities"
+  fi
+}
+
+
+function installPrerequisities {
+  echo -e "${INFO} Configuring docker-ce and docker-compose"
+  echo -e "${INFO} Checking curl"
+  apt-get update -qq
+  apt-get install curl -qq -y
+
+  if test -f /usr/bin/dockerd; then
+    dockerdVersion=$(/usr/bin/dockerd --version)
+    echo -e "${INFO} $dockerdVersion already installed, skipping..."
+  else
+    echo -e "${INFO} Installing docker-ce"
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    apt-get install software-properties-common
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     apt-get update -qq
-    apt-get install curl -qq -y
+    apt-get install -qq -y $dockerInstallVersion
 
-    if test -f /usr/bin/dockerd; then
-      dockerdVersion=$(/usr/bin/dockerd --version)
-      echo -e "${INFO} $dockerdVersion already installed, skipping..."
-    else
-      echo -e "${INFO} Installing docker-ce"
-      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-      apt-get install software-properties-common
-      add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-      apt-get update -qq
-      apt-get install -qq -y $dockerInstallVersion
-
-      if [[ ${__NO_SWARM} == "false" ]]; then
-        echo -e "${INFO} Initializing docker in swarm mode"
-        docker swarm init
-      fi
+    if [[ ${__NO_SWARM} == "false" ]]; then
+      echo -e "${INFO} Initializing docker in swarm mode"
+      docker swarm init
     fi
+  fi
 
-    if test -f /usr/local/bin/docker-compose; then
-      dockerComposeVersion=$(/usr/local/bin/docker-compose --version)
-      echo -e "${INFO} $dockerComposeVersion already installed, skipping..."
-    else
-      echo -e "${INFO} Installing docker-compose"
-      curl -sS -L "https://github.com/docker/compose/releases/download/$dockerComposeInstallVersion/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-      chmod +x /usr/local/bin/docker-compose
-    fi
+  if test -f /usr/local/bin/docker-compose; then
+    dockerComposeVersion=$(/usr/local/bin/docker-compose --version)
+    echo -e "${INFO} $dockerComposeVersion already installed, skipping..."
+  else
+    echo -e "${INFO} Installing docker-compose"
+    curl -sS -L "https://github.com/docker/compose/releases/download/$dockerComposeInstallVersion/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
   fi
 }
 
@@ -352,14 +357,6 @@ function checkDockerGroup {
 }
 
 
-function checkIfRoot {
-  if [ "$EUID" -ne 0 ]
-  then
-    echo -e "${ERROR} Please re-run as root"
-    exit
-  fi
-}
-
 
 function selectDockerVersion {
   dockerInstallVersion="docker-ce=5:18.09.9~3-0~ubuntu-bionic"
@@ -373,7 +370,6 @@ function selectDockerVersion {
 function createEnvFile {
   if [[ ! -f ${stackEnvFile} ]]; then
     cp "${FM_DIR}/env.template" ${stackEnvFile}
-    chown ${defUser}:${defUser} ${stackEnvFile}
   else
     echo -e "${WARNING} Used ${stackEnvFile} from previous installation!"
   fi
@@ -391,10 +387,8 @@ function addEnvToFile {
       sed -i "${__old_env_var}d"  "${stackEnvFile}"
       __old_env_var=$((__old_env_var-1))
       sed -i "${__old_env_var}a ${__new_env_var}"  "${stackEnvFile}"
-      chown ${defUser} ${stackEnvFile}
     else
       echo "${1}=${2}" >> ${stackEnvFile}
-      chown ${defUser} ${stackEnvFile}
     fi 
   fi
 }
@@ -451,17 +445,16 @@ ERROR='\033[0;31m[ERROR]:\033[0;0m'
 WARNING='\033[0;33m[WARNING]:\033[0;0m'
 INFO='\033[0;96m[INFO]:\033[0;0m'
 
-cd ${FM_DIR}
+pushd ${FM_DIR} > /dev/null
 
 # Workaround to fix composefile when installing
 export KRAKEND_PORT=443
 
 argumentsCheck "$@"
-checkIfRoot
 createEnvFile
 setVariableFile "${stackEnvFile}"
 proxy_config
-installPrerequisities
+checkInstallPrerequisities
 checkDockerGroup
 updateDockerSecrets
 pullImages
@@ -469,3 +462,5 @@ cleanup
 finishedMessage
 unsetVariableFile "${stackEnvFile}"
 unsetVariableFile "${dockerPerformSettings}"
+
+popd
