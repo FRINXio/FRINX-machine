@@ -7,6 +7,11 @@ JAVA_MAX_MEM=${JAVA_MAX_MEM:="4G"}
 DEBUG_PARAMETER="--debug"
 UNICONFIG_ID=${CONTAINER_ID:=1}
 
+# set sensitive env variables from docker secrets
+if [[ -f "/set_env_secrets.sh" ]]; then
+  . /set_env_secrets.sh ''
+fi
+
 display_usage() {
     echo -e "Usage: $(basename "$0") [-f] [-l LICENSE_TOKEN] [--debug]"
     echo -e "where: "
