@@ -24,8 +24,18 @@ services:
     environment:
       - CONFIG_PROP=config.properties
       - _JAVA_OPTIONS="-Xmx${CS_RES_LIMIT_MEM}"
+    entrypoint: ["/app/startup.sh"]
     volumes:
       - ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties:ro
+    secrets:
+      - uniflow
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
+      - source: conductor_startup
+        target: /app/startup.sh
+        mode: 0777
     healthcheck:
       test: curl -I -XGET http://localhost:8080/health
       interval: 10s
@@ -144,13 +154,16 @@ services:
     logging: *logging_loki
     labels:
       - traefik.enable=false  
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_MULTIPLE_DATABASES=conductor,frinx,schellar
+    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh postgres"]
     volumes:
       - frinx_uniflow_postgresql_data:/var/lib/postgresql/data
       - ${UF_CONFIG_PATH}/uniflow-postgres:/docker-entrypoint-initdb.d:ro
+    secrets:
+      - uniflow
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
     healthcheck:
       test: pg_isready -U postgres
       interval: 10s
@@ -192,7 +205,13 @@ services:
       - CONDUCTOR_API_URL=http://conductor-server:8080/api
       - BACKEND=postgres
       - POSTGRES_MIGRATIONS_DIR=migrations
-      - POSTGRES_DATABASE_URL=host=postgresql port=5432 user=postgres password=postgres database=schellar
+    entrypoint: ["/set_env_secrets.sh", "./schellar"]
+    secrets:
+      - uniflow
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
     healthcheck:
       test: wget --spider -q conductor-server:8080/health && wget --spider -q 127.0.0.1:3000/liveness && nc -z postgresql:5432
       interval: 10s
@@ -260,14 +279,18 @@ services:
           memory: ${WP_RES_LIMIT_MEM}
 
   uniresource:
-    image: frinx/resource-manager:1.0.2
+    image: frinx/resource-manager:latest
     logging: *logging_loki
     labels:
-      - traefik.enable=false  
+      - traefik.enable=false
+    entrypoint: ["/set_env_secrets.sh", "./run.sh"]
+    secrets:
+      - uniflow
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
     environment:
-      - RM_DB_CONNECTION_STRING=postgres://postgres:postgres@postgresql:5432/postgres?sslmode=disable
-      - RM_API_PORT=8884
-      - RM_ADMIN_ROLES=OWNER
       - RM_ADMIN_GROUPS=network-admin
       - RM_LOG_PATH=/var/log/rm.log
       - RM_LOG_LEVEL=warn
@@ -306,9 +329,15 @@ services:
     image: frinx/frinx-inventory-server:1.1.0
     logging: *logging_loki
     labels:
-      - traefik.enable=false  
+      - traefik.enable=false
+    entrypoint: ["/run_inventory.sh"]
+    secrets:
+      - inventory
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@inventory-postgres:5432/inventory?sslmode=disable
       - UNICONFIG_API_PROTOCOL=https
       - UNICONFIG_API_PORT=8181
       - UNICONFIG_LIST_URL=http://krakend:8080/static/list/uniconfig
@@ -350,13 +379,16 @@ services:
     user: postgres
     logging: *logging_loki
     labels:
-      - traefik.enable=false  
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=inventory
+      - traefik.enable=false
+    entrypoint: ["/set_env_secrets.sh", "docker-entrypoint.sh postgres"]
     volumes:
       - frinx_uniflow_inventory_postgresql_data:/var/lib/postgresql/data
+    secrets:
+      - inventory
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
     healthcheck:
       test: pg_isready -U postgres
       interval: 10s
@@ -387,6 +419,17 @@ services:
           cpus: ${IP_RES_LIMIT_CPUS}
           memory: ${IP_RES_LIMIT_MEM}
 
+secrets:
+  inventory:
+    external: true
+  uniflow:
+    external: true
+
+configs:
+  set_env_secrets:
+    file: ${UF_CONFIG_PATH}/set_env_secrets.sh
+  conductor_startup:
+    file: ${UF_CONFIG_PATH}/conductor/startup.sh
 
 volumes:
   frinx_uniflow_elastic_data:

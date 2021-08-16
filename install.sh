@@ -265,7 +265,7 @@ function installPrerequisities {
 }
 
 
-function updateDockerSecrets {
+function updateDockerCertsSecrets {
 
   for i in $(ls ${dockerCertSettings} )
   do
@@ -283,6 +283,28 @@ function updateDockerSecrets {
     else
       echo -e "${INFO} Docker Secrets: Creating docker secret with name ${i}"
       docker secret create "${i}" "${dockerCertSettings}/${i}" > /dev/null || echo -e "${ERROR} Docker secret not imported" | exit 1
+    fi
+  done
+}
+
+function updateDockerEnvSecrets {
+
+  for i in $(ls ${dockerEnvSettings} )
+  do
+    local secret_exist=$(docker secret ls -f name=${i} --format {{.Name}})
+    if [[ ${secret_exist} != '' ]]; then
+      if [ "${__UPDATE_SECRETS}" == "true" ]; then
+        echo -e "${INFO} Docker Secrets: Updating docker secret with name ${i}"
+        (docker secret rm "${i}" > /dev/null && echo -e "${INFO} Docker Secrets: Remove old secret ${i}") || \
+          (echo -e "${ERROR} Docker Secrets: Problem with removing old docker secrets ${i}" && exit 1)
+        (docker secret create "${i}" "${dockerEnvSettings}/${i}" > /dev/null && echo -e "${INFO} Docker Secrets: Set new secret ${i}") || \
+          (echo -e "${ERROR} Docker Secrets: Problem during updating docker secret ${i}" && exit 1)
+      else
+        echo -e "${INFO} Docker Secrets: Skipping docker secret update with name ${i}"
+      fi
+    else
+      echo -e "${INFO} Docker Secrets: Creating docker secret with name ${i}"
+      docker secret create "${i}" "${dockerEnvSettings}/${i}" > /dev/null || echo -e "${ERROR} Docker secret not imported" | exit 1
     fi
   done
 
@@ -303,7 +325,6 @@ function pullImages {
 
   echo -e "${INFO} Pulling Krakend base image"
   docker pull frinx/krakend:${BASE_KRAKEND_IMAGE_TAG}
-
 }
 
 
@@ -443,6 +464,7 @@ dockerComposeFileMonitor="${FM_DIR}/composefiles/support/swarm-monitoring.yml"
 
 dockerPerformSettings="${FM_DIR}/config/dev_settings.txt"
 dockerCertSettings="${FM_DIR}/config/certificates"
+dockerEnvSettings="${FM_DIR}/config/secrets"
 
 __NO_SWARM="false"
 
@@ -465,11 +487,10 @@ proxy_config
 checkInstallPrerequisities
 installLokiPlugin
 checkDockerGroup
-updateDockerSecrets
+updateDockerCertsSecrets
+updateDockerEnvSecrets
 pullImages
 cleanup
 finishedMessage
 unsetVariableFile "${stackEnvFile}"
 unsetVariableFile "${dockerPerformSettings}"
-
-popd

@@ -74,27 +74,35 @@ services:
       # Enable G1GC and GC logging 
       - _JAVA_OPTIONS=-Xmx${UC_XMX_LIMIT_MEM} -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xlog:gc:/opt/uniconfig-frinx/log/gc-{{.Task.Slot}}.log:tags,time,uptime,level:filecount=10,filesize=5M -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1 ${UC_PROXY_HTTP_ENV} ${UC_PROXY_HTTP_PORT_ENV} ${UC_PROXY_HTTPS_ENV} ${UC_PROXY_HTTPS_PORT_ENV} ${UC_PROXY_NOPROXY_ENV}
       - dbPersistence_enabled=true
-      - dbPersistence_connection_dbName=uniconfig
-      - dbPersistence_connection_username=postgres
-      - dbPersistence_connection_password=postgres
       - dbPersistence_connection_databaseLocations_host=uniconfig-postgres
       - dbPersistence_connection_databaseLocations_port=5432
+    entrypoint: ["/opt/uniconfig-frinx/run_uniconfig.sh"]
     volumes:
       - frinx_uniconfig-controller_logs:/opt/uniconfig-frinx/log
       - ${UC_CONFIG_PATH}/config/lighty-uniconfig-config.json:/opt/uniconfig-frinx/config/lighty-uniconfig-config.json:ro
       - ${UC_CONFIG_PATH}/config/logback.xml:/opt/uniconfig-frinx/config/logback.xml:ro
       - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache:rw
-      - ${UC_CONFIG_PATH}/config/.keystore:/opt/uniconfig-frinx/config/.keystore:ro
-    healthcheck:
-      test: curl --insecure -o /dev/null --user admin:admin --silent --write-out "%{http_code}" -X POST 'https://127.0.0.1:8181/rests/operations/uniconfig-manager:health' -H "Content-Type:application/json" | grep 200 || exit 1
-      interval: 10s
-      timeout: 35s
-      retries: 5
-      start_period: ${UC_HEALTH_START_TIME}
+    secrets:
+      - uniconfig
+      - source: frinx_uniconfig_keystore
+        target: /opt/uniconfig-frinx/config/.keystore
     configs:
       - source: uniconfig_startup
         target: /opt/uniconfig-frinx/run_uniconfig.sh
         mode: 0777
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
+    healthcheck:
+    # remove password from 
+      test: | 
+        curl --insecure -o /dev/null --silent --write-out "%{http_code}" \
+        -X POST 'https://127.0.0.1:8181/rests/operations/uniconfig-manager:health' \
+        -H "Content-Type:application/json" -H "Authorization:Basic YWRtaW46YWRtaW4=" | grep 200 || exit 1
+      interval: 10s
+      timeout: 35s
+      retries: 5
+      start_period: ${UC_HEALTH_START_TIME}
     entrypoint: ['/opt/uniconfig-frinx/run_uniconfig.sh']
     command: -l ${LICENSE} 
     ulimits:
@@ -130,12 +138,15 @@ services:
     logging: *logging_loki
     labels:
       - traefik.enable=false  
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=uniconfig
+    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh postgres"]
     volumes:
       - frinx_uniconfig-postgresql_data:/var/lib/postgresql/data
+    secrets:
+      - uniconfig
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -172,12 +183,8 @@ services:
 configs:
   uniconfig_startup:
     file: ${UF_CONFIG_PATH}/uniconfig/run_uniconfig.sh
-
-volumes:
-  frinx_uniconfig-controller_logs:
-    name: frinx_uniconfig-controller_logs
-  frinx_uniconfig-postgresql_data:
-    name: frinx_uniconfig-postgresql_data
+  set_env_secrets:
+    file: ${UF_CONFIG_PATH}/set_env_secrets.sh
 
 secrets:
   frinx_uniconfig_tls_cert.pem:
@@ -186,6 +193,16 @@ secrets:
     external: true
   frinx_uniconfig_X509.crt:
     external: true
+  frinx_uniconfig_keystore:
+    external: true
+  uniconfig:
+    external: true
+
+volumes:
+  frinx_uniconfig-controller_logs:
+    name: frinx_uniconfig-controller_logs
+  frinx_uniconfig-postgresql_data:
+    name: frinx_uniconfig-postgresql_data
 
 networks:
   default:
