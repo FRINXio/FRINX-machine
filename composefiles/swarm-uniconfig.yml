@@ -6,8 +6,8 @@
 version: "3.7"
 
 services:
-  uniconfig_1:
-    image: frinx/uniconfig:4.2.7
+  uniconfig_uc-controller:
+    image: frinx/uniconfig:4.2.8
     logging:
       driver: "json-file"
       options:
@@ -22,9 +22,8 @@ services:
       - traefik.http.services.uniconfig.loadbalancer.server.scheme=https
       - traefik.http.services.uniconfig.loadbalancer.passhostheader=true
       - traefik.http.routers.uniconfig.tls=true
-
     environment:
-      #- JAVA_MAX_MEM=${UC_XMX_LIMIT_MEM}
+      - JAVA_MAX_MEM=${UC_XMX_LIMIT_MEM}
       # Enable G1GC and GC logging 
       - _JAVA_OPTIONS=-Xmx${UC_XMX_LIMIT_MEM} -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xlog:gc:/opt/uniconfig-frinx/log/gc.log:tags,time,uptime,level:filecount=10,filesize=5M -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1 ${UC_PROXY_HTTP_ENV} ${UC_PROXY_HTTP_PORT_ENV} ${UC_PROXY_HTTPS_ENV} ${UC_PROXY_HTTPS_PORT_ENV} ${UC_PROXY_NOPROXY_ENV}
       - dbPersistence_enabled=true
@@ -33,7 +32,6 @@ services:
       - dbPersistence_connection_password=postgres
       - dbPersistence_connection_databaseLocations_host=uniconfig-postgres
       - dbPersistence_connection_databaseLocations_port=5432
-      - dbPersistence_uniconfigInstance_instanceName=uniconfig_1 
     volumes:
       - uniconfig_logs:/opt/uniconfig-frinx/log
       - ${UC_CONFIG_PATH}/config/lighty-uniconfig-config.json:/opt/uniconfig-frinx/config/lighty-uniconfig-config.json:ro

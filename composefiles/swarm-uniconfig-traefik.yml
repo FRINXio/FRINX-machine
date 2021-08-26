@@ -29,8 +29,8 @@ services:
       nproc:
         soft: ${TF_ULIMIT_NPROC_SOFT}
         hard: ${TF_ULIMIT_NPROC_HARD}
-    # cap_drop:
-    #   - all
+    cap_drop:
+      - all
     deploy:
       placement:
         constraints:

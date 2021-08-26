@@ -1,101 +1,111 @@
 {
-    "controller":{
-        "restoreDirectoryPath":"./clustered-datastore-restore",
-        "maxDataBrokerFutureCallbackQueueSize":1000,
-        "maxDataBrokerFutureCallbackPoolSize":10,
-        "configurationDatastoreContext": {
-            "maximumMessageSliceSize":1024000,
-            "useTellBasedProtocol": true,
-            "frontendRequestTimeoutInSeconds":300,
-            "shardTransactionCommitTimeoutInSeconds":120,
-            "backendAlivenessTimerIntervalInSeconds":120,
-            "shardLeaderElectionTimeout":60000,
-            "shardInitializationTimeout":60000,
-            "operationTimeoutInMillis": 300000,
-            "syncIndexThreshold":100,
-            "shardHeartbeatIntervalInMillis":1000,
-            "shardTransactionIdleTimeout": 600000,
-            "shardJournalRecoveryLogBatchSize": 1,
-            "shardSnapshotBatchCount": 20000,
-            "shardSnapshotDataThresholdPercentage": 12,
-            "shardTransactionCommitQueueCapacity": 50000,
-            "persistent": false,
-            "shardBatchedModificationCount": 1,
-            "shardCommitQueueExpiryTimeoutInMillis": 120000,
-            "transactionDebugContextEnabled": false,
-            "maxShardDataChangeExecutorPoolSize": 20,
-            "maxShardDataChangeExecutorQueueSize": 1000,
-            "maxShardDataChangeListenerQueueSize": 1000,
-            "maxShardDataStoreExecutorQueueSize": 5000,
-            "fileBackedStreamingThresholdInMegabytes": 128,
-            "frontendNoProgressTimeoutInSeconds": 900
+    // Controller configuration.
+    "controller": {
+        // DOM notification service - settings related to notifications queue.
+        "domNotificationRouterConfig": {
+            // size of the notification queue
+            "queueDepth": 65536,
+            // the maximum time in to busy spin for (see PhasedBackoffWaitStrategy)
+            "spinTime": 0,
+            // the maximum time in to yield for (see PhasedBackoffWaitStrategy)
+            "parkTime": 0,
+            // time unit that expresses values of spin-time and park-time.
+            "unit": "MILLISECONDS"
         },
-        "operationalDatastoreContext": {
-            "maximumMessageSliceSize":1024000,
-            "useTellBasedProtocol": true,
-            "frontendRequestTimeoutInSeconds":300,
-            "shardTransactionCommitTimeoutInSeconds":120,
-            "backendAlivenessTimerIntervalInSeconds":120,
-            "shardLeaderElectionTimeout":60000,
-            "shardInitializationTimeout":60000,
-            "operationTimeoutInMillis": 300000,
-            "syncIndexThreshold":100,
-            "shardHeartbeatIntervalInMillis":1000,
-            "shardTransactionIdleTimeout": 600000,
-            "shardJournalRecoveryLogBatchSize": 1,
-            "shardSnapshotBatchCount": 20000,
-            "shardSnapshotDataThresholdPercentage": 12,
-            "shardTransactionCommitQueueCapacity": 50000,
-            "persistent": false,
-            "shardBatchedModificationCount": 1,
-            "shardCommitQueueExpiryTimeoutInMillis": 120000,
-            "transactionDebugContextEnabled": false,
-            "maxShardDataChangeExecutorPoolSize": 20,
-            "maxShardDataChangeExecutorQueueSize": 1000,
-            "maxShardDataChangeListenerQueueSize": 1000,
-            "maxShardDataStoreExecutorQueueSize": 5000,
-            "fileBackedStreamingThresholdInMegabytes": 128,
-            "frontendNoProgressTimeoutInSeconds": 900
+        /*
+        Contains list of paths to artifacts containing YANG modules for UniConfig schema
+        and identifiers of the schema directories.
+        */
+        "schemaServiceConfig": {
+            // set of YANG modules that are loaded at initialization of UniConfig
+            "topLevelModules": [],
+            // path to the root cache directory that holds custom schemas
+            "rootCacheDirectory": "cache",
+            // path to the directory to which system YANG schemas are loaded
+            "systemSchemasDirectory": "schemas"
         },
-        "metricCaptureEnabled":false,
-        "mailboxCapacity":1000,
-        "moduleShardsConfig": "config/module-shards.conf",
-        "modulesConfig": "config/modules.conf",
-        "domNotificationRouterConfig":{
-            "queueDepth":65536,
-            "spinTime":0,
-            "parkTime":0,
-            "unit":"MILLISECONDS"
+        // Settings related to configuration datastore and associated data-change events
+        "configurationDatastoreConfig": {
+            // maximum thread pool size for the data change notification executor
+            "maxDataChangeExecutorPoolSize": 20,
+            // maximum queue size for the data change notification executor
+            "maxDataChangeExecutorQueueSize": 1000,
+            // maximum queue size for the data change listeners
+            "maxDataChangeListenerQueueSize": 1000,
+            // maximum queue size for the data store executor
+            "maxDataStoreExecutorQueueSize": 5000
         },
-        "actorSystemConfig":{
-            "akkaConfigPath":"config/akka.conf",
-            "factoryAkkaConfigPath":"config/factory-akka.conf"
-        },
-        "schemaServiceConfig":{
-            "topLevelModules":[]
+        // Settings related to operational datastore and associated data-change events
+        "operationalDatastoreConfig": {
+            // maximum thread pool size for the data change notification executor
+            "maxDataChangeExecutorPoolSize": 20,
+            // maximum queue size for the data change notification executor
+            "maxDataChangeExecutorQueueSize": 1000,
+            // maximum queue size for the data change listeners
+            "maxDataChangeListenerQueueSize": 1000,
+            // maximum queue size for the data store executor
+            "maxDataStoreExecutorQueueSize": 5000
         }
     },
-    "restconf":{
-        "httpPort":8181,
-        "inetAddress":"0.0.0.0",
+    "restconf": {
+        "httpPort": 8181,
+        "inetAddress": "0.0.0.0",
         "webSocketPort": 8185,
-        "restconfServletContextPath":"/rests",
+        "restconfServletContextPath": "/rests",
         "jsonRestconfServiceType": "DRAFT_18",
-        "streamConfiguration" : {
-            "maximumFragmentLength" : 0,
-            "idleTimeout" : 30000,
-            "heartbeatInterval" : 10000,
-            "useSSE" : false
+        "streamConfiguration": {
+            "maximumFragmentLength": 0,
+            "idleTimeout": 30000,
+            "heartbeatInterval": 10000,
+            "useSSE": false
+        }
+    },
+    /*
+    CLI shell settings via environment variables.
+    Environment variables override settings from JSON config part.
+
+    cliShell_sshServer_enabled=false
+    cliShell_sshServer_port=2022
+    cliShell_sshServer_inetAddress=0.0.0.0
+    cliShell_sshServer_usernamePasswordAuth_username=admin
+    cliShell_sshServer_usernamePasswordAuth_password=secret
+    */
+    "cliShell": {
+        "sshServer": {
+            // Flag that determines if ssh server will be started or not.
+            "enabled": false,
+            // Port bind to ssh server.
+            "port": 2022,
+            // IP address bind to ssh server.
+            "inetAddress": "127.0.0.1",
+            // Basic username + password authentication.
+            "usernamePasswordAuth": {
+                "username": "admin",
+                "password": "secret"
+            }
         }
     },
     "daexim": {
         "daeximDirectory": "daexim"
     },
     /*
+    Settings for the Device Discovery service
+    */
+    "deviceDiscovery":{
+        // A parameter that specifies the local address from which the scanning will be ran.
+        "localAddress": "",
+        // A parameter that specifies the amount of threads that will the service use.
+        "threadAmount": 4,
+        // A parameter that specifies the maximum limit of IP addresses that the service can process in one request.
+        "addressCheckLimit": 100
+    },
+    /*
     DB persistence settings via environment variables.
     Environment variables override settings from JSON config part.
 
-    dbPersistence_enabled=false
+    dbPersistence_embedded_database_enabled=false
+    dbPersistence_embedded_database_dataDir=./data/pg_dir
+    dbPersistence_embedded_database_cleanDataDir=true
     dbPersistence_connection_dbName=uniconfig
     dbPersistence_connection_username=uniremote
     dbPersistence_connection_password=unipass
@@ -112,6 +122,12 @@
     dbPersistence_uniconfigInstance_instanceName=uc-0
     */
     "dbPersistence": {
+        /*
+        Grouped settings that are related to embedded database.
+        The embedded database is only for testing purposes, it should not be run in the production environment.
+        Database is started and initialized using 'connection'/'dbName' and 'connection'/'username' parameters.
+        The embedded database does not use a password, therefore it ignores the password parameter.
+        */
         "embeddedDatabase": {
             // Flag that determines if embedded database will be started or not.
             "enabled": false,
@@ -120,35 +136,102 @@
             // A parameter that determines if the 'dataDir' directory will be deleted after uniconfig is turned off.
             "cleanDataDir": true
         },
+        // Grouped settings related to database connection.
         "connection": {
+            // name of the database
             "dbName": "uniconfig",
+            // name of the user that has the remote access to database specified by 'dbName'
             "username": "uniremote",
+            // user password (it is used only for the password-base authentication)
             "password": "unipass",
+            // initial size of the connection pool (pre-initialized connections)
             "initialDbPoolSize": 5,
-            "maxDbPoolSize": 10,
+            // maximum size of the connection pool, before creation of next connections are blocked
+            "maxDbPoolSize": 20,
+            // maximum number of idle connections before next idle connections are cleaned
             "maxIdleConnections": 5,
+            // maximum wait time for obtaining of a new connection before fetch request is dropped [milliseconds]
             "maxWaitTime": 30000,
+            // enabled TLS authentication (if it is enabled, 'tlsClientCert', 'tlsClientKey', and 'tlsCaCert'
+            // are used and 'password' field is not used
             "enabledTls": false,
-            "tlsClientCert": "./client.pks", // relative path from uniconfig main folder
-            "tlsClientKey": "./client.key", // relative path from uniconfig main folder
-            "tlsCaCert": "./ca.pks", // relative path from uniconfig main folder
+            // path to UniConfig client certificate (relative path from UniConfig main folder)
+            // - used for authentication of UniConfig against DB
+            "tlsClientCert": "./client.pks",
+            // path to UniConfig client certificate key (relative path from UniConfig main folder)
+            "tlsClientKey": "./client.key",
+            // path to certificate of DB certificate authority - used for authentication of DB against UniConfig
+            "tlsCaCert": "./ca.pks",
+            /*
+            List of network locations at which target database resides. The first entry is always tried in the first
+            attempt during creation of database connection. If there are multiple entries specified, then other
+            locations are used as fallback method in the order in which they are specified.
+            */
             "databaseLocations": [
                 {
+                    // database hostname / IP address
                     "host": "127.0.0.1",
+                    // TCP port on which target database listens to incoming connections
                     "port": 26257
                 }
             ]
         },
+        // UniConfig instance naming settings.
         "uniconfigInstance": {
-            "instanceName": "uc-0",
+            // Identifier of the local UniConfig instance (name must be unique in the cluster). If it is set to 'null'
+            // then this identifier is tried to be loaded from 'data/instance_name'. If this file doesn't exist, then
+            // name of the UniConfig instance is randomly generated and this file is created with new name of instance.
+            "instanceName": null,
+            // identifier of the UniConfig instance that backs up local UniConfig instance (it should be set to 'null'
+            // in the stateless deployment)
             "backupInstanceName": null
         },
+        // Uniconfig instance monitoring settings. These settings have effect only in the stateful deployment.
         "monitoring": {
+            // interval between updating of local UniConfig instance heartbeat timestamp [milliseconds]
             "heartbeatInterval": 1000,
+            // initial delay before backup monitoring system launches the first verification of the UniConfig instance
+            // that is backed by local Uniconfig instance [milliseconds]
             "initialMonitoringDelay": 5000,
+            // interval between executions of verifications - whether UniConfig instance that is backed by local
+            // UniConfig instance is alive [milliseconds]
             "backupMonitoringInterval": 10000,
+            // maximum allowable delay between the current timestamp and the timestamp of monitored UniConfig instance
+            // [milliseconds]
             "maxInstanceAge": 5000
         }
+    },
+    "templates": {
+        "enabled": false
+    },
+    // Grouped settings that are related to Uniconfig transactions.
+    "transactions": {
+        /*
+        Flag that determines whether dedicated Uniconfig transactions or shared transactions
+        can be used:
+        [true]:  User must used transactions created by 'create-transaction' RPC
+                 for interaction with nodes in uniconfig, templates, or snapshot topologies.
+                 Shared transaction can be used for: CRUD operations under paths that don't
+                 include uniconfig, templates, or snapshot node; read operation under
+                 uniconfig, templates, or snapshot node.
+        [false]: RPC 'create-transaction' and 'close-transaction' cannot be used -
+                 dedicated Uniconfig transactions cannot be used. Only shared transaction
+                 can be used for interaction with whole CONFIG/OPER datastore.
+        */
+        "uniconfigTransactionEnabled": false,
+        /*
+        Maximum transaction age before it can be evicted from transaction registry [seconds].
+        Configuring '0' disables cleaning of Uniconfig transactions.
+        */
+        "maxTransactionAge": 0,
+        /*
+        Interval at which expired transactions are closed and cleaned [seconds].
+        Expired transaction: transaction which age exceeds 'maxTransactionAge' setting.
+        Only dedicated Uniconfig transactions (initialized using 'create-transaction' RPC)
+        are cleaned - shared transaction is never removed or invalidated.
+         Configuring '0' disables cleaning of Uniconfig transactions.
+        */
+        "cleaningInterval": 0
     },
     "tls": {
         "enabledTls": true,
