@@ -151,26 +151,25 @@ function generateUcPostgresCompose {
 
 function generateUcCompose {
 
-    for ((i=1;i<=__UC_INSTANCES;i++)); do
-        local __COMPOSE_PATH="${__FOLDER_PATH}/swarm-uniconfig_${i}.yml"
-        local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}/uniconfig_${i}"
-        local __DEF_UC_CONFIG_MIDDLE_PATH="config/uniconfig/frinx/uniconfig"
-        local __SERVICE_FULL_NAME="${__SERVICE_NAME}_${i}"
+    local __COMPOSE_PATH="${__FOLDER_PATH}/swarm-uniconfig.yml"
+    local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}/uniconfig_${__UC_INSTANCE_SUFIX}"
+    local __DEF_UC_CONFIG_MIDDLE_PATH="config/uniconfig/frinx/uniconfig"
+    local __SERVICE_FULL_NAME="${__SERVICE_NAME}_${__UC_INSTANCE_SUFIX}"
 
-        rsync -r --exclude "cache/*" ${FM_DIR}/${__DEF_UC_CONFIG_MIDDLE_PATH}/* "${__FOLDER_PATH}/${__CONFIG_PATH}"
-        chmod a+w "${__FOLDER_PATH}/${__CONFIG_PATH}/cache"
-        
-        cp "${FM_COMPOSE_DIR}/${__UC_COMPOSE_NAME}" "${__COMPOSE_PATH}"
-        sed -i 's|_instanceName=uniconfig_1|'"_instanceName=${__SERVICE_FULL_NAME}|g" "${__COMPOSE_PATH}"
-        sed -i 's| uniconfig_1:|'" ${__SERVICE_FULL_NAME}:|g" "${__COMPOSE_PATH}"
-        sed -i 's|\${UC_CONFIG_PATH}|'"/opt/frinx/${__SERVICE_NAME}/uniconfig_${i}|g" "${__COMPOSE_PATH}"
-        sed -i 's|${UC_SWARM_NODE_ID}|'"${__NODE_ID}|g" "${__COMPOSE_PATH}"
-        sed -i 's|uniconfig_logs|'"${__SERVICE_FULL_NAME}_logs|g" "${__COMPOSE_PATH}"
-        sed -i 's|_host=uniconfig-postgres|'"_host=${__SERVICE_NAME}-postgres|g" "${__COMPOSE_PATH}"
-        sed -i 's|entrypoints=https,uniconfig|'"entrypoints=https,${__SERVICE_NAME}|g" "${__COMPOSE_PATH}"
-        sed -i 's|\.uniconfig\.|'"\.${__SERVICE_NAME}\.|g" "${__COMPOSE_PATH}"
+    rsync -r --exclude "cache/*" ${FM_DIR}/${__DEF_UC_CONFIG_MIDDLE_PATH}/* "${__FOLDER_PATH}/${__CONFIG_PATH}"
+    chmod a+w "${__FOLDER_PATH}/${__CONFIG_PATH}/cache"
+    
+    cp "${FM_COMPOSE_DIR}/${__UC_COMPOSE_NAME}" "${__COMPOSE_PATH}"
+    sed -i "s|_instanceName=uniconfig_${__UC_INSTANCE_SUFIX}|""_instanceName=${__SERVICE_FULL_NAME}|g" "${__COMPOSE_PATH}"
+    sed -i "s| uniconfig_${__UC_INSTANCE_SUFIX}:|"" ${__SERVICE_FULL_NAME}:|g" "${__COMPOSE_PATH}"
+    sed -i 's|\${UC_CONFIG_PATH}|'"/opt/frinx/${__SERVICE_NAME}/uniconfig_${__UC_INSTANCE_SUFIX}|g" "${__COMPOSE_PATH}"
+    sed -i 's|${UC_SWARM_NODE_ID}|'"${__NODE_ID}|g" "${__COMPOSE_PATH}"
+    sed -i 's|replicas: 1|'"replicas: ${__UC_INSTANCES}|g" "${__COMPOSE_PATH}"
+    sed -i 's|uniconfig_logs|'"${__SERVICE_FULL_NAME}_logs|g" "${__COMPOSE_PATH}"
+    sed -i 's|_host=uniconfig-postgres|'"_host=${__SERVICE_NAME}-postgres|g" "${__COMPOSE_PATH}"
+    sed -i 's|entrypoints=https,uniconfig|'"entrypoints=https,${__SERVICE_NAME}|g" "${__COMPOSE_PATH}"
+    sed -i 's|\.uniconfig\.|'"\.${__SERVICE_NAME}\.|g" "${__COMPOSE_PATH}"
 
-    done
 }
 
 function prepareFolder {
@@ -200,6 +199,8 @@ __UC_POSTGRES_COMPOSE_NAME="swarm-uniconfig-postgres.yml"
 __UC_TRAEFIK_COMPOSE_NAME="swarm-uniconfig-traefik.yml"
 
 __DEF_CONFIG_PATH="opt/frinx"
+
+__UC_INSTANCE_SUFIX="uc-controller"
 
 __UC_INSTANCES=2
 
