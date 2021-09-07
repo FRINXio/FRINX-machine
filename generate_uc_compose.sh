@@ -56,7 +56,8 @@ do
         -s|--service-name)
             if [[ ${2} != "-"* ]] && [[ ! -z ${2} ]]; then
                 checkUniconfigServiceName "${2}"
-                __SERVICE_NAME="${2}"; shift
+                __SERVICE_NAME="${2}"
+                shift
             else
                 echo "Service name not defined. See help!"
                 exit 1
@@ -121,55 +122,63 @@ function isNodeInSwarm {
   fi
 }
 
-function generateUcTraefikCompose {
-    
-    local __COMPOSE_PATH="${__FOLDER_PATH}/${__UC_TRAEFIK_COMPOSE_NAME}"
-    local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}/traefik"
+function prepareConfigFiles {
 
-    mkdir -p "${__FOLDER_PATH}/${__CONFIG_PATH}"
-    cp ${FM_DIR}/config/traefik/* "${__FOLDER_PATH}/${__CONFIG_PATH}"
-    sed -i "s/  uniconfig:/  ${__SERVICE_NAME}:/g" "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik.yml"
+    local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}"
+    local __DEF_UC_CONFIG_MIDDLE_PATH="config/uniconfig/frinx/uniconfig"
 
-    cp "${FM_COMPOSE_DIR}/${__UC_TRAEFIK_COMPOSE_NAME}" "${__COMPOSE_PATH}"
-    sed -i "s/ uniconfig:/ ${__SERVICE_NAME}:/g" "${__COMPOSE_PATH}"
-    sed -i 's|${UF_CONFIG_PATH}/traefik|'"/${__CONFIG_PATH}|g" "${__COMPOSE_PATH}"
-    sed -i 's|${UF_SWARM_NODE_ID}|'"${__NODE_ID}|g" "${__COMPOSE_PATH}"
+    # prepare traefik config files
+    mkdir -p "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik" "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}"
+    cp ${FM_DIR}/config/traefik/* "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik"
+    sed -i "s/  uniconfig:/  ${__SERVICE_FULL_NAME}:/g" "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik/traefik.yml"
+
+    # prepare uniconfig config files
+    rsync -r --exclude "cache/*" ${FM_DIR}/${__DEF_UC_CONFIG_MIDDLE_PATH}/* "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}"
+    chmod a+w "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}/cache"
 }
 
-
-function generateUcPostgresCompose {
-    
-    local __COMPOSE_PATH="${__FOLDER_PATH}/${__UC_POSTGRES_COMPOSE_NAME}"
-    local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}/uniconfig"
-
-    cp "${FM_COMPOSE_DIR}/${__UC_POSTGRES_COMPOSE_NAME}" "${__COMPOSE_PATH}"
-    sed -i "s/ uniconfig-postgres:/ ${__SERVICE_NAME}-postgres:/g" "${__COMPOSE_PATH}"
-    sed -i 's|${UC_CONFIG_PATH}|'"/${__CONFIG_PATH}|g" "${__COMPOSE_PATH}"
-    sed -i 's|${UC_SWARM_NODE_ID}|'"${__NODE_ID}|g" "${__COMPOSE_PATH}"
-    sed -i "s/uniconfig_postgresql_data/${__SERVICE_NAME}_postgresql_data/g" "${__COMPOSE_PATH}"
-}
 
 function generateUcCompose {
 
-    local __COMPOSE_PATH="${__FOLDER_PATH}/swarm-uniconfig.yml"
-    local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}/uniconfig_${__UC_INSTANCE_SUFIX}"
-    local __DEF_UC_CONFIG_MIDDLE_PATH="config/uniconfig/frinx/uniconfig"
-    local __SERVICE_FULL_NAME="${__SERVICE_NAME}_${__UC_INSTANCE_SUFIX}"
+    if [[ "${__SERVICE_NAME}" == "uniconfig" ]]; then
+        __SERVICE_FULL_NAME="${__UNICONFIG_SERVICE_SUFIX}"
+    else
+        __SERVICE_FULL_NAME="${__SERVICE_NAME}-${__UNICONFIG_SERVICE_SUFIX}"
+    fi
 
-    rsync -r --exclude "cache/*" ${FM_DIR}/${__DEF_UC_CONFIG_MIDDLE_PATH}/* "${__FOLDER_PATH}/${__CONFIG_PATH}"
-    chmod a+w "${__FOLDER_PATH}/${__CONFIG_PATH}/cache"
-    
+    local __COMPOSE_PATH="${__FOLDER_PATH}/${__UC_COMPOSE_NAME}"
+    local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}"
+
+    prepareConfigFiles
+
     cp "${FM_COMPOSE_DIR}/${__UC_COMPOSE_NAME}" "${__COMPOSE_PATH}"
-    sed -i "s|_instanceName=uniconfig_${__UC_INSTANCE_SUFIX}|""_instanceName=${__SERVICE_FULL_NAME}|g" "${__COMPOSE_PATH}"
-    sed -i "s| uniconfig_${__UC_INSTANCE_SUFIX}:|"" ${__SERVICE_FULL_NAME}:|g" "${__COMPOSE_PATH}"
-    sed -i 's|\${UC_CONFIG_PATH}|'"/opt/frinx/${__SERVICE_NAME}/uniconfig_${__UC_INSTANCE_SUFIX}|g" "${__COMPOSE_PATH}"
+
+    # service names
+    sed -i "s/  uniconfig:/  ${__SERVICE_NAME}:/g" "${__COMPOSE_PATH}"
+    sed -i "s/  uniconfig-controller:/  ${__SERVICE_FULL_NAME}:/g" "${__COMPOSE_PATH}"
+    sed -i "s/  uniconfig-postgres:/  ${__SERVICE_NAME}-postgres:/g" "${__COMPOSE_PATH}"
+
+    # swarm node id
     sed -i 's|${UC_SWARM_NODE_ID}|'"${__NODE_ID}|g" "${__COMPOSE_PATH}"
-    sed -i 's|replicas: 1|'"replicas: ${__UC_INSTANCES}|g" "${__COMPOSE_PATH}"
+    sed -i 's|${UF_SWARM_NODE_ID}|'"${__NODE_ID}|g" "${__COMPOSE_PATH}"
+
+    # swarm config paths
+    sed -i 's|${UC_CONFIG_PATH}|'"/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}|g" "${__COMPOSE_PATH}"
+    sed -i 's|${UF_CONFIG_PATH}/traefik|'"/${__CONFIG_PATH}/traefik|g" "${__COMPOSE_PATH}"
+
+    # swarm persistant volume paths
     sed -i 's|uniconfig_logs|'"${__SERVICE_FULL_NAME}_logs|g" "${__COMPOSE_PATH}"
-    sed -i 's|_host=uniconfig-postgres|'"_host=${__SERVICE_NAME}-postgres|g" "${__COMPOSE_PATH}"
+    sed -i "s/uniconfig_postgresql_data/${__SERVICE_NAME}_postgresql_data/g" "${__COMPOSE_PATH}"
+
+    # swarm uniconfig-controller replicas
+    sed -i 's|replicas: ${UC_CONTROLLER_REPLICAS:-1}|'"replicas: ${__UC_INSTANCES}|g" "${__COMPOSE_PATH}"
+
+    # labels
     sed -i 's|entrypoints=https,uniconfig|'"entrypoints=https,${__SERVICE_NAME}|g" "${__COMPOSE_PATH}"
     sed -i 's|\.uniconfig\.|'"\.${__SERVICE_NAME}\.|g" "${__COMPOSE_PATH}"
 
+    # env
+    sed -i 's|_host=uniconfig-postgres|'"_host=${__SERVICE_NAME}-postgres|g" "${__COMPOSE_PATH}"
 }
 
 function prepareFolder {
@@ -192,6 +201,7 @@ OK="\033[0;92m[OK]:\033[0;0m"
 FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 FM_COMPOSE_DIR="${FM_DIR}/composefiles"
 
+__SERVICE_NAME="uniconfig-controller"
 __FOLDER_PATH="${FM_COMPOSE_DIR}/uniconfig"
 
 __UC_COMPOSE_NAME="swarm-uniconfig.yml"
@@ -200,13 +210,10 @@ __UC_TRAEFIK_COMPOSE_NAME="swarm-uniconfig-traefik.yml"
 
 __DEF_CONFIG_PATH="opt/frinx"
 
-__UC_INSTANCE_SUFIX="uc-controller"
-
 __UC_INSTANCES=2
+__UNICONFIG_SERVICE_SUFIX="uniconfig-controller"
 
 argumentsCheck "$@"
 prepareFolder
 isNodeInSwarm ${__NODE_ID}
-generateUcPostgresCompose
-generateUcTraefikCompose
 generateUcCompose

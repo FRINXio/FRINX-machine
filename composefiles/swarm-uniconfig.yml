@@ -6,7 +6,48 @@
 version: "3.7"
 
 services:
-  uniconfig_uc-controller:
+  uniconfig:
+    image: traefik:v2.4
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    volumes:
+      - ${UF_CONFIG_PATH}/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ${UF_CONFIG_PATH}/traefik/traefik_dynamic.yml:/etc/traefik/traefik_dynamic.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    secrets:
+      - frinx_uniconfig_tls_cert.pem
+      - frinx_uniconfig_tls_key.pem
+      - frinx_uniconfig_X509.crt
+    healthcheck:
+      test: traefik healthcheck
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    ulimits:
+      nofile:
+        soft: ${TF_ULIMIT_NOFILE_SOFT}
+        hard: ${TF_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${TF_ULIMIT_NPROC_SOFT}
+        hard: ${TF_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    deploy:
+      placement:
+        constraints:
+          - node.id == ${UF_SWARM_NODE_ID}
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${TF_RES_LIMIT_CPUS}
+          memory: ${TF_RES_LIMIT_MEM}
+
+  uniconfig-controller:
     image: frinx/uniconfig:4.2.8
     logging:
       driver: "json-file"
@@ -33,7 +74,7 @@ services:
       - dbPersistence_connection_databaseLocations_host=uniconfig-postgres
       - dbPersistence_connection_databaseLocations_port=5432
     volumes:
-      - uniconfig_logs:/opt/uniconfig-frinx/log
+      - frinx_uniconfig_logs:/opt/uniconfig-frinx/log
       - ${UC_CONFIG_PATH}/config/lighty-uniconfig-config.json:/opt/uniconfig-frinx/config/lighty-uniconfig-config.json:ro
       - ${UC_CONFIG_PATH}/config/logback.xml:/opt/uniconfig-frinx/config/logback.xml:ro
       - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache:rw
@@ -66,16 +107,74 @@ services:
         delay: 5s
         window: 10s
       mode: replicated
-      replicas: 1
+      replicas: ${UC_CONTROLLER_REPLICAS:-1}
       resources:
         limits:
           cpus: ${UC_RES_LIMIT_CPUS}
           memory: ${UC_RES_LIMIT_MEM}
 
+  uniconfig-postgres:
+    image: postgres:12.2
+    user: postgres
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "3"
+        max-size: "10m"
+    labels:
+      - traefik.enable=false  
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=uniconfig
+    volumes:
+      - frinx_uniconfig_postgresql_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    ulimits:
+      nofile:
+        soft: ${UP_ULIMIT_NOFILE_SOFT}
+        hard: ${UP_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${UP_ULIMIT_NPROC_SOFT}
+        hard: ${UP_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    cap_add:
+      - CAP_NET_BIND_SERVICE
+      - NET_ADMIN
+    deploy:
+      placement:
+        constraints:
+          - node.id == ${UC_SWARM_NODE_ID}
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${UP_RES_LIMIT_CPUS}
+          memory: ${UP_RES_LIMIT_MEM}
 
 volumes:
-  uniconfig_logs:
-    name: uniconfig_logs
+  frinx_uniconfig_logs:
+    name: frinx_uniconfig_logs
+  frinx_uniconfig_postgresql_data:
+    name: frinx_uniconfig_postgresql_data
+
+secrets:
+  frinx_uniconfig_tls_cert.pem:
+    external: true
+  frinx_uniconfig_tls_key.pem:
+    external: true
+  frinx_uniconfig_X509.crt:
+    external: true
 
 networks:
   default:

@@ -27,8 +27,8 @@ delete_stack()
 
 unused_volumes()
 {
-    __volumes=$(docker volume ls -q -f name=uniflow* -f name=uniconfig* -f name=inventory*)
-    __unused_volumes=$(docker volume ls -q -f name=uniflow* -f name=uniconfig* -f name=inventory* -f dangling=true)
+    __volumes=$(docker volume ls -q -f name=frinx* )
+    __unused_volumes=$(docker volume ls -q -f name=frinx* -f dangling=true)
 
     if [ "${__volumes[@]}" != "" ]; then
         if [ "${__volumes[@]}" == "${__unused_volumes[@]}" ]; then
