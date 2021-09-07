@@ -162,7 +162,7 @@ function startUniconfig {
     echo -e "${INFO} Multi-node deployment - compose files are stored on this path: ${uniconfigServiceFilesPath}"
     echo -e "${INFO} Make sure the UniConfig configuration files are present on remote node in /opt/frinx folder"
     shopt -s lastpipe
-    find ${uniconfigServiceFilesPath} -iname "swarm-*.yml" -print0 | \
+    find ${uniconfigServiceFilesPath} -iname "swarm-uniconfig.yml" -print0 | \
     while IFS= read -r -d '' compose_name; do 
       echo -e "${INFO} Checking swarm nodes for ${compose_name} uniconfig deployment"
       node_id=($(grep node.id "${compose_name}" | sed -e 's/- node.id//;s/==//;s/^[[:space:]]*//'))
@@ -175,7 +175,7 @@ function startUniconfig {
   else
     echo -e "${INFO} Single-node deployment - composefiles/${dockerSwarmUniconfig}"
     echo -e "${INFO} Uniconfig swarm worker node id: ${UC_SWARM_NODE_ID}"
-    docker stack deploy --compose-file "composefiles/${dockerSwarmUniconfig}" --compose-file "composefiles/${dockerSwarmUniconfigPsql}" --compose-file "composefiles/${dokcerSwarmTraefik}" $stackName
+    docker stack deploy --compose-file "composefiles/${dockerSwarmUniconfig}" $stackName
   fi
 }
 
@@ -278,7 +278,7 @@ function generateUniconfigKrakendFile {
 
   if [[ ${__multinode} == "true" ]]; then
     shopt -s lastpipe
-    find ${uniconfigServiceFilesPath} -iname "swarm-*traefik.yml" -print0 | \
+    find ${uniconfigServiceFilesPath} -iname "swarm-uniconfig.yml" -print0 | \
     while IFS= read -r -d '' traefik_name; do 
       if [[ -z $name ]]; then
         line_num=$(($(cat ${traefik_name} | grep -n "services:" | cut -d ':' -f 1)+1))
@@ -373,9 +373,7 @@ licenseKeyFile="${FM_DIR}/config/uniconfig/uniconfig_license.txt"
 
 dockerSwarmUniflow='swarm-uniflow.yml'
 dokcerSwarmKrakend='swarm-uniflow-krakend.yml'
-dokcerSwarmTraefik='swarm-uniconfig-traefik.yml'
 dockerSwarmUniconfig='swarm-uniconfig.yml'
-dockerSwarmUniconfigPsql='swarm-uniconfig-postgres.yml'
 
 uniconfigServiceFilesPath="${FM_DIR}/composefiles/uniconfig"
 

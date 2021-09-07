@@ -63,7 +63,7 @@ services:
       - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms512m -Xmx3584m"
     volumes:
-      - uniflow_elastic_data:/usr/share/elasticsearch/data
+      - frinx_uniflow_elastic_data:/usr/share/elasticsearch/data
       - ${UF_CONFIG_PATH}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ${UF_CONFIG_PATH}/elasticsearch/backup.sh:/usr/share/elasticsearch/backup.sh:ro
     healthcheck:
@@ -152,7 +152,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_MULTIPLE_DATABASES=conductor,frinx,schellar
     volumes:
-      - uniflow_postgresql_data:/var/lib/postgresql/data
+      - frinx_uniflow_postgresql_data:/var/lib/postgresql/data
       - ${UF_CONFIG_PATH}/uniflow-postgres:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: pg_isready -U postgres
@@ -372,7 +372,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=inventory
     volumes:
-      - inventory_postgresql_data:/var/lib/postgresql/data
+      - frinx_uniflow_inventory_postgresql_data:/var/lib/postgresql/data
       - ${UF_CONFIG_PATH}/inventory-postgres:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: pg_isready -U postgres
@@ -406,12 +406,12 @@ services:
 
 
 volumes:
-  uniflow_elastic_data:
-    name: uniflow_elastic_data
-  uniflow_postgresql_data:
-    name: uniflow_postgresql_data
-  inventory_postgresql_data:
-    name: inventory_postgresql_data
+  frinx_uniflow_elastic_data:
+    name: frinx_uniflow_elastic_data
+  frinx_uniflow_postgresql_data:
+    name: frinx_uniflow_postgresql_data
+  frinx_uniflow_inventory_postgresql_data:
+    name: frinx_uniflow_inventory_postgresql_data
 
 networks:
   default:
