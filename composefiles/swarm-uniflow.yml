@@ -330,13 +330,16 @@ services:
       - DATABASE_URL=postgres://postgres:postgres@inventory-postgres:5432/inventory?sslmode=disable
       - UNICONFIG_API_PROTOCOL=https
       - UNICONFIG_API_PORT=8181
-      - UNICONFIG_LIST_URL=http://krakend:8080/static/list/uniconfig    
+      - UNICONFIG_LIST_URL=http://krakend:8080/static/list/uniconfig
+    volumes:
+      - ${UF_CONFIG_PATH}/inventory/run_inventory.sh:/run_inventory.sh:ro
     healthcheck:
       test: wget --spider -q '0.0.0.0:8000/.well-known/apollo/server-health'
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 20s
+      start_period: 40s
+    entrypoint: ["/run_inventory.sh"]
     ulimits:
       nofile:
         soft: ${IV_ULIMIT_NOFILE_SOFT}
@@ -373,7 +376,6 @@ services:
       - POSTGRES_DB=inventory
     volumes:
       - frinx_uniflow_inventory_postgresql_data:/var/lib/postgresql/data
-      - ${UF_CONFIG_PATH}/inventory-postgres:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: pg_isready -U postgres
       interval: 10s
