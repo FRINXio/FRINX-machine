@@ -130,7 +130,7 @@ function prepareConfigFiles {
     # prepare traefik config files
     mkdir -p "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik" "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}"
     cp ${FM_DIR}/config/traefik/* "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik"
-    sed -i "s/  uniconfig:/  ${__SERVICE_FULL_NAME}:/g" "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik/traefik.yml"
+    sed -i "s/  uniconfig:/  ${__SERVICE_NAME}:/g" "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik/traefik.yml"
 
     # prepare uniconfig config files
     rsync -r --exclude "cache/*" ${FM_DIR}/${__DEF_UC_CONFIG_MIDDLE_PATH}/* "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}"
