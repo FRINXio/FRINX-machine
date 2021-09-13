@@ -147,7 +147,7 @@
             // initial size of the connection pool (pre-initialized connections)
             "initialDbPoolSize": 5,
             // maximum size of the connection pool, before creation of next connections are blocked
-            "maxDbPoolSize": 20,
+            "maxDbPoolSize": 100,
             // maximum number of idle connections before next idle connections are cleaned
             "maxIdleConnections": 5,
             // maximum wait time for obtaining of a new connection before fetch request is dropped [milliseconds]
@@ -218,7 +218,7 @@
                  dedicated Uniconfig transactions cannot be used. Only shared transaction
                  can be used for interaction with whole CONFIG/OPER datastore.
         */
-        "uniconfigTransactionEnabled": false,
+        "uniconfigTransactionEnabled": true,
         /*
         Maximum transaction age before it can be evicted from transaction registry [seconds].
         Configuring '0' disables cleaning of Uniconfig transactions.
