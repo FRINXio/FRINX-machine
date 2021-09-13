@@ -44,6 +44,8 @@ services:
         hard: ${CS_ULIMIT_NPROC_HARD}
     cap_drop:
       - all
+    sysctls:
+      net.ipv4.tcp_keepalive_time: 300
     deploy:
       placement:
         constraints:
