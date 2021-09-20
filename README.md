@@ -5,7 +5,10 @@ https://github.com/FRINXio/FRINX-machine/releases
 
 > Master branch is used for development and not recommended for deployment
 
+</br>
 
+`For migration of Frinx-Machine 1.6 to Frinx-Machine 1.7 see ` [ Migration from Frinx Machine 1.6](#maintaining) </br>
+ 
 ## Requirements
 Minimal hardware requirements (See [resource limitation](#resource-limitation))
 
@@ -19,10 +22,13 @@ Development:
 - 16GB RAM
 - 4x CPU
 
+
+For long-term monitoring is good to have a minimal 30Gb of free space 
+
 To deploy an FM swarm cluster you need at least one machine with Ubuntu 18.04/20.04 installed.
 
 # Starting Frinx Machine
-You can deploy the FM either locally with all services running on a single node, or you can split UniFlow and UniConfig instances among multiple nodes. UniFlow is always running on the docker swarm manager node. In the case of multi-node deployment, it is necessary to modify the .env file ( Follow [Preparing Environment](#preparing-environment) ).
+You can deploy the FM either locally with all services running on a single node, or you can split UniFlow and UniConfig instances among multiple nodes. UniFlow is always running on the docker swarm manager node.
 
 
 * [Installation](#installation)
@@ -32,12 +38,14 @@ You can deploy the FM either locally with all services running on a single node,
 * [Resource limitation](#resource-limitation) 
 * [Maintaining](#maintaining)
 * [TLS Certificated](#tls-certificates) 
-
+</br></br>
 ## Installation
 Run the install script, this will check and download the neccessary prerequisities.
 
 ```sh
-$ sudo ./install.sh
+$ ./install.sh  # will ask password sudo 
+$ ./install.sh  --skip # skip dependeny installing
+$ ./install.sh  --update-secrets # update certificates to docker secrets frm ./config/certificates folder
 ```
 
 Automatically installed software:
@@ -49,16 +57,23 @@ Automatically installed software:
 NOTE: It may happen that swarm initialization will fail during install. Most likely due to multiple network interfaces present. 
 In that case run `docker swarm init --advertise-addr <ip-addr>` command to tell swarm which ip address to use for inter-manager communication and overlay networking
 
+</br>
+
 NOTE: As FM is designed to run as non-root user, you need the user to be in `docker` group, this is done automatically during the installation process. Use newgrp or reboot the system for changes to take effect **BEFORE** running ```./startup.sh``` <br>
 See: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
 
+</br>
+
+
+### Install Frinx Machine with proxy 
 If you want to configure docker to use a proxy server, use:
+
 
 ```sh
 # Create folder for docker proxy config file
 $ mkdir "${USER}/.docker"
 
-$ sudo ./install.sh \
+$ ./install.sh \
 --proxy-conf "${USER}/.docker/config.json" \ 
 --http-proxy "ip:port" \
 --https-proxy "ip:port" \
@@ -66,10 +81,13 @@ $ sudo ./install.sh \
 ```
 For disabling proxy, the config.json must be removed and content of UC_PROXY_* variables in .env file must be erased! For example: UC_PROXY_HTTP_ENV="".
 
-For more info see: https://docs.docker.com/network/proxy/
+For more info see: https://docs.docker.com/network/proxy/ 
+</br></br>
 
 ### Install/Update docker secrets (KrakenD HTTPS/TLS)
-During installation, docker secrets are created and are used for establishing HTTPS/TLS connections. These secrets contain private and public keys and are generated from files in the ./config/certificates folder. These certificates can be replaced by custom certificates (use the same name) before execution of installation script or re-execution with the `--update-secrets` flag.
+During installation, docker secrets are created and are used for establishing HTTPS/TLS connections. These secrets contain private and public keys and are generated from files in the ./config/certificates folder. 
+
+These certificates can be replaced by custom certificates (use the same name) before execution of installation script or re-execution with the `--update-secrets` flag. </br></br>
 ## Single-node deployment
 Installation and running of UniFlow and UniConfig on the same machine.
 To deploy both UniFlow and UniConfig locally (for testing and demo purposes), run `startup.sh`:
@@ -85,8 +103,11 @@ $ ./startup.sh --uniflow
 # To uniconfig only, use:
 $ ./startup.sh --uniconfig 
 
-# To metric services only, use:
+# To monitoring services only, use:
 $ ./startup.sh --monitoring 
+
+# To Frinx Machine without monitoring services, use:
+$ ./startup.sh --no-monitoring 
 
 ```
 The FRINX Machine services will now be started. 
@@ -101,18 +122,23 @@ Each service will show as 'REPLICAS 1/1' when the service is up (it may take sev
 UniFlow dashboard is accessible via web browser by visiting:
 ```sh
 http://<IP_of_node_running_FM>
+
+# monitoring dashboard
+http://<IP_of_node_running_FM>:3000
 ```
+
 In some cases the self signed certificate of the FM dashboard creates an NET_ERR_CERT_INVALID error message in your browser. Follow [these](https://stackoverflow.com/questions/35274659/does-using-badidea-or-thisisunsafe-to-bypass-a-chrome-certificate-hsts-error) steps to proceed.
+
+</br>
 
 ### Demo workflows & sample topology
 Once all services are started, please clone https://github.com/FRINXio/fm-workflows and follow the instructions to load demo workflows and a sample topolgy. <br>You can find a collection of demo use cases here https://docs.frinx.io/frinx-machine/use-cases/index.html
 
-
+</br>
 
 ## Multi-node deployment
 UniFlow services are deployed on swarm manager node and UniConifig services are deployed on swarm worker nodes.
 
-NOTE: Before starting multi-node deployment, it is **necessary to generate uniconfig compose files** with `generate_uc_compose.sh` script!
 ### Preparing worker nodes for UniConfig services
 
 Install and set-up docker-ce on worker node:
@@ -127,8 +153,10 @@ $ sudo apt-get install docker-ce=5:18.09.9~3-0~ubuntu-bionic
 $ sudo apt-get install docker-ce=5:20.10.5~3-0~ubuntu-focal
 $ sudo usermod -aG docker $USER
 $ newgrp docker
-$ docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+$ docker plugin install grafana/loki-docker-driver:main-20515a2 --alias loki --grant-all-permissions
 ```
+
+### Connect workers to Docker Swarm
 
 Run following command on manager node to determine the swarm token
 ```sh
@@ -142,36 +170,48 @@ And then join the worker node to the swarm with token provided by the manager:
 $ docker swarm join --token SWMTKN-<TOKEN> IP:PORT
 ```
 
-To deploy UniConfig to a worker node, distribute the default UniConfig configuration to `/opt` directory on the worker node (SCP used as an example).
-
-From the manager node:
-```sh
-$ scp -r ./config/uniconfig/frinx username@host:/home/username/
-```
-Log into remote node and copy the files:
-```sh
-$ sudo cp -r /home/username/frinx /opt
-$ sudo chmod a+w /opt/frinx/uniconfig/cache/
-```
-
-### Generating uniconfig compose files
-
 Now is possible to check all swarm nodes with and find worker node IDs.
 ```sh
 #List all swarm nodes
 $ docker node ls
 ```
 
-For generating of uniconfig (uniconfig-postgresql) compose files use `generate_uc_compose.sh`.  
-You need to define:
-- uniconfig service name: must be unique name 
-- swarm node-id: where will be deployed (find from previous command output)
-- folder path:  where are stored composefiles for multinode deployment
+### Generate configuration files for multi-node deployment
 
-Preffered folder path is `./composefiles/uniconfig`, but can be differend (outside from FM repo folder).
+Frinx Machine supports Uniconfig deployment in multi-zone mode (multiple uniconfig zones). 
+Before the Frinx Machine is start, is necessary to generate unique configuration files per each zone separatelly.
+For generating these files use `generate_uc_compose.sh`.  
+
+You need to define:
+- uniconfig zone name: must be unique name 
+- swarm node-id: where will be deployed (use docker node ls)
+- folder path:  where are stored composefiles for multinode deployment
+- instances: how many uniconfig instances will be started per zone (redundancy)
+
+Default folder path is `./composefiles/uniconfig`, but can be differend (outside from FM repo folder).
 ```sh
-$ ./generate_uc_compose.sh -s <service_name> -n <node_id> -f <path_to_folder>
+$ ./generate_uc_compose.sh -s <service_name> -n <node_id> -f <path_to_folder> -i <instances>
 ```
+<br>
+
+### Upload configuration files on worker node
+
+To deploy UniConfig to a worker node, distribute the default UniConfig configuration to `/opt` directory on the worker node (SCP used as an example).
+
+From the worker node:
+```sh
+$ sudo install -o $USER -g $USER -m 755 -d /opt/frinx
+
+# if older FM was started on this node, remove docker persistant volumes
+$ docker volume prune -f
+```
+
+From the manager node:
+```sh
+# path_to_folder contain generated files from previous steps
+$ scp -r <path_to_folder>/opt/frinx/* username@host:/opt/frinx
+```
+</br>
 
 ### Deploying services
 
@@ -185,6 +225,8 @@ $ ./startup.sh --multinode --uniconfig --dev
 ```
 
 NOTE: The deployment might take a while as the worker node needs to download all necessary images first.
+
+</br>
 
 ## Preparing Environment
 The FRINX-Machine repository contains a **env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to these groups:
@@ -204,15 +246,49 @@ The FRINX-Machine repository contains a **env.template** (used for creating .env
 >   * UC_PROXY_* : use docker proxy in Uniconfig Service ( See [Installation](#installation) )
 
 Default settings are prepared for deployment without docker proxy.
+
+</br>
+
 ## Resource limitation
 
 Default resource limitation is configured for production but can be changed to development.
 ```sh
-$ ./startup.sh --dev
+$ ./startup.sh --dev    # ./config/dev_settings.txt
+$ ./startup.sh --prod   # ./config/prod_settings.txt, same as ./startup.sh 
 ```
-Template for production settings is stored in `./config/prod_settings.txt`. <br> In this file, these values can be changed by profiled requirements.
+These values can be changed by profiled requirements.
+
+</br>
 
 ## Maintaining
+
+### Migration from Frinx Machine 1.6
+
+- Remove old docker volumes : 
+
+```sh
+$ ./teardown -v
+# or 
+$ docker volume prune -f
+``` 
+
+- Update / remove .env file from Frinx Machine 1.6 deployment:
+
+If you using for the deployment of Frinx Machine 1.7 the same directory as for Frinx Machine 1.6, you need to update/remove .env file.</br>
+`For updating replace these lines in .env file.`
+```sh
+# Remove:
+LOCAL_KRAKEND_IMAGE_TAG="with_certificates"
+# Add 
+BASE_KRAKEND_IMAGE_TAG="1.0.0"
+LOCAL_KRAKEND_IMAGE_TAG=""
+``` 
+
+- Build KrakenD image with custom certificates (optional):
+
+Add custom certifictes to ./krakend/certs and use `build_krakend.sh`
+
+</br>
 
 ### Checking
 You can check the status of the swarm cluster by running:
@@ -221,6 +297,8 @@ $ docker service ls
 $ docker stack ps fm
 ```
 Where 'fm' (FRINX Machine) is the name of the swarm stack configured during deployment, the name is assigned automatically.
+
+</br>
 
 ### Bench Security
 
@@ -242,6 +320,8 @@ Bench security analysis can be performed with this command
 $ ./config/docker-security/bench_security.sh
 ```
 
+</br>
+
 ### Monitoring services
 
 Frinx Machine is collecting logs and metrics/statistics from services.
@@ -250,7 +330,11 @@ Frinx Machine is collecting logs and metrics/statistics from services.
 * Node monitoring: node-exporter
 * Swarm monitoring: google/cadvisor
 * Visualization: Grafana (url 127.0.0.1:3000)
-<br>
+
+NOTE: Be aware, that the monitoring system is space consuming. For longer monitoring is good to have enough free space on the disc. 
+Optimal is 30Gb and more.
+
+</br>
 
 ### ElasticSearch disk flood stage prevention 
 ElasticSearch changes the disk permissions to read-only if the disk free space drops below 512Mb.. This setting is a last resort to prevent nodes from running out of disk space. The index block must be released manually when the disk utilization falls below the high watermark.
@@ -259,6 +343,8 @@ ElasticSearch changes the disk permissions to read-only if the disk free space d
 curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index.blocks read_only_allow_delete": null}'
 ```
 
+</br>
+
 ### List of deployed uniconfig services
 KrakenD provice API, which return list of deployed uniconfig services:
 
@@ -266,6 +352,8 @@ KrakenD provice API, which return list of deployed uniconfig services:
 $ curl -X GET 127.0.0.1/static/list/uniconfig
 {"instances":["uniconfig1","uniconfig2"]}
 ```
+
+</br>
 
 ### Shutdown
 To stop all services, simply remove the stack from the swarm:
@@ -284,6 +372,7 @@ For see more options run:
 $ ./teardown.sh -h
 ```
 
+</br>
 
 ### Log collections
 To collect logs, run:
@@ -292,7 +381,16 @@ $ ./collectlogs.sh
 ```
 This will collect all docker related logs and compresses it into an archive. Logs are collected from local machine only, if you want logs from remote node (e.g. worker) you must copy and run the script on the remote node.
 
-# TLS certificates
+</br>
+
+## TLS certificates
+
+All certificates, which are stored in docker secrets can be found in `./config/certificates` folder.
+
+* frinx_krakend_*: Enabling HTTPS for api-gateway
+* frinx_uniconfig_tls_cert*: Enabling HTTPS connection for traefik (unizonfig zone load balancer)
+
+</br>
 
 In the demo deployment the setup has already been done and uniconfig is running under https(not suitable for production).
 To set it up with own certificates please follow the next steps:
@@ -309,8 +407,11 @@ To set it up with own certificates please follow the next steps:
     In case a new certificate is generated for uniconfig When prompted for `What is your first and last name?` put docker dns name of uniconfig container (Default: uniconfig).
 
     Also will need to modify `/home/test/FRINX-machine/config/uniconfig/frinx/uniconfig/config/lighty-uniconfig-config.json` based on the new keystore setup.  
+
 3.  In case self signed certificate is used please add ca's certificate to `karakend/certs` folder in `.crt` format.  
     For changes to be propagated run `./build_krakend.sh` (for more run with -h) in case of deployed stack `startup.sh` as well. 
+
+</br>
 
 ## For developers
 If you need to modify and rebuild modules, you can use `pullmodules.sh` script to download up-to-date modules from FRINX's public GitHub repositories. Then you can use standard docker utilities to build and distribute them, e.g.:
