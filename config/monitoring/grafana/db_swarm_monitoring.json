@@ -553,16 +553,24 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "rgba(245, 54, 54, 0.9)",
+                "color": "dark-green",
                 "value": null
               },
               {
-                "color": "rgba(237, 122, 40, 0.89)",
+                "color": "semi-dark-green",
                 "value": 0.1
               },
               {
                 "color": "rgba(14, 211, 40, 0.97)",
                 "value": 0.25
+              },
+              {
+                "color": "rgba(237, 122, 40, 0.89)",
+                "value": 0.7
+              },
+              {
+                "color": "dark-red",
+                "value": 0.9
               }
             ]
           },
@@ -867,7 +875,7 @@
           {
             "evaluator": {
               "params": [
-                524287
+                1024000000 
               ],
               "type": "lt"
             },
@@ -892,7 +900,7 @@
         "for": "1m",
         "frequency": "1m",
         "handler": 1,
-        "message": "Hahaha",
+        "message": "Disk space is low. Please remove old data and check elasticsearch volume permissions in logs!",
         "name": "Free disc space alert",
         "noDataState": "keep_state",
         "notifications": []
@@ -963,7 +971,7 @@
           "fill": true,
           "line": true,
           "op": "lt",
-          "value": 524287,
+          "value": 1024000000,
           "visible": true
         }
       ],

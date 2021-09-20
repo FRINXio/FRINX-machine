@@ -183,7 +183,7 @@ function generateUcCompose {
 
 function prepareFolder {
     if [ -d ${__FOLDER_PATH} ]; then
-        rm -rf ${__FOLDER_PATH}/*
+        rm -rf "${__FOLDER_PATH}/swarm-uniconfig.yml" "${__FOLDER_PATH}/opt"
         mkdir -p ${__FOLDER_PATH}/${__DEF_CONFIG_PATH}
     fi
 }
