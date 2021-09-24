@@ -3,9 +3,15 @@
 {
     "endpoint": "{{ .endpoint }}",
     "method": "{{ .method }}",
-    "querystring_params": ["*"],
     "output_encoding": "no-op",
     "headers_to_pass": ["*"],
+
+    {{ if .querystring_params }}
+    "querystring_params": [ 
+        {{range $query_enabled, $query := .querystring_params}} {{if gt $query_enabled 0}},{{end}} "{{$query}}" {{ end }} 
+        ],
+    {{end}}
+
     "backend": [
     {
         "url_pattern": "{{ .url_pattern }}",

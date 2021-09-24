@@ -41,14 +41,20 @@
             "url_pattern": "/executions"
         },
         {
-            "endpoint": "/api/uniflow/executions",
-            "method": "GET",
-            "url_pattern": "/executions"
-        },
-        {
             "endpoint": "/api/uniflow/schedule/{name}/{b}",
             "method": "GET",
             "url_pattern": "/schedule/{name}/{b}"
+        },
+        {
+            "endpoint": "/api/uniflow/executions",
+            "method": "GET",
+            "url_pattern": "/executions?q=&h=",
+            "querystring_params": [
+                "start",
+                "size",
+                "status",
+                "workflowId"
+              ]
         }
     ]
 }
