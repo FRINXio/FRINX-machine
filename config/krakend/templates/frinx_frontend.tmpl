@@ -4,7 +4,13 @@
 {
     "endpoint": "{{ .endpoint }}",
     "method": "GET",
-    "querystring_params": ["*"],
+
+    {{ if .querystring_params }}
+    "querystring_params": [ 
+        {{range $query_enabled, $query := .querystring_params}} {{if gt $query_enabled 0}},{{end}} "{{$query}}" {{ end }} 
+        ],
+    {{end}}
+
     "output_encoding": "no-op",
     "headers_to_pass": ["*"],
     "backend": [
@@ -26,9 +32,9 @@
 {
     "endpoint": "/frinxui{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if lt $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
     "method": "GET",
-    "querystring_params": ["*"],
     "output_encoding": "no-op",
     "headers_to_pass": ["*"],
+
     "backend": [
     {
         "url_pattern": "{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if lt $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",

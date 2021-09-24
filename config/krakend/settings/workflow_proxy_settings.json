@@ -53,7 +53,10 @@
         {
             "endpoint": "/api/uniflow/workflow/{a}",
             "method": "GET",
-            "url_pattern": "/workflow/{a}"
+            "url_pattern": "/workflow/{a}",
+            "querystring_params": [
+                "includeTask"
+              ]
         },
         {
             "endpoint": "/api/uniflow/workflow/{a}",
@@ -89,11 +92,6 @@
             "endpoint": "/api/uniflow/event/{event}",
             "method": "GET",
             "url_pattern": "/event/{event}"
-        },
-        {
-            "endpoint": "/api/uniflow/hierarchical",
-            "method": "GET",
-            "url_pattern": "/hierarchical"
         },
         {
             "endpoint": "/api/uniflow/id/{workflowId}",
@@ -154,6 +152,17 @@
             "endpoint": "/api/uniflow/workflow/bulk/restart",
             "method": "POST",
             "url_pattern": "/bulk/restart"
+        },
+        {
+            "endpoint": "/api/uniflow/hierarchical",
+            "method": "GET",
+            "url_pattern": "/hierarchical",
+            "querystring_params": [
+                "start",
+                "size",
+                "workflowId",
+                "status"
+              ]
         }
     ]
 }
