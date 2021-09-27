@@ -4,6 +4,8 @@ x-logging: &logging_loki
     driver: loki
     options:
       loki-url: "http://${MANAGER_IP_ADDR}:3100/loki/api/v1/push"
+      max-file: "3"
+      max-size: "10m"
       loki-retries: "1"
       loki-batch-size: "1500"
       loki-relabel-config: |
