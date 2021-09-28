@@ -108,7 +108,7 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:1.0.1
+    image: frinx/frinx-frontend:latest
     logging: *logging_loki
     labels:
       - traefik.enable=false  
@@ -230,7 +230,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:1.0.5
+    image: frinx/workflow-proxy:latest
     user: node
     logging: *logging_loki
     labels:
