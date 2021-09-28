@@ -23,7 +23,10 @@
         {
             "endpoint": "/api/uniflow/metadata/taskdefs/{name}",
             "method": "DELETE",
-            "url_pattern": "/metadata/taskdefs/{name}"
+            "url_pattern": "/metadata/taskdefs/{name}",
+            "querystring_params": [
+                "archiveWorkflow"
+              ]
         },
         {
             "endpoint": "/api/uniflow/metadata/workflow",
@@ -43,7 +46,10 @@
         {
             "endpoint": "/api/uniflow/metadata/workflow/{name}",
             "method": "GET",
-            "url_pattern": "/metadata/workflow/{name}"
+            "url_pattern": "/metadata/workflow/{name}",
+            "querystring_params": [
+                "version"
+              ]
         },
         {
             "endpoint": "/api/uniflow/metadata/workflow/{name}/{version}",
@@ -136,22 +142,27 @@
         {
             "endpoint": "/api/uniflow/workflow/bulk/pause",
             "method": "PUT",
-            "url_pattern": "/bulk/pause"
+            "url_pattern": "/workflow/bulk/pause"
         },
         {
             "endpoint": "/api/uniflow/workflow/bulk/resume",
             "method": "PUT",
-            "url_pattern": "/bulk/resume"
+            "url_pattern": "/workflow/bulk/resume"
         },
         {
             "endpoint": "/api/uniflow/workflow/bulk/retry",
             "method": "POST",
-            "url_pattern": "/bulk/retry"
+            "url_pattern": "/workflow/bulk/retry"
         },
         {
             "endpoint": "/api/uniflow/workflow/bulk/restart",
             "method": "POST",
-            "url_pattern": "/bulk/restart"
+            "url_pattern": "/workflow/bulk/restart"
+        },
+        {
+            "endpoint": "/api/uniflow/workflow/bulk/terminate",
+            "method": "DELETE",
+            "url_pattern": "/workflow/bulk/terminate"
         },
         {
             "endpoint": "/api/uniflow/hierarchical",
@@ -160,8 +171,21 @@
             "querystring_params": [
                 "start",
                 "size",
+                "status",
                 "workflowId",
-                "status"
+                "order"
+              ]
+        },
+        {
+            "endpoint": "/api/uniflow/executions",
+            "method": "GET",
+            "url_pattern": "/executions?q=&h=",
+            "querystring_params": [
+                "start",
+                "size",
+                "status",
+                "workflowId",
+                "order"
               ]
         }
     ]
