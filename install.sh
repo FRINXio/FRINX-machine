@@ -259,7 +259,7 @@ function installPrerequisities {
     echo -e "${INFO} $dockerComposeVersion already installed, skipping..."
   else
     echo -e "${INFO} Installing docker-compose"
-    curl -sS -L "https://github.com/docker/compose/releases/download/$dockerComposeInstallVersion/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    curl -sS -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
   fi
 }
@@ -294,12 +294,12 @@ function pullImages {
   setVariableFile "${dockerPerformSettings}"
 
   echo -e "${INFO} Pulling UniFlow images"
-  docker-compose --log-level ERROR -f $dockerComposeFileUniflow pull
+  docker-compose --log-level ERROR -f $dockerComposeFileUniflow pull || true
   echo -e "${INFO} Pulling UniConfig images"
-  docker-compose --log-level ERROR -f $dockerComposeFileUniconfig pull
+  docker-compose --log-level ERROR -f $dockerComposeFileUniconfig pull || true
 
   echo -e "${INFO} Pulling Monitoring images"
-  docker-compose --log-level ERROR -f $dockerComposeFileMonitor pull
+  docker-compose --log-level ERROR -f $dockerComposeFileMonitor pull || true
 
   echo -e "${INFO} Pulling Krakend base image"
   docker pull frinx/krakend:${BASE_KRAKEND_IMAGE_TAG}
@@ -432,7 +432,6 @@ function unsetVariableFile {
 # Program starts here
 # =======================================
 selectDockerVersion
-dockerComposeInstallVersion="1.22.0"
 
 scriptName="$(basename "${0}")"
 FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
