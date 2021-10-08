@@ -136,16 +136,20 @@
     <logger name="org.opendaylight.yangtools" level="INFO"/>
 
     <!-- do not modify this part, we should use RESTCONF RPCs for controlling of logging brokers -->
-    <logger name="org.opendaylight.restconf.nb.rfc8040.jersey.providers.logging.RestconfLoggingBroker" level="TRACE" additivity="false">
+    <logger name="org.opendaylight.restconf.nb.rfc8040.jersey.providers.logging.RestconfLoggingBroker" level="INFO" additivity="false">
         <appender-ref ref="restconf"/>
+        <appender-ref ref="STDOUT"/>
     </logger>
-    <logger name="org.opendaylight.netconf.logging.brokers.NetconfMessagesLoggingBroker" level="TRACE" additivity="false">
+    <logger name="org.opendaylight.netconf.logging.brokers.NetconfMessagesLoggingBroker" level="INFO" additivity="false">
         <appender-ref ref="netconf-messages"/>
+        <appender-ref ref="STDOUT"/>
     </logger>
-    <logger name="org.opendaylight.netconf.logging.brokers.NotificationsLoggingBroker" level="TRACE" additivity="false">
+    <logger name="org.opendaylight.netconf.logging.brokers.NotificationsLoggingBroker" level="INFO" additivity="false">
         <appender-ref ref="netconf-notifications"/>
+        <appender-ref ref="STDOUT"/>
     </logger>
-    <logger name="org.opendaylight.netconf.logging.brokers.NetconfEventsLoggingBroker" level="TRACE" additivity="false">
+    <logger name="org.opendaylight.netconf.logging.brokers.NetconfEventsLoggingBroker" level="INFO" additivity="false">
         <appender-ref ref="netconf-events"/>
+        <appender-ref ref="STDOUT"/>
     </logger>
 </configuration>
