@@ -11,6 +11,7 @@ x-logging: &logging_loki
       loki-url: "http://${MANAGER_IP_ADDR}:3100/loki/api/v1/push"
       max-file: "3"
       max-size: "10m"
+      mode: non-blocking
       loki-retries: "1"
       loki-batch-size: "1500"
       loki-relabel-config: |
@@ -92,7 +93,7 @@ services:
     healthcheck:
       test: curl --insecure -o /dev/null --user admin:admin --silent --write-out "%{http_code}" -X POST 'https://127.0.0.1:8181/rests/operations/uniconfig-manager:health' -H "Content-Type:application/json" | grep 200 || exit 1
       interval: 10s
-      timeout: 10s
+      timeout: 35s
       retries: 5
       start_period: ${UC_HEALTH_START_TIME}
     command: -l ${LICENSE} 
