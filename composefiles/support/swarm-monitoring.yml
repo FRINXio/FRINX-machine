@@ -108,22 +108,24 @@ services:
   swarm-node-info:       
     image: prom/node-exporter:v1.2.2
     logging: *logging_loki
+    environment:
+      NODE_ID: '{{.Node.ID}}'
     volumes:       
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
+      - /etc/hostname:/etc/nodename
     healthcheck:
       test: ["CMD-SHELL", "wget --spider -q localhost:9100"]
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 20s 
-    command:       
-      - '--path.procfs=/host/proc'       
-      - '--path.sysfs=/host/sys'       
-      - '--path.rootfs=/host'       
-      - '--collector.filesystem.ignored-mount-points="^(/rootfs|/host|)/(sys|proc|dev|host|etc)($$|/)"'       
-      - '--collector.filesystem.ignored-fs-types="^(sys|proc|auto|cgroup|devpts|ns|au|fuse\.lxc|mqueue)(fs|)$$"'
+      start_period: 20s
+    configs:
+      - source: node_exporter
+        target: /node_exporter
+        mode: 0777
+    entrypoint: ['/node_exporter']
     ulimits:
       nofile:
         soft: ${MN_ULIMIT_NOFILE_SOFT}
@@ -132,15 +134,11 @@ services:
         soft: ${MN_ULIMIT_NPROC_SOFT}
         hard: ${MN_ULIMIT_NPROC_HARD}
     deploy:
-      placement:
-        constraints:
-          - node.role == manager
       restart_policy:
         condition: on-failure
         delay: 5s
         window: 10s
-      mode: replicated
-      replicas: 1
+      mode: global
       resources:
         limits:
           cpus: ${MN_RES_LIMIT_CPUS}
@@ -149,9 +147,11 @@ services:
   swarm-services-info:
     image: google/cadvisor:v0.33.0
     logging: *logging_loki
+    hostname: '{{.Node.ID}}'
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - /:/rootfs:ro
-      - /var/run:/var/run:rw
+      - /var/run:/var/run
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
     healthcheck:
@@ -160,6 +160,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+    command: -logtostderr -docker_only
     ulimits:
       nofile:
         soft: ${MS_ULIMIT_NOFILE_SOFT}
@@ -168,15 +169,11 @@ services:
         soft: ${MS_ULIMIT_NPROC_SOFT}
         hard: ${MS_ULIMIT_NPROC_HARD}
     deploy:
-      placement:
-        constraints:
-          - node.role == manager
       restart_policy:
         condition: on-failure
         delay: 5s
         window: 10s
-      mode: replicated
-      replicas: 1
+      mode: global
       resources:
         limits:
           cpus: ${MS_RES_LIMIT_CPUS}
@@ -222,6 +219,10 @@ services:
           memory: ${ML_RES_LIMIT_MEM}
     ports:
     - 3100:3100
+
+configs:
+  node_exporter:
+    file: ${UF_CONFIG_PATH}/monitoring/node-exporter/startup.sh
 
 volumes:
   frinx-monitoring-prometheus:

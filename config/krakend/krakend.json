@@ -30,6 +30,18 @@
     "github_com/ifaisalalam/krakend-gin-logger": {
       "enabled": true,
       "skip_paths": ["/__health"]
+    },
+    "github_com/devopsfaith/krakend-opencensus": {
+      "exporters": {
+        "prometheus": {
+          "port": 9091,
+          "namespace": "krakend",
+          "tag_host": true,
+          "tag_path": true,
+          "tag_method": true,
+          "tag_statuscode": true
+        }
+      }
     }
   },
   "endpoints": [
