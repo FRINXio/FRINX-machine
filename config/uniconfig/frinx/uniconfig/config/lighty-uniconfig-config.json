@@ -207,23 +207,17 @@
     // Grouped settings that are related to Uniconfig transactions.
     "transactions": {
         /*
-        Flag that determines whether dedicated Uniconfig transactions or shared transactions
-        can be used:
-        [true]:  User must used transactions created by 'create-transaction' RPC
-                 for interaction with nodes in uniconfig, templates, or snapshot topologies.
-                 Shared transaction can be used for: CRUD operations under paths that don't
-                 include uniconfig, templates, or snapshot node; read operation under
-                 uniconfig, templates, or snapshot node.
-        [false]: RPC 'create-transaction' and 'close-transaction' cannot be used -
-                 dedicated Uniconfig transactions cannot be used. Only shared transaction
-                 can be used for interaction with whole CONFIG/OPER datastore.
+                Flag that determines whether build-and-commit or only immediate commit model is supported:
+        [true]:  both build-and-commit using dedicated UniConfig transactions and immediate
+	             commit models are supported.
+        [false]: only immediate commit model without explicit transactions is supported
         */
         "uniconfigTransactionEnabled": true,
         /*
         Maximum transaction age before it can be evicted from transaction registry [seconds].
         Configuring '0' disables cleaning of Uniconfig transactions.
         */
-        "maxTransactionAge": 0,
+        "maxTransactionAge": 600,
         /*
         Interval at which expired transactions are closed and cleaned [seconds].
         Expired transaction: transaction which age exceeds 'maxTransactionAge' setting.
@@ -231,7 +225,7 @@
         are cleaned - shared transaction is never removed or invalidated.
          Configuring '0' disables cleaning of Uniconfig transactions.
         */
-        "cleaningInterval": 0
+        "cleaningInterval": 60
     },
     "tls": {
         "enabledTls": true,
