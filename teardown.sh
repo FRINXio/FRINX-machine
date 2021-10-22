@@ -10,11 +10,15 @@ DESCRIPTION:
     - Default stack name is set to fm (based on startup.sh script)
 
 OPTIONS:
-    -h|--help           print help
     -s|--stack-name     set FM stack name (default fm)
-    -v|--volumes        delete FM volumes
+    -f|--frinx          delete FM Uniconfig/Uniflow volumes
     -m|--monitoring     delete FM monitoring volumes
-    -a|--all            delete FM and monitoring volumes
+    -v|--volumes        delete all FM persistant volumes (FM, Monitoring)
+    -c|--cache          delete content of ./config/uniconfig/frinx/uniconfig/cache folder
+    -e|--env            delete .env file with custom settings
+    -a|--all            delete all volumes and files
+
+    -h|--help           print help
     -w|--wait           maximal waiting time for removing volumes (default 30s)
     -d|--debug          enable verbose
 EOF
@@ -80,6 +84,9 @@ function unused_fm_volumes()
 __SCRIPT_NAME="$(basename "${0}")"
 __SCRIPT_PATH="$(dirname "$(readlink -f "$0")")"
 
+__ENV_PATH="${__SCRIPT_PATH}/.env"
+__CACHE_PATH="${__SCRIPT_PATH}/config/uniconfig/frinx/uniconfig/cache"
+
 __STACK_NAME="fm"
 __WAIT_TIME=30
 unset __CLEAN_VOLUMES
@@ -100,15 +107,27 @@ do
                 shift
             fi;;
 
-        -v|--volumes)
+        -f|--frinx)
             __CLEAN_VOLUMES="true";;
+
+        -v|--volumes)
+            __CLEAN_VOLUMES="true"
+            __CLEAN_MONITORING="true";;
         
         -m|--monitoring)
             __CLEAN_MONITORING="true";;
 
+        -c|--cache)
+            __CLEAN_CACHE="true";;
+
+        -e|--env)
+            __CLEAN_ENV="true";;
+
         -a|--all)
             __CLEAN_VOLUMES="true"
-            __CLEAN_MONITORING="true";;
+            __CLEAN_MONITORING="true"
+            __CLEAN_CACHE="true"
+            __CLEAN_ENV="true";;
 
         -w|--wait)
             if [[ -z ${2} ]]; then
@@ -159,4 +178,14 @@ if [ -n "${__CLEAN_MONITORING}" ]; then
         echo "Removing was not successful"
         exit 1
     fi
+fi
+
+if [ -n "${__CLEAN_ENV}" ]; then
+    echo "###### Removing .env file ######"
+    rm -rfv "${__ENV_PATH}"
+fi
+
+if [ -n "${__CLEAN_CACHE}" ]; then
+    echo "###### Removing content of cache folder ######"
+    find "${__CACHE_PATH}" -mindepth 1 -maxdepth 1 -type d -exec sudo rm -vrf {} \;
 fi

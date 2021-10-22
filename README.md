@@ -363,9 +363,12 @@ $ ./teardown.sh
 
 To remove all persistent data, purge the volumes (ATTENTION!!! ALL USER DATA WILL BE LOST):
 ```sh
-$ ./teardown.sh -v # remove Frinx Machine uniflow/uniconfig data
+$ ./teardown.sh -f # remove Frinx Machine uniflow/uniconfig data
 $ ./teardown.sh -m # remove Monitoring data
-$ ./teardown.sh -a # remove all Frinx docker volumes
+$ ./teardown.sh -v # remove all Frinx docker volumes
+$ ./teardown.sh -c # delete content of ./config/uniconfig/frinx/uniconfig/cache folder
+$ ./teardown.sh -e # delete .env file with custom settings
+$ ./teardown.sh -a # delete all volumes and files
 ```
 For see more options run:
 ```sh
