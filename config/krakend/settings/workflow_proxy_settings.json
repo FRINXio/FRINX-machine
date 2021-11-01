@@ -187,6 +187,11 @@
                 "workflowId",
                 "order"
               ]
+        },
+        {
+            "endpoint": "/api/uniflow/external/postgres/{dataId}",
+            "method": "GET",
+            "url_pattern": "/external/postgres/{dataId}"
         }
     ]
 }
