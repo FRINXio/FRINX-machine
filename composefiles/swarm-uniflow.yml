@@ -21,7 +21,7 @@ x-logging: &logging_json
 
 services:
   conductor-server:
-    image: frinx/uniflow-conductor-server:1.0.1
+    image: frinx/uniflow-conductor-server:latest
     # user: guest
     logging: *logging_loki
     labels:
