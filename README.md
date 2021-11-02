@@ -22,13 +22,12 @@ Development:
 - 16GB RAM
 - 4x CPU
 
-
-For long-term monitoring is good to have a minimal 30Gb of free space 
+It is recommended to deploy with 30GB of disk space or more depending on your data retention policies and deployment scale.
 
 To deploy an FM swarm cluster you need at least one machine with Ubuntu 18.04/20.04 installed.
 
-# Starting Frinx Machine
-You can deploy the FM either locally with all services running on a single node, or you can split UniFlow and UniConfig instances among multiple nodes. UniFlow is always running on the docker swarm manager node.
+# How to install and run FRINX Machine
+You can deploy the FM either locally with all services running on a single node, or you can distribute UniFlow and UniConfig instances across multiple nodes. UniFlow is always running on the docker swarm manager node.
 
 
 * [Installation](#installation)
@@ -43,8 +42,8 @@ You can deploy the FM either locally with all services running on a single node,
 Run the install script, this will check and download the neccessary prerequisities.
 
 ```sh
-$ ./install.sh  # will ask password sudo 
-$ ./install.sh  --skip # skip dependeny installing
+$ ./install.sh  # the install script requires sudo access to install the required components (see list below)
+$ ./install.sh  --skip # skip the installation of dependencies
 $ ./install.sh  --update-secrets # update certificates to docker secrets frm ./config/certificates folder
 ```
 
@@ -65,7 +64,7 @@ See: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-
 </br>
 
 
-### Install Frinx Machine with proxy 
+### Install FRINX Machine with proxy
 If you want to configure docker to use a proxy server, use:
 
 
@@ -89,28 +88,28 @@ During installation, docker secrets are created and are used for establishing HT
 
 These certificates can be replaced by custom certificates (use the same name) before execution of installation script or re-execution with the `--update-secrets` flag. </br></br>
 ## Single-node deployment
-Installation and running of UniFlow and UniConfig on the same machine.
-To deploy both UniFlow and UniConfig locally (for testing and demo purposes), run `startup.sh`:
+Install and run UniFlow and UniConfig on the same machine.
+To deploy all components on a single node, run `startup.sh`:
 ```sh
 $ ./startup.sh
 
-# To use development resource limitation, use:
+# To deploy FRINX Machine with resource limitations (e.g. for development), use:
 $ ./startup.sh --dev 
 
-# To uniflow only, use:
+# To deploy uniflow only, use:
 $ ./startup.sh --uniflow 
 
-# To uniconfig only, use:
+# To deploy uniconfig only, use:
 $ ./startup.sh --uniconfig 
 
-# To monitoring services only, use:
+# To deploy monitoring services only, use:
 $ ./startup.sh --monitoring 
 
-# To Frinx Machine without monitoring services, use:
+# To deploy FRINX Machine without monitoring services, use:
 $ ./startup.sh --no-monitoring 
 
 ```
-The FRINX Machine services will now be started. 
+The FRINX Machine services will be started.
 
 To check the status of all services use
 ```sh
@@ -119,7 +118,7 @@ $ docker service ls
 
 Each service will show as 'REPLICAS 1/1' when the service is up (it may take several minutes to start all services).
 
-UniFlow dashboard is accessible via web browser by visiting:
+The FRINX Machine dashboard is accessible via web browser by visiting:
 ```sh
 http://<IP_of_node_running_FM>
 
@@ -249,14 +248,14 @@ Default settings are prepared for deployment without docker proxy.
 
 </br>
 
-## Resource limitation
+## Resource limitations
 
-Default resource limitation is configured for production but can be changed to development.
+Default resource limitations are configured for production and can be changed for development.
 ```sh
 $ ./startup.sh --dev    # ./config/dev_settings.txt
 $ ./startup.sh --prod   # ./config/prod_settings.txt, same as ./startup.sh 
 ```
-These values can be changed by profiled requirements.
+These values in the dev_settings and prod_settings txt files can be changed based on deployment needs.
 
 </br>
 
