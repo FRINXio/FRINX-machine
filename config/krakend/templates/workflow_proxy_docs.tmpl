@@ -1,0 +1,52 @@
+{{range $index, $element := .}}
+{{if gt $index 0}},{{end}}
+{
+    "endpoint": "{{ .endpoint }}",
+    "method": "{{ .method }}",
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
+
+    {{ if .querystring_params }}
+    "querystring_params": [ 
+        {{range $query_enabled, $query := .querystring_params}} {{if gt $query_enabled 0}},{{end}} "{{$query}}" {{ end }} 
+        ],
+    {{end}}
+
+    "backend": [
+    {
+        "url_pattern": "{{ .url_pattern }}",
+        "encoding": "no-op",
+        "sd": "static",
+        "disable_host_sanitize": false,
+        "extra_config": {
+            "github.com/devopsfaith/krakend-martian": {
+                "fifo.Group": {
+                    "scope": ["request", "response"],
+                    "aggregateErrors": true,
+                    "modifiers": [
+                        {
+                            "header.Modifier": {
+                                "scope": ["request"],
+                                "name": "Accept-Encoding",
+                                "value": "identity"
+                            }
+                        },
+                        {{ include "default_tenant_headers.tmpl" }},
+                        {
+                            "header.Modifier": {
+                                "scope": ["request"],
+                                "name": "from",
+                                "value": "admin-user"
+                            }
+                        }
+                    ]
+                }
+              }
+        },
+        "host": [
+            "workflow-proxy:8088"
+        ]
+    }
+]
+}
+{{end}}
