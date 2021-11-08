@@ -46,6 +46,7 @@
   },
   "endpoints": [
     {{ template "workflow_proxy.tmpl" .workflow_proxy_settings.endpoints }},
+    {{ template "workflow_proxy_docs.tmpl" .workflow_proxy_docs_settings.endpoints }},
     {{ template "inventory.tmpl" .inventory_settings.endpoints }},
     {{ template "uniconfig.tmpl" .uniconfig_settings }},
     {{ template "uniresource.tmpl" .uniresource_settings.endpoints }},
