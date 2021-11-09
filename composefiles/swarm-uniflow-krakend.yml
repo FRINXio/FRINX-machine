@@ -13,12 +13,6 @@ x-logging: &logging_loki
         - action: labelmap
           regex: swarm_(service)
 
-x-logging: &logging_json
-    driver: "json-file"
-    options:
-      max-file: "3"
-      max-size: "10m"
-
 services:
   krakend:
     image: frinx/krakend:${LOCAL_KRAKEND_IMAGE_TAG}
@@ -65,6 +59,10 @@ services:
       placement:
         constraints:
           - node.role == manager
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 10s
       mode: replicated
       replicas: 1
       resources:

@@ -6,22 +6,19 @@ x-logging: &logging_loki
       loki-url: "http://${MANAGER_IP_ADDR}:3100/loki/api/v1/push"
       max-file: "3"
       max-size: "10m"
+      mode: non-blocking
       loki-retries: "1"
       loki-batch-size: "1500"
       loki-relabel-config: |
         - action: labelmap
           regex: swarm_(service)
 
-x-logging: &logging_json
-    driver: "json-file"
-    options:
-      max-file: "3"
-      max-size: "10m"
-
 services:
   prometheus:
     image: prom/prometheus:v2.29.1
     logging: *logging_loki
+    labels:
+      - traefik.enable=false 
     volumes:
       - frinx-monitoring-prometheus:/prometheus
       - ${UF_CONFIG_PATH}/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -43,14 +40,14 @@ services:
       - "--storage.tsdb.path=/prometheus"
       - "--web.console.libraries=/usr/share/prometheus/console_libraries"
       - "--web.console.templates=/usr/share/prometheus/consoles"
-      - '--storage.tsdb.retention.time=3d'
-      - '--storage.tsdb.retention.size=512MB'
+      - '--storage.tsdb.retention.time=7d'
+      - '--storage.tsdb.retention.size=2048MB'
     deploy:
       placement:
         constraints:
           - node.role == manager
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated
@@ -63,6 +60,8 @@ services:
   grafana:
     image: grafana/grafana:8.1.2
     logging: *logging_loki
+    labels:
+      - traefik.enable=false 
     environment:
       - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
     volumes: 
@@ -93,7 +92,7 @@ services:
         constraints:
           - node.role == manager
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated
@@ -108,6 +107,8 @@ services:
   swarm-node-info:       
     image: prom/node-exporter:v1.2.2
     logging: *logging_loki
+    labels:
+      - traefik.enable=false 
     environment:
       NODE_ID: '{{.Node.ID}}'
     volumes:       
@@ -135,7 +136,7 @@ services:
         hard: ${MN_ULIMIT_NPROC_HARD}
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: global
@@ -147,6 +148,8 @@ services:
   swarm-services-info:
     image: google/cadvisor:v0.33.0
     logging: *logging_loki
+    labels:
+      - traefik.enable=false 
     hostname: '{{.Node.ID}}'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -170,7 +173,7 @@ services:
         hard: ${MS_ULIMIT_NPROC_HARD}
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: global
@@ -181,7 +184,14 @@ services:
 
   loki:
     image: grafana/loki:2.2.1
-    logging: *logging_json
+    logging:
+      driver: "json-file"
+      options:
+        mode: non-blocking
+        max-file: "3"
+        max-size: "10m"
+    labels:
+      - traefik.enable=false 
     volumes:
       - frinx-monitoring-loki:/loki
       - ${UF_CONFIG_PATH}/monitoring/loki/loki-config.yaml:/etc/loki/loki-local-config.yaml
@@ -208,7 +218,7 @@ services:
         prometheus.port: "9090"
         prometheus.path: "/metrics"
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated

@@ -14,12 +14,6 @@ x-logging: &logging_loki
         - action: labelmap
           regex: swarm_(service)
 
-x-logging: &logging_json
-    driver: "json-file"
-    options:
-      max-file: "3"
-      max-size: "10m"
-
 services:
   conductor-server:
     image: frinx/uniflow-conductor-server:latest
@@ -54,7 +48,7 @@ services:
         constraints:
           - node.role == manager
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated
@@ -72,7 +66,7 @@ services:
       - traefik.enable=false 
     environment:
       - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms512m -Xmx3584m"
+      - "ES_JAVA_OPTS=-Xms${ES_JAVA_OPTS_S} -Xmx${ES_JAVA_OPTS_M}"
     volumes:
       - frinx_uniflow_elastic_data:/usr/share/elasticsearch/data
       - ${UF_CONFIG_PATH}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
@@ -97,7 +91,7 @@ services:
         constraints:
           - node.role == manager
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated
@@ -134,7 +128,7 @@ services:
         constraints:
           - node.role == manager
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated
@@ -177,7 +171,7 @@ services:
         constraints:
           - node.role == manager
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated
@@ -219,7 +213,7 @@ services:
         constraints:
           - node.role == manager
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated
@@ -257,7 +251,7 @@ services:
         constraints:
           - node.role == manager
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated
@@ -300,7 +294,7 @@ services:
         constraints:
           - node.role == manager
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated
@@ -342,6 +336,10 @@ services:
       placement:
         constraints:
           - node.role == manager
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 10s
       mode: replicated
       replicas: 1
       resources:
@@ -381,7 +379,7 @@ services:
         constraints:
           - node.role == manager
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated

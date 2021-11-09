@@ -18,12 +18,6 @@ x-logging: &logging_loki
         - action: labelmap
           regex: swarm_(service)
 
-x-logging: &logging_json
-    driver: "json-file"
-    options:
-      max-file: "3"
-      max-size: "10m"
-
 services:
   uniconfig:
     image: traefik:v2.4
@@ -75,9 +69,10 @@ services:
       - traefik.http.services.uniconfig.loadbalancer.passhostheader=true
       - traefik.http.routers.uniconfig.tls=true
     environment:
+      - CONTAINER_ID='{{.Task.Slot}}'
       - JAVA_MAX_MEM=${UC_XMX_LIMIT_MEM}
       # Enable G1GC and GC logging 
-      - _JAVA_OPTIONS=-Xmx${UC_XMX_LIMIT_MEM} -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xlog:gc:/opt/uniconfig-frinx/log/gc.log:tags,time,uptime,level:filecount=10,filesize=5M -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1 ${UC_PROXY_HTTP_ENV} ${UC_PROXY_HTTP_PORT_ENV} ${UC_PROXY_HTTPS_ENV} ${UC_PROXY_HTTPS_PORT_ENV} ${UC_PROXY_NOPROXY_ENV}
+      - _JAVA_OPTIONS=-Xmx${UC_XMX_LIMIT_MEM} -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xlog:gc:/opt/uniconfig-frinx/log/gc-{{.Task.Slot}}.log:tags,time,uptime,level:filecount=10,filesize=5M -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1 ${UC_PROXY_HTTP_ENV} ${UC_PROXY_HTTP_PORT_ENV} ${UC_PROXY_HTTPS_ENV} ${UC_PROXY_HTTPS_PORT_ENV} ${UC_PROXY_NOPROXY_ENV}
       - dbPersistence_enabled=true
       - dbPersistence_connection_dbName=uniconfig
       - dbPersistence_connection_username=postgres
@@ -114,7 +109,7 @@ services:
         constraints:
           - node.id == ${UC_SWARM_NODE_ID}
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated
@@ -159,7 +154,7 @@ services:
         constraints:
           - node.id == ${UC_SWARM_NODE_ID}
       restart_policy:
-        condition: on-failure
+        condition: any
         delay: 5s
         window: 10s
       mode: replicated
