@@ -229,8 +229,6 @@ services:
     logging: *logging_loki
     labels:
       - traefik.enable=false
-    volumes:
-      - ${UF_CONFIG_PATH}/workflow-proxy/uniflow.json:/app/workflow-proxy/swagger.json
     healthcheck:
       test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/readiness' && curl -I -XGET http://conductor-server:8080/health || exit 1
       interval: 10s
