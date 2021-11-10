@@ -24,6 +24,16 @@
             "endpoint": "/api/uniflow/swagger-ui-init.js",
             "method": "GET",
             "url_pattern": "/docs/swagger-ui-init.js"
+        },
+        {
+            "endpoint": "/api/uniflow/favicon-32x32.png",
+            "method": "GET",
+            "url_pattern": "/docs/favicon-32x32.png"
+        },
+        {
+            "endpoint": "/api/uniflow/favicon-16x16.png",
+            "method": "GET",
+            "url_pattern": "/docs/favicon-16x16.png"
         }
     ]
 }
