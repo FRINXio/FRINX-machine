@@ -57,7 +57,7 @@ services:
           memory: ${TF_RES_LIMIT_MEM}
 
   uniconfig-controller:
-    image: frinx/uniconfig:4.2.8
+    image: frinx/uniconfig:4.2.9
     logging: *logging_loki
     labels:
       - traefik.enable=true
