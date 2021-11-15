@@ -7,7 +7,7 @@ https://github.com/FRINXio/FRINX-machine/releases
 
 </br>
 
-`For migration of Frinx-Machine 1.6 to Frinx-Machine 1.7 see ` [ Migration from Frinx Machine 1.6](#maintaining) </br>
+`For migration of Frinx-Machine 1.6 to higher version see ` [ Migration from Frinx Machine 1.6](#maintaining) </br>
  
 ## Requirements
 Minimal hardware requirements (See [resource limitation](#resource-limitation))
