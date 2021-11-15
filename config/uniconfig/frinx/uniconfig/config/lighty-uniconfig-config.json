@@ -94,6 +94,8 @@
     "deviceDiscovery":{
         // A parameter that specifies the local address from which the scanning will be ran.
         "localAddress": "",
+        // A parameter that specifies the amount of threads that will the service use.
+        "threadAmount": 4,
         // A parameter that specifies the maximum limit of IP addresses that the service can process in one request.
         "addressCheckLimit": 256
     },
