@@ -4,6 +4,8 @@
 {
     "endpoint": "{{ .endpoint }}",
     "method": "GET",
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
 
     {{ if .querystring_params }}
     "querystring_params": [ 
@@ -11,8 +13,6 @@
         ],
     {{end}}
 
-    "output_encoding": "no-op",
-    "headers_to_pass": ["*"],
     "backend": [
     {
         "url_pattern": "{{ .url_pattern }}",

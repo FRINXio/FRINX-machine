@@ -1,52 +1,79 @@
-{{range $index, $element := .}}
-{{if gt $index 0}},{{end}}
 {
-    "endpoint": "{{ .endpoint }}",
-    "method": "{{ .method }}",
+    "endpoint": "/api/inventory",
+    "method": "POST",
     "output_encoding": "no-op",
     "headers_to_pass": ["*"],
 
-    {{ if .querystring_params }}
-    "querystring_params": [ 
-        {{range $query_enabled, $query := .querystring_params}} {{if gt $query_enabled 0}},{{end}} "{{$query}}" {{ end }} 
-        ],
-    {{end}}
+    "extra_config": {
+        {{ $jwt_production := env "JWT_PRODUCTION" }}
+        {{ if eq $jwt_production "true" }}
+            {{ include "jwt_config.tmpl" }}
+        {{ else if eq $jwt_production "false" }}
+            {{ include "jwt_fake_config.tmpl" }}
+        {{ end }}
+    },
 
     "backend": [
-    {
-        "url_pattern": "{{ .url_pattern }}",
-        "encoding": "no-op",
-        "sd": "static",
-        "disable_host_sanitize": false,
-        "extra_config": {
-            "github.com/devopsfaith/krakend-martian": {
-                "fifo.Group": {
-                    "scope": ["request", "response"],
-                    "aggregateErrors": true,
-                    "modifiers": [
-                        {
-                            "header.Modifier": {
-                                "scope": ["request"],
-                                "name": "Content-Type",
-                                "value":  "application/json"
+        {
+            "url_pattern": "/graphql",
+            "encoding": "no-op",
+            "sd": "static",
+            "disable_host_sanitize": false,
+            "extra_config": {
+                "github.com/devopsfaith/krakend-martian": {
+                    "fifo.Group": {
+                        "scope": ["request", "response"],
+                        "aggregateErrors": true,
+                        "modifiers": [
+                            {
+                                "header.Modifier": {
+                                    "scope": ["request"],
+                                    "name": "Content-Type",
+                                    "value":  "application/json"
+                                }
                             }
-                        },
-                        {{ include "default_tenant_headers.tmpl" }},
-                        {
-                            "header.Modifier": {
-                                "scope": ["request"],
-                                "name": "from",
-                                "value": "inventory"
-                            }
-                        }
-                    ]
+                        ]
+                    }
                 }
-              }
-        },
-        "host": [
-            "inventory:8000"
-        ]
-    }
-]
+            },
+            "host": [
+                "inventory:8000"
+            ]
+        }
+    ]
+}, 
+{
+    "endpoint": "/api/inventory",
+    "method": "GET",
+    "output_encoding": "no-op",
+    "headers_to_pass": ["*"],
+
+    "backend": [
+        {
+            "url_pattern": "/graphql",
+            "encoding": "no-op",
+            "sd": "static",
+            "disable_host_sanitize": false,
+            "extra_config": {
+                "github.com/devopsfaith/krakend-martian": {
+                    "fifo.Group": {
+                        "scope": ["request", "response"],
+                        "aggregateErrors": true,
+                        "modifiers": [
+                            {
+                                "header.Modifier": {
+                                    "scope": ["request"],
+                                    "name": "Content-Type",
+                                    "value":  "application/json"
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "host": [
+                "inventory:8000"
+            ]
+        }
+    ]
 }
-{{end}}

@@ -33,7 +33,7 @@ OPTIONS:
 
    --https       Deploy Frinx-Machine in https mode 
                   - KrakenD with certificates
-                  - https://127.0.0.1
+                  - https://localhost
 
    --prod|--dev|--high  
                   Deploy Frinx-Machine in production or development mode
@@ -75,7 +75,11 @@ Each service has REPLICAS 1/1 when everything works (it may take several minutes
 
 Use './teardown.sh' to stop all services
 or  './teardown.sh -v' to remove also old data if needed.
+
 EOF
+
+echo -e "${INFO} USE localhost instead of 127.0.0.1"
+
 }
 
 
@@ -88,7 +92,7 @@ function argumentsCheck {
            exit 0;;
         
         --https)
-            export KRAKEND_HTTPS="true"
+            export TLS_DISABLED="false"
             export KRAKEND_TLS_PROTOCOL="https"
             export KRAKEND_PORT=443;;
 
@@ -164,6 +168,8 @@ function startMonitoring {
 
 function startUniflow {
   setKrakendComposeTag
+  generateFrinxFrontendFile
+
   echo -e "${INFO} Uniflow swarm worker node id: ${UF_SWARM_NODE_ID}"
   docker stack deploy --compose-file composefiles/$dockerSwarmUniflow $stackName
   status=$?
@@ -356,6 +362,22 @@ function setNodeIdLocalDeploy {
 }
 
 
+function generateFrinxFrontendFile {
+
+  local __ff_conf_tmpl="${UF_CONFIG_PATH}/frinx-frontend/config_template.json"
+  local __ff_conf="${UF_CONFIG_PATH}/frinx-frontend/config.json"
+
+  if [[ ${JWT_PRODUCTION} == "false" ]]; then
+    echo -e "${WARNING} For Autorization is used Frinx Fake Token"
+  elif [[ ${JWT_PRODUCTION} == "true" ]]; then
+    echo -e "${WARNING} For Autorization is used Azure Active Directory"
+  fi
+
+  sed " s|AZURE_LOGIN_URL|${AZURE_LOGIN_URL}|; s|AZURE_CLIENT_ID|${AZURE_CLIENT_ID}|; s|AZURE_TENANT_NAME|${AZURE_TENANT_NAME}|; s|AZURE_ENABLED|${JWT_PRODUCTION}|; \
+  s|KRAKEND_URL|${KRAKEND_TLS_PROTOCOL}://${REDIRECT_URI}|" ${__ff_conf_tmpl} > ${__ff_conf}
+}
+
+
 function generateUniconfigKrakendFile {
 
   if [[ ${__multinode} == "true" ]]; then
@@ -469,10 +491,9 @@ uniconfigServiceFilesPath="${FM_DIR}/composefiles/uniconfig"
 krakendUniconfigNode="${FM_DIR}/config/krakend/settings"
 krakendUniconfigTmplFile="${krakendUniconfigNode}/uniconfig_settings_template.json"
 krakendUniconfigFile="${krakendUniconfigNode}/uniconfig_settings.json"
-mkdir -p ${FM_DIR}/config/krakend/partials/tls
 
 ## Default http 
-export KRAKEND_HTTPS="false"    
+export TLS_DISABLED="true"
 export KRAKEND_TLS_PROTOCOL="http"
 export KRAKEND_PORT=80
 

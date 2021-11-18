@@ -1,0 +1,6 @@
+"github.com/devopsfaith/krakend-lua/router": {
+    "sources": ["scripts/fake_frinx_token.lua"],
+    "allow_open_libs": true,
+    "pre": "local r = ctx.load(); fake_token_validate(r);",
+    "live": true
+}

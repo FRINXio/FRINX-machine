@@ -1,68 +1,115 @@
 {{range $index_in_range, $not_used_element := $.range}}
 {{if gt $index_in_range 0}},{{end}}
 
-{{range $host_index, $host := $.hosts}}
-{{if gt $host_index 0}},{{end}}
-{
-    "endpoint": "/api/{{$host}}/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
-    "method": "POST",
-    {{ include "uniconfig_partial_1.tmpl" }}
-    "backend": [
+    {{range $host_index, $host := $.hosts}}
+    {{if gt $host_index 0}},{{end}}
+
     {
-        "url_pattern": "/rests/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
-        {{ include "uniconfig_partial_2.tmpl" }}
-        "host": [
-	        "https://{{$host}}:8181"
+        "endpoint": "/api/{{$host}}/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+        "method": "POST",
+        {{ include "uniconfig_partial_1.tmpl" }}
+
+        "extra_config": {
+            {{ $jwt_production := env "JWT_PRODUCTION" }}
+            {{ if eq $jwt_production "true" }}
+                {{ include "jwt_config.tmpl" }}
+            {{ else if eq $jwt_production "false" }}
+                {{ include "jwt_fake_config.tmpl" }}
+            {{ end }},
+            
+            "github.com/devopsfaith/krakend-lua/proxy": {
+                "sources": ["scripts/uniconfig_rbac.lua"],
+                "allow_open_libs": true,
+                "pre": "local r = request.load(); user_group_auth(r, os.getenv('UNICONFIG_CONTROLLER_ADMIN_GROUP'));",
+                "live": true
+            }
+        },
+
+        "backend": [
+            {
+                "url_pattern": "/rests/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+                {{ include "uniconfig_partial_2.tmpl" }}
+                "extra_config": {
+                    "github.com/devopsfaith/krakend-lua/proxy/backend": {
+                        "pre": "local r = request.load(); r:headers('Authorization','Basic YWRtaW46YWRtaW4=');",
+                        "allow_open_libs": true
+                    }
+                },
+                "host": [
+                    "https://{{$host}}:8181"
+                ]
+            }
         ]
     }
-    ]
-}
-{{end}}
-{{end}}
-,
+    {{end}}
+{{end}},
+
 
 {{range $method_index, $method := .methods}}
 {{if gt $method_index 0}},{{end}}
 
-{{range $index_in_range, $not_used_element := $.range}}
-{{if gt $index_in_range 0}},{{end}}
+    {{range $index_in_range, $not_used_element := $.range}}
+    {{if gt $index_in_range 0}},{{end}}
 
-{{range $host_range, $host := $.hosts}}
-{{if gt $host_range 0}},{{end}}
+        {{range $host_range, $host := $.hosts}}
+        {{if gt $host_range 0}},{{end}}
 
-{
-    "endpoint": "/api/{{$host}}/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
-    "method": "{{$method}}",
-    {{ include "uniconfig_partial_1.tmpl" }}
-    "backend": [
-    {
-        "url_pattern": "/rests/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
-        {{ include "uniconfig_partial_2.tmpl" }}
-        "host": [
-            "https://{{$host}}:8181"
-        ]
-    }
-],
-    "extra_config": {
-        "@comment": "Fixing escape queries with multiple fields separated by semicolon",
-        "github.com/devopsfaith/krakend-lua/router": {
-            "sources": ["scripts/query_escape.lua"],
-            "allow_open_libs": true,
-            "pre": "local r = ctx.load(); r:url(urlencode(r));",
-            "live": true
-        }
-    }
-}
-{{end}}
-{{end}}
+            {
+                "endpoint": "/api/{{$host}}/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+                "method": "{{$method}}",
+                {{ include "uniconfig_partial_1.tmpl" }}
+
+
+                "extra_config": {
+                    {{ $jwt_production := env "JWT_PRODUCTION" }}
+                    {{ if eq $jwt_production "true" }}
+                        {{ include "jwt_config.tmpl" }}
+                    {{ else if eq $jwt_production "false" }}
+                        "github.com/devopsfaith/krakend-lua/router": {
+                            "@comment": "Fixing escape queries with multiple fields separated by semicolon",
+                            "sources": ["scripts/uniconfig_query_escape.lua", "scripts/fake_frinx_token.lua"],
+                            "allow_open_libs": true,
+                            "pre": "local r = ctx.load(); r:url(urlencode(r)); fake_token_validate(r)",
+                            "live": true
+                        }
+                    {{ end }},
+                    
+                    "github.com/devopsfaith/krakend-lua/proxy": {
+                        "sources": ["scripts/uniconfig_rbac.lua"],
+                        "allow_open_libs": true,
+                        "pre": "local r = request.load(); user_group_auth(r, os.getenv('UNICONFIG_CONTROLLER_ADMIN_GROUP'));",
+                        "live": true
+                    }
+                },
+
+                "backend": [
+                    {
+                        "url_pattern": "/rests/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+                        {{ include "uniconfig_partial_2.tmpl" }}
+                        "extra_config": {
+                            "github.com/devopsfaith/krakend-lua/proxy/backend": {
+                                "pre": "local r = request.load(); r:headers('Authorization','Basic YWRtaW46YWRtaW4=');",
+                                "allow_open_libs": true
+                            }
+                        },
+                        "host": [
+                            "https://{{$host}}:8181"
+                        ]
+                    }
+                ]
+            }
+
+        {{end}}
+    {{end}}
 {{end}},
+
+
 {
+    "@comment": "Return list of uniconfig-controller zones",
+
     "endpoint": "/static/list/uniconfig",
     "method": "GET",
-    "backend": [
-        {
-        }
-    ],
+    "backend": [{ }],
     "extra_config": {
         "github.com/devopsfaith/krakend/proxy": {
             "static": {
