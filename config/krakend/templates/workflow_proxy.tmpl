@@ -12,6 +12,15 @@
         ],
     {{end}}
 
+    "extra_config": {
+        {{ $jwt_production := env "JWT_PRODUCTION" }}
+        {{ if eq $jwt_production "true" }}
+            {{ include "jwt_config.tmpl" }}
+        {{ else if eq $jwt_production "false" }}
+            {{ include "jwt_fake_config.tmpl" }}
+        {{ end }}
+    },
+
     "backend": [
     {
         "url_pattern": "{{ .url_pattern }}",
@@ -36,14 +45,6 @@
                                 "scope": ["response"],
                                 "name": "Content-Type",
                                 "value": "application/json; charset=utf-8"
-                            }
-                        },
-                        {{ include "default_tenant_headers.tmpl" }},
-                        {
-                            "header.Modifier": {
-                                "scope": ["request"],
-                                "name": "from",
-                                "value": "admin-user"
                             }
                         }
                     ]

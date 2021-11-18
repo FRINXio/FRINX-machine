@@ -26,12 +26,25 @@ services:
       - FC_SETTINGS=/etc/krakend/settings
       - FC_PARTIALS=/etc/krakend/partials
       - FC_TEMPLATES=/etc/krakend/templates
+      # HTTPS SETTINGS
+      - TLS_DISABLED=${TLS_DISABLED}
+      # AUTHORIZATION AND AUTHENTICATION SETTINGS
+      # IF false, THEN Fake-Frinx-Token Used
+      # IF true,  THEN Azure AD Token Required 
+      - JWT_PRODUCTION=${JWT_PRODUCTION}
+      # AZURE AD PLUGIN SETTINGS
+      - AZURE_LOGIN_URL=${AZURE_LOGIN_URL}
+      - AZURE_TENANT_NAME=${AZURE_TENANT_NAME}
+      - AZURE_KRAKEND_PLUGIN_CLIENT_ID=${AZURE_CLIENT_ID}
+      - AZURE_KRAKEND_PLUGIN_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
+      - AZURE_KRAKEND_PLUGIN_JWT_VALUE_PREFIX=Bearer
+      # UNICONFIG RBAC SETTINGS
+      - UNICONFIG_CONTROLLER_ADMIN_GROUP=${ADMIN_GROUP}
       # - FC_OUT=/etc/krakend/output.json
       # Ignore x509 certificate errors
       - GODEBUG="x509ignoreCN=0"
     volumes:
       - ${UF_CONFIG_PATH}/krakend:/etc/krakend:ro
-      - ${UF_CONFIG_PATH}/krakend/tls/${KRAKEND_TLS_PROTOCOL}:/etc/krakend/partials/tls:ro
     secrets:
       - frinx_krakend_tls_cert.pem
       - frinx_krakend_tls_key.pem
@@ -167,7 +180,9 @@ services:
     image: frinx/frinx-frontend:latest
     logging: *logging_loki
     labels:
-      - traefik.enable=false  
+      - traefik.enable=false
+    environment:
+    - TLS_PROTOCOL=${KRAKEND_TLS_PROTOCOL}
     volumes:
       - ${UF_CONFIG_PATH}/frinx-frontend/config.json:/usr/share/nginx/html/config.json:ro
     healthcheck:
@@ -295,11 +310,15 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:1.0.6
+    image: frinx/workflow-proxy:latest
     user: node
     logging: *logging_loki
     labels:
       - traefik.enable=false
+    environment:
+      - OAUTH2=${JWT_PRODUCTION}
+      - OAUTH2_AUTH_URL=${AZURE_LOGIN_URL}/${AZURE_TENANT_NAME}/oauth2/v2.0/authorize
+      - OAUTH2_TOKEN_URL=/api/uniflow/docs/token
     healthcheck:
       test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/readiness' && curl -I -XGET http://conductor-server:8080/health || exit 1
       interval: 10s
@@ -343,7 +362,8 @@ services:
         target: /set_env_secrets.sh
         mode: 0777
     environment:
-      - RM_ADMIN_GROUPS=network-admin
+      - RM_ADMIN_GROUPS=${ADMIN_GROUP}
+      - RM_ADMIN_ROLES=''
       - RM_LOG_PATH=/var/log/rm.log
       - RM_LOG_LEVEL=warn
       - WASMER_MAX_TIMEOUT_MILLIS=10000
@@ -378,7 +398,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:1.1.0
+    image: frinx/frinx-inventory-server:latest
     logging: *logging_loki
     labels:
       - traefik.enable=false
@@ -392,7 +412,8 @@ services:
     environment:
       - UNICONFIG_API_PROTOCOL=https
       - UNICONFIG_API_PORT=8181
-      - UNICONFIG_LIST_URL=http://krakend:8080/static/list/uniconfig
+      - UNICONFIG_LIST_URL=${KRAKEND_TLS_PROTOCOL}://krakend:8080/static/list/uniconfig
+      - X_TENANT_ID=${AZURE_TENANT_ID}
     volumes:
       - ${UF_CONFIG_PATH}/inventory/run_inventory.sh:/run_inventory.sh:ro
     healthcheck:
