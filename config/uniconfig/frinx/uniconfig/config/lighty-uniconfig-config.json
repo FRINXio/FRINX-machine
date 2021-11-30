@@ -147,7 +147,7 @@
             // initial size of the connection pool (pre-initialized connections)
             "initialDbPoolSize": 5,
             // maximum size of the connection pool, before creation of next connections are blocked
-            "maxDbPoolSize": 100,
+            "maxDbPoolSize": 300,
             // maximum number of idle connections before next idle connections are cleaned
             "maxIdleConnections": 5,
             // maximum wait time for obtaining of a new connection before fetch request is dropped [milliseconds]
