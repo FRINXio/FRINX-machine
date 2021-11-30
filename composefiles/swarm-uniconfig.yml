@@ -142,6 +142,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    command: postgres -N 300
     ulimits:
       nofile:
         soft: ${UP_ULIMIT_NOFILE_SOFT}
