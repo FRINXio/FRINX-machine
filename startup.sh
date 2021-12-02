@@ -35,7 +35,8 @@ OPTIONS:
                   - KrakenD with certificates
                   - https://127.0.0.1
 
-   --prod|--dev  Deploy Frinx-Machine in production or development mode
+   --prod|--dev|--high  
+                  Deploy Frinx-Machine in production or development mode
                   - different allocation of resources
                   - default: production
 
@@ -91,7 +92,7 @@ function argumentsCheck {
             export KRAKEND_TLS_PROTOCOL="https"
             export KRAKEND_PORT=443;;
 
-        --prod|--dev)
+        --prod|--dev|--high)
             if [ -z ${__only_one_perf_config} ]; then
               if [ ${1} == "--prod" ]; then
                 __only_one_perf_config="true"
@@ -99,9 +100,12 @@ function argumentsCheck {
               elif [ ${1} == "--dev" ]; then
                 __only_one_perf_config="true";
                 performSettings="${devPerformSettingFile}"
+              elif [ ${1} == "--high" ]; then
+                __only_one_perf_config="true";
+                performSettings="${highPerformSettingFile}"
               fi
             else 
-                echo -e "Conflict parameters: --prod|--dev !!! Just one can be selected !!!"
+                echo -e "Conflict parameters: --prod|--dev|--high !!! Just one can be selected !!!"
                 echo -e "Use '${scriptName} --help' for more details"
                 exit 1
             fi;;
@@ -424,6 +428,7 @@ export KRAKEND_PORT=80
 # DEFAULT PERFORM SETTINGS
 devPerformSettingFile='./config/dev_settings.txt'
 productPerformSettingFile='./config/prod_settings.txt'
+highPerformSettingFile='./config/high_settings.txt'
 performSettings="${productPerformSettingFile}"
 
 # DEFAULT FM START SETTINGS
