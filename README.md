@@ -254,6 +254,7 @@ Default resource limitations are configured for production and can be changed fo
 ```sh
 $ ./startup.sh --dev    # ./config/dev_settings.txt
 $ ./startup.sh --prod   # ./config/prod_settings.txt, same as ./startup.sh 
+$ ./startup.sh --high   # ./config/high_settings.txt, Warning, will be used a lot of resources.
 ```
 These values in the dev_settings and prod_settings txt files can be changed based on deployment needs.
 
