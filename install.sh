@@ -315,16 +315,16 @@ function pullImages {
 
   setVariableFile "${dockerPerformSettings}"
 
+  # Workaround to fix composefile when installing
+  export KRAKEND_PORT=443
+
+  echo -e "${INFO} Pulling Monitoring images"
+  docker-compose --log-level ERROR -f $dockerComposeFileMonitor pull || true
   echo -e "${INFO} Pulling UniFlow images"
   docker-compose --log-level ERROR -f $dockerComposeFileUniflow pull || true
   echo -e "${INFO} Pulling UniConfig images"
   docker-compose --log-level ERROR -f $dockerComposeFileUniconfig pull || true
 
-  echo -e "${INFO} Pulling Monitoring images"
-  docker-compose --log-level ERROR -f $dockerComposeFileMonitor pull || true
-
-  echo -e "${INFO} Pulling Krakend base image"
-  docker pull frinx/krakend:${BASE_KRAKEND_IMAGE_TAG}
 }
 
 
@@ -477,20 +477,19 @@ INFO='\033[0;96m[INFO]:\033[0;0m'
 
 pushd ${FM_DIR} > /dev/null
 
-# Workaround to fix composefile when installing
-export KRAKEND_PORT=443
+  argumentsCheck "$@"
+  createEnvFile
+  setVariableFile "${stackEnvFile}"
+  proxy_config
+  checkInstallPrerequisities
+  installLokiPlugin
+  checkDockerGroup
+  updateDockerCertsSecrets
+  updateDockerEnvSecrets
+  pullImages
+  cleanup
+  finishedMessage
+  unsetVariableFile "${stackEnvFile}"
+  unsetVariableFile "${dockerPerformSettings}"
 
-argumentsCheck "$@"
-createEnvFile
-setVariableFile "${stackEnvFile}"
-proxy_config
-checkInstallPrerequisities
-installLokiPlugin
-checkDockerGroup
-updateDockerCertsSecrets
-updateDockerEnvSecrets
-pullImages
-cleanup
-finishedMessage
-unsetVariableFile "${stackEnvFile}"
-unsetVariableFile "${dockerPerformSettings}"
+popd > /dev/null

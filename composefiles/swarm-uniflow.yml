@@ -15,6 +15,62 @@ x-logging: &logging_loki
           regex: swarm_(service)
 
 services:
+  krakend:
+    image: frinx/krakend:latest
+    # user: root
+    logging: *logging_loki
+    labels:
+      - traefik.enable=false  
+    environment:
+      - FC_ENABLE=1
+      - FC_SETTINGS=/etc/krakend/settings
+      - FC_PARTIALS=/etc/krakend/partials
+      - FC_TEMPLATES=/etc/krakend/templates
+      # - FC_OUT=/etc/krakend/output.json
+      # Ignore x509 certificate errors
+      - GODEBUG="x509ignoreCN=0"
+    volumes:
+      - ${UF_CONFIG_PATH}/krakend:/etc/krakend:ro
+      - ${UF_CONFIG_PATH}/krakend/tls/${KRAKEND_TLS_PROTOCOL}:/etc/krakend/partials/tls:ro
+    secrets:
+      - frinx_krakend_tls_cert.pem
+      - frinx_krakend_tls_key.pem
+      - source: frinx_krakend_X509.crt
+        target: /usr/local/share/ca-certificates/frinx_krakend_X509.crt
+    healthcheck:
+      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/__health' || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    ports:
+      - target: 8080
+        published: ${KRAKEND_PORT}
+        mode: host  
+    ulimits:
+      nofile:
+        soft: ${KD_ULIMIT_NOFILE_SOFT}
+        hard: ${KD_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${KD_ULIMIT_NPROC_SOFT}
+        hard: ${KD_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${KD_RES_LIMIT_CPUS}
+          memory: ${KD_RES_LIMIT_MEM}
+
   conductor-server:
     image: frinx/uniflow-conductor-server:latest
     # user: guest
@@ -419,6 +475,12 @@ secrets:
   inventory:
     external: true
   uniflow:
+    external: true
+  frinx_krakend_tls_cert.pem:
+    external: true
+  frinx_krakend_tls_key.pem:
+    external: true
+  frinx_krakend_X509.crt:
     external: true
 
 configs:
