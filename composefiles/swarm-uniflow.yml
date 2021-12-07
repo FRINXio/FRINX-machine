@@ -16,7 +16,7 @@ x-logging: &logging_loki
 
 services:
   conductor-server:
-    image: frinx/uniflow-conductor-server:1.0.2
+    image: frinx/uniflow-conductor-server:latest
     # user: guest
     logging: *logging_loki
     labels:
@@ -24,7 +24,6 @@ services:
     environment:
       - CONFIG_PROP=config.properties
       - _JAVA_OPTIONS="-Xmx${CS_RES_LIMIT_MEM}"
-    entrypoint: ["/app/startup.sh"]
     volumes:
       - ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties:ro
     secrets:
@@ -32,9 +31,6 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
-      - source: conductor_startup
-        target: /app/startup.sh
         mode: 0777
     healthcheck:
       test: curl -I -XGET http://localhost:8080/health
@@ -428,8 +424,6 @@ secrets:
 configs:
   set_env_secrets:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
-  conductor_startup:
-    file: ${UF_CONFIG_PATH}/conductor/startup.sh
 
 volumes:
   frinx_uniflow_elastic_data:
