@@ -162,7 +162,7 @@ function startMonitoring {
 function startUniflow {
   setKrakendComposeTag
   echo -e "${INFO} Uniflow swarm worker node id: ${UF_SWARM_NODE_ID}"
-  docker stack deploy --compose-file composefiles/$dockerSwarmUniflow --compose-file composefiles/$dokcerSwarmKrakend $stackName
+  docker stack deploy --compose-file composefiles/$dockerSwarmUniflow $stackName
   status=$?
   if [[ $status -ne 0 ]]; then
     echo -e "${ERROR} Problem with starting Uniflow."
@@ -407,7 +407,6 @@ stackName="fm"
 licenseKeyFile="${FM_DIR}/config/uniconfig/uniconfig_license.txt"
 
 dockerSwarmUniflow='swarm-uniflow.yml'
-dokcerSwarmKrakend='swarm-uniflow-krakend.yml'
 dockerSwarmUniconfig='swarm-uniconfig.yml'
 
 dockerSwarmMetrics='support/swarm-monitoring.yml'
