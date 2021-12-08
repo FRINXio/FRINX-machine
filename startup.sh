@@ -156,6 +156,9 @@ function argumentsCheck {
 
 function startMonitoring {
   echo -e "${INFO} Monitoring swarm node id: ${UF_SWARM_NODE_ID}"
+  export TELEGRAF_GROUP=$(stat -c '%g' /var/run/docker.sock)
+  export TELEGRAF_HOTNAME=$(stat -c '%g' /var/run/docker.sock)
+
   docker stack deploy --compose-file composefiles/$dockerSwarmMetrics $stackName
 }
 

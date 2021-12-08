@@ -1,15 +1,23 @@
 apiVersion: 1
 
 datasources:
-  - name: Prometheus
-    type: prometheus
-    access: proxy
-    url: http://prometheus:9090
-    jsonData:
-      httpMethod: POST
-
   - name: Loki
     type: loki
     access: proxy
     url: http://loki:3100
     jsonData:
+
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    basicAuth: true
+    basicAuthUser: frinx
+    jsonData:
+      defaultBucket: frinx
+      httpMode: POST
+      organization: frinx-machine
+      version: Flux
+    secureJsonData:
+      basicAuthPassword: frinx123!
+      token: eyJrIjoiN09MSVpVZjlVRG1xNHlLNXpVbmZJOXFLWU1GOXFxNEIiLCJuIjoic3Nzc3MiLCJpZCI6MX0
