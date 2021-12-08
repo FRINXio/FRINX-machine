@@ -14,51 +14,8 @@ x-logging: &logging_loki
           regex: swarm_(service)
 
 services:
-  prometheus:
-    image: prom/prometheus:v2.29.1
-    logging: *logging_loki
-    labels:
-      - traefik.enable=false 
-    volumes:
-      - frinx-monitoring-prometheus:/prometheus
-      - ${UF_CONFIG_PATH}/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-    healthcheck:
-      test: ["CMD-SHELL", "wget --spider localhost:9090/-/healthy"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    ulimits:
-      nofile:
-        soft: ${MP_ULIMIT_NOFILE_SOFT}
-        hard: ${MP_ULIMIT_NOFILE_HARD}
-      nproc:
-        soft: ${MP_ULIMIT_NPROC_SOFT}
-        hard: ${MP_ULIMIT_NPROC_HARD}
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.path=/prometheus"
-      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-      - "--web.console.templates=/usr/share/prometheus/consoles"
-      - '--storage.tsdb.retention.time=7d'
-      - '--storage.tsdb.retention.size=2048MB'
-    deploy:
-      placement:
-        constraints:
-          - node.role == manager
-      restart_policy:
-        condition: any
-        delay: 5s
-        window: 10s
-      mode: replicated
-      replicas: 1
-      resources:
-        limits:
-          cpus: ${MP_RES_LIMIT_CPUS}
-          memory: ${MP_RES_LIMIT_MEM}
-
   grafana:
-    image: grafana/grafana:8.1.2
+    image: grafana/grafana:8.3.0
     logging: *logging_loki
     labels:
       - traefik.enable=false 
@@ -104,84 +61,6 @@ services:
     ports:
     - 3000:3000
 
-  swarm-node-info:       
-    image: prom/node-exporter:v1.2.2
-    logging: *logging_loki
-    labels:
-      - traefik.enable=false 
-    environment:
-      NODE_ID: '{{.Node.ID}}'
-    volumes:       
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-      - /etc/hostname:/etc/nodename
-    healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q localhost:9100"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    configs:
-      - source: node_exporter
-        target: /node_exporter
-        mode: 0777
-    entrypoint: ['/node_exporter']
-    ulimits:
-      nofile:
-        soft: ${MN_ULIMIT_NOFILE_SOFT}
-        hard: ${MN_ULIMIT_NOFILE_HARD}
-      nproc:
-        soft: ${MN_ULIMIT_NPROC_SOFT}
-        hard: ${MN_ULIMIT_NPROC_HARD}
-    deploy:
-      restart_policy:
-        condition: any
-        delay: 5s
-        window: 10s
-      mode: global
-      resources:
-        limits:
-          cpus: ${MN_RES_LIMIT_CPUS}
-          memory: ${MN_RES_LIMIT_MEM}
-
-  swarm-services-info:
-    image: google/cadvisor:v0.33.0
-    logging: *logging_loki
-    labels:
-      - traefik.enable=false 
-    hostname: '{{.Node.ID}}'
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /:/rootfs:ro
-      - /var/run:/var/run
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-    healthcheck:
-      test: ["CMD-SHELL", "curl -X GET 0.0.0.0:8080/api/v2.0/version"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    command: -logtostderr -docker_only
-    ulimits:
-      nofile:
-        soft: ${MS_ULIMIT_NOFILE_SOFT}
-        hard: ${MS_ULIMIT_NOFILE_HARD}
-      nproc:
-        soft: ${MS_ULIMIT_NPROC_SOFT}
-        hard: ${MS_ULIMIT_NPROC_HARD}
-    deploy:
-      restart_policy:
-        condition: any
-        delay: 5s
-        window: 10s
-      mode: global
-      resources:
-        limits:
-          cpus: ${MS_RES_LIMIT_CPUS}
-          memory: ${MS_RES_LIMIT_MEM}
-
   loki:
     image: grafana/loki:2.2.1
     logging:
@@ -191,7 +70,7 @@ services:
         max-file: "3"
         max-size: "10m"
     labels:
-      - traefik.enable=false 
+      - traefik.enable=false
     volumes:
       - frinx-monitoring-loki:/loki
       - ${UF_CONFIG_PATH}/monitoring/loki/loki-config.yaml:/etc/loki/loki-local-config.yaml
@@ -230,9 +109,117 @@ services:
     ports:
     - 3100:3100
 
+  influxdb:
+    image: influxdb:2.1
+    logging: *logging_loki
+    labels:
+      - traefik.enable=false
+    entrypoint: ["/set_env_secrets.sh", "/entrypoint.sh influxd"]
+    secrets:
+      - influxdb
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_RETENTION=2d
+    volumes:
+      - frinx-monitoring-influxdb:/var/lib/influxdb2:rw
+    healthcheck:
+      test: ["CMD-SHELL", "influx ping || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    ulimits:
+      nofile:
+        soft: ${MI_ULIMIT_NOFILE_SOFT}
+        hard: ${MI_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${MI_ULIMIT_NPROC_SOFT}
+        hard: ${MI_ULIMIT_NPROC_HARD}
+    # cap_drop:
+    #   - all
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${MI_RES_LIMIT_CPUS}
+          memory: ${MI_RES_LIMIT_MEM}
+    ports:
+      - "8086:8086"
+
+  telegraf:
+    image: telegraf:1.20
+    user: telegraf:${TELEGRAF_GROUP}
+    logging: *logging_loki
+    labels:
+      - traefik.enable=false
+    hostname: "{{.Node.Hostname}}"
+    environment:
+      - HOST_PROC=/rootfs/proc
+      - HOST_SYS=/rootfs/sys
+      - HOST_ETC=/rootfs/etc
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys:/rootfs/sys:ro
+      - /proc:/rootfs/proc:ro
+      - /etc:/rootfs/etc:ro
+      - /etc/hostname:/etc/hostname:ro
+    entrypoint: ["/set_env_secrets.sh", "/entrypoint.sh telegraf"]
+    secrets:
+      - influxdb
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
+      - source: frinx-telegraf-config
+        target: /etc/telegraf/telegraf.conf
+        mode: 0755
+    healthcheck:
+      test: ["CMD-SHELL", "curl -X GET localhost:8080 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    ulimits:
+      nofile:
+        soft: ${MG_ULIMIT_NOFILE_SOFT}
+        hard: ${MG_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${MG_ULIMIT_NPROC_SOFT}
+        hard: ${MG_ULIMIT_NPROC_HARD}
+    # cap_drop:
+    #   - all
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 10s
+      mode: global
+      resources:
+        limits:
+          cpus: ${MG_RES_LIMIT_CPUS}
+          memory: ${MG_RES_LIMIT_MEM}
+
+secrets:
+  influxdb:
+    external: true
+
 configs:
-  node_exporter:
-    file: ${UF_CONFIG_PATH}/monitoring/node-exporter/startup.sh
+  frinx-telegraf-config:
+    file: ${UF_CONFIG_PATH}/monitoring/telegraf/telegraf.conf
+  set_env_secrets:
+    file: ${UF_CONFIG_PATH}/set_env_secrets.sh
 
 volumes:
   frinx-monitoring-prometheus:
@@ -241,6 +228,8 @@ volumes:
       name: frinx-monitoring-grafana
   frinx-monitoring-loki:
       name: frinx-monitoring-loki
+  frinx-monitoring-influxdb:
+      name: frinx-monitoring-influxdb
 
 networks:
     default:
