@@ -116,7 +116,7 @@ services:
       - traefik.enable=false
     entrypoint: ["/set_env_secrets.sh", "/entrypoint.sh influxd"]
     secrets:
-      - influxdb
+      - frinx_influxdb
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -177,7 +177,7 @@ services:
       - /etc/hostname:/etc/hostname:ro
     entrypoint: ["/set_env_secrets.sh", "/entrypoint.sh telegraf"]
     secrets:
-      - influxdb
+      - frinx_influxdb
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -212,7 +212,7 @@ services:
           memory: ${MG_RES_LIMIT_MEM}
 
 secrets:
-  influxdb:
+  frinx_influxdb:
     external: true
 
 configs:

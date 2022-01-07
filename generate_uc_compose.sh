@@ -127,14 +127,8 @@ function prepareConfigFiles {
     local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}"
     local __DEF_UC_CONFIG_MIDDLE_PATH="config/uniconfig/frinx/uniconfig"
 
-    # prepare traefik config files
-    mkdir -p "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik" "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}"
-    cp ${FM_DIR}/config/traefik/* "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik"
-    sed -i "s/  uniconfig:/  ${__SERVICE_NAME}:/g" "${__FOLDER_PATH}/${__CONFIG_PATH}/traefik/traefik.yml"
-
-    # prepare uniconfig config files
-    rsync -r --exclude "cache/*" ${FM_DIR}/${__DEF_UC_CONFIG_MIDDLE_PATH}/* "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}"
-    chmod a+w "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}/cache"
+    # prepare uniconfig cache folder and files
+    mkdir -p "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}/cache"
 }
 
 
@@ -164,7 +158,6 @@ function generateUcCompose {
 
     # swarm config paths
     sed -i 's|${UC_CONFIG_PATH}|'"/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}|g" "${__COMPOSE_PATH}"
-    sed -i 's|${UF_CONFIG_PATH}/traefik|'"/${__CONFIG_PATH}/traefik|g" "${__COMPOSE_PATH}"
 
     # swarm persistant volume paths
     sed -i 's|uniconfig-controller_logs|'"${__SERVICE_FULL_NAME}_logs|g" "${__COMPOSE_PATH}"
@@ -179,6 +172,8 @@ function generateUcCompose {
 
     # env
     sed -i 's|_host=uniconfig-postgres|'"_host=${__SERVICE_NAME}-postgres|g" "${__COMPOSE_PATH}"
+    sed -i 's|TRAEFIK_ENTRYPOINTS_UNICONFIG|'"TRAEFIK_ENTRYPOINTS_${__SERVICE_NAME}|g" "${__COMPOSE_PATH}"
+
 }
 
 function prepareFolder {
