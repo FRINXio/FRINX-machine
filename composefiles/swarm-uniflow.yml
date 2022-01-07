@@ -83,7 +83,7 @@ services:
     volumes:
       - ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties:ro
     secrets:
-      - uniflow
+      - frinx_uniflow
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -211,7 +211,7 @@ services:
       - frinx_uniflow_postgresql_data:/var/lib/postgresql/data
       - ${UF_CONFIG_PATH}/uniflow-postgres:/docker-entrypoint-initdb.d:ro
     secrets:
-      - uniflow
+      - frinx_uniflow
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -259,7 +259,7 @@ services:
       - POSTGRES_MIGRATIONS_DIR=migrations
     entrypoint: ["/set_env_secrets.sh", "./schellar"]
     secrets:
-      - uniflow
+      - frinx_uniflow
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -337,7 +337,7 @@ services:
       - traefik.enable=false
     entrypoint: ["/set_env_secrets.sh", "./run.sh"]
     secrets:
-      - uniflow
+      - frinx_uniflow
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -384,7 +384,7 @@ services:
       - traefik.enable=false
     entrypoint: ["/run_inventory.sh"]
     secrets:
-      - inventory
+      - frinx_inventory
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -436,7 +436,7 @@ services:
     volumes:
       - frinx_uniflow_inventory_postgresql_data:/var/lib/postgresql/data
     secrets:
-      - inventory
+      - frinx_inventory
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -472,9 +472,9 @@ services:
           memory: ${IP_RES_LIMIT_MEM}
 
 secrets:
-  inventory:
+  frinx_inventory:
     external: true
-  uniflow:
+  frinx_uniflow:
     external: true
   frinx_krakend_tls_cert.pem:
     external: true

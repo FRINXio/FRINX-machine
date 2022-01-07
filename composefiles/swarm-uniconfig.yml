@@ -23,13 +23,26 @@ services:
     image: traefik:v2.4
     logging: *logging_loki
     volumes:
-      - ${UF_CONFIG_PATH}/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
-      - ${UF_CONFIG_PATH}/traefik/traefik_dynamic.yml:/etc/traefik/traefik_dynamic.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock
     secrets:
       - frinx_uniconfig_tls_cert.pem
       - frinx_uniconfig_tls_key.pem
       - frinx_uniconfig_X509.crt
+    environment:
+      - TRAEFIK_PING=true
+      - TRAEFIK_LOG=true
+      - TRAEFIK_LOG_LEVEL=DEBUG
+      - TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY=true
+      - TRAEFIK_SERVERSTRANSPORT_ROOTCAS=/run/secrets/frinx_uniconfig_X509.crt
+      - TRAEFIK_PROVIDERS_DOCKER=true
+      - TRAEFIK_PROVIDERS_FILE_FILENAME=/etc/traefik/traefik_dynamic.yml
+      - TRAEFIK_PROVIDERS_FILE_WATCH=true
+      - TRAEFIK_ENTRYPOINTS_UNICONFIG=true
+      - TRAEFIK_ENTRYPOINTS_UNICONFIG_ADDRESS=:8181
+    configs:
+      - source: traefik_dynamic_conf
+        target: /etc/traefik/traefik_dynamic.yml
+        mode: 0777
     healthcheck:
       test: traefik healthcheck
       interval: 10s
@@ -76,14 +89,11 @@ services:
       - dbPersistence_enabled=true
       - dbPersistence_connection_databaseLocations_host=uniconfig-postgres
       - dbPersistence_connection_databaseLocations_port=5432
-    entrypoint: ["/opt/uniconfig-frinx/run_uniconfig.sh"]
     volumes:
       - frinx_uniconfig-controller_logs:/opt/uniconfig-frinx/log
-      - ${UC_CONFIG_PATH}/config/lighty-uniconfig-config.json:/opt/uniconfig-frinx/config/lighty-uniconfig-config.json:ro
-      - ${UC_CONFIG_PATH}/config/logback.xml:/opt/uniconfig-frinx/config/logback.xml:ro
-      - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache:rw
+      - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache_tmp:rw
     secrets:
-      - uniconfig
+      - frinx_uniconfig_db
       - source: frinx_uniconfig_keystore
         target: /opt/uniconfig-frinx/config/.keystore
     configs:
@@ -92,6 +102,12 @@ services:
         mode: 0777
       - source: set_env_secrets
         target: /set_env_secrets.sh
+        mode: 0777
+      - source: uniconfig_lighty
+        target: /opt/uniconfig-frinx/config/lighty-uniconfig-config.json
+        mode: 0777
+      - source: uniconfig_logback
+        target: /opt/uniconfig-frinx/config/logback.xml
         mode: 0777
     healthcheck:
     # remove password from 
@@ -138,11 +154,12 @@ services:
     logging: *logging_loki
     labels:
       - traefik.enable=false  
-    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh postgres"]
     volumes:
       - frinx_uniconfig-postgresql_data:/var/lib/postgresql/data
     secrets:
-      - uniconfig
+      - frinx_uniconfig_db
+    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh postgres"]
+    command: postgres -N 300
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -153,7 +170,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-    command: postgres -N 300
     ulimits:
       nofile:
         soft: ${UP_ULIMIT_NOFILE_SOFT}
@@ -184,8 +200,14 @@ services:
 configs:
   uniconfig_startup:
     file: ${UF_CONFIG_PATH}/uniconfig/run_uniconfig.sh
+  uniconfig_lighty:
+    file: ${UF_CONFIG_PATH}/uniconfig/frinx/uniconfig/config/lighty-uniconfig-config.json
+  uniconfig_logback:
+    file: ${UF_CONFIG_PATH}/uniconfig/frinx/uniconfig/config/logback.xml
   set_env_secrets:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
+  traefik_dynamic_conf:
+    file: ${UF_CONFIG_PATH}/traefik/traefik_dynamic.yml
 
 secrets:
   frinx_uniconfig_tls_cert.pem:
@@ -196,7 +218,7 @@ secrets:
     external: true
   frinx_uniconfig_keystore:
     external: true
-  uniconfig:
+  frinx_uniconfig_db:
     external: true
 
 volumes:
@@ -206,5 +228,5 @@ volumes:
     name: frinx_uniconfig-postgresql_data
 
 networks:
-  default:
-    name: frinx-machine
+    default:
+      name: frinx-machine

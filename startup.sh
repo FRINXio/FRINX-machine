@@ -52,7 +52,7 @@ OPTIONS:
                             - Default ${uniconfigServiceFilesPath}
                             - Uniflow on manager node
                             - Uniconfig on worker nodes
-                    
+                   
    For more info about multi-node deployment see README
                           
   COMMON SETTINGS
@@ -142,7 +142,7 @@ function argumentsCheck {
                   exit 1
               fi; shift
             fi;;
-           
+
         -d|--debug) 
             set -x;;
 
@@ -279,12 +279,6 @@ function checkSwarmMode {
 }
 
 
-# TODO when uniconfig image will be changed to non root
-function uniconfigMountedVolumePermission {
-    # for uniconfig non root user
-    chmod a+w "${UC_CONFIG_PATH}/cache"
-}
-
 function checkSwarmNodeActive {
   local __node_id=${1}
   local __status=$(docker node ls --filter id=${__node_id} --format {{.Status}})
@@ -301,7 +295,6 @@ function checkSwarmNodeActive {
 function setNodeIdLocalDeploy {
   if [ -z "${__multinode}" ]; then
     export UC_SWARM_NODE_ID="${nodeID}"
-    uniconfigMountedVolumePermission
   fi
   export UF_SWARM_NODE_ID="${nodeID}"
 }
