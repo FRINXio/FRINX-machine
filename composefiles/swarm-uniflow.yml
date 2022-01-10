@@ -164,7 +164,7 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:1.0.3
+    image: frinx/frinx-frontend:latest
     logging: *logging_loki
     labels:
       - traefik.enable=false  
