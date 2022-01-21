@@ -22,13 +22,27 @@ OPTIONS:
    -i|--instances    [__UC_INSTANCES]
                      - Default : 2
 
-   -n|--node-id      [SWARM-NODE-ID]
-                     - Define swarm node id
-
    -f|--folder-path  [UNICONFIG FOLDER PATH]
                      - Define path, where will be 
                        compose file stored. 
-                          
+
+    SWARM NODE-PLACEMENT CONFIGURATION 
+
+     --force           [__FORCE_GENERATE]
+                       - Allow re/generation of composefile with wrong parameters
+                       - Default '${__FORCE_GENERATE}'
+
+                 [USE ONLY ONE OPTION]
+
+     -n|--node-id      [TYPE]
+                       - Define services placement by node id
+     --hostname        [TYPE]
+                       - Define services placement by node hostname
+     --label           [TYPE]
+                       - Define services placement by node zone label
+     --role            [TYPE]
+                       - Define services placement by node role
+
   COMMON SETTINGS
 
    -h|--help    Print this help and exit
@@ -57,20 +71,45 @@ do
             if [[ ${2} != "-"* ]] && [[ ! -z ${2} ]]; then
                 checkUniconfigServiceName "${2}"
                 __SERVICE_NAME="${2}"
+                __SERVICE_NAME_DEFINED='true'
                 shift
             else
                 echo "Service name not defined. See help!"
                 exit 1
             fi;;
 
-        -n|--node-id)
-            if [[ ${2} != "-"* ]] && [[ ! -z ${2} ]]; then
-                __NODE_ID="${2}"; shift
+        -n|--node-id|--hostname|--label|--role)
+            if [ -z ${__only_one_config} ]; then
+              if [ ${1} == "-n" ]; then
+                __only_one_config="true"
+                TYPE="id"
+              elif [ ${1} == "--node-id" ]; then
+                __only_one_config="true"
+                TYPE="id"
+              elif [ ${1} == "--hostname" ]; then
+                __only_one_config="true"
+                TYPE="name"
+              elif [ ${1} == "--label" ]; then
+                __only_one_config="true"
+                TYPE="node.label"
+              elif [ ${1} == "--role" ]; then
+                __only_one_config="true"
+                TYPE="role"
+              fi
+
+              if [[ ${2} == '-'* ]] || [[ ${2} == '' ]] || [[ -z ${2}  ]]; then
+                echo -e "${ERROR} Missing Swarm node placement input parameter for deployment: '${1}', type: 'node ${TYPE}'"
+                exit 1
+              else
+                __NODE_ID=${2}
+                shift
+              fi
             else
-                echo "Service swarm node id not defined. See help!"
+                echo -e "${ERROR} Conflict parameters: -n|--node-id|--hostname|--label|--role !!! Just one can be selected !!!"
+                echo -e "Use '${scriptName} --help' for more details"
                 exit 1
             fi;;
-
+            
         -i|--instances)
             local regex='^[0-9]+$'
             if [[ ${2} =~ ${regex} ]]; then
@@ -89,6 +128,10 @@ do
                 exit 1
             fi;;
 
+        --force)
+          SWARM_STATUS=${WARNING}
+          __FORCE_GENERATE='true';;
+
         -d|--debug) 
             set -x;;
             
@@ -98,6 +141,18 @@ do
     esac
     shift
 done
+
+if [[ -z $TYPE ]]; then
+  echo -e "${ERROR} Node placement type not defined. See help !!!"
+  exit 1
+fi
+
+if [[ -z $__SERVICE_NAME_DEFINED ]]; then
+  echo -e "${ERROR} Service name not defined. See help !!!"
+  exit 1
+fi
+
+
 }
 
 
@@ -115,10 +170,56 @@ function checkUniconfigServiceName {
 }
 
 function isNodeInSwarm {
-  if [[ "$(docker node ls -f id=${1} --format {{.ID}})" == "${1}" ]]; then
-      echo -e "${INFO} Node" ${1} "in swarm - Hostname: $(docker node ls -f id=${1} --format {{.Hostname}})"
+
+  bold=$(tput bold)
+  normal=$(tput sgr0) 
+
+  node_hostname=$(docker node ls -f ${TYPE}=${1} --format {{.Hostname}}) || 
+    { { echo -e "${ERROR} Bad node definition parameter ${bold}${TYPE}=${1}${normal}";} ;}
+  
+  if [[ $node_hostname != '' ]] || [[ $__FORCE_GENERATE == 'true' ]] ; then
+
+    case $TYPE in
+    'id')
+        node=$(docker node inspect ${node_hostname} --format {{.ID}})
+        message="with ID"
+        deployment="node.id == ${1}"
+        ;;
+
+    'name')
+        node=$(docker node inspect ${node_hostname} --format {{.Description.Hostname}})
+        message="with hostname"
+        deployment="node.hostname == ${1}"
+        ;;
+
+    'node.label')
+        node=$(docker node inspect ${node_hostname} --format {{.Spec.Labels.zone}})
+        message="with label zone ="
+        deployment="node.labels.zone == ${1}"
+        ;;
+
+    'role')
+        node=$(docker node inspect ${node_hostname} --format {{.Spec.Role}})
+        message="with role"
+        deployment="node.role == ${1}"
+        ;;
+
+    *)
+        echo -e "${ERROR} ${TYPE} is not supported"
+        exit 1
+        ;;
+    esac
+  fi
+
+  if [[ "${node}" == "${1}" ]]; then
+      echo -e "${INFO} Node ${message} ${bold}${1}${normal} is in swarm - Hostname: ${bold}${node_hostname}${normal}"
   else 
-      echo -e "${WARNING} Node ${1} not in swarm"
+      echo -e "${SWARM_STATUS} Node ${message} ${bold}${1}${normal} not in swarm"
+      if [[ $__FORCE_GENERATE == 'false' ]]; then
+        echo -e "${SWARM_STATUS} Composefiles was not generated"
+        exit 1
+      fi
+      echo -e "${SWARM_STATUS} Composefiles were force-generated with wrong placement settings"
   fi
 }
 
@@ -152,9 +253,8 @@ function generateUcCompose {
     sed -i "s/  uniconfig-controller:/  ${__SERVICE_FULL_NAME}:/g" "${__COMPOSE_PATH}"
     sed -i "s/  uniconfig-postgres:/  ${__SERVICE_NAME}-postgres:/g" "${__COMPOSE_PATH}"
 
-    # swarm node id
-    sed -i 's|${UC_SWARM_NODE_ID}|'"${__NODE_ID}|g" "${__COMPOSE_PATH}"
-    sed -i 's|${UF_SWARM_NODE_ID}|'"${__NODE_ID}|g" "${__COMPOSE_PATH}"
+    # swarm node deployment
+    sed -i "s/node.role == manager/${deployment}/g" "${__COMPOSE_PATH}"
 
     # swarm config paths
     sed -i 's|${UC_CONFIG_PATH}|'"/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}|g" "${__COMPOSE_PATH}"
@@ -192,6 +292,7 @@ ERROR="\033[0;31m[ERROR]:\033[0;0m"
 WARNING="\033[0;33m[WARNING]:\033[0;0m"
 INFO="\033[0;96m[INFO]:\033[0;0m"
 OK="\033[0;92m[OK]:\033[0;0m"
+SWARM_STATUS=${ERROR}
 
 FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 FM_COMPOSE_DIR="${FM_DIR}/composefiles"
@@ -203,10 +304,11 @@ __UC_COMPOSE_NAME="swarm-uniconfig.yml"
 
 __DEF_CONFIG_PATH="opt/frinx"
 
+__FORCE_GENERATE='false'
 __UC_INSTANCES=2
 __UNICONFIG_SERVICE_SUFIX="uniconfig-controller"
 
 argumentsCheck "$@"
-prepareFolder
 isNodeInSwarm ${__NODE_ID}
+prepareFolder
 generateUcCompose
