@@ -18,6 +18,11 @@ x-logging: &logging_loki
         - action: labelmap
           regex: swarm_(service)
 
+x-placement: &placement
+      placement:
+        constraints:
+          - node.role == manager
+
 services:
   uniconfig:
     image: traefik:v2.4
@@ -58,10 +63,8 @@ services:
         hard: ${TF_ULIMIT_NPROC_HARD}
     cap_drop:
       - all
-    deploy:
-      placement:
-        constraints:
-          - node.id == ${UF_SWARM_NODE_ID}
+    deploy: 
+      <<: *placement
       mode: replicated
       replicas: 1
       resources:
@@ -133,10 +136,8 @@ services:
     cap_add:
       - CAP_NET_BIND_SERVICE
       - NET_ADMIN
-    deploy:
-      placement:
-        constraints:
-          - node.id == ${UC_SWARM_NODE_ID}
+    deploy: 
+      <<: *placement
       restart_policy:
         condition: any
         delay: 5s
@@ -182,10 +183,8 @@ services:
     cap_add:
       - CAP_NET_BIND_SERVICE
       - NET_ADMIN
-    deploy:
-      placement:
-        constraints:
-          - node.id == ${UC_SWARM_NODE_ID}
+    deploy: 
+      <<: *placement
       restart_policy:
         condition: any
         delay: 5s

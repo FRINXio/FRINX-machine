@@ -185,16 +185,13 @@ function startUniconfig {
     find ${uniconfigServiceFilesPath} -iname "swarm-uniconfig.yml" -print0 | \
     while IFS= read -r -d '' compose_name; do 
       echo -e "${INFO} Checking swarm nodes for ${compose_name} uniconfig deployment"
-      node_id=($(grep node.id "${compose_name}" | sed -e 's/- node.id//;s/==//;s/^[[:space:]]*//'))
-      for node in "${node_id[@]}"
-      do 
-        checkSwarmNodeActive "${node_id}"
-      done
+      node_id="$(grep node "${compose_name}" | sed -e 's/^[[:space:]]*//')"
+      checkUcSwarmMode "${node_id}"
       docker stack deploy --compose-file ${compose_name} $stackName    
     done
   else
     echo -e "${INFO} Single-node deployment - composefiles/${dockerSwarmUniconfig}"
-    echo -e "${INFO} Uniconfig swarm worker node id: ${UC_SWARM_NODE_ID}"
+    echo -e "${INFO} Uniconfig swarm worker node hostname: ${UC_SWARM_NODE_ID}"
     docker stack deploy --compose-file "composefiles/${dockerSwarmUniconfig}" $stackName
   fi
 }
@@ -277,6 +274,65 @@ function checkSwarmMode {
       echo -e "${INFO} Docker running in swarm mode"
     fi
 }
+
+function checkUcSwarmMode {
+
+  local TYPE="$(echo ${1}| cut -d ' ' -f 2)"
+  local PLACEMENT_INPUT="$(echo ${1}| cut -d ' ' -f 4)"
+  if [[ $PLACEMENT_INPUT != '' ]] && [[ $TYPE != '' ]] ; then
+
+    case $TYPE in
+      'node.id')
+        __id=$(docker node ls -f id=${PLACEMENT_INPUT} --format {{.ID}})
+        if [[ "${__id}" == "${PLACEMENT_INPUT}" ]];then
+          __name=$(docker node ls -f id=${PLACEMENT_INPUT} --format {{.Hostname}})
+          __status=$(docker node inspect ${__name} --format {{.Status.State}}) 
+        else
+          __name="node.id=${PLACEMENT_INPUT}"
+          __status='not found' 
+        fi;;
+
+      'node.hostname')
+        __name=$(docker node ls -f name=${PLACEMENT_INPUT} --format {{.Hostname}})
+        if [[ "${__name}" == "${PLACEMENT_INPUT}" ]];then
+          __status=$(docker node inspect ${__name} --format {{.Status.State}}) 
+        else
+          __name="node.hostname=${PLACEMENT_INPUT}"
+          __status='not found' 
+        fi;;
+
+      'node.labels.zone')
+        __name=$(docker node ls -f node.label=${PLACEMENT_INPUT} --format {{.Hostname}}) || true
+        if [[ "${__name}" != '' ]];then
+          __status=$(docker node inspect ${__name} --format {{.Status.State}}) 
+        else
+          __name="node.label=${PLACEMENT_INPUT}"
+          __status='not found' 
+        fi;;
+
+      'node.role')
+        __name=$(docker node ls -f role=${PLACEMENT_INPUT} --format {{.Hostname}}) || true
+        if [[ "${__name}" != '' ]];then
+          __name=$(docker node ls -f role=${PLACEMENT_INPUT} --format {{.Hostname}})
+          __status=$(docker node inspect ${__name} --format {{.Status.State}}) 
+        else
+          __name="node.role=${PLACEMENT_INPUT}"
+          __status='not found' 
+        fi;;
+      *)
+          echo -e "${ERROR} ${TYPE} is not supported"
+          return;;
+    esac
+    
+    if [[ "${__status}" != "ready" ]]; then
+      echo -e "${ERROR} Swarm node:  ${__name} - ${__node_id} ${__status:-not exist}"
+    elif [[ "${__status}" == "ready" ]]; then
+      echo -e "${OK} Swarm node ${__name} with placement type ${TYPE} = ${PLACEMENT_INPUT} is ${__status}"
+    fi
+  fi
+
+}
+
 
 
 function checkSwarmNodeActive {
@@ -428,7 +484,7 @@ performSettings="${productPerformSettingFile}"
 
 # DEFAULT FM START SETTINGS
 startupType="full"
-nodeID=$(docker node ls --filter role=manager --format {{.ID}})
+nodeID=$(docker node ls --filter role=manager --format {{.Hostname}})
 export UC_CONFIG_PATH="${FM_DIR}/config/uniconfig/frinx/uniconfig"
 export UF_CONFIG_PATH="${FM_DIR}/config"
 
