@@ -102,6 +102,41 @@
             <MaxFileSize>50MB</MaxFileSize>
         </triggeringPolicy>
     </appender>
+    <appender name="cli-messages" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator class="io.lighty.discriminator.MarkerBasedDiscriminator">
+            <key>deviceName</key>
+            <defaultValue>unknown</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="${deviceName}-cli-messages" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>log/${CONTAINER_ID}/cli-messages/${deviceName}.log</file>
+                <encoder>
+                    <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
+                </encoder>
+                <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+                    <maxIndex>20</maxIndex>
+                    <FileNamePattern>log/${CONTAINER_ID}/cli-messages/${deviceName}.log.%i</FileNamePattern>
+                </rollingPolicy>
+                <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                    <MaxFileSize>16MB</MaxFileSize>
+                </triggeringPolicy>
+            </appender>
+        </sift>
+    </appender>
+
+    <appender name="gnmi" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>log/${CONTAINER_ID}/gnmi.log</File>
+        <encoder>
+            <pattern>%d{HH:mm:ss} %level %logger - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <maxIndex>20</maxIndex>
+            <FileNamePattern>log/${CONTAINER_ID}/gnmi.log.%i</FileNamePattern>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>16MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
 
     <!-- root logger -->
     <root level="INFO">
@@ -124,6 +159,12 @@
     <!-- translation unit framework part -->
     <logger name="io.frinx.translate.unit.commons" level="INFO"/>
     <logger name="io.fd.honeycomb" level="INFO"/>
+
+    <logger name="io.lighty.gnmi" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="logs"/>
+        <appender-ref ref="gnmi"/>
+    </logger>
 
     <!-- RESTCONF part -->
     <logger name="org.opendaylight.restconf" level="INFO"/>
@@ -150,6 +191,10 @@
     </logger>
     <logger name="org.opendaylight.netconf.logging.brokers.NetconfEventsLoggingBroker" level="INFO" additivity="false">
         <appender-ref ref="netconf-events"/>
+        <appender-ref ref="STDOUT"/>
+    </logger>
+    <logger name="io.frinx.cli.io.impl.cli.CliLoggingBroker" level="INFO" additivity="false">
+        <appender-ref ref="cli-messages"/>
         <appender-ref ref="STDOUT"/>
     </logger>
 </configuration>
