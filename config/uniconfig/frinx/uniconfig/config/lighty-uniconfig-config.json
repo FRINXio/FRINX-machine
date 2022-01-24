@@ -47,17 +47,35 @@
             "maxDataStoreExecutorQueueSize": 5000
         }
     },
+    // RESTCONF and web server settings
     "restconf": {
+        // listening web server port
         "httpPort": 8181,
+        // IP address on which web server is listening to incoming requests (0.0.0.0 - addresses of all interfaces)
         "inetAddress": "0.0.0.0",
-        "webSocketPort": 8185,
+        // common URL prefix under which all resources and operations are registered
         "restconfServletContextPath": "/rests",
+        /*
+         RESTCONF implementation:
+         a. 'DRAFT_02' - old draft-based implementation,
+         b. 'DRAFT_18' - RFC8040 implementation
+        */
         "jsonRestconfServiceType": "DRAFT_18",
-        "streamConfiguration": {
-            "maximumFragmentLength": 0,
-            "idleTimeout": 30000,
-            "heartbeatInterval": 10000,
-            "useSSE": false
+        // Settings related to filtering of data in CRUD operations.
+        "schemaFilters": {
+            // List of extension definitions that can be used to filter out data during PUT/POST/PATCH operation.
+            //"ignoredDataOnWriteByExtensions": [
+            //    "tailf:hidden full"
+            //],
+            // List of extension definitions that can be used to filter out data during GET operation.
+            //"hiddenDataOnReadByExtensions": [
+            //    "tailf:hidden deprecated",
+            //    "tailf:hidden debug"
+            //],
+            // Indicates if the data for non-existing schema nodes will be ignored during PUT/POST/PATCH operation.
+            "ignoreUnsupportedDefinitionsOnWrite": false,
+            // Indicates if the definition with "DEPRECATED" status should be hidden during GET operation.
+            "hideDeprecatedDefinitionsOnRead": false
         }
     },
     /*
@@ -85,19 +103,17 @@
             }
         }
     },
-    "daexim": {
-        "daeximDirectory": "daexim"
-    },
     /*
     Settings for the Device Discovery service
     */
     "deviceDiscovery":{
         // A parameter that specifies the local address from which the scanning will be ran.
         "localAddress": "",
-        // A parameter that specifies the amount of threads that will the service use.
-        "threadAmount": 4,
+        // A parameter that specifies the maximum pool size by the executor.
+        // If left empty, the default will be CPU_COUNT * 8.
+        //"maxPoolSize": 20,
         // A parameter that specifies the maximum limit of IP addresses that the service can process in one request.
-        "addressCheckLimit": 256
+        "addressCheckLimit": 254
     },
     /*
     DB persistence settings via environment variables.
@@ -181,36 +197,27 @@
             // Identifier of the local UniConfig instance (name must be unique in the cluster). If it is set to 'null'
             // then this identifier is tried to be loaded from 'data/instance_name'. If this file doesn't exist, then
             // name of the UniConfig instance is randomly generated and this file is created with new name of instance.
-            "instanceName": null,
-            // identifier of the UniConfig instance that backs up local UniConfig instance (it should be set to 'null'
-            // in the stateless deployment)
-            "backupInstanceName": null
+            "instanceName": null
         },
-        // Uniconfig instance monitoring settings. These settings have effect only in the stateful deployment.
-        "monitoring": {
+        // Heart beat service settings.
+        "heartBeat": {
             // interval between updating of local UniConfig instance heartbeat timestamp [milliseconds]
-            "heartbeatInterval": 1000,
-            // initial delay before backup monitoring system launches the first verification of the UniConfig instance
-            // that is backed by local Uniconfig instance [milliseconds]
-            "initialMonitoringDelay": 5000,
-            // interval between executions of verifications - whether UniConfig instance that is backed by local
-            // UniConfig instance is alive [milliseconds]
-            "backupMonitoringInterval": 10000,
-            // maximum allowable delay between the current timestamp and the timestamp of monitored UniConfig instance
-            // [milliseconds]
-            "maxInstanceAge": 5000
+            "heartbeatInterval": 1000
         }
     },
+    // Template settings
     "templates": {
+        // Enabled templates - if it is set to 'false', UniConfig will not prepare YANG modules for templates
+        // - creation of templates will not work. Enabled templates consumes more memory than setup without templates.
         "enabled": false
     },
     // Grouped settings that are related to Uniconfig transactions.
     "transactions": {
         /*
-                Flag that determines whether build-and-commit or only immediate commit model is supported:
-        [true]:  both build-and-commit using dedicated UniConfig transactions and immediate
-	             commit models are supported.
-        [false]: only immediate commit model without explicit transactions is supported
+        Flag that determines whether build-and-commit or only immediate commit model is supported:
+        [TRUE]: both build-and-commit using dedicated UniConfig transactions and immediate
+                commit models are supported
+        [FALSE]: only immediate commit model without explicit transactions is supported
         */
         "uniconfigTransactionEnabled": true,
         /*
@@ -227,10 +234,135 @@
         */
         "cleaningInterval": 60
     },
+    // Grouped settings that are related to notifications.
+    "notifications": {
+        // Flag that determines whether notifications are collected
+        "enabled": false,
+        "kafka": {
+            // Username used for authentication into Kafka brokers (SASL). If it is not set, then authentication
+            // is disabled (PLAINTEXT scheme).
+            // "username": "kafka",
+            // Password used for authentication into Kafka brokers.
+            //"password": "kafka",
+            "kafkaServers": [
+                {
+                    // Address / hostname of the interface on which Kafka broker is listening to incoming connections.
+                    "brokerHost": "127.0.0.1",
+                    // TCP port on which Kafka broker is listening to incoming connections.
+                    "brokerListeningPort": 9092
+                }
+            ],
+            // Flag that determines whether netconf notifications are enabled
+            "netconfNotificationsEnabled": true,
+            // Flag that determines whether audit logs are enabled
+            "auditLogsEnabled": true,
+            // Flag that determines whether transaction notifications are enabled
+            "transactionNotificationsEnabled": true,
+            // Unique identifier of topic that is used for storing netconf notifications.
+            "netconfNotificationsTopicName": "netconf-notifications",
+            // Unique identifier of topic that is used for storing audit logs.
+            "auditLogsTopicName": "audit-logs",
+            // Unique identifier of topic that is used for storing transaction notifications.
+            "transactionsTopicName": "transactions",
+            // Embedded Kafka settings (embedded Kafka is disabled by default, it should not be used in the production).
+            // Only PLAINTEXT authentication scheme is supported.
+            "embeddedKafka": {
+                // If this flag is set to 'true', then embedded Kafka is started during boot process.
+                // Otherwise, all other settings are effectively ignored.
+                "enabled": false,
+                // Directory to which embedded Kafka is downloaded and extracted.
+                "installDir": "/tmp/embedded-kafka",
+                // URL that is used for download of Kafka, if it hasn't been downloaded yet.
+                "archiveUrl": "https://dlcdn.apache.org/kafka/3.0.0/kafka_2.12-3.0.0.tgz",
+                // Directory containing Kafka data files - persisted topics.
+                "dataDir": "./data/embedded-kafka",
+                // Clean data from previous run before starting of Kafka (= disabled persistence).
+                "cleanDataBeforeStart": true,
+                // Number of partitions used for created topic.
+                "partitions": 1
+            }
+        },
+        // Settings related to audit logs
+        "auditLogs": {
+            // If response body should be included in notification
+            "includeResponseBody": false
+        },
+        // Config for deletion of old notifications from db
+        "notificationDbTreshold": {
+            // Maximum count of records, after reaching this count oldest records will be deleted
+            "maxCount": 10000,
+            // Maximum age of records, all older records will be deleted (in hours)
+            "maxAge": 100
+        },
+        // How often should uniconfig check for unassigned netconf notifications subscriptions (in seconds)
+        "netconfSubscriptionsMonitoringInterval": 5,
+        // How many unassigned netconf subscriptions can be processed within one subscription monitoring interval
+        "maxNetconfSubscriptionsPerInterval": 10
+    },
+    // Initial logging configuration (afterwards it can be updated using RPCs).
+    "loggingController": {
+        // Configuration of specific logging brokers for different system components.
+        "broker": [
+            // Logging all NETCONF messages.
+            {
+                // Logging broker identifier.
+                "broker-identifier": "netconf_messages",
+                // Enabled/disabled logging.
+                "is-logging-broker-enabled": false,
+                // Configured default logging behaviour - if it is set to 'true', logging is enabled
+                // for all NETCONF devices. Otherwise, it is enabled only for explicitly defined devices
+                // ('device-list' field).
+                "is-logging-enabled-on-all-devices": false
+                // List of devices for which logging is enabled.
+                //"device-list": ["dev1", "dev2"]
+            },
+            // Logging all southbound NETCONF events related to creation/closing of NETCONF connections.
+            {
+                "broker-identifier": "netconf_events",
+                "is-logging-broker-enabled": false,
+                "is-logging-enabled-on-all-devices": false
+            },
+            // Logging all NETCONF notification messages.
+            {
+                "broker-identifier": "netconf_notifications",
+                "is-logging-broker-enabled": false,
+                "is-logging-enabled-on-all-devices": false
+            },
+            // Logging all CLI commands and responses.
+            {
+                "broker-identifier": "cli_messages",
+                "is-logging-broker-enabled": false,
+                "is-logging-enabled-on-all-devices": false
+            },
+            // Logging RESTCONF requests and responses.
+            {
+                "broker-identifier": "restconf",
+                "is-logging-broker-enabled": false
+                // HTTP headers which content is removed from logs.
+                //"restconf-logging:hidden-http-headers": [
+                //    "Authorization",
+                //    "Cookie"
+                //],
+                // HTTP operations that are not logged.
+                //"restconf-logging:hidden-http-methods": [
+                //    "GET"
+                //]
+            }
+        ]
+    },
+    // cryptographic settings
+    "crypto": {
+        // identifier of YANG extension that is responsible for marking of leaves/leaf-lists that must be encrypted
+        // "encryptExtensionId": "frinx-encrypt:encrypt",
+        // name of YANG module from which the correct revision of 'netconfEncryptedPathsModuleName' is chosen
+        // "netconfReferenceModuleName": "system",
+        // name of YANG module which contains deviations to leaves/leaf-lists that must be encrypted
+        // "netconfEncryptedPathsModuleName": "encrypted-paths"
+    },
     "tls": {
         "enabledTls": true,
         "enabledClientAuthentication": false,
         "keystorePath": "config/.keystore",
         "keystorePassword": "password"
-    }
+    }   
 }
