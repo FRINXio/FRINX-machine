@@ -12,17 +12,16 @@
         "extra_config": {
             {{ $jwt_production := env "JWT_PRODUCTION" }}
             {{ if eq $jwt_production "true" }}
-                {{ include "jwt_config.tmpl" }}
+                {{ include "jwt_config.tmpl" }},
+                "github.com/devopsfaith/krakend-lua/router": {
+                    "sources": ["scripts/uniconfig_rbac.lua"],
+                    "allow_open_libs": true,
+                    "pre": "local r = ctx.load(); user_group_auth(r, os.getenv('UNICONFIG_CONTROLLER_ADMIN_GROUP'));",
+                    "live": true
+                }                
             {{ else if eq $jwt_production "false" }}
                 {{ include "jwt_fake_config.tmpl" }}
-            {{ end }},
-            
-            "github.com/devopsfaith/krakend-lua/proxy": {
-                "sources": ["scripts/uniconfig_rbac.lua"],
-                "allow_open_libs": true,
-                "pre": "local r = request.load(); user_group_auth(r, os.getenv('UNICONFIG_CONTROLLER_ADMIN_GROUP'));",
-                "live": true
-            }
+            {{ end }}
         },
 
         "backend": [
@@ -59,11 +58,16 @@
                 "method": "{{$method}}",
                 {{ include "uniconfig_partial_1.tmpl" }}
 
-
                 "extra_config": {
                     {{ $jwt_production := env "JWT_PRODUCTION" }}
                     {{ if eq $jwt_production "true" }}
-                        {{ include "jwt_config.tmpl" }}
+                        {{ include "jwt_config.tmpl" }},
+                        "github.com/devopsfaith/krakend-lua/router": {
+                            "sources": ["scripts/uniconfig_query_escape.lua", "scripts/uniconfig_rbac.lua"],
+                            "allow_open_libs": true,
+                            "pre": "local r = ctx.load(); r:url(urlencode(r)); user_group_auth(r, os.getenv('UNICONFIG_CONTROLLER_ADMIN_GROUP'))",
+                            "live": true
+                        }                    
                     {{ else if eq $jwt_production "false" }}
                         "github.com/devopsfaith/krakend-lua/router": {
                             "@comment": "Fixing escape queries with multiple fields separated by semicolon",
@@ -72,14 +76,7 @@
                             "pre": "local r = ctx.load(); r:url(urlencode(r)); fake_token_validate(r)",
                             "live": true
                         }
-                    {{ end }},
-                    
-                    "github.com/devopsfaith/krakend-lua/proxy": {
-                        "sources": ["scripts/uniconfig_rbac.lua"],
-                        "allow_open_libs": true,
-                        "pre": "local r = request.load(); user_group_auth(r, os.getenv('UNICONFIG_CONTROLLER_ADMIN_GROUP'));",
-                        "live": true
-                    }
+                    {{ end }}
                 },
 
                 "backend": [

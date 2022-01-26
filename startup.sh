@@ -167,7 +167,6 @@ function startMonitoring {
 }
 
 function startUniflow {
-  setKrakendComposeTag
   generateFrinxFrontendFile
 
   echo -e "${INFO} Uniflow swarm worker node id: ${UF_SWARM_NODE_ID}"
@@ -281,6 +280,7 @@ function checkSwarmMode {
     fi
 }
 
+
 function checkUcSwarmMode {
 
   local TYPE="$(echo ${1}| cut -d ' ' -f 2)"
@@ -340,7 +340,6 @@ function checkUcSwarmMode {
 }
 
 
-
 function checkSwarmNodeActive {
   local __node_id=${1}
   local __status=$(docker node ls --filter id=${__node_id} --format {{.Status}})
@@ -362,16 +361,21 @@ function setNodeIdLocalDeploy {
 }
 
 
-function generateFrinxFrontendFile {
-
-  local __ff_conf_tmpl="${UF_CONFIG_PATH}/frinx-frontend/config_template.json"
-  local __ff_conf="${UF_CONFIG_PATH}/frinx-frontend/config.json"
-
+function validateAzureAD {
   if [[ ${JWT_PRODUCTION} == "false" ]]; then
     echo -e "${WARNING} For Autorization is used Frinx Fake Token"
   elif [[ ${JWT_PRODUCTION} == "true" ]]; then
     echo -e "${WARNING} For Autorization is used Azure Active Directory"
+    echo -e "${INFO} Validating Azure AD configs from '${stackEnvFile}'"
+    . azure_ad.sh validate
   fi
+}
+
+
+function generateFrinxFrontendFile {
+
+  local __ff_conf_tmpl="${UF_CONFIG_PATH}/frinx-frontend/config_template.json"
+  local __ff_conf="${UF_CONFIG_PATH}/frinx-frontend/config.json"
 
   sed " s|AZURE_LOGIN_URL|${AZURE_LOGIN_URL}|; s|AZURE_CLIENT_ID|${AZURE_CLIENT_ID}|; s|AZURE_TENANT_NAME|${AZURE_TENANT_NAME}|; s|AZURE_ENABLED|${JWT_PRODUCTION}|; \
   s|KRAKEND_URL|${KRAKEND_TLS_PROTOCOL}://${REDIRECT_URI}|" ${__ff_conf_tmpl} > ${__ff_conf}
@@ -399,13 +403,6 @@ function generateUniconfigKrakendFile {
   sed "s/\"UNICONFIG-NAME\"/${name}/" ${krakendUniconfigTmplFile} > ${krakendUniconfigFile}
 }
 
-function setKrakendComposeTag {
-  if [[ ${LOCAL_KRAKEND_IMAGE_TAG} == '' ]]; then
-    LOCAL_KRAKEND_IMAGE_TAG=${BASE_KRAKEND_IMAGE_TAG}
-    export LOCAL_KRAKEND_IMAGE_TAG
-    echo -e "${INFO} KrakenD image tag: ${LOCAL_KRAKEND_IMAGE_TAG}"
-  fi
-}
 
 function setManagerIpAddrEnv {
   MANAGER_IP_ADDR=$(hostname -I | cut -d ' ' -f 1)
@@ -523,6 +520,7 @@ echo -e "${INFO} Selected resource configuration: ${performSettings}"
 
 setVariableFile "${performSettings}"  # load performance settings
 setVariableFile "${stackEnvFile}"     # load .env settings
+validateAzureAD
 
 startContainers
 show_last_info
