@@ -517,12 +517,6 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "$$hashKey": "object:1595",
-          "alias": "usage_percent {com.docker.stack.namespace=&quot;fm&quot;, com.docker.swarm.node.id=&quot;50xwfpes5dxaei8jre49gre6f&quot;, com.docker.swarm.service.id=&quot;6g70hxwyrr1imzqh7j2sc7ycf&quot;, com.docker.swarm.service.name=&quot;fm_krakend&quot;, com.docker.swarm.task.id=&quot;g6qkzifhf4ga7p37pts8a87zz&quot;, com.docker.swarm.task.name=&quot;fm_krakend.1.g6qkzifhf4ga7p37pts8a87zz&quot;, container_image=&quot;frinx/krakend:1.0.0@sha256&quot;, container_name=&quot;fm_krakend.1.g6qkzifhf4ga7p37pts8a87zz&quot;, container_status=&quot;running&quot;, container_version=&quot;156788609b4c1977f9cb48258abc49a509307a974cab455301a91e51623d645e&quot;, cpu=&quot;cpu-total&quot;, engine_host=&quot;jozef-latitude-5511&quot;, host=&quot;jozef-latitude-5511&quot;, maintainer=&quot;jvolak@frinx.io&quot;, server_version=&quot;20.10.10&quot;, source=&quot;522f0325f510&quot;, traefik.enable=&quot;false&quot;}"
-        }
-      ],
       "spaceLength": 10,
       "stack": true,
       "steppedLine": false,
@@ -627,12 +621,6 @@
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "$$hashKey": "object:1595",
-          "alias": "usage_percent {com.docker.stack.namespace=&quot;fm&quot;, com.docker.swarm.node.id=&quot;50xwfpes5dxaei8jre49gre6f&quot;, com.docker.swarm.service.id=&quot;6g70hxwyrr1imzqh7j2sc7ycf&quot;, com.docker.swarm.service.name=&quot;fm_krakend&quot;, com.docker.swarm.task.id=&quot;g6qkzifhf4ga7p37pts8a87zz&quot;, com.docker.swarm.task.name=&quot;fm_krakend.1.g6qkzifhf4ga7p37pts8a87zz&quot;, container_image=&quot;frinx/krakend:1.0.0@sha256&quot;, container_name=&quot;fm_krakend.1.g6qkzifhf4ga7p37pts8a87zz&quot;, container_status=&quot;running&quot;, container_version=&quot;156788609b4c1977f9cb48258abc49a509307a974cab455301a91e51623d645e&quot;, cpu=&quot;cpu-total&quot;, engine_host=&quot;jozef-latitude-5511&quot;, host=&quot;jozef-latitude-5511&quot;, maintainer=&quot;jvolak@frinx.io&quot;, server_version=&quot;20.10.10&quot;, source=&quot;522f0325f510&quot;, traefik.enable=&quot;false&quot;}"
-        }
-      ],
       "spaceLength": 10,
       "stack": true,
       "steppedLine": false,

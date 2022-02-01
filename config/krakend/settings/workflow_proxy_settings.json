@@ -58,14 +58,6 @@
         },
         {
             "endpoint": "/api/uniflow/workflow/{a}",
-            "method": "GET",
-            "url_pattern": "/workflow/{a}",
-            "querystring_params": [
-                "includeTask"
-              ]
-        },
-        {
-            "endpoint": "/api/uniflow/workflow/{a}",
             "method": "DELETE",
             "url_pattern": "/workflow/{a}"
         },
