@@ -22,7 +22,7 @@ Azure AD environment configuration
       -a|--azure_enable    Enable Azure AD authorizathion
                             in Frinx Machine
       
-      -n|--tenant_domain     Azure AD Tenant Domain (Primary domain)
+      -n|--tenant_name     Azure AD Tenant Domain (Primary domain)
                             - sinle-tenant: e.g. yourname.onmicrosoft.com
                             - multi-tenant: "common"
 
@@ -197,8 +197,9 @@ FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 stackEnvFile="${FM_DIR}/.env"
 createEnvFile
 
-if [ $# -eq 0 ]; then
+if [ $# -eq 0 ] || [ $1 == '-h' ] || [ $1 == '--help' ] ; then
  show_help
+ exit 0
 fi
 
 "$@"
