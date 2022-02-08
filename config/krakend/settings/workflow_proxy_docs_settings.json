@@ -6,6 +6,11 @@
             "url_pattern": "/docs"
         },
         {
+            "endpoint": "/api/uniflow/docs-uniconfig",
+            "method": "GET",
+            "url_pattern": "/docs-uniconfig"
+        },
+        {
             "endpoint": "/api/uniflow/swagger-ui.css",
             "method": "GET",
             "url_pattern": "/docs/swagger-ui.css"
