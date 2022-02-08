@@ -73,7 +73,7 @@ services:
           memory: ${TF_RES_LIMIT_MEM}
 
   uniconfig-controller:
-    image: frinx/uniconfig:4.2.10-rc11
+    image: frinx/uniconfig:4.2.10
     logging: *logging_loki
     labels:
       - traefik.enable=true
@@ -117,7 +117,7 @@ services:
       test: | 
         curl --insecure -o /dev/null --silent --write-out "%{http_code}" \
         -X POST 'https://127.0.0.1:8181/rests/operations/uniconfig-manager:health' \
-        -H "Content-Type:application/json" -H "Authorization:Basic YWRtaW46YWRtaW4=" | grep 200 || exit 1
+        -H "Content-Type:application/json" | grep 200 || exit 1
       interval: 10s
       timeout: 35s
       retries: 5

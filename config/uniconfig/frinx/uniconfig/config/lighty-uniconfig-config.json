@@ -55,12 +55,6 @@
         "inetAddress": "0.0.0.0",
         // common URL prefix under which all resources and operations are registered
         "restconfServletContextPath": "/rests",
-        /*
-         RESTCONF implementation:
-         a. 'DRAFT_02' - old draft-based implementation,
-         b. 'DRAFT_18' - RFC8040 implementation
-        */
-        "jsonRestconfServiceType": "DRAFT_18",
         // Settings related to filtering of data in CRUD operations.
         "schemaFilters": {
             // List of extension definitions that can be used to filter out data during PUT/POST/PATCH operation.
@@ -166,6 +160,12 @@
             "maxDbPoolSize": 300,
             // maximum number of idle connections before next idle connections are cleaned
             "maxIdleConnections": 5,
+            /*
+            Timeout value used for socket read operations. If reading from the server takes longer than this value,
+            the connection is closed. This can be used as both a brute force global query timeout and a method of
+            detecting network problems. The timeout is specified in seconds and a value of 0 means that it is disabled.
+            */
+            "socketReadTimeout": 20,
             // maximum wait time for obtaining of a new connection before fetch request is dropped [milliseconds]
             "maxWaitTime": 30000,
             // enabled TLS authentication (if it is enabled, 'tlsClientCert', 'tlsClientKey', and 'tlsCaCert'
@@ -210,21 +210,23 @@
         // Enabled templates - if it is set to 'false', UniConfig will not prepare YANG modules for templates
         // - creation of templates will not work. Enabled templates consumes more memory than setup without templates.
         "enabled": false
+        /* Name of the YANG module which is used for comparison of loaded YANG repositories based on revision and
+           further saving the name of the latest YANG repository. Latest YANG repository is automatically used
+           at creation of new template node, if user doesn't specify it explicitly. If this setting is not specified,
+           this feature will be disabled.*/
+        // "latestSchemaReferenceModuleName": "system"
     },
     // Grouped settings that are related to Uniconfig transactions.
     "transactions": {
         /*
-        Flag that determines whether build-and-commit or only immediate commit model is supported:
-        [TRUE]: both build-and-commit using dedicated UniConfig transactions and immediate
-                commit models are supported
-        [FALSE]: only immediate commit model without explicit transactions is supported
+        Time after transaction can be closed [seconds] by transaction cleaner.
         */
-        "uniconfigTransactionEnabled": true,
+        "transactionIdleTimeOut": 300,
         /*
         Maximum transaction age before it can be evicted from transaction registry [seconds].
         Configuring '0' disables cleaning of Uniconfig transactions.
         */
-        "maxTransactionAge": 600,
+        "maxTransactionAge": 1800,
         /*
         Interval at which expired transactions are closed and cleaned [seconds].
         Expired transaction: transaction which age exceeds 'maxTransactionAge' setting.
