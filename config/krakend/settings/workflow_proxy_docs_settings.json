@@ -18,12 +18,30 @@
         {
             "endpoint": "/api/uniflow/swagger-ui-bundle.js",
             "method": "GET",
-            "url_pattern": "/docs/swagger-ui-bundle.js"
+            "url_pattern": "/docs/swagger-ui-bundle.js",
+            "extra_config": {
+                "github.com/devopsfaith/krakend-lua/proxy": {
+                    "sources": ["scripts/wp_azure_swagger.lua"],
+                    "allow_open_libs": true,
+                    "post": "local r = response.load(); r:body(swagger_auth_modal(r, os.getenv('JWT_PRODUCTION'), 'openid', os.getenv('AZURE_KRAKEND_PLUGIN_CLIENT_ID')));",
+                    "live": true
+                }
+            }
+        },
+        {
+            "endpoint": "/api/uniflow/swagger-ui.css.map",
+            "method": "GET",
+            "url_pattern": "/docs/swagger-ui.css.map"
         },
         {
             "endpoint": "/api/uniflow/swagger-ui-standalone-preset.js",
             "method": "GET",
             "url_pattern": "/docs/swagger-ui-standalone-preset.js"
+        },
+        {
+            "endpoint": "/api/uniflow/swagger-ui-standalone-preset.js.map",
+            "method": "GET",
+            "url_pattern": "/docs/swagger-ui-standalone-preset.js.map"
         },
         {
             "endpoint": "/api/uniflow/swagger-ui-init.js",
