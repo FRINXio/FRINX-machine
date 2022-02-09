@@ -12,7 +12,10 @@
         ],
     {{end}}
 
-
+    {{ if .extra_config }}
+        "extra_config": {{ marshal .extra_config }},
+    {{end}}
+   
     "backend": [
     {
         "url_pattern": "{{ .url_pattern }}",
@@ -42,55 +45,4 @@
     }
 ]
 }
-{{end}},
-{
-    "endpoint": "/api/uniflow/docs/token",
-    "method": "POST",
-    "output_encoding": "no-op",
-    "headers_to_pass": ["*"],
-    "querystring_params":[  
-        "*"
-    ],
-    "backend": [
-        {
-            "url_pattern": "/{{ env "AZURE_TENANT_NAME"}}/oauth2/v2.0/token",
-            "encoding": "no-op",
-            "sd": "static",
-            "disable_host_sanitize": false,
-            "extra_config": {
-                "github.com/devopsfaith/krakend-martian": {
-                    "fifo.Group": {
-                        "scope": ["request", "response"],
-                        "aggregateErrors": true,
-                        "modifiers": [
-                            {
-                                "header.Modifier": {
-                                    "scope": ["request"],
-                                    "name": "Accept-Encoding",
-                                    "value": "identity"
-                                }
-                            },
-                            {
-                                "header.Modifier": {
-                                    "scope": ["request","response"],
-                                    "name": "Access-Control-Allow-Origin",
-                                    "value": "*"
-                                }
-                            },
-                            {
-                                "header.Modifier": {
-                                    "scope": ["request", "response"],
-                                    "name": "Access-Control-Allow-Headers",
-                                    "value": "X-Requested-With"
-                                }
-                            }
-                        ]
-                    }
-                }
-            },
-            "host": [
-                "{{ env "AZURE_LOGIN_URL"}}"
-            ]
-        }
-    ]
-}
+{{end}}
