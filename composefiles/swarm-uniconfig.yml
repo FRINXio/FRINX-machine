@@ -23,6 +23,9 @@ x-placement: &placement
         constraints:
           - node.role == manager
 
+x-tcp_keepalive: &tcp_keepalive
+      net.ipv4.tcp_keepalive_time: 300
+
 services:
   uniconfig:
     image: traefik:v2.4
@@ -63,6 +66,8 @@ services:
         hard: ${TF_ULIMIT_NPROC_HARD}
     cap_drop:
       - all
+    sysctls:
+      <<: *tcp_keepalive
     deploy: 
       <<: *placement
       mode: replicated
@@ -136,6 +141,8 @@ services:
     cap_add:
       - CAP_NET_BIND_SERVICE
       - NET_ADMIN
+    sysctls:
+      <<: *tcp_keepalive
     deploy: 
       <<: *placement
       restart_policy:
@@ -183,6 +190,8 @@ services:
     cap_add:
       - CAP_NET_BIND_SERVICE
       - NET_ADMIN
+    sysctls:
+      <<: *tcp_keepalive
     deploy: 
       <<: *placement
       restart_policy:
