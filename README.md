@@ -15,16 +15,19 @@ Minimal hardware requirements (See [resource limitation](#resource-limitation))
 Production: (default)
 
 - 24GB RAM
-- 4x CPU
+- 8x CPU
 
 Development:
 
 - 16GB RAM
 - 4x CPU
 
-It is recommended to deploy with 30GB of disk space or more depending on your data retention policies and deployment scale.
+It is recommended to deploy with 40GB of disk space or more depending on your data retention policies and deployment scale.
 
 To deploy an FM swarm cluster you need at least one machine with Ubuntu 18.04/20.04 installed.
+
+## Frinx Machine architecture
+Architecture overview [here](docs/fm_architecture.md).
 
 # How to install and run FRINX Machine
 You can deploy the FM either locally with all services running on a single node, or you can distribute UniFlow and UniConfig instances across multiple nodes. UniFlow is always running on the docker swarm manager node.
@@ -77,11 +80,51 @@ $ ./install.sh \
 --http-proxy "ip:port" \
 --https-proxy "ip:port" \
 --no-proxy "ip:port,ip:port,..."
+
+# or use env variables if are configured
+$ ./install.sh \
+--proxy-conf "${USER}/.docker/config.json" \ 
+--http-proxy "${http_proxy}" \
+--https-proxy "${https_proxy}" \
+--no-proxy "${no_proxy}"
+
 ```
 For disabling proxy, the config.json must be removed and content of UC_PROXY_* variables in .env file must be erased! For example: UC_PROXY_HTTP_ENV="".
 
 For more info see: https://docs.docker.com/network/proxy/ 
 </br></br>
+
+### Enable Azure AD authorization
+
+Frinx Machine supports authentification and authorization via Azure AD.
+For details about configuration visit [Azure AD configuration](docs/azure_ad.md).
+
+For configuration use `azure_ad.sh` script.
+
+You need to define:
+- tenant name: organization name (single tenant e.g. `yourAdName.onmicrosoft.com`), or `common` for multi tenant
+- tenant id: code of tenant AD (GUID), e.g. aaaaaaaa_bbbb_cccc_dddd_eeeeeeeeeeee
+
+- client id: code of application (GUID) for KrakenD plugin (see [KrakenD Azure Plugin docs](https://github.com/FRINXio/krakend-azure-plugin))
+- client secret: application secret 
+- redirect url: IP/DNS of server, from where is accessed frinx-frontend
+
+```sh
+# print help for configuration
+$ ./azure_ad.sh configure -h
+# example for multi-tenant
+$ ./azure_ad.sh configure --azure_enable \
+    --tenant_name 'common' \
+    --tenant_id 'aaaaaaaa_bbbb_cccc_dddd_eeeeeeeeeeee' \
+    --client_id 'aaaaaaaa_bbbb_cccc_dddd_eeeeeeeeeeee' \
+    --client_secret '79A4Q~RL5pELYji-KU58UfSeGoRVGco8f20~K' \
+    --redirect_url 'localhost'
+
+# validate configuration environment variables
+# 0 - variables are correct, 1 - variables are wrong configured + print error message
+./azure_ad.sh validate | echo $?
+```
+<br>
 
 ### Install/Update docker secrets (KrakenD HTTPS/TLS)
 During installation, docker secrets are created and are used for establishing HTTPS/TLS connections. These secrets contain private and public keys and are generated from files in the ./config/certificates folder. 
@@ -182,33 +225,61 @@ Before the Frinx Machine is start, is necessary to generate unique configuration
 For generating these files use `generate_uc_compose.sh`.  
 
 You need to define:
-- uniconfig zone name: must be unique name 
-- swarm node-id: where will be deployed (use docker node ls)
+- uniconfig zone name: must be unique name - <service_name>
 - folder path:  where are stored composefiles for multinode deployment
 - instances: how many uniconfig instances will be started per zone (redundancy)
 
+- swarm node placement method: swarm node identificator, select one of them (use `docker node ls` for info)
+    *   node id : unique ID od node
+    *   node hostname : unique node hostname
+    *   node role : manager/worker1/worker2 ...
+    *   node label : node with label zone=<NODE_LABEL> 
+
+Script is checking input placement values based on Readiness status. Files are not generated bu default, when
+nodes are not ready. This generation of composefiles can be forced with flag --force. 
 Default folder path is `./composefiles/uniconfig`, but can be differend (outside from FM repo folder).
+
 ```sh
-$ ./generate_uc_compose.sh -s <service_name> -n <node_id> -f <path_to_folder> -i <instances>
+# Check all nodes in cluster (from manager node)
+$ docker node ls
+
+m4lyotjrwc059u76dkdksyfsp *   frinx-manager   Ready     Active         Leader           20.10.5
+vrybz35tsmtp23gd9byoimq1z     frinx-worker1   Ready     Active                          20.10.5
+li5msj11609ss58n7mafa9cbt     frinx-worker2   Ready     Active                          20.10.5
+
+# Check settings of nodes in cluster
+docker node inspect <HOSTNAME> --format "{{.Description.Hostname}} {{.ID}} {{.Spec.Labels.zone}} {{.Spec.Role}}"
+
+  <Hostname>             <ID>               <Label>   <Role>
+frinx-manager   m4lyotjrwc059u76dkdksyfsp   uniflow   manager
+
+# Check
+$ ./generate_uc_compose.sh -s <service_name> -f <path_to_folder> -i <instances> --hostname <Hostname>
+$ ./generate_uc_compose.sh -s <service_name> -f <path_to_folder> -i <instances> --node-id <ID>
+$ ./generate_uc_compose.sh -s <service_name> -f <path_to_folder> -i <instances> --label <Label>
+$ ./generate_uc_compose.sh -s <service_name> -f <path_to_folder> -i <instances> --role <Role>
+
+# Label swarm node with zone label
+docker node update <NODE_HOSTNAME> --label-add zone=<UNIQUE_LABEL>
+
+# Force generating of composefiles, e.g.
+$ ./generate_uc_compose.sh -s <service_name> -f <path_to_folder> -i <instances> --role <Role> --force
 ```
+
+
 <br>
 
-### Upload configuration files on worker node
+### Preparing worker/slave node for multi-node deployment
 
-To deploy UniConfig to a worker node, distribute the default UniConfig configuration to `/opt` directory on the worker node (SCP used as an example).
+To deploy UniConfig to a worker node, create cache folder and clean old uniconfig volumes.
 
 From the worker node:
 ```sh
-$ sudo install -o $USER -g $USER -m 755 -d /opt/frinx
+# create cache volume for uniconfig-cotroller
+mkdir -p /opt/frinx/<SERVICE_NAME>/uniconfig-controller/cache/
 
 # if older FM was started on this node, remove docker persistant volumes
-$ docker volume prune -f
-```
-
-From the manager node:
-```sh
-# path_to_folder contain generated files from previous steps
-$ scp -r <path_to_folder>/opt/frinx/* username@host:/opt/frinx
+docker volume prune --filter label=fm
 ```
 </br>
 
@@ -229,6 +300,20 @@ NOTE: The deployment might take a while as the worker node needs to download all
 
 ## Preparing Environment
 The FRINX-Machine repository contains a **env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to these groups:
+* **Common settings**
+>   * JWT_PRODUCTION: enable/disable Azure AD authorization
+
+* **Azure AD settings** (See [AzureAD Instalation manual](docs/azure_ad.md) )
+>   * AZURE_LOGIN_URL : url for logging to Azure AD, default: https://login.microsoftonline.com
+>   * AZURE_TENANT_NAME : tenant domain name
+>   * AZURE_TENANT_ID : tenant id where '-' are replaced with '_'
+>   * AZURE_CLIENT_ID : App (Client) ID
+>   * AZURE_CLIENT_SECRET : App (Client) secret
+>   * REDIRECT_URI : IP/DNS of server without scheme (http(s)://) !!!
+
+
+* **RBAC settings**
+>   * ADMIN_GROUP : super admin group with all permissions, default: network-admin
 
 * **Temporary settings** - Created by FM scripts, **do not change them**
 >   * UC_PROXY_* : use docker proxy in Uniconfig Service ( See [Installation](#installation) )
@@ -297,11 +382,11 @@ $ ./config/docker-security/bench_security.sh
 ### Monitoring services
 
 Frinx Machine is collecting logs and metrics/statistics from services.
-* Metrics: Prometheus
+* Metrics: InfluxDB
 * Logs: Loki
-* Node monitoring: node-exporter
-* Swarm monitoring: google/cadvisor
-* Visualization: Grafana (url 127.0.0.1:3000)
+* Node monitoring: Telegrad
+* Swarm monitoring: Telegraf
+* Visualization: Grafana (url 127.0.0.1:3000, user: admin, password: admin)
 
 NOTE: Be aware, that the monitoring system is space consuming. For longer monitoring is good to have enough free space on the disc. 
 Optimal is 30Gb and more.
