@@ -16,7 +16,7 @@ x-logging: &logging_loki
 
 services:
   krakend:
-    image: frinx/krakend:latest
+    image: frinx/krakend:1.0.2
     # user: root
     logging: *logging_loki
     labels:
@@ -86,7 +86,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/uniflow-conductor-server:latest
+    image: frinx/uniflow-conductor-server:1.0.5
     # user: guest
     logging: *logging_loki
     labels:
@@ -178,7 +178,7 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:latest
+    image: frinx/frinx-frontend:1.0.5
     logging: *logging_loki
     labels:
       - traefik.enable=false
@@ -311,7 +311,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:latest
+    image: frinx/workflow-proxy:1.0.7
     user: node
     logging: *logging_loki
     labels:
@@ -351,7 +351,7 @@ services:
           memory: ${WP_RES_LIMIT_MEM}
 
   uniresource:
-    image: frinx/resource-manager:latest
+    image: frinx/resource-manager:1.0.3
     logging: *logging_loki
     labels:
       - traefik.enable=false
@@ -399,7 +399,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:latest
+    image: frinx/frinx-inventory-server:1.2.0
     logging: *logging_loki
     labels:
       - traefik.enable=false
