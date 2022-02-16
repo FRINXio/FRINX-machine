@@ -142,7 +142,8 @@ services:
       - traefik.enable=false 
     environment:
       - "discovery.type=single-node"
-      - "ES_JAVA_OPTS=-Xms${ES_JAVA_OPTS_S} -Xmx${ES_JAVA_OPTS_M}"
+      - "bootstrap.memory_lock=true"
+      - "ES_JAVA_OPTS=-Xms${ES_JAVA_OPTS_M} -Xmx${ES_JAVA_OPTS_M}"
     volumes:
       - frinx_uniflow_elastic_data:/usr/share/elasticsearch/data
       - ${UF_CONFIG_PATH}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
@@ -160,6 +161,9 @@ services:
       nproc:
         soft: ${ES_ULIMIT_NPROC_SOFT}
         hard: ${ES_ULIMIT_NPROC_HARD}
+      memlock:
+        soft: -1
+        hard: -1
     cap_drop:
       - all
     deploy:
