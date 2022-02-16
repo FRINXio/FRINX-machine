@@ -221,12 +221,12 @@
         /*
         Time after transaction can be closed [seconds] by transaction cleaner.
         */
-        "transactionIdleTimeOut": 300,
+        "transactionIdleTimeOut": 3600,
         /*
         Maximum transaction age before it can be evicted from transaction registry [seconds].
         Configuring '0' disables cleaning of Uniconfig transactions.
         */
-        "maxTransactionAge": 1800,
+        "maxTransactionAge": 7200,
         /*
         Interval at which expired transactions are closed and cleaned [seconds].
         Expired transaction: transaction which age exceeds 'maxTransactionAge' setting.

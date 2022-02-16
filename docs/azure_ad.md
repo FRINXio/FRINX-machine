@@ -59,9 +59,9 @@ Example of encoded JWT token with claims. These claims are transferred to the re
 {
   ......
   "tid": "aaaaaaaa-1234-5678-abcd-abcd12345678",
-  "name": "FRINX Super Administrator (Test)",
+  "name": "Test User",
   "oid": "d040c2a8-aaaa-bbbb-cccc-f2900fea4f51",
-  "preferred_username": "frinx-super-admin@gammaworkshop.co.uk",
+  "preferred_username": "user@test.onmicrosoft.com",
   "roles": [
     "User.ReadWrite"
   ],

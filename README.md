@@ -7,8 +7,18 @@ https://github.com/FRINXio/FRINX-machine/releases
 
 </br>
 
-`For migration of Frinx-Machine 1.6 to higher version see ` [ Migration from Frinx Machine 1.6](#maintaining) </br>
- 
+## Known Issues
+### Problem with loading device configuration via device inventory UI
+- White screen on page `/frinxui/inventory/config/<id>`
+
+- Reason
+<t> - Expired uniconfig transaction for dedicated configuration <br>
+
+- How to fix it (workarounds) <br>
+<t> - clean `TX_ID_INVENTORY` from browser local storage <br>
+<t> - or use incognito mode <br>
+<t> - or load different device config (will replace expired TX_ID_INVENTORY in local storage) <br>
+
 ## Requirements
 Minimal hardware requirements (See [resource limitation](#resource-limitation))
 
