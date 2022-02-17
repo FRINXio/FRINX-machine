@@ -183,7 +183,7 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:1.0.5
+    image: frinx/frinx-frontend:1.0.6
     logging: *logging_loki
     labels:
       - traefik.enable=false
@@ -404,7 +404,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:1.2.0
+    image: frinx/frinx-inventory-server:1.2.1
     logging: *logging_loki
     labels:
       - traefik.enable=false
