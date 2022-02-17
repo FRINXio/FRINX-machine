@@ -54,7 +54,7 @@ esac
 done
 
 # removing cached data and logs from previous run
-rm -rf snapshots/ journal/ log/${UNICONFIG_ID}/* log/gc-${UNICONFIG_ID}.lo*
+rm -rf snapshots/ journal/
 
 # folder where lighty stores data
 mkdir -m 700 -p data
