@@ -146,6 +146,7 @@ services:
       - "ES_JAVA_OPTS=-Xms${ES_JAVA_OPTS_M} -Xmx${ES_JAVA_OPTS_M}"
     volumes:
       - frinx_uniflow_elastic_data:/usr/share/elasticsearch/data
+      - frinx_uniflow_elastic_logs:/usr/share/elasticsearch/logs
       - ${UF_CONFIG_PATH}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ${UF_CONFIG_PATH}/elasticsearch/backup.sh:/usr/share/elasticsearch/backup.sh:ro
     healthcheck:
@@ -516,6 +517,8 @@ configs:
 volumes:
   frinx_uniflow_elastic_data:
     name: frinx_uniflow_elastic_data
+  frinx_uniflow_elastic_logs:
+    name: frinx_uniflow_elastic_logs
   frinx_uniflow_postgresql_data:
     name: frinx_uniflow_postgresql_data
   frinx_uniflow_inventory_postgresql_data:
