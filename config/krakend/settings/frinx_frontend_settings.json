@@ -5,6 +5,14 @@
             "url_pattern": "/"
         },
         {
+            "endpoint": "/bundle.js",
+            "url_pattern": "/bundle.js"
+        },
+        {
+            "endpoint": "/-/config.js",
+            "url_pattern": "/-/config.js"
+        },
+        {
             "endpoint": "/favicon.ico",
             "url_pattern": "/favicon.ico"
         }

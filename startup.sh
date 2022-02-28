@@ -34,6 +34,8 @@ OPTIONS:
    --https       Deploy Frinx-Machine in https mode 
                   - KrakenD with certificates
                   - https://localhost
+  
+   --auth        Deploy Frinx-Machine with authorization 
 
    --prod|--dev|--high  
                   Deploy Frinx-Machine in production or development mode
@@ -95,6 +97,9 @@ function argumentsCheck {
             export TLS_DISABLED="false"
             export KRAKEND_TLS_PROTOCOL="https"
             export KRAKEND_PORT=443;;
+
+        --auth)
+            export AUTH_ENABLED="true";;
 
         --prod|--dev|--high)
             if [ -z ${__only_one_perf_config} ]; then
@@ -167,7 +172,6 @@ function startMonitoring {
 }
 
 function startUniflow {
-  generateFrinxFrontendFile
 
   echo -e "${INFO} Uniflow swarm worker node id: ${UF_SWARM_NODE_ID}"
   docker stack deploy --compose-file composefiles/$dockerSwarmUniflow $stackName
@@ -362,25 +366,12 @@ function setNodeIdLocalDeploy {
 
 
 function validateAzureAD {
-  if [[ ${JWT_PRODUCTION} == "false" ]]; then
+  if [[ ${AUTH_ENABLED} == "false" ]]; then
     echo -e "${WARNING} For Autorization is used Frinx Fake Token"
-  elif [[ ${JWT_PRODUCTION} == "true" ]]; then
+  elif [[ ${AUTH_ENABLED} == "true" ]]; then
     echo -e "${WARNING} For Autorization is used Azure Active Directory"
-    echo -e "${INFO} Validating Azure AD configs from '${stackEnvFile}'"
-    . azure_ad.sh validate
   fi
 }
-
-
-function generateFrinxFrontendFile {
-
-  local __ff_conf_tmpl="${UF_CONFIG_PATH}/frinx-frontend/config_template.json"
-  local __ff_conf="${UF_CONFIG_PATH}/frinx-frontend/config.json"
-
-  sed " s|AZURE_LOGIN_URL|${AZURE_LOGIN_URL}|; s|AZURE_CLIENT_ID|${AZURE_CLIENT_ID}|; s|AZURE_TENANT_NAME|${AZURE_TENANT_NAME}|; s|AZURE_ENABLED|${JWT_PRODUCTION}|; \
-  s|KRAKEND_URL|${KRAKEND_TLS_PROTOCOL}://${REDIRECT_URI}|" ${__ff_conf_tmpl} > ${__ff_conf}
-}
-
 
 function generateUniconfigKrakendFile {
 
@@ -493,6 +484,9 @@ krakendUniconfigFile="${krakendUniconfigNode}/uniconfig_settings.json"
 export TLS_DISABLED="true"
 export KRAKEND_TLS_PROTOCOL="http"
 export KRAKEND_PORT=80
+
+## Default Auth settings
+export AUTH_ENABLED=false
 
 # DEFAULT PERFORM SETTINGS
 devPerformSettingFile='./config/dev_settings.txt'

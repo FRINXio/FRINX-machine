@@ -31,20 +31,16 @@ services:
       # AUTHORIZATION AND AUTHENTICATION SETTINGS
       # IF false, THEN Fake-Frinx-Token Used
       # IF true,  THEN Azure AD Token Required 
-      - JWT_PRODUCTION=${JWT_PRODUCTION}
-      # AZURE AD PLUGIN SETTINGS
-      - AZURE_LOGIN_URL=${AZURE_LOGIN_URL}
-      - AZURE_TENANT_NAME=${AZURE_TENANT_NAME}
-      - AZURE_KRAKEND_PLUGIN_CLIENT_ID=${AZURE_CLIENT_ID}
-      - AZURE_KRAKEND_PLUGIN_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
-      - AZURE_KRAKEND_PLUGIN_JWT_VALUE_PREFIX=Bearer
-      - AZURE_KRAKEND_PLUGIN_GROUP_DISABLE=false
+      - AUTH_ENABLED=${AUTH_ENABLED}
+      # UNICONFIG RBAC SETTINGS
+      - UNICONFIG_CONTROLLER_ADMIN_GROUP=${ADMIN_GROUP}
       # - FC_OUT=/etc/krakend/output.json
       # Ignore x509 certificate errors
       - GODEBUG="x509ignoreCN=0"
     volumes:
       - ${UF_CONFIG_PATH}/krakend:/etc/krakend:ro
     secrets:
+      - frinx_auth
       - frinx_rbac
       - frinx_krakend_tls_cert.pem
       - frinx_krakend_tls_key.pem
@@ -186,16 +182,33 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:1.0.6
+    image: frinx/frinx-frontend:scheme
+    user: node
     logging: *logging_loki
     labels:
       - traefik.enable=false
+    entrypoint: ["/set_env_secrets.sh", "yarn start"]
+    secrets:
+      - frinx_auth
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
     environment:
-    - TLS_PROTOCOL=${KRAKEND_TLS_PROTOCOL}
-    volumes:
-      - ${UF_CONFIG_PATH}/frinx-frontend/config.json:/usr/share/nginx/html/config.json:ro
+      - AUTH_REDIRECT_SCHEME=${KRAKEND_TLS_PROTOCOL}
+      - AUTH_ENABLED=${AUTH_ENABLED}
+      - URL_BASENAME=/frinxui
+      - UNIFLOW_ENABLED=true
+      - CONDUCTOR_API_URL=/api/uniflow
+      - UNIFLOW_API_DOCS_URL=/api/uniflow/docs
+      - UNICONFIG_ENABLED=true
+      - UNICONFIG_API_DOCS_URL=/api/uniflow/docs-uniconfig
+      - INVENTORY_ENABLED=true
+      - INVENTORY_API_URL=/api/inventory
+      - UNIRESOURCE_ENABLED=true
+      - UNIRESOURCE_API_URL=/api/uniresource
     healthcheck:
-      test: curl --silent -o /dev/null  --write-out 'HTTPSTATUS:%{http_code}\n' -X GET 'http://127.0.0.1:8888' || exit 1
+      test: wget --spider -q '0.0.0.0:8888'
       interval: 10s
       timeout: 5s
       retries: 5
@@ -324,13 +337,6 @@ services:
     logging: *logging_loki
     labels:
       - traefik.enable=false
-    entrypoint: ["/set_env_secrets.sh", "yarn start"]
-    secrets: 
-      - frinx_rbac
-    configs:
-      - source: set_env_secrets
-        target: /set_env_secrets.sh
-        mode: 0777
     environment:
       - OAUTH2=${JWT_PRODUCTION}
       - OAUTH2_AUTH_URL=${AZURE_LOGIN_URL}/${AZURE_TENANT_NAME}/oauth2/v2.0/authorize
@@ -373,12 +379,13 @@ services:
     entrypoint: ["/set_env_secrets.sh", "./run.sh"]
     secrets:
       - frinx_uniflow
-      - frinx_rbac
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
         mode: 0777
     environment:
+      - RM_ADMIN_GROUPS=${ADMIN_GROUP}
+      - RM_ADMIN_ROLES=''
       - RM_LOG_PATH=/var/log/rm.log
       - RM_LOG_LEVEL=warn
       - WASMER_MAX_TIMEOUT_MILLIS=10000
@@ -419,6 +426,7 @@ services:
       - traefik.enable=false
     entrypoint: ["/run_inventory.sh"]
     secrets:
+      - frinx_auth
       - frinx_inventory
     configs:
       - source: set_env_secrets
@@ -428,7 +436,6 @@ services:
       - UNICONFIG_API_PROTOCOL=https
       - UNICONFIG_API_PORT=8181
       - UNICONFIG_LIST_URL=${KRAKEND_TLS_PROTOCOL}://krakend:8080/static/list/uniconfig
-      - X_TENANT_ID=${AZURE_TENANT_ID}
     volumes:
       - ${UF_CONFIG_PATH}/inventory/run_inventory.sh:/run_inventory.sh:ro
     healthcheck:
@@ -508,6 +515,8 @@ services:
           memory: ${IP_RES_LIMIT_MEM}
 
 secrets:
+  frinx_auth:
+    external: true
   frinx_inventory:
     external: true
   frinx_uniflow:
@@ -520,6 +529,7 @@ secrets:
     external: true
   frinx_rbac:
     external: true
+
 configs:
   set_env_secrets:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
