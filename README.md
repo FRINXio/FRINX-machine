@@ -321,10 +321,6 @@ The FRINX-Machine repository contains a **env.template** (used for creating .env
 >   * AZURE_CLIENT_SECRET : App (Client) secret
 >   * REDIRECT_URI : IP/DNS of server without scheme (http(s)://) !!!
 
-
-* **RBAC settings**
->   * ADMIN_GROUP : super admin group with all permissions, default: network-admin
-
 * **Temporary settings** - Created by FM scripts, **do not change them**
 >   * UC_PROXY_* : use docker proxy in Uniconfig Service ( See [Installation](#installation) )
 

@@ -20,7 +20,7 @@ services:
     # user: root
     logging: *logging_loki
     labels:
-      - traefik.enable=false  
+      - traefik.enable=false
     environment:
       - FC_ENABLE=1
       - FC_SETTINGS=/etc/krakend/settings
@@ -39,18 +39,21 @@ services:
       - AZURE_KRAKEND_PLUGIN_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
       - AZURE_KRAKEND_PLUGIN_JWT_VALUE_PREFIX=Bearer
       - AZURE_KRAKEND_PLUGIN_GROUP_DISABLE=false
-      # UNICONFIG RBAC SETTINGS
-      - UNICONFIG_CONTROLLER_ADMIN_GROUP=${ADMIN_GROUP}
       # - FC_OUT=/etc/krakend/output.json
       # Ignore x509 certificate errors
       - GODEBUG="x509ignoreCN=0"
     volumes:
       - ${UF_CONFIG_PATH}/krakend:/etc/krakend:ro
     secrets:
+      - frinx_rbac
       - frinx_krakend_tls_cert.pem
       - frinx_krakend_tls_key.pem
       - source: frinx_krakend_X509.crt
         target: /usr/local/share/ca-certificates/frinx_krakend_X509.crt
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
     healthcheck:
       test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/__health' || exit 1
       interval: 10s
@@ -321,6 +324,13 @@ services:
     logging: *logging_loki
     labels:
       - traefik.enable=false
+    entrypoint: ["/set_env_secrets.sh", "yarn start"]
+    secrets: 
+      - frinx_rbac
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
     environment:
       - OAUTH2=${JWT_PRODUCTION}
       - OAUTH2_AUTH_URL=${AZURE_LOGIN_URL}/${AZURE_TENANT_NAME}/oauth2/v2.0/authorize
@@ -363,13 +373,12 @@ services:
     entrypoint: ["/set_env_secrets.sh", "./run.sh"]
     secrets:
       - frinx_uniflow
+      - frinx_rbac
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
         mode: 0777
     environment:
-      - RM_ADMIN_GROUPS=${ADMIN_GROUP}
-      - RM_ADMIN_ROLES=''
       - RM_LOG_PATH=/var/log/rm.log
       - RM_LOG_LEVEL=warn
       - WASMER_MAX_TIMEOUT_MILLIS=10000
@@ -509,7 +518,8 @@ secrets:
     external: true
   frinx_krakend_X509.crt:
     external: true
-
+  frinx_rbac:
+    external: true
 configs:
   set_env_secrets:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
