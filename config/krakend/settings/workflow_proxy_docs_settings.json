@@ -23,7 +23,7 @@
                 "github.com/devopsfaith/krakend-lua/proxy": {
                     "sources": ["scripts/wp_azure_swagger.lua"],
                     "allow_open_libs": true,
-                    "post": "local r = response.load(); r:body(swagger_auth_modal(r, os.getenv('JWT_PRODUCTION'), 'openid', os.getenv('AZURE_KRAKEND_PLUGIN_CLIENT_ID')));",
+                    "post": "local r = response.load(); r:body(swagger_auth_modal(r, os.getenv('AUTH_ENABLED'), 'openid', os.getenv('AZURE_KRAKEND_PLUGIN_CLIENT_ID')));",
                     "live": true
                 }
             }

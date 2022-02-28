@@ -13,7 +13,7 @@
     {{end}}
 
     "extra_config": {
-        {{ $jwt_production := env "JWT_PRODUCTION" }}
+        {{ $jwt_production := env "AUTH_ENABLED" }}
         {{ if eq $jwt_production "true" }}
             {{ include "jwt_config.tmpl" }}
         {{ else if eq $jwt_production "false" }}

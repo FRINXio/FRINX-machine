@@ -129,12 +129,29 @@ $ ./azure_ad.sh configure --azure_enable \
     --client_id 'aaaaaaaa_bbbb_cccc_dddd_eeeeeeeeeeee' \
     --client_secret '79A4Q~RL5pELYji-KU58UfSeGoRVGco8f20~K' \
     --redirect_url 'localhost'
+```
+These settings will be stored in docker secrets with name frinx_auth. 
+Default configuration can be found in file **config/secrets/frinx_auth**.
+Other options are follow:
 
-# validate configuration environment variables
-# 0 - variables are correct, 1 - variables are wrong configured + print error message
-./azure_ad.sh validate | echo $?
+```sh
+# Save configuration to file config/secrets/frinx_auth.tmp
+$ ./azure_ad.sh configure --azure_enable \
+    --tenant_name 'common' \
+    --tenant_id 'aaaaaaaa_bbbb_cccc_dddd_eeeeeeeeeeee' \
+    --client_id 'aaaaaaaa_bbbb_cccc_dddd_eeeeeeeeeeee' \
+    --client_secret '79A4Q~RL5pELYji-KU58UfSeGoRVGco8f20~K' \
+    --redirect_url 'localhost'
+    --keep_config
+
+# Validate values in config/secrets/frinx_auth.tmp 
+$ ./azure_ad.sh validate 
+
+# Update/create frinx_auth docker setrets from config/secrets/frinx_auth.tmp 
+$ ./azure_ad.sh updateSecrets 
 ```
 <br>
+
 
 ### Install/Update docker secrets (KrakenD HTTPS/TLS)
 During installation, docker secrets are created and are used for establishing HTTPS/TLS connections. These secrets contain private and public keys and are generated from files in the ./config/certificates folder. 
@@ -311,15 +328,6 @@ NOTE: The deployment might take a while as the worker node needs to download all
 ## Preparing Environment
 The FRINX-Machine repository contains a **env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to these groups:
 * **Common settings**
->   * JWT_PRODUCTION: enable/disable Azure AD authorization
-
-* **Azure AD settings** (See [AzureAD Instalation manual](docs/azure_ad.md) )
->   * AZURE_LOGIN_URL : url for logging to Azure AD, default: https://login.microsoftonline.com
->   * AZURE_TENANT_NAME : tenant domain name
->   * AZURE_TENANT_ID : tenant id where '-' are replaced with '_'
->   * AZURE_CLIENT_ID : App (Client) ID
->   * AZURE_CLIENT_SECRET : App (Client) secret
->   * REDIRECT_URI : IP/DNS of server without scheme (http(s)://) !!!
 
 * **Temporary settings** - Created by FM scripts, **do not change them**
 >   * UC_PROXY_* : use docker proxy in Uniconfig Service ( See [Installation](#installation) )
