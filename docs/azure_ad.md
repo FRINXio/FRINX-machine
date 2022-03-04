@@ -75,7 +75,7 @@ Example of encoded JWT token with claims. These claims are transferred to the re
 
 ## RBAC configuration
 
-Super user is defined in .env file via **ADMIN_GROUP** variable.
+All default settings are defined in **config/secrets/frinx_rbac** and are stored to docker secrets during execution of ./install.sh
 
 ### Uniflow
 
