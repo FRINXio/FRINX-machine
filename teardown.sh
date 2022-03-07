@@ -31,6 +31,14 @@ delete_stack()
   echo ""
 }
 
+delete_stuck_containers()
+{
+  echo "###### Cleaning stuck containers and network ######" 
+  docker rm -f $(docker ps -a --filter name=${__STACK_NAME}_ -q) 
+  docker network rm $(docker network ls --filter name=frinx-machine -q)
+  echo ""
+}
+
 function unused_monitoring_volumes()
 {
     local __volumes=$(docker volume ls -q -f name=frinx-monitoring-*)
@@ -149,6 +157,8 @@ done
 
 #EXECUTION
 delete_stack
+sleep 10
+delete_stuck_containers
 
 #CLEAN VOLUMES
 if [ -n "${__CLEAN_VOLUMES}" ]; then
