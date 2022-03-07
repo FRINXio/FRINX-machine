@@ -31,6 +31,7 @@ services:
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_node_monitoring.json:/etc/grafana/provisioning/dashboards/db_node_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_swarm_monitoring.json:/etc/grafana/provisioning/dashboards/db_swarm_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_wf_monitoring.json:/etc/grafana/provisioning/dashboards/db_wf_monitoring.json
+      - ${UF_CONFIG_PATH}/monitoring/grafana/db_device_monitoring.json:/etc/grafana/provisioning/dashboards/db_device_monitoring.json
     healthcheck:
       test: ["CMD-SHELL", "wget --spider localhost:3000/api/health"]
       interval: 10s
