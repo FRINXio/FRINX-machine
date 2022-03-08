@@ -182,7 +182,7 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:scheme
+    image: frinx/frinx-frontend:latest
     user: node
     logging: *logging_loki
     labels:
