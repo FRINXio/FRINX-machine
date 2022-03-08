@@ -372,7 +372,7 @@ services:
           memory: ${WP_RES_LIMIT_MEM}
 
   uniresource:
-    image: frinx/resource-manager:1.0.3
+    image: frinx/resource-manager:latest
     logging: *logging_loki
     labels:
       - traefik.enable=false
