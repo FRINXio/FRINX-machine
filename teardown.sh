@@ -16,7 +16,9 @@ OPTIONS:
     -v|--volumes        delete all FM persistant volumes (FM, Monitoring)
     -c|--cache          delete content of ./config/uniconfig/frinx/uniconfig/cache folder
     -e|--env            delete .env file with custom settings
-    -a|--all            delete all volumes and files
+    -a|--all            delete all volumes and files (except secrets)
+
+    -S|--secrets        delete all docker secrets with prefix frinx_
 
     -h|--help           print help
     -w|--wait           maximal waiting time for removing volumes (default 30s)
@@ -33,9 +35,13 @@ delete_stack()
 
 delete_stuck_containers()
 {
-  echo "###### Cleaning stuck containers and network ######" 
-  docker rm -f $(docker ps -a --filter name=${__STACK_NAME}_ -q) 
-  docker network rm $(docker network ls --filter name=frinx-machine -q)
+  echo "###### Cleaning stuck containers and network ######"
+  sleep 20
+  local __containers=$(comm -2 -3 <(docker ps -aq --filter name=${__STACK_NAME}_ | sort) <(docker ps -aq --filter name=${__STACK_NAME}_ --filter='status=removing' | sort)) 
+  if [[ $__containers != '' ]]; then
+    docker rm -f $__containers || true
+    docker network rm $(docker network ls --filter name=frinx-machine -q) 2>/dev/null || true
+  fi
   echo ""
 }
 
@@ -137,6 +143,9 @@ do
             __CLEAN_CACHE="true"
             __CLEAN_ENV="true";;
 
+        -S|--secrets)
+            __CLEAN_SECRETS="true";;
+
         -w|--wait)
             if [[ -z ${2} ]]; then
                 echo "Problem with -w|--wait parameter. Missing input value."
@@ -157,7 +166,6 @@ done
 
 #EXECUTION
 delete_stack
-sleep 10
 delete_stuck_containers
 
 #CLEAN VOLUMES
@@ -198,4 +206,9 @@ fi
 if [ -n "${__CLEAN_CACHE}" ]; then
     echo "###### Removing content of cache folder ######"
     find "${__CACHE_PATH}" -mindepth 1 -maxdepth 1 -type d -exec sudo rm -vrf {} \;
+fi
+
+if [ -n "${__CLEAN_SECRETS}" ]; then
+    echo "###### Removing frinx machine secrets ######"
+    docker secret rm $(docker secret ls --filter name=frinx_ -q) 
 fi
