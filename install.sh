@@ -48,9 +48,9 @@ DESCRIPTION:
                                     - port can be defined
 
   COMMON SETTINGS
-    -s|--skip     Skip installation of dependencies
-    -h|--help     Print help
-    -d|--debug    Enable verbose
+    -i|--install-deps     Installation of dependencies
+    -h|--help             Print help
+    -d|--debug            Enable verbose
 
 EOF
 }
@@ -182,8 +182,8 @@ do
             show_help
             exit 0;;
       
-        -s|--skip)
-            __SKIP_DEP=true;;
+        -i|--install-deps)
+            __SKIP_DEP="false";;
             
         --no-swarm)
             echo -e "${WARNING} Skipping swarm setup"
@@ -467,6 +467,7 @@ dockerCertSettings="${FM_DIR}/config/certificates"
 dockerEnvSettings="${FM_DIR}/config/secrets"
 
 __NO_SWARM="false"
+__SKIP_DEP="true"
 
 # TODO find better way to obrain username
 defUser=$(who | awk 'NR==1{print $1;}')

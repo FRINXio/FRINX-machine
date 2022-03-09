@@ -55,9 +55,9 @@ You can deploy the FM either locally with all services running on a single node,
 Run the install script, this will check and download the neccessary prerequisities.
 
 ```sh
-$ ./install.sh  # the install script requires sudo access to install the required components (see list below)
-$ ./install.sh  --skip # skip the installation of dependencies
-$ ./install.sh  --update-secrets # update certificates to docker secrets frm ./config/certificates folder
+$ ./install.sh                   # pull images, set secrets, skip the installation of dependencies
+$ ./install.sh  --install-deps   # required sudo access to install the FM dependencies (see list below) 
+$ ./install.sh  --update-secrets # create/update certificates to docker secrets frm ./config/certificates folder
 ```
 
 Automatically installed software:
