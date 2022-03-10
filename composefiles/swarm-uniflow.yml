@@ -207,6 +207,8 @@ services:
       - INVENTORY_API_URL=/api/inventory
       - UNIRESOURCE_ENABLED=true
       - UNIRESOURCE_API_URL=/api/uniresource
+      - UNISTORE_API_URL=/api/unistore
+      - GAMMA_ENABLED=${GM_UI_ENABLED:-false}
     healthcheck:
       test: wget --spider -q '0.0.0.0:8888'
       interval: 10s

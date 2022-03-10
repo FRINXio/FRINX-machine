@@ -13,6 +13,10 @@
             "url_pattern": "/-/config.js"
         },
         {
+            "endpoint": "/gamma-options.js",
+            "url_pattern": "/gamma-options.js"
+        },
+        {
             "endpoint": "/favicon.ico",
             "url_pattern": "/favicon.ico"
         }
