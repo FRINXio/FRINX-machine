@@ -44,8 +44,13 @@ OPTIONS:
 
    --uniflow        Deploy UniFlow services
    --uniconfig      Deploy UniConfig services
+   --unistore       Deploy Unistore services (not started by default)
+   --with-unistore  Deploy Full FM with Unistore services
+
    --monitoring     Deploy Monitoring services
    --no-monitoring  Deploy UniFlow and UniConfig services
+
+
 
   MULTI-NODE DEPLOYMENT
 
@@ -119,7 +124,7 @@ function argumentsCheck {
                 exit 1
             fi;;
 
-        --uniflow|--uniconfig|--monitoring|--no-monitoring)
+        --uniflow|--uniconfig|--monitoring|--no-monitoring|--unistore|--with-unistore)
             if [ -z ${__only_one_config} ]; then
               if [ ${1} == "--uniflow" ]; then
                 __only_one_config="true"
@@ -133,6 +138,12 @@ function argumentsCheck {
               elif [ ${1} == "--no-monitoring" ]; then
                 __only_one_config="true"
                 startupType="nomonitoring"
+              elif [ ${1} == "--unistore" ]; then
+                __only_one_config="true"
+                startupType="unistore"
+              elif [ ${1} == "--with-unistore" ]; then
+                __only_one_config="true"
+                startupType="withunistore"
               fi
             else 
                 echo -e "Conflict parameters: --uniflow|--uniconfig|--monitoring !!! Just one can be selected !!!"
@@ -174,11 +185,32 @@ function startMonitoring {
 function startUniflow {
 
   echo -e "${INFO} Uniflow swarm worker node id: ${UF_SWARM_NODE_ID}"
+  if [[ "$(docker service ps --format {{.Name}} fm_unistore)" != "" ]]; then
+    echo -e "${INFO} Update Frinx-Frontent: enable L3VPN automation"
+    export GM_UI_ENABLED=true
+  fi
+
   docker stack deploy --compose-file composefiles/$dockerSwarmUniflow $stackName
   status=$?
   if [[ $status -ne 0 ]]; then
     echo -e "${ERROR} Problem with starting Uniflow."
     echo -e "${ERROR} If 'network frinx-machine not found!', wait a while and start Uniflow again."
+    exit 1
+  fi
+}
+
+function startUnistore {
+  export LICENSE=$(cat $licenseKeyFile)
+  echo -e "${INFO} Update Frinx-Frontent: enable L3VPN automation"
+  docker service update --env-add GAMMA_ENABLED=true fm_frinx-frontend  > /dev/null 2>&1
+  export GM_UI_ENABLED=true
+
+  echo -e "${INFO} Unistore swarm worker node id: ${UF_SWARM_NODE_ID}"
+  docker stack deploy --compose-file composefiles/$dockerSwarmUnistore $stackName
+  status=$?
+  if [[ $status -ne 0 ]]; then
+    echo -e "${ERROR} Problem with starting Unistore."
+    echo -e "${ERROR} If 'network frinx-machine not found!', wait a while and start FM again."
     exit 1
   fi
 }
@@ -222,6 +254,11 @@ function startContainers {
         startUniconfig
       ;;
 
+      unistore)
+        echo -e "${INFO} Deploying UniConfig only"
+        startUnistore
+      ;;
+
       monitoring)
         echo -e "${INFO} Deploying Monitoring services only"
         startMonitoring
@@ -231,6 +268,14 @@ function startContainers {
         echo -e "${INFO} Deploying Uniflow and Uniconfig services only"
         startUniflow
         startUniconfig
+      ;;
+
+      withunistore)
+        echo -e "${INFO} Deploying Uniflow, Uniconfig and Monitoring services"
+        startMonitoring
+        startUniflow
+        startUniconfig
+        startUnistore
       ;;
 
       full)
@@ -470,6 +515,7 @@ licenseKeyFile="${FM_DIR}/config/uniconfig/uniconfig_license.txt"
 
 dockerSwarmUniflow='swarm-uniflow.yml'
 dockerSwarmUniconfig='swarm-uniconfig.yml'
+dockerSwarmUnistore='swarm-unistore.yml'
 
 dockerSwarmMetrics='support/swarm-monitoring.yml'
 

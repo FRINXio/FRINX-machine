@@ -58,6 +58,7 @@
     {{ template "workflow_proxy_docs.tmpl" .workflow_proxy_docs_settings.endpoints }},
     {{ template "inventory.tmpl" }},
     {{ template "uniconfig.tmpl" .uniconfig_settings }},
+    {{ template "unistore.tmpl" .unistore_settings }},
     {{ template "uniresource.tmpl" .uniresource_settings.endpoints }},
     {{ template "frinx_frontend.tmpl" .frinx_frontend_settings}}
   ]

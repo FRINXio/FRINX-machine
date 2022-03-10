@@ -163,18 +163,24 @@ During installation, docker secrets are created and are used for establishing HT
 These certificates can be replaced by custom certificates (use the same name) before execution of installation script or re-execution with the `--update-secrets` flag. </br></br>
 ## Single-node deployment
 Install and run UniFlow and UniConfig on the same machine.
-To deploy all components on a single node, run `startup.sh`:
+To deploy all components except unistore on a single node, run `startup.sh`:
 ```sh
 $ ./startup.sh
 
 # To deploy FRINX Machine with resource limitations (e.g. for development), use:
 $ ./startup.sh --dev 
 
+# To deploy all services including unistore, use:
+$ ./startup.sh --with-unistore
+
 # To deploy uniflow only, use:
 $ ./startup.sh --uniflow 
 
 # To deploy uniconfig only, use:
 $ ./startup.sh --uniconfig 
+
+# To deploy unistore services only, use:
+$ ./startup.sh --unistore
 
 # To deploy monitoring services only, use:
 $ ./startup.sh --monitoring 
