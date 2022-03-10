@@ -1,0 +1,165 @@
+# THIS FILE IS USED AS A TEMPLATE FOR UNICONFIG SERVICES
+# DO NOT DEPLOY SERVICES USING THIS FILE
+# USE ./startup.sh SCRIPT TO DO IT FOR YOU
+# ${UC_CONFIG_PATH} and ${LICENSE} ARE SET BY THE ./startup.sh SCRIPT
+
+version: "3.7"
+
+x-logging: &logging_loki
+    driver: loki
+    options:
+      loki-url: "http://${MANAGER_IP_ADDR}:3100/loki/api/v1/push"
+      max-file: "3"
+      max-size: "10m"
+      mode: non-blocking
+      loki-retries: "1"
+      loki-batch-size: "1500"
+      loki-relabel-config: |
+        - action: labelmap
+          regex: swarm_(service)
+
+x-placement: &placement
+      placement:
+        constraints:
+          - node.role == manager
+
+x-tcp_keepalive: &tcp_keepalive
+      net.ipv4.tcp_keepalive_time: 300
+
+services:
+  unistore:
+    image: frinx/uniconfig:4.2.10
+    logging: *logging_loki
+    labels:
+      - traefik.enable=false  
+    environment:
+      - JAVA_MAX_MEM=${US_XMX_LIMIT_MEM}
+      # Enable G1GC and GC logging 
+      - _JAVA_OPTIONS=-Xmx${US_XMX_LIMIT_MEM} -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xlog:gc:/opt/uniconfig-frinx/log/gc.log:tags,time,uptime,level:filecount=10,filesize=5M -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1 ${UC_PROXY_HTTP_ENV} ${UC_PROXY_HTTP_PORT_ENV} ${UC_PROXY_HTTPS_ENV} ${UC_PROXY_HTTPS_PORT_ENV} ${UC_PROXY_NOPROXY_ENV}
+      - dbPersistence_enabled=true
+      - dbPersistence_connection_dbName=unistore
+      - dbPersistence_connection_databaseLocations_host=unistore-postgres
+      - dbPersistence_connection_databaseLocations_port=5432
+    volumes:
+      - frinx_unistore-controller_logs:/opt/uniconfig-frinx/log
+      - ${UF_CONFIG_PATH}/unistore/cache:/opt/uniconfig-frinx/cache:rw
+    secrets:
+      - frinx_unistore_db
+    configs:
+      - source: unistore_startup
+        target: /opt/uniconfig-frinx/run_uniconfig.sh
+        mode: 0777
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
+      - source: unistore_lighty
+        target: /opt/uniconfig-frinx/config/lighty-uniconfig-config.json
+        mode: 0777
+    healthcheck:
+      test: | 
+        curl --insecure -o /dev/null --silent --write-out "%{http_code}" \
+        -X POST 'http://127.0.0.1:8181/rests/operations/uniconfig-manager:health' \
+        -H "Content-Type:application/json" | grep 200 || exit 1
+      interval: 10s
+      timeout: 35s
+      retries: 5
+      start_period: ${US_HEALTH_START_TIME}
+    entrypoint: ['/opt/uniconfig-frinx/run_uniconfig.sh']
+    command: -l ${LICENSE} 
+    ulimits:
+      nofile:
+        soft: ${US_ULIMIT_NOFILE_SOFT}
+        hard: ${US_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${US_ULIMIT_NPROC_SOFT}
+        hard: ${US_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    cap_add:
+      - CAP_NET_BIND_SERVICE
+      - NET_ADMIN
+    sysctls:
+      <<: *tcp_keepalive
+    deploy: 
+      <<: *placement
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${US_RES_LIMIT_CPUS}
+          memory: ${US_RES_LIMIT_MEM}
+
+  unistore-postgres:
+    image: postgres:12.2
+    user: postgres
+    logging: *logging_loki
+    labels:
+      - traefik.enable=false  
+    volumes:
+      - frinx_unistore-postgresql_data:/var/lib/postgresql/data
+    secrets:
+      - frinx_unistore_db
+    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh postgres"]
+    command: postgres -N 300
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    ulimits:
+      nofile:
+        soft: ${SP_ULIMIT_NOFILE_SOFT}
+        hard: ${SP_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${SP_ULIMIT_NPROC_SOFT}
+        hard: ${SP_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    cap_add:
+      - CAP_NET_BIND_SERVICE
+      - NET_ADMIN
+    sysctls:
+      <<: *tcp_keepalive
+    deploy: 
+      <<: *placement
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${SP_RES_LIMIT_CPUS}
+          memory: ${SP_RES_LIMIT_MEM}
+
+volumes:
+  frinx_unistore-controller_logs:
+    name: frinx_unistore_logs
+  frinx_unistore-postgresql_data:
+    name: frinx_unistore-postgresql_data
+
+configs:
+  unistore_startup:
+    file: ${UF_CONFIG_PATH}/uniconfig/run_uniconfig.sh
+  unistore_lighty:
+    file: ${UF_CONFIG_PATH}/unistore/lighty-unistore-config.json
+  set_env_secrets:
+    file: ${UF_CONFIG_PATH}/set_env_secrets.sh
+
+secrets:
+  frinx_unistore_db:
+    external: true
+
+networks:
+    default:
+      name: frinx-machine

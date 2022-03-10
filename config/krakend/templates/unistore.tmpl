@@ -1,0 +1,90 @@
+{{range $index_in_range, $not_used_element := $.range}}
+{{if gt $index_in_range 0}},{{end}}
+
+    {{range $host_index, $host := $.hosts}}
+    {{if gt $host_index 0}},{{end}}
+
+    {
+        "endpoint": "/api/{{$host}}/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+        "method": "POST",
+        {{ include "uniconfig_partial_1.tmpl" }}
+
+        "extra_config": {
+            {{ $jwt_production := env "AUTH_ENABLED" }}
+            {{ if eq $jwt_production "true" }}
+                {{ include "jwt_config.tmpl" }},
+                "github.com/devopsfaith/krakend-lua/router": {
+                    "sources": ["scripts/unistore_rbac.lua"],
+                    "allow_open_libs": true,
+                    "pre": "local r = ctx.load(); user_group_auth(r, os.getenv('UNISTORE_CONTROLLER_ADMIN_GROUP'))",
+                    "live": true
+                }
+            {{ else if eq $jwt_production "false" }}
+                {{ include "jwt_fake_config.tmpl" }}
+            {{ end }}
+        },
+
+        "backend": [
+            {
+                "url_pattern": "/rests/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+                {{ include "uniconfig_partial_2.tmpl" }}
+                "host": [
+                    "http://{{$host}}:8181"
+                ]
+            }
+        ]
+    }
+    {{end}}
+{{end}},
+
+
+{{range $method_index, $method := .methods}}
+{{if gt $method_index 0}},{{end}}
+
+    {{range $index_in_range, $not_used_element := $.range}}
+    {{if gt $index_in_range 0}},{{end}}
+
+        {{range $host_range, $host := $.hosts}}
+        {{if gt $host_range 0}},{{end}}
+
+            {
+                "endpoint": "/api/{{$host}}/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+                "method": "{{$method}}",
+                {{ include "uniconfig_partial_1.tmpl" }}
+
+
+                "extra_config": {
+                    {{ $jwt_production := env "AUTH_ENABLED" }}
+                    {{ if eq $jwt_production "true" }}
+                        {{ include "jwt_config.tmpl" }},
+                        "github.com/devopsfaith/krakend-lua/router": {
+                            "sources": ["scripts/uniconfig_query_escape.lua", "scripts/unistore_rbac.lua"],
+                            "allow_open_libs": true,
+                            "pre": "local r = ctx.load(); r:url(urlencode(r)); user_group_auth(r, os.getenv('UNISTORE_CONTROLLER_ADMIN_GROUP'))",
+                            "live": true
+                        }
+                    {{ else if eq $jwt_production "false" }}
+                        "github.com/devopsfaith/krakend-lua/router": {
+                            "@comment": "Fixing escape queries with multiple fields separated by semicolon",
+                            "sources": ["scripts/uniconfig_query_escape.lua", "scripts/fake_frinx_token.lua"],
+                            "allow_open_libs": true,
+                            "pre": "local r = ctx.load(); r:url(urlencode(r)); fake_token_validate(r)",
+                            "live": true
+                        }
+                    {{ end }}
+                },
+
+                "backend": [
+                    {
+                        "url_pattern": "/rests/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+                        {{ include "uniconfig_partial_2.tmpl" }}
+                        "host": [
+                            "http://{{$host}}:8181"
+                        ]
+                    }
+                ]
+            }
+
+        {{end}}
+    {{end}}
+{{end}}

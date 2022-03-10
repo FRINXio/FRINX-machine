@@ -1,0 +1,12 @@
+This is a placeholder folder, which can be left empty or contain folders with yang schemas to import before startup.
+
+The directory is always copied.
+
+Example of structure:
+cache (folder)
+  - schema_iosxr (folder)
+    - a.yang (file)
+    - b.yang (file)
+  - schema_junos (folder)
+    - x.yang (file)
+    - y.yang (file)
