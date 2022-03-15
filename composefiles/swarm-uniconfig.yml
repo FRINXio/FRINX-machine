@@ -30,18 +30,19 @@ services:
   uniconfig:
     image: traefik:v2.4
     logging: *logging_loki
+    networks:
+      - default
+      - uniconfig-network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     secrets:
       - frinx_uniconfig_tls_cert.pem
       - frinx_uniconfig_tls_key.pem
-      - frinx_uniconfig_X509.crt
     environment:
       - TRAEFIK_PING=true
       - TRAEFIK_LOG=true
       - TRAEFIK_LOG_LEVEL=DEBUG
       - TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY=true
-      - TRAEFIK_SERVERSTRANSPORT_ROOTCAS=/run/secrets/frinx_uniconfig_X509.crt
       - TRAEFIK_PROVIDERS_DOCKER=true
       - TRAEFIK_PROVIDERS_FILE_FILENAME=/etc/traefik/traefik_dynamic.yml
       - TRAEFIK_PROVIDERS_FILE_WATCH=true
@@ -57,6 +58,7 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+
     ulimits:
       nofile:
         soft: ${TF_ULIMIT_NOFILE_SOFT}
@@ -80,13 +82,15 @@ services:
   uniconfig-controller:
     image: frinx/uniconfig:4.2.10
     logging: *logging_loki
+    networks:
+      - uniconfig-network
     labels:
       - traefik.enable=true
-      - traefik.http.routers.uniconfig.entrypoints=https,uniconfig
+      - traefik.http.routers.uniconfig.entrypoints=http,uniconfig
       - traefik.http.routers.uniconfig.rule=PathPrefix(`/rests`)
       - traefik.http.services.uniconfig.loadBalancer.sticky.cookie.name=uniconfig_server_id
       - traefik.http.services.uniconfig.loadbalancer.server.port=8181
-      - traefik.http.services.uniconfig.loadbalancer.server.scheme=https
+      - traefik.http.services.uniconfig.loadbalancer.server.scheme=http
       - traefik.http.services.uniconfig.loadbalancer.passhostheader=true
       - traefik.http.routers.uniconfig.tls=true
     environment:
@@ -102,8 +106,6 @@ services:
       - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache_tmp:rw
     secrets:
       - frinx_uniconfig_db
-      - source: frinx_uniconfig_keystore
-        target: /opt/uniconfig-frinx/config/.keystore
     configs:
       - source: uniconfig_startup
         target: /opt/uniconfig-frinx/run_uniconfig.sh
@@ -120,8 +122,8 @@ services:
     healthcheck:
     # remove password from 
       test: | 
-        curl --insecure -o /dev/null --silent --write-out "%{http_code}" \
-        -X POST 'https://127.0.0.1:8181/rests/operations/uniconfig-manager:health' \
+        curl -o /dev/null --silent --write-out "%{http_code}" \
+        -X POST 'http://127.0.0.1:8181/rests/operations/uniconfig-manager:health' \
         -H "Content-Type:application/json" | grep 200 || exit 1
       interval: 10s
       timeout: 35s
@@ -160,6 +162,8 @@ services:
     image: postgres:12.2
     user: postgres
     logging: *logging_loki
+    networks:
+      - uniconfig-network
     labels:
       - traefik.enable=false  
     volumes:
@@ -222,10 +226,6 @@ secrets:
     external: true
   frinx_uniconfig_tls_key.pem:
     external: true
-  frinx_uniconfig_X509.crt:
-    external: true
-  frinx_uniconfig_keystore:
-    external: true
   frinx_uniconfig_db:
     external: true
 
@@ -236,5 +236,8 @@ volumes:
     name: frinx_uniconfig-postgresql_data
 
 networks:
-    default:
-      name: frinx-machine
+  default:
+    name: frinx-machine
+
+  uniconfig-network:
+    name: uniconfig-network

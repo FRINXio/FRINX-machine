@@ -476,10 +476,6 @@ Traefik certificates: Establish HTTPS connection between FM services and Uniconf
 * frinx_uniconfig_tls_key.pem*: 
 * frinx_krakend_X509.crt --X.509 Certificate for frinx_uniconfig_tls_cert/frinx_uniconfig_tls_key, self-signed certificate fix
 
-Uniconfig keystore: Enabling of TLS in UniConfig-controller
-* frinx_uniconfig_keystore
-* frinx_uniconfig_X509.crt --X.509 Certificate for frinx_uniconfig_keystore, self-signed certificate fix
-- /home/test/FRINX-machine/config/uniconfig/frinx/uniconfig/config/lighty-uniconfig-config.json
 </br>
 
 ! For use in the **production environment**, please generate your own certificates and store them with the same name to docker secrets.

@@ -360,11 +360,5 @@
         // "netconfReferenceModuleName": "system",
         // name of YANG module which contains deviations to leaves/leaf-lists that must be encrypted
         // "netconfEncryptedPathsModuleName": "encrypted-paths"
-    },
-    "tls": {
-        "enabledTls": true,
-        "enabledClientAuthentication": false,
-        "keystorePath": "config/.keystore",
-        "keystorePassword": "password"
-    }   
+    }
 }
