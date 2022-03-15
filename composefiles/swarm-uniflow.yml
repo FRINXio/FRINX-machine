@@ -42,10 +42,12 @@ services:
     secrets:
       - frinx_auth
       - frinx_rbac
-      - frinx_krakend_tls_cert.pem
-      - frinx_krakend_tls_key.pem
-      - source: frinx_krakend_X509.crt
-        target: /usr/local/share/ca-certificates/frinx_krakend_X509.crt
+      - source: frinx_krakend_tls_cert.pem
+        target: /home/krakend/frinx_krakend_tls_cert.pem
+      - source: frinx_krakend_tls_key.pem
+        target: /home/krakend/frinx_krakend_tls_key.pem
+      - source: frinx_uniconfig_tls_cert.pem
+        target: /usr/local/share/ca-certificates/frinx_uniconfig_tls_cert.crt
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -527,7 +529,7 @@ secrets:
     external: true
   frinx_krakend_tls_key.pem:
     external: true
-  frinx_krakend_X509.crt:
+  frinx_uniconfig_tls_cert.pem:
     external: true
   frinx_rbac:
     external: true

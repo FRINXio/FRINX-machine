@@ -4,8 +4,8 @@
   "port": 8080,
   "cache_ttl": "3600s",
   "tls": {
-    "public_key": "/run/secrets/frinx_krakend_tls_cert.pem",
-    "private_key": "/run/secrets/frinx_krakend_tls_key.pem",
+    "public_key": "/home/krakend/frinx_krakend_tls_cert.pem",
+    "private_key": "/home/krakend/frinx_krakend_tls_key.pem",
     "disabled": {{ env "TLS_DISABLED" }}
   },
   "timeout": "2m",

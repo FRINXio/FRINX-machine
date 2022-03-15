@@ -23,10 +23,17 @@ DESCRIPTION:
           NOTE: You NEED a working swarm prior to running startup.sh
 
     --update-secrets      
-          Update/create docker secrets for Frinx services from  ./config/certificates
-          Default names for KrakenD TLS are:
-          - frinx_krakend_tls_cert.pem
-          - frinx_krakend_tls_key.pem
+          Force update docker secrets for Frinx services from  ./config/secrets
+          Force update certificated stored in docker secrets 
+                - generate certs to ./config/certificates folder
+    
+    --custom-ssl-cert [path]
+          Path to custom cert for frinx_krakend_tls_cert.pem secret
+
+
+    --custom-ssl-key  [path]
+          Path to custom cert for frinx_krakend_tls_key.pem secret
+
 
   DOCKER PROXY CONFIGURATION
 
@@ -194,6 +201,24 @@ do
             echo -e "${WARNING} Updating docker frinx secrets"
             __UPDATE_SECRETS="true";;
 
+        --custom-ssl-key)
+            if [[ -f ${2} ]]; then
+              KRAKEND_SSL_KEY_PATH="${2}";
+              echo -e "${WARNING} Used custom SSL key"; shift
+            else
+              echo -e "${ERROR} Bad path ${2} for SSL key"
+              exit 1
+            fi;;
+
+        --custom-ssl-cert)
+            echo -e "${WARNING} Used custom SSL cert"
+            if [[ -f ${2} ]]; then
+                KRAKEND_SSL_CERT_PATH="${2}"; shift
+            else
+              echo -e "${ERROR} Bad path ${2} for SSL cert"
+              exit 1
+            fi;;
+
         --proxy-conf)
             if [[ ${2} != "-"* ]] && [[ ! -z ${2} ]]; then
                 __PROXY_PATH="${2}"; shift
@@ -235,7 +260,7 @@ function installPrerequisities {
   echo -e "${INFO} Configuring docker-ce and docker-compose"
   echo -e "${INFO} Checking curl"
   apt-get update > /dev/null
-  apt-get install curl -y
+  apt-get install curl openssl -y
 
   if test -f /usr/bin/dockerd; then
     dockerdVersion=$(/usr/bin/dockerd --version)
@@ -265,27 +290,47 @@ function installPrerequisities {
 }
 
 
-function updateDockerCertsSecrets {
-
-  for i in $(ls ${dockerCertSettings} )
-  do
-    local secret_exist=$(docker secret ls -f name=${i} --format {{.Name}})
-    if [[ ${secret_exist} != '' ]]; then
-      if [ "${__UPDATE_SECRETS}" == "true" ]; then
-        echo -e "${INFO} Docker Secrets: Updating docker secret with name ${i}"
-        (docker secret rm "${i}" > /dev/null && echo -e "${INFO} Docker Secrets: Remove old secret ${i}") || \
-          (echo -e "${ERROR} Docker Secrets: Problem with removing old docker secrets ${i}" && exit 1)
-        (docker secret create "${i}" "${dockerCertSettings}/${i}" > /dev/null && echo -e "${INFO} Docker Secrets: Set new secret ${i}") || \
-          (echo -e "${ERROR} Docker Secrets: Problem during updating docker secret ${i}" && exit 1)
-      else
-        echo -e "${INFO} Docker Secrets: Skipping docker secret update with name ${i}"
-      fi
-    else
-      echo -e "${INFO} Docker Secrets: Creating docker secret with name ${i}"
-      docker secret create "${i}" "${dockerCertSettings}/${i}" > /dev/null || echo -e "${ERROR} Docker secret not imported" | exit 1
-    fi
-  done
+function generateUniconfigTLSCerts {
+  if [[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_KEY}" ]] || [[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_CERT}" ]] || [ "${__UPDATE_SECRETS}" == "true" ]; then
+    echo -e "${INFO} Generating SSL key/cert used for uniconfig-zone TLS communication"
+    docker secret rm $( docker secret ls -q -f name=${UNICONFIG_SSL_KEY} -f name=${UNICONFIG_SSL_CERT}) &>/dev/null || true
+    openssl genrsa --out ${dockerCertSettings}/${UNICONFIG_SSL_KEY} &>/dev/null
+    openssl req -new -x509 -key ${dockerCertSettings}/${UNICONFIG_SSL_KEY} -out ${dockerCertSettings}/${UNICONFIG_SSL_CERT} -days 365 \
+          -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io'
+    docker secret create "${UNICONFIG_SSL_KEY}" "${dockerCertSettings}/${UNICONFIG_SSL_KEY}" > /dev/null || echo -e "${ERROR} Docker secret ${UNICONFIG_SSL_KEY} not imported" | exit 1
+    docker secret create "${UNICONFIG_SSL_CERT}" "${dockerCertSettings}/${UNICONFIG_SSL_CERT}" > /dev/null || echo -e "${ERROR} Docker secret ${UNICONFIG_SSL_CERT} not imported" | exit 1
+  fi
 }
+
+
+function generateKrakenDTLSCerts {
+
+  if [[ -f "${KRAKEND_SSL_KEY_PATH}" ]] || [[ -f "${KRAKEND_SSL_CERT_PATH}" ]]; then
+    echo -e "${INFO} Validation of key/cert used for KrakenD TLS communication"
+    key_md5=$(openssl rsa -modulus -noout -in ${KRAKEND_SSL_KEY_PATH} | openssl md5)
+    cert_md5=$(openssl x509 -modulus -noout -in ${KRAKEND_SSL_CERT_PATH} | openssl md5)
+    if [[ $key_md5 != $cert_md5 ]]; then
+      echo $key_md5 $cert_md5
+      echo -e "${ERROR} SSL key ${KRAKEND_SSL_KEY_PATH} is not compatible with cert ${KRAKEND_SSL_CERT_PATH}"
+      exit 1
+    fi
+    echo -e "${INFO} Remove old ${KRAKEND_SSL_KEY} / ${KRAKEND_SSL_CERT} from docker secret"
+    docker secret rm $( docker secret ls -q -f name=${KRAKEND_SSL_KEY} -f name=${KRAKEND_SSL_CERT}) &>/dev/null || true
+    echo -e "${INFO} Creating new ${KRAKEND_SSL_KEY} / ${KRAKEND_SSL_CERT} to docker secret"
+    docker secret create "${KRAKEND_SSL_KEY}" "${KRAKEND_SSL_KEY_PATH}" > /dev/null || echo -e "${ERROR} Docker secret ${KRAKEND_SSL_KEY} not imported" | exit 1
+    docker secret create "${KRAKEND_SSL_CERT}" "${KRAKEND_SSL_CERT_PATH}" > /dev/null || echo -e "${ERROR} Docker secret ${KRAKEND_SSL_CERT} not imported" | exit 1
+  elif [[ ! -f "${dockerCertSettings}/${KRAKEND_SSL_KEY}" ]] || [[ ! -f "${dockerCertSettings}/${KRAKEND_SSL_CERT}" ]] || [ "${__UPDATE_SECRETS}" == "true" ]; then
+    echo -e "${INFO} Generating SSL key/cert used for KrakenD TLS communication"
+    docker secret rm $( docker secret ls -q -f name=${KRAKEND_SSL_KEY} -f name=${KRAKEND_SSL_CERT}) &>/dev/null || true
+    openssl genrsa --out ${dockerCertSettings}/${KRAKEND_SSL_KEY} &>/dev/null
+    openssl req -new -x509 -key ${dockerCertSettings}/${KRAKEND_SSL_KEY} -out ${dockerCertSettings}/${KRAKEND_SSL_CERT} -days 365 \
+          -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io'
+    docker secret create "${KRAKEND_SSL_KEY}" "${dockerCertSettings}/${KRAKEND_SSL_KEY}" > /dev/null || echo -e "${ERROR} Docker secret ${KRAKEND_SSL_KEY} not imported" | exit 1
+    docker secret create "${KRAKEND_SSL_CERT}" "${dockerCertSettings}/${KRAKEND_SSL_CERT}" > /dev/null || echo -e "${ERROR} Docker secret ${KRAKEND_SSL_CERT} not imported" | exit 1
+  fi
+
+}
+
 
 function updateDockerEnvSecrets {
 
@@ -466,6 +511,11 @@ dockerPerformSettings="${FM_DIR}/config/dev_settings.txt"
 dockerCertSettings="${FM_DIR}/config/certificates"
 dockerEnvSettings="${FM_DIR}/config/secrets"
 
+UNICONFIG_SSL_KEY="frinx_uniconfig_tls_key.pem"
+UNICONFIG_SSL_CERT="frinx_uniconfig_tls_cert.pem"
+KRAKEND_SSL_KEY="frinx_krakend_tls_key.pem"
+KRAKEND_SSL_CERT="frinx_krakend_tls_cert.pem"
+
 __NO_SWARM="false"
 __SKIP_DEP="true"
 
@@ -485,7 +535,8 @@ pushd ${FM_DIR} > /dev/null
   checkInstallPrerequisities
   installLokiPlugin
   checkDockerGroup
-  updateDockerCertsSecrets
+  generateUniconfigTLSCerts
+  generateKrakenDTLSCerts
   updateDockerEnvSecrets
   pullImages
   cleanup
