@@ -58,6 +58,9 @@ Run the install script, this will check and download the neccessary prerequisiti
 $ ./install.sh                   # pull images, set secrets, skip the installation of dependencies
 $ ./install.sh  --install-deps   # required sudo access to install the FM dependencies (see list below) 
 $ ./install.sh  --update-secrets # create/update certificates to docker secrets frm ./config/certificates folder
+
+# Use custom cert/key for KrakenD TLS, replace old frinx_krakend_tls* docker secrets
+$ ./install.sh  --custom-ssl-cert path/to/cert.pem --custom-ssl-key path/to/key.pem 
 ```
 
 Automatically installed software:
@@ -65,6 +68,7 @@ Automatically installed software:
 - docker-compose 1.22.0
 - docker-ce 18.09 / 20.10
 - loki-docker-driver
+- openssl
 
 NOTE: It may happen that swarm initialization will fail during install. Most likely due to multiple network interfaces present. 
 In that case run `docker swarm init --advertise-addr <ip-addr>` command to tell swarm which ip address to use for inter-manager communication and overlay networking
@@ -462,9 +466,11 @@ This will collect all docker related logs and compresses it into an archive. Log
 Frinx Machine is providing the option to establish TLS connections between:
 * Between browser and api-gateway (by default off, to enable use follow command `./startup.sh --https`). [More info](https://www.krakend.io/docs/service-settings/tls/)
 * Frinx Machine Services and Uniconfig zone (Traefik load-balancer). [More info](https://doc.traefik.io/traefik/https/tls/)
-* Uniconfig zone load balancer (Traefik) and Uniconfig controller instances. [More info](https://docs.frinx.io/frinx-uniconfig/UniConfig/user-guide/operational-procedures/tls/tls.html)
 
-All default certificates are placed in `./config/certificates` folder and during execution of `./install.sh` are stored to docker secrets. 
+
+During the execution of `./install.sh`, all certificates are stored to docker secrets. 
+For Traefik/Uniconfig zone, the script generates its own keys/certs and store them in the `./config/certificates` folder.
+For KrakenD can be these certificates specified: `$ ./install.sh  --custom-ssl-cert path/to/cert.pem --custom-ssl-key path/to/key.pem`
 
 ### Certificate description
 Api-Gateway (KrakenD) TLS: 
@@ -472,13 +478,25 @@ Api-Gateway (KrakenD) TLS:
 * frinx_krakend_tls_key.pem
 
 Traefik certificates: Establish HTTPS connection between FM services and Uniconfig zone (multizone support)
-* frinx_uniconfig_tls_cert.pem*:
-* frinx_uniconfig_tls_key.pem*: 
-* frinx_krakend_X509.crt --X.509 Certificate for frinx_uniconfig_tls_cert/frinx_uniconfig_tls_key, self-signed certificate fix
+
+* frinx_uniconfig_tls_cert.pem 
+* frinx_uniconfig_tls_key.pem
 
 </br>
 
-! For use in the **production environment**, please generate your own certificates and store them with the same name to docker secrets.
+! For use in the **production environment**, please use your own certificates for KrakenD service.
+
+```bash
+# Example, generate private key
+$ openssl genrsa --out FRINX-Machine/config/certificates/frinx_krakend_tls_key.pem 
+# Example, generate selfsigned x509 cert
+# used wildcard Common Name (CN) *
+$ openssl req -new -x509 -days 365
+            -key FRINX-Machine/config/certificates/frinx_krakend_tls_key.pem \
+            -out FRINX-Machine/config/certificates/frinx_krakend_tls_cert.pem \
+            -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io'
+```
+
 </br>
 
 ## For developers

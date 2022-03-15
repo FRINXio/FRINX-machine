@@ -9,3 +9,5 @@
 .env
 config/krakend/settings/uniconfig_settings.json
 config/frinx-frontend/config.json
+config/certificates/**
+!config/certificates/README.md
