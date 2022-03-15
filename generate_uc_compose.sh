@@ -267,12 +267,15 @@ function generateUcCompose {
     sed -i 's|replicas: ${UC_CONTROLLER_REPLICAS:-1}|'"replicas: ${__UC_INSTANCES}|g" "${__COMPOSE_PATH}"
 
     # labels
-    sed -i 's|entrypoints=https,uniconfig|'"entrypoints=https,${__SERVICE_NAME}|g" "${__COMPOSE_PATH}"
+    sed -i 's|entrypoints=http,uniconfig|'"entrypoints=http,${__SERVICE_NAME}|g" "${__COMPOSE_PATH}"
     sed -i 's|\.uniconfig\.|'"\.${__SERVICE_NAME}\.|g" "${__COMPOSE_PATH}"
 
     # env
     sed -i 's|_host=uniconfig-postgres|'"_host=${__SERVICE_NAME}-postgres|g" "${__COMPOSE_PATH}"
     sed -i 's|TRAEFIK_ENTRYPOINTS_UNICONFIG|'"TRAEFIK_ENTRYPOINTS_${__SERVICE_NAME}|g" "${__COMPOSE_PATH}"
+
+    # networks
+    sed -i 's|uniconfig-network|'"${__SERVICE_NAME}-network|g" "${__COMPOSE_PATH}"
 
 }
 
