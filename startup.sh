@@ -106,6 +106,11 @@ function argumentsCheck {
         --auth)
             export AUTH_ENABLED="true";;
 
+        --proxy)
+            export PROXY_ENABLED="true"
+            setProxyEnv;;
+
+
         --prod|--dev|--high)
             if [ -z ${__only_one_perf_config} ]; then
               if [ ${1} == "--prod" ]; then
@@ -439,6 +444,17 @@ function generateUniconfigKrakendFile {
   sed "s/\"UNICONFIG-NAME\"/${name}/" ${krakendUniconfigTmplFile} > ${krakendUniconfigFile}
 }
 
+function setProxyEnv {
+  export HTTP_PROXY="${http_proxy:-$HTTP_PROXY}"
+  export HTTPS_PROXY="${https_proxy:-$HTTPS_PROXY}"
+  export NO_PROXY="${no_proxy:-$NO_PROXY}"
+
+  # load .proxy settings
+  setVariableFile "${stackProxyFile}"
+  echo -e "${INFO} Proxy settings enabled!"
+  echo -e "${INFO} http: ${HTTP_PROXY:-${WARNING}NaN}, https: ${HTTPS_PROXY:-${WARNING}NaN}, no: ${NO_PROXY:-${WARNING}NaN}"
+}
+
 
 function setManagerIpAddrEnv {
   MANAGER_IP_ADDR=$(hostname -I | cut -d ' ' -f 1)
@@ -473,7 +489,8 @@ function addEnvToFile {
 
 function setVariableFile {
   local __filePath="${1}"
-  if [[ -f ${__filePath} ]]; then
+  # check if the file exists and if contain at least one config parameter
+  if [[ -f ${__filePath} ]] && [[ "$(grep -v '^\s*$\|^\s*\#' ${__filePath})" != "" ]]; then
     source "${__filePath}"
     local __name=$(grep ^[[:alpha:]] ${__filePath})
     for ((i=0; i< ${#__name[@]}; i++ ))
@@ -485,7 +502,8 @@ function setVariableFile {
 
 
 function unsetVariableEnvFile {
-  if [[ -f ${stackEnvFile} ]]; then
+  # check if the file exists and if contain at least one config parameter
+  if [[ -f ${stackEnvFile} ]] && [[ "$(grep -v '^\s*$\|^\s*\#' ${stackEnvFile})" != "" ]]; then
     local __name=$(grep ^[[:alpha:]] ${stackEnvFile})
     for ((i=0; i< ${#__name[@]}; i++ ))
     do
@@ -503,6 +521,7 @@ scriptName="$(basename "${0}")"
 
 FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 stackEnvFile="${FM_DIR}/.env"
+stackProxyFile="${FM_DIR}/.proxy"
 
 ERROR="\033[0;31m[ERROR]:\033[0;0m"
 WARNING="\033[0;33m[WARNING]:\033[0;0m"

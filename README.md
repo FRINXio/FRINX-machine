@@ -80,34 +80,6 @@ See: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-
 
 </br>
 
-
-### Install FRINX Machine with proxy
-If you want to configure docker to use a proxy server, use:
-
-
-```sh
-# Create folder for docker proxy config file
-$ mkdir "${USER}/.docker"
-
-$ ./install.sh \
---proxy-conf "${USER}/.docker/config.json" \ 
---http-proxy "ip:port" \
---https-proxy "ip:port" \
---no-proxy "ip:port,ip:port,..."
-
-# or use env variables if are configured
-$ ./install.sh \
---proxy-conf "${USER}/.docker/config.json" \ 
---http-proxy "${http_proxy}" \
---https-proxy "${https_proxy}" \
---no-proxy "${no_proxy}"
-
-```
-For disabling proxy, the config.json must be removed and content of UC_PROXY_* variables in .env file must be erased! For example: UC_PROXY_HTTP_ENV="".
-
-For more info see: https://docs.docker.com/network/proxy/ 
-</br></br>
-
 ### Enable Azure AD authorization
 
 Frinx Machine supports authentification and authorization via Azure AD.
@@ -335,14 +307,27 @@ NOTE: The deployment might take a while as the worker node needs to download all
 
 </br>
 
+## Proxy configuration
+
+Use default environment settings
+```sh
+# Use $HTTPS_PROXY $HTTP_PROXY $NO_PROXY env
+$ ./startup.sh --proxy
+```
+For customization of proxy settings in FM deployment, create FRINX-Machine/.proxy file and configure own settings.
+
+```ini
+HTTP_PROXY='host:port'
+HTTPS_PROXY='host:port'
+NO_PROXY='ip:port,ip:port'
+```
+and start FM with --proxy switch.
+
 ## Preparing Environment
 The FRINX-Machine repository contains a **env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to these groups:
 * **Common settings**
 
 * **Temporary settings** - Created by FM scripts, **do not change them**
->   * UC_PROXY_* : use docker proxy in Uniconfig Service ( See [Installation](#installation) )
-
-Default settings are prepared for deployment without docker proxy.
 
 </br>
 

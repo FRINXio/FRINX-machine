@@ -35,8 +35,9 @@ services:
       # - FC_OUT=/etc/krakend/output.json
       # Ignore x509 certificate errors
       - GODEBUG="x509ignoreCN=0"
-      - HTTP_PROXY=${http_proxy}
-      - HTTPS_PROXY=${https_proxy}
+      - PROXY_ENABLED=${PROXY_ENABLED:-false}
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
       - NO_PROXY=workflow-proxy,frinx-frontend,inventory,uniconfig,unistore,uniresource
     volumes:
       - ${UF_CONFIG_PATH}/krakend:/etc/krakend:ro
