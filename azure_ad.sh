@@ -94,7 +94,8 @@ function addEnvToFile {
 function setVariableFile {
   local __filePath="${1}"
   echo $__filePath
-  if [[ -f ${__filePath} ]]; then
+  # check if the file exists and if contain at least one config parameter
+  if [[ -f ${__filePath} ]]  && [[ "$(grep -v '^\s*$\|^\s*\#' ${__filePath})" != "" ]]; then
     source "${__filePath}"
     local __name=$(grep ^[[:alpha:]] ${__filePath})
     for ((i=0; i< ${#__name[@]}; i++ ))
@@ -107,7 +108,8 @@ function setVariableFile {
 
 function unsetVariableFile {
   local __filePath="${1}"
-  if [[ -f ${__filePath} ]]; then
+  # check if the file exists and if contain at least one config parameter
+  if [[ -f ${__filePath} ]]  && [[ "$(grep -v '^\s*$\|^\s*\#' ${__filePath})" != "" ]]; then
     local __name=$(grep ^[[:alpha:]] ${__filePath})
     for ((i=0; i< ${#__name[@]}; i++ ))
     do

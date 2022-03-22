@@ -96,8 +96,12 @@ services:
     environment:
       - CONTAINER_ID={{.Task.Slot}}
       - JAVA_MAX_MEM=${UC_XMX_LIMIT_MEM}
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=${NO_PROXY}
+      - PROXY_ENABLED=${PROXY_ENABLED:-false}
       # Enable G1GC and GC logging 
-      - _JAVA_OPTIONS=-Xmx${UC_XMX_LIMIT_MEM} -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xlog:gc:/opt/uniconfig-frinx/log/gc-{{.Task.Slot}}.log:tags,time,uptime,level:filecount=10,filesize=5M -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1 ${UC_PROXY_HTTP_ENV} ${UC_PROXY_HTTP_PORT_ENV} ${UC_PROXY_HTTPS_ENV} ${UC_PROXY_HTTPS_PORT_ENV} ${UC_PROXY_NOPROXY_ENV}
+      - _JAVA_OPTIONS=-Xmx${UC_XMX_LIMIT_MEM} -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xlog:gc:/opt/uniconfig-frinx/log/gc-{{.Task.Slot}}.log:tags,time,uptime,level:filecount=10,filesize=5M -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1
       - dbPersistence_enabled=true
       - dbPersistence_connection_databaseLocations_host=uniconfig-postgres
       - dbPersistence_connection_databaseLocations_port=5432
