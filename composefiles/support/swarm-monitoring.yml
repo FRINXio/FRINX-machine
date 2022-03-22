@@ -32,6 +32,7 @@ services:
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_swarm_monitoring.json:/etc/grafana/provisioning/dashboards/db_swarm_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_wf_monitoring.json:/etc/grafana/provisioning/dashboards/db_wf_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_device_monitoring.json:/etc/grafana/provisioning/dashboards/db_device_monitoring.json
+      - ${UF_CONFIG_PATH}/monitoring/grafana/db_cert_monitoring.json:/etc/grafana/provisioning/dashboards/db_cert_monitoring.json
     healthcheck:
       test: ["CMD-SHELL", "wget --spider localhost:3000/api/health"]
       interval: 10s
@@ -177,6 +178,10 @@ services:
     entrypoint: ["/set_env_secrets.sh", "/entrypoint.sh telegraf"]
     secrets:
       - frinx_influxdb
+      - source: frinx_krakend_tls_cert.pem
+        target: /usr/local/share/ca-certificates/frinx_krakend_tls_cert.pem
+      - source: frinx_uniconfig_tls_cert.pem
+        target: /usr/local/share/ca-certificates/frinx_uniconfig_tls_cert.pem
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -212,6 +217,10 @@ services:
 
 secrets:
   frinx_influxdb:
+    external: true
+  frinx_uniconfig_tls_cert.pem:
+    external: true
+  frinx_krakend_tls_cert.pem:
     external: true
 
 configs:
