@@ -229,7 +229,7 @@ function configure {
 
   # todo scheme redirect
   addEnvToFile "AUTH_REDIRECT_DOMAIN" "${AZURE_REDIRECT_URL}"
-  addEnvToFile "MSAL_AUTHORITY" "https://login.microsoftonline.com/common/"
+  addEnvToFile "MSAL_AUTHORITY" "https://login.microsoftonline.com/${AZURE_TENANT_NAME}/"
 
   updateSecrets
 

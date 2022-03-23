@@ -185,7 +185,7 @@ function startMonitoring {
 function startUniflow {
 
   echo -e "${INFO} Uniflow swarm worker node id: ${UF_SWARM_NODE_ID}"
-  if [[ "$(docker service ps --format {{.Name}} fm_unistore)" != "" ]]; then
+  if [[ "$(docker service ls --format {{.Name}} | grep fm_unistore)" != "" ]]; then
     echo -e "${INFO} Update Frinx-Frontent: enable L3VPN automation"
     export GM_UI_ENABLED=true
   fi
@@ -271,7 +271,7 @@ function startContainers {
       ;;
 
       withunistore)
-        echo -e "${INFO} Deploying Uniflow, Uniconfig and Monitoring services"
+        echo -e "${INFO} Deploying Uniflow, Uniconfig, Unistore and Monitoring services"
         startMonitoring
         startUniflow
         startUniconfig
