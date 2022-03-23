@@ -59,6 +59,9 @@ rm -rf snapshots/ journal/
 # folder where lighty stores data
 mkdir -m 700 -p data
 
+# wait for postgresql container
+sleep 5
+
 is_enabled_debugging "$@"; enabled_debugging=$?
 if [ $enabled_debugging -eq 1 ]; then
   delete_debug_argument "$@"
