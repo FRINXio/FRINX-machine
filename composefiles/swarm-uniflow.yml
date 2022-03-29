@@ -343,10 +343,16 @@ services:
     logging: *logging_loki
     labels:
       - traefik.enable=false
+    entrypoint: ["/set_env_secrets.sh", "yarn start"]
+    secrets:
+      - frinx_rbac
+      - frinx_auth
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0777
     environment:
-      - OAUTH2=${JWT_PRODUCTION}
-      - OAUTH2_AUTH_URL=${AZURE_LOGIN_URL}/${AZURE_TENANT_NAME}/oauth2/v2.0/authorize
-      - OAUTH2_TOKEN_URL=/api/uniflow/docs/token
+      - OAUTH2=${AUTH_ENABLED}
     healthcheck:
       test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/readiness' && curl -I -XGET http://conductor-server:8080/health || exit 1
       interval: 10s
