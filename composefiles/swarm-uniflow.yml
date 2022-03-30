@@ -16,7 +16,7 @@ x-logging: &logging_loki
 
 services:
   krakend:
-    image: frinx/krakend:1.0.2
+    image: frinx/krakend:latest
     # user: root
     logging: *logging_loki
     labels:
