@@ -89,7 +89,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/uniflow-conductor-server:1.0.5
+    image: frinx/uniflow-conductor-server:latest
     # user: guest
     logging: *logging_loki
     labels:
@@ -338,7 +338,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:1.0.7
+    image: frinx/workflow-proxy:latest
     user: node
     logging: *logging_loki
     labels:

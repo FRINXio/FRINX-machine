@@ -153,7 +153,14 @@
         },
         {
             "endpoint": "/api/uniflow/workflow/bulk/terminate",
+            "method": "POST",
+            "url_pattern": "/workflow/bulk/terminate"
+        },
+        {
+            "@comment": "Deprecated",
+            "endpoint": "/api/uniflow/workflow/bulk/terminate",
             "method": "DELETE",
+            "backend_method": "POST",
             "url_pattern": "/workflow/bulk/terminate"
         },
         {
