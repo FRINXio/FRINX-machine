@@ -1,36 +1,8 @@
 
-{{range $index, $element := .endpoints}}
-{{if gt $index 0}},{{end}}
-{
-    "endpoint": "{{ .endpoint }}",
-    "method": "GET",
-    "output_encoding": "no-op",
-    "headers_to_pass": ["*"],
-
-    {{ if .querystring_params }}
-    "querystring_params": [ 
-        {{range $query_enabled, $query := .querystring_params}} {{if gt $query_enabled 0}},{{end}} "{{$query}}" {{ end }} 
-        ],
-    {{end}}
-
-    "backend": [
-    {
-        "url_pattern": "{{ .url_pattern }}",
-        "encoding": "no-op",
-        "sd": "static",
-        "disable_host_sanitize": false,
-        "host": [
-            "frinx-frontend:8888"
-        ]
-    }
-]
-}
-{{end}}
-,
 {{range $index_in_range, $not_used_element := $.range}}
 {{if gt $index_in_range 0}},{{end}}
 {
-    "endpoint": "/frinxui{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if lt $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+    "endpoint": "/{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if lt $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
     "method": "GET",
     "output_encoding": "no-op",
     "headers_to_pass": ["*"],
