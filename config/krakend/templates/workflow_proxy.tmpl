@@ -26,6 +26,11 @@
         "url_pattern": "{{ .url_pattern }}",
         "encoding": "no-op",
         "sd": "static",
+
+        {{ if .backend_method }}
+            "method": "{{.backend_method}}",
+        {{end}}
+        
         "disable_host_sanitize": false,
         "extra_config": {
             "github.com/devopsfaith/krakend-martian": {
