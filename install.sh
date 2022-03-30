@@ -24,9 +24,17 @@ DESCRIPTION:
 
     --update-secrets      
           Update/create docker secrets for Frinx services from  ./config/certificates
-          Default names for KrakenD TLS are:
+          Default certificate names:
           - frinx_krakend_tls_cert.pem
           - frinx_krakend_tls_key.pem
+          - frinx_uniconfig_tls_cert.pem
+          - frinx_uniconfig_tls_key.pem
+
+    --custom-ssl-key
+          Select custom frinx_krakend_tls_key.pem
+
+    --custom-ssl-cert
+          Select custom frinx_krakend_tls_cert.pem
 
   COMMON SETTINGS
     -i|--install-deps     Installation of dependencies
@@ -129,14 +137,18 @@ function installPrerequisities {
 
 
 function generateUniconfigTLSCerts {
-  if [[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_KEY}" ]] || [[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_CERT}" ]] || [ "${__UPDATE_SECRETS}" == "true" ]; then
-    echo -e "${INFO} Generating SSL key/cert used for uniconfig-zone TLS communication"
+
+  if ([[ $(docker secret ls --filter name=${UNICONFIG_SSL_KEY} --format {{.Name}}) == '' ]] || [[ $(docker secret ls --filter name=${UNICONFIG_SSL_CERT} --format {{.Name}}) == '' ]]) || [ "${__UPDATE_SECRETS}" == "true" ]; then
     docker secret rm $( docker secret ls -q -f name=${UNICONFIG_SSL_KEY} -f name=${UNICONFIG_SSL_CERT}) &>/dev/null || true
-    openssl genrsa --out ${dockerCertSettings}/${UNICONFIG_SSL_KEY} &>/dev/null
-    openssl req -new -x509 -key ${dockerCertSettings}/${UNICONFIG_SSL_KEY} -out ${dockerCertSettings}/${UNICONFIG_SSL_CERT} -days 365 \
-          -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io'
-    docker secret create "${UNICONFIG_SSL_KEY}" "${dockerCertSettings}/${UNICONFIG_SSL_KEY}" > /dev/null || echo -e "${ERROR} Docker secret ${UNICONFIG_SSL_KEY} not imported" | exit 1
-    docker secret create "${UNICONFIG_SSL_CERT}" "${dockerCertSettings}/${UNICONFIG_SSL_CERT}" > /dev/null || echo -e "${ERROR} Docker secret ${UNICONFIG_SSL_CERT} not imported" | exit 1
+    if ([[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_KEY}" ]] || [[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_CERT}" ]]); then
+      echo -e "${INFO} Generating SSL key/cert used for uniconfig-zone TLS communication"
+      openssl genrsa --out ${dockerCertSettings}/${UNICONFIG_SSL_KEY} &>/dev/null
+      openssl req -new -x509 -key ${dockerCertSettings}/${UNICONFIG_SSL_KEY} -out ${dockerCertSettings}/${UNICONFIG_SSL_CERT} -days 365 \
+            -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io'
+    fi
+      echo -e "${INFO} Updating SSL key/cert used for uniconfig-zone TLS communication"
+      docker secret create "${UNICONFIG_SSL_KEY}" "${dockerCertSettings}/${UNICONFIG_SSL_KEY}" > /dev/null || echo -e "${ERROR} Docker secret ${UNICONFIG_SSL_KEY} not imported" | exit 1
+      docker secret create "${UNICONFIG_SSL_CERT}" "${dockerCertSettings}/${UNICONFIG_SSL_CERT}" > /dev/null || echo -e "${ERROR} Docker secret ${UNICONFIG_SSL_CERT} not imported" | exit 1
   fi
 }
 
@@ -157,12 +169,15 @@ function generateKrakenDTLSCerts {
     echo -e "${INFO} Creating new ${KRAKEND_SSL_KEY} / ${KRAKEND_SSL_CERT} to docker secret"
     docker secret create "${KRAKEND_SSL_KEY}" "${KRAKEND_SSL_KEY_PATH}" > /dev/null || echo -e "${ERROR} Docker secret ${KRAKEND_SSL_KEY} not imported" | exit 1
     docker secret create "${KRAKEND_SSL_CERT}" "${KRAKEND_SSL_CERT_PATH}" > /dev/null || echo -e "${ERROR} Docker secret ${KRAKEND_SSL_CERT} not imported" | exit 1
-  elif [[ ! -f "${dockerCertSettings}/${KRAKEND_SSL_KEY}" ]] || [[ ! -f "${dockerCertSettings}/${KRAKEND_SSL_CERT}" ]] || [ "${__UPDATE_SECRETS}" == "true" ]; then
-    echo -e "${INFO} Generating SSL key/cert used for KrakenD TLS communication"
+  elif ([[ $(docker secret ls --filter name=${KRAKEND_SSL_KEY} --format {{.Name}}) == '' ]] || [[ $(docker secret ls --filter name=${KRAKEND_SSL_CERT} --format {{.Name}}) == '' ]]) || [ "${__UPDATE_SECRETS}" == "true" ]; then
     docker secret rm $( docker secret ls -q -f name=${KRAKEND_SSL_KEY} -f name=${KRAKEND_SSL_CERT}) &>/dev/null || true
-    openssl genrsa --out ${dockerCertSettings}/${KRAKEND_SSL_KEY} &>/dev/null
-    openssl req -new -x509 -key ${dockerCertSettings}/${KRAKEND_SSL_KEY} -out ${dockerCertSettings}/${KRAKEND_SSL_CERT} -days 365 \
-          -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io'
+    if [[ ! -f "${dockerCertSettings}/${KRAKEND_SSL_KEY}" ]] || [[ ! -f "${dockerCertSettings}/${KRAKEND_SSL_CERT}" ]]; then
+      echo -e "${INFO} Generating SSL key/cert used for KrakenD TLS communication"
+      openssl genrsa --out ${dockerCertSettings}/${KRAKEND_SSL_KEY} &>/dev/null
+      openssl req -new -x509 -key ${dockerCertSettings}/${KRAKEND_SSL_KEY} -out ${dockerCertSettings}/${KRAKEND_SSL_CERT} -days 365 \
+            -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io'
+    fi
+    echo -e "${INFO} Updating SSL key/cert used for KrakenD TLS communication"
     docker secret create "${KRAKEND_SSL_KEY}" "${dockerCertSettings}/${KRAKEND_SSL_KEY}" > /dev/null || echo -e "${ERROR} Docker secret ${KRAKEND_SSL_KEY} not imported" | exit 1
     docker secret create "${KRAKEND_SSL_CERT}" "${dockerCertSettings}/${KRAKEND_SSL_CERT}" > /dev/null || echo -e "${ERROR} Docker secret ${KRAKEND_SSL_CERT} not imported" | exit 1
   fi
@@ -203,10 +218,12 @@ function pullImages {
 
   echo -e "${INFO} Pulling Monitoring images"
   docker-compose --log-level ERROR -f $dockerComposeFileMonitor pull || true
-  echo -e "${INFO} Pulling UniFlow images"
+  echo -e "${INFO} Pulling Uniflow images"
   docker-compose --log-level ERROR -f $dockerComposeFileUniflow pull || true
-  echo -e "${INFO} Pulling UniConfig images"
+  echo -e "${INFO} Pulling Uniconfig images"
   docker-compose --log-level ERROR -f $dockerComposeFileUniconfig pull || true
+  echo -e "${INFO} Pulling Unistore images"
+  docker-compose --log-level ERROR -f $dockerComposeFileUnistore pull || true
 
 }
 
@@ -344,6 +361,8 @@ stackEnvFile="${FM_DIR}/.env"
 
 dockerComposeFileUniconfig="${FM_DIR}/composefiles/swarm-uniconfig.yml"
 dockerComposeFileUniflow="${FM_DIR}/composefiles/swarm-uniflow.yml"
+dockerComposeFileUnistore="${FM_DIR}/composefiles/swarm-unistore.yml"
+
 dockerComposeFileMonitor="${FM_DIR}/composefiles/support/swarm-monitoring.yml"
 
 dockerPerformSettings="${FM_DIR}/config/dev_settings.txt"
