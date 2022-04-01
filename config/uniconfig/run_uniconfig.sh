@@ -13,11 +13,6 @@ if [[ -f "/set_env_secrets.sh" ]]; then
   . /set_env_secrets.sh ''
 fi
 
-if [[ -d "/opt/uniconfig-frinx/cache_tmp" ]]; then
-  echo "Copy cache_tmp folder before start"
-  cp -R /opt/uniconfig-frinx/cache_tmp/* /opt/uniconfig-frinx/cache
-fi
-
 display_usage() {
     echo -e "Usage: $(basename "$0") [-f] [-l LICENSE_TOKEN] [--debug]"
     echo -e "where: "

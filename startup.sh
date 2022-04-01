@@ -238,6 +238,7 @@ function startUniconfig {
   else
     echo -e "${INFO} Single-node deployment - composefiles/${dockerSwarmUniconfig}"
     echo -e "${INFO} Uniconfig swarm worker node hostname: ${UC_SWARM_NODE_ID}"
+    chmod -R 777  ${UC_CONFIG_PATH}/cache
     docker stack deploy --compose-file "composefiles/${dockerSwarmUniconfig}" $stackName
   fi
 }
