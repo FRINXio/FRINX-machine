@@ -110,7 +110,7 @@ services:
       - dbPersistence_connection_databaseLocations_port=5432
     volumes:
       - frinx_uniconfig-controller_logs:/opt/uniconfig-frinx/log
-      - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache_tmp:rw
+      - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache:rw
     secrets:
       - frinx_uniconfig_db
     configs:

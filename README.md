@@ -286,6 +286,8 @@ From the worker node:
 ```sh
 # create cache volume for uniconfig-cotroller
 mkdir -p /opt/frinx/<SERVICE_NAME>/uniconfig-controller/cache/
+# set correct permissions
+chmod -R 777 /opt/frinx/<SERVICE_NAME>/uniconfig-controller/cache/
 
 # if older FM was started on this node, remove docker persistant volumes
 docker volume prune --filter label=fm

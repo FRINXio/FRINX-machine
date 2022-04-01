@@ -230,6 +230,7 @@ function prepareConfigFiles {
 
     # prepare uniconfig cache folder and files
     mkdir -p "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}/cache"
+    chmod -R 777 "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}/cache"
 }
 
 
