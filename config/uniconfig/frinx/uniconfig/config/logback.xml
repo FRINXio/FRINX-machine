@@ -138,6 +138,11 @@
         </triggeringPolicy>
     </appender>
 
+    <!-- used for automatic propagation of set logger level to JUL logging implementation -->
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
     <!-- root logger -->
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
@@ -177,6 +182,9 @@
 
     <!-- Kafka -->
     <logger name="org.apache.kafka.clients.NetworkClient" level="INFO"/>
+
+    <!-- PostgreSQL driver -->
+    <logger name="org.postgresql" level="INFO"/>
 
     <!-- do not modify this part, we should use RESTCONF RPCs for controlling of logging brokers -->
     <logger name="org.opendaylight.restconf.nb.rfc8040.jersey.providers.logging.RestconfLoggingBroker" level="INFO" additivity="false">

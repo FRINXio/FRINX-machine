@@ -95,7 +95,13 @@
                 "username": "admin",
                 "password": "secret"
             }
-        }
+        },
+        // Flag that determines if uniconfig-shell provides scrolling of output
+        "enableScrolling": false,
+        // Number of history items to keep in memory
+        "historySize": 500,
+        // Number of history items to keep in the history file
+        "historyFileSize": 1000
     },
     /*
     Settings for the Device Discovery service
@@ -209,12 +215,18 @@
     "templates": {
         // Enabled templates - if it is set to 'false', UniConfig will not prepare YANG modules for templates
         // - creation of templates will not work. Enabled templates consumes more memory than setup without templates.
-        "enabled": false
+        "enabled": false,
         /* Name of the YANG module which is used for comparison of loaded YANG repositories based on revision and
            further saving the name of the latest YANG repository. Latest YANG repository is automatically used
            at creation of new template node, if user doesn't specify it explicitly. If this setting is not specified,
            this feature will be disabled.*/
         // "latestSchemaReferenceModuleName": "system"
+        // Enabled auto-upgrading of templates that are using old YANG repository to templates with same name
+        // and latest YANG repositories (applying version-drop). Before templates are upgraded, they are also backed up.
+        "enabledTemplatesUpgrading": false,
+        // Maximum age of backup template [days]. After that age, template will be removed from database permanently.
+        // Negative value will cause removing of such template immediately at the next UniConfig booting process.
+        "maxBackupTemplateAge": -1
     },
     // Grouped settings that are related to Uniconfig transactions.
     "transactions": {
@@ -223,6 +235,7 @@
         */
         "transactionIdleTimeOut": 3600,
         /*
+	"maxStoredTransactions": 100,
         Maximum transaction age before it can be evicted from transaction registry [seconds].
         Configuring '0' disables cleaning of Uniconfig transactions.
         */
@@ -234,7 +247,12 @@
         are cleaned - shared transaction is never removed or invalidated.
          Configuring '0' disables cleaning of Uniconfig transactions.
         */
-        "cleaningInterval": 60
+        "cleaningInterval": 60,
+        /*
+        Boolean value if the Immediate Commit Model is enabled or not. Default value is true.
+        If disabled, only manually created transactions can exist.
+        */
+        "isImmediateCommitEnabled": true
     },
     // Grouped settings that are related to notifications.
     "notifications": {
@@ -260,12 +278,39 @@
             "auditLogsEnabled": true,
             // Flag that determines whether transaction notifications are enabled
             "transactionNotificationsEnabled": true,
+            // Enabled collection and propagation of data-change-events into Kafka.
+            "dataChangeEventsEnabled": true,
+            // Enabled collection and propagation of connection notifications into Kafka.
+            "connectionNotificationsEnabled": true,
             // Unique identifier of topic that is used for storing netconf notifications.
             "netconfNotificationsTopicName": "netconf-notifications",
             // Unique identifier of topic that is used for storing audit logs.
             "auditLogsTopicName": "audit-logs",
             // Unique identifier of topic that is used for storing transaction notifications.
             "transactionsTopicName": "transactions",
+            // Unique identifier of the Kafka topic used for distribution of data-change-events.
+            "dataChangeEventsTopicName": "data-change-events",
+            // Unique identifier of the Kafka topic used for distribution of connection notifications.
+            "connectionNotificationsTopicName": "connection-notifications",
+            // If only connection notifications for NETCONF stream are enabled.
+            "connectionNotificationsNetconfStreamOnly": true,
+            // Configuration of how long the send() method and the creation of connection for
+            // reading of metadata methods will block. (in ms)
+            "blockingTimeout": 60000,
+            // Configuration of how long will the producer wait for the acknowledgement of a request. (in ms)
+            // If the acknowledgement is not received before the timeout elapses, the producer will resend the
+            // request or fail the request if retries are exhausted
+            "requestTimeout": 30000,
+            // Configuration of the upper bound on the time to report success or failure after a
+            // call to send() returns.(in ms)
+            // This limits the total time that a record will be delayed prior to sending, the time to
+            // await acknowledgement from the broker (if expected), and the time allowed for retriable send failures.
+            "deliveryTimeout": 120000,
+            // The maximum thread pool size in the executor
+            // A thread pool executor is needed to send messages to Kafka
+            "maxThreadPoolSize": 8,
+            // The maximum capacity of the work queue in the executor
+            "queueCapacity": 2048,
             // Embedded Kafka settings (embedded Kafka is disabled by default, it should not be used in the production).
             // Only PLAINTEXT authentication scheme is supported.
             "embeddedKafka": {
@@ -275,7 +320,7 @@
                 // Directory to which embedded Kafka is downloaded and extracted.
                 "installDir": "/tmp/embedded-kafka",
                 // URL that is used for download of Kafka, if it hasn't been downloaded yet.
-                "archiveUrl": "https://dlcdn.apache.org/kafka/3.0.0/kafka_2.12-3.0.0.tgz",
+                "archiveUrl": "https://dlcdn.apache.org/kafka/3.1.0/kafka_2.13-3.1.0.tgz",
                 // Directory containing Kafka data files - persisted topics.
                 "dataDir": "./data/embedded-kafka",
                 // Clean data from previous run before starting of Kafka (= disabled persistence).
