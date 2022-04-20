@@ -245,7 +245,7 @@ function startUniconfig {
 
 function startContainers {
 
-  generateUniconfigKrakendFile
+  setUniconfigZoneEnv
   setNodeIdLocalDeploy
   setManagerIpAddrEnv
   
@@ -424,7 +424,7 @@ function validateAzureAD {
   fi
 }
 
-function generateUniconfigKrakendFile {
+function setUniconfigZoneEnv {
 
   if [[ ${__multinode} == "true" ]]; then
     shopt -s lastpipe
@@ -432,17 +432,17 @@ function generateUniconfigKrakendFile {
     while IFS= read -r -d '' traefik_name; do 
       if [[ -z $name ]]; then
         line_num=$(($(cat ${traefik_name} | grep -n "services:" | cut -d ':' -f 1)+1))
-        name="\"$(sed -n ${line_num}p ${traefik_name} | cut -d ':' -f 1 | sed 's/ //g')\"" 
+        name="$(sed -n ${line_num}p ${traefik_name} | cut -d ':' -f 1 | sed 's/ //g')" 
       else
         line_num=$(($(cat ${traefik_name} | grep -n "services:" | cut -d ':' -f 1)+1))
-        name="\"$(sed -n ${line_num}p ${traefik_name} | cut -d ':' -f 1 | sed 's/ //g')\",\n\t\t${name}"
+        name="$(sed -n ${line_num}p ${traefik_name} | cut -d ':' -f 1 | sed 's/ //g'),${name}"
       fi
     done
     name=${name}
   else
-    name='"uniconfig"'
+    name='uniconfig'
   fi
-  sed "s/\"UNICONFIG-NAME\"/${name}/" ${krakendUniconfigTmplFile} > ${krakendUniconfigFile}
+  export UNICONFIG_ZONES_LIST=${name}
 }
 
 function setProxyEnv {
@@ -458,7 +458,7 @@ function setProxyEnv {
 
 
 function setManagerIpAddrEnv {
-  MANAGER_IP_ADDR=$(hostname -I | cut -d ' ' -f 1)
+  MANAGER_IP_ADDR=$(docker node inspect --format '{{.ManagerStatus.Addr}}' self | cut -d ' ' -f 1)
   export MANAGER_IP_ADDR
 }
 
@@ -540,11 +540,6 @@ dockerSwarmUnistore='swarm-unistore.yml'
 dockerSwarmMetrics='support/swarm-monitoring.yml'
 
 uniconfigServiceFilesPath="${FM_DIR}/composefiles/uniconfig"
-
-# DEFAULT KRAKEND SETTINGS
-krakendUniconfigNode="${FM_DIR}/config/krakend/settings"
-krakendUniconfigTmplFile="${krakendUniconfigNode}/uniconfig_settings_template.json"
-krakendUniconfigFile="${krakendUniconfigNode}/uniconfig_settings.json"
 
 ## Default http 
 export TLS_DISABLED="true"
