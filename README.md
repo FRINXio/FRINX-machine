@@ -302,7 +302,8 @@ $ ./startup.sh --multinode
 # For different composefiles path
 $ ./startup.sh --multinode 'path/to/your/folder'
 # Can be aslo combined with another options 
-$ ./startup.sh --multinode --uniconfig --dev
+$ ./startup.sh --multinode 'path/to/your/folder' --uniconfig --dev
+$ ./startup.sh --multinode 'path/to/your/folder' --uniflow --dev
 ```
 
 NOTE: The deployment might take a while as the worker node needs to download all necessary images first.

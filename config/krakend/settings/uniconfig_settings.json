@@ -1,7 +1,4 @@
 {
-    "hosts": [
-        "UNICONFIG-NAME"
-    ],
     "methods": [
         "PUT",
         "GET",
