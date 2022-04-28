@@ -72,6 +72,8 @@ if [[ ${PROXY_ENABLED} == "true" ]]; then
   _JAVA_OPTIONS="$_JAVA_OPTIONS ${__HTTP_HOST} ${__HTTP_PORT} ${__HTTPS_HOST} ${__HTTPS_PORT} -Dhttp.nonProxyHosts=${NO_PROXY}"
 fi
 
+mkdir -p log/${SERVICE_NAME}/${UNICONFIG_ID}
+
 # removing cached data and logs from previous run
 rm -rf snapshots/ journal/
 

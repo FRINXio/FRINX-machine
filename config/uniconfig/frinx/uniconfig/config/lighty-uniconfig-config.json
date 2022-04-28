@@ -196,7 +196,13 @@
                     // TCP port on which target database listens to incoming connections
                     "port": 26257
                 }
-            ]
+            ],
+            /*
+            Repairs the Flyway schema history table before Flyway migration. This will perform the following actions:
+             1. Remove any failed migrations on databases.
+             2. Realign the checksums, descriptions and types of the applied migrations with available migrations.
+            */
+            "repairSchemaHistory": false
         },
         // UniConfig instance naming settings.
         "uniconfigInstance": {
@@ -230,12 +236,12 @@
     },
     // Grouped settings that are related to Uniconfig transactions.
     "transactions": {
+        "maxStoredTransactions": 100,
         /*
         Time after transaction can be closed [seconds] by transaction cleaner.
         */
         "transactionIdleTimeOut": 3600,
         /*
-	"maxStoredTransactions": 100,
         Maximum transaction age before it can be evicted from transaction registry [seconds].
         Configuring '0' disables cleaning of Uniconfig transactions.
         */
@@ -405,5 +411,27 @@
         // "netconfReferenceModuleName": "system",
         // name of YANG module which contains deviations to leaves/leaf-lists that must be encrypted
         // "netconfEncryptedPathsModuleName": "encrypted-paths"
+    },
+    // settings for metrics
+    "metrics": {
+            // flag that determines if metrics will be reported or not
+            "enabled": true,
+            // reporter type (log, csv)
+            "reporter": "log",
+            // reporting rate in seconds
+            "rate": 30
+        // example csv output for one metric
+        //        t,count,mean_rate,m1_rate,m5_rate,m15_rate,rate_unit
+        //        1650557436,3,0.182204,0.507889,0.580330,0.593370,events/second
+        //        1650557466,3,0.064564,0.308050,0.525104,0.573917,events/second
+        //        1650557496,3,0.039233,0.186842,0.475134,0.555102,events/second
+        //        1650557526,3,0.028178,0.113325,0.429919,0.536904,events/second
+        //        1650557534,3,0.026281,0.104264,0.422813,0.533929,events/second
+        //
+        // example log output
+        // 18:16:20.886 INFO io.frinx.uniconfig.metrics.impl.ReporterImpl - type=GAUGE, name=io.frinx.uniconfig.manager.impl.task.TaskExecutorImpl.queue_size, value=0
+        // 18:16:20.887 INFO io.frinx.uniconfig.metrics.impl.ReporterImpl - type=METER, name=org.opendaylight.controller.uniconfig.transaction.manager.impl.UniconfigTransactionManagerImpl.transaction_invoke, count=0, m1_rate=0.0, m5_rate=0.0, m15_rate=0.0, mean_rate=0.0, rate_unit=events/second
+        // 18:16:20.887 INFO io.frinx.uniconfig.metrics.impl.ReporterImpl - type=METER, name=org.opendaylight.yangtools.yang.common.RpcResult.rpc_invoke, count=3, m1_rate=0.3080502714195554, m5_rate=0.5251039914257685, m15_rate=0.5739172434618175, mean_rate=0.06565517632771098, rate_unit=events/second
+
     }
 }
