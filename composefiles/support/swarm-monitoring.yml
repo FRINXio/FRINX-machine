@@ -33,6 +33,7 @@ services:
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_wf_monitoring.json:/etc/grafana/provisioning/dashboards/db_wf_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_device_monitoring.json:/etc/grafana/provisioning/dashboards/db_device_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_cert_monitoring.json:/etc/grafana/provisioning/dashboards/db_cert_monitoring.json
+      - ${UF_CONFIG_PATH}/monitoring/grafana/db_uniconfig_monitoring.json:/etc/grafana/provisioning/dashboards/db_uniconfig_monitoring.json
     entrypoint: ["/set_env_secrets.sh", "/run.sh"]
     secrets:
       - frinx_grafana
@@ -182,6 +183,7 @@ services:
       - /proc:/rootfs/proc:ro
       - /etc:/rootfs/etc:ro
       - /etc/hostname:/etc/hostname:ro
+      - frinx_uniconfig-controller_logs:/tmp/logs
     entrypoint: ["/set_env_secrets.sh", "/entrypoint.sh telegraf"]
     secrets:
       - frinx_influxdb
@@ -247,6 +249,8 @@ volumes:
       name: frinx-monitoring-loki
   frinx-monitoring-influxdb:
       name: frinx-monitoring-influxdb
+  frinx_uniconfig-controller_logs:
+    name: frinx_uniconfig-controller_logs
 
 networks:
     default:

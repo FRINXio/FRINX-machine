@@ -261,7 +261,6 @@ function generateUcCompose {
     sed -i 's|${UC_CONFIG_PATH}|'"/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}|g" "${__COMPOSE_PATH}"
 
     # swarm persistant volume paths
-    sed -i 's|uniconfig-controller_logs|'"${__SERVICE_FULL_NAME}_logs|g" "${__COMPOSE_PATH}"
     sed -i "s/uniconfig-postgresql_data/${__SERVICE_NAME}-postgresql_data/g" "${__COMPOSE_PATH}"
 
     # swarm uniconfig-controller replicas

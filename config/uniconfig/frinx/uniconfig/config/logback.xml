@@ -14,13 +14,13 @@
         </encoder>
     </appender>
     <appender name="logs" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>log/${CONTAINER_ID}/logs.log</File>
+        <File>log/${SERVICE_NAME}/${CONTAINER_ID}/logs.log</File>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <maxIndex>20</maxIndex>
-            <FileNamePattern>log/${CONTAINER_ID}/logs.log.%i</FileNamePattern>
+            <FileNamePattern>log/${SERVICE_NAME}/${CONTAINER_ID}/logs.log.%i</FileNamePattern>
         </rollingPolicy>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
             <MaxFileSize>50MB</MaxFileSize>
@@ -33,13 +33,13 @@
         </discriminator>
         <sift>
             <appender name="${deviceName}-netconf-notifications" class="ch.qos.logback.core.rolling.RollingFileAppender">
-                <file>log/${CONTAINER_ID}/netconf-notifications/${deviceName}.log</file>
+                <file>log/${SERVICE_NAME}/${CONTAINER_ID}/netconf-notifications/${deviceName}.log</file>
                 <encoder>
                     <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
                 </encoder>
                 <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
                     <maxIndex>20</maxIndex>
-                    <FileNamePattern>log/${CONTAINER_ID}/netconf-notifications/${deviceName}.log.%i</FileNamePattern>
+                    <FileNamePattern>log/${SERVICE_NAME}/${CONTAINER_ID}/netconf-notifications/${deviceName}.log.%i</FileNamePattern>
                 </rollingPolicy>
                 <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
                     <MaxFileSize>16MB</MaxFileSize>
@@ -54,13 +54,13 @@
         </discriminator>
         <sift>
             <appender name="${deviceName}-netconf-messages" class="ch.qos.logback.core.rolling.RollingFileAppender">
-                <file>log/${CONTAINER_ID}/netconf-messages/${deviceName}.log</file>
+                <file>log/${SERVICE_NAME}/${CONTAINER_ID}/netconf-messages/${deviceName}.log</file>
                 <encoder>
                     <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
                 </encoder>
                 <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
                     <maxIndex>20</maxIndex>
-                    <FileNamePattern>log/${CONTAINER_ID}/netconf-messages/${deviceName}.log.%i</FileNamePattern>
+                    <FileNamePattern>log/${SERVICE_NAME}/${CONTAINER_ID}/netconf-messages/${deviceName}.log.%i</FileNamePattern>
                 </rollingPolicy>
                 <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
                     <MaxFileSize>16MB</MaxFileSize>
@@ -75,13 +75,13 @@
         </discriminator>
         <sift>
             <appender name="${deviceName}-netconf-events" class="ch.qos.logback.core.rolling.RollingFileAppender">
-                <file>log/${CONTAINER_ID}/netconf-events/${deviceName}.log</file>
+                <file>log/${SERVICE_NAME}/${CONTAINER_ID}/netconf-events/${deviceName}.log</file>
                 <encoder>
                     <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
                 </encoder>
                 <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
                     <maxIndex>20</maxIndex>
-                    <FileNamePattern>log/${CONTAINER_ID}/netconf-events/${deviceName}.log.%i</FileNamePattern>
+                    <FileNamePattern>log/${SERVICE_NAME}/${CONTAINER_ID}/netconf-events/${deviceName}.log.%i</FileNamePattern>
                 </rollingPolicy>
                 <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
                     <MaxFileSize>16MB</MaxFileSize>
@@ -90,13 +90,13 @@
         </sift>
     </appender>
     <appender name="restconf" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>log/${CONTAINER_ID}/restconf.log</File>
+        <File>log/${SERVICE_NAME}/${CONTAINER_ID}/restconf.log</File>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <maxIndex>20</maxIndex>
-            <FileNamePattern>log/${CONTAINER_ID}/restconf.%i</FileNamePattern>
+            <FileNamePattern>log/${SERVICE_NAME}/${CONTAINER_ID}/restconf.%i</FileNamePattern>
         </rollingPolicy>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
             <MaxFileSize>50MB</MaxFileSize>
@@ -109,13 +109,13 @@
         </discriminator>
         <sift>
             <appender name="${deviceName}-cli-messages" class="ch.qos.logback.core.rolling.RollingFileAppender">
-                <file>log/${CONTAINER_ID}/cli-messages/${deviceName}.log</file>
+                <file>log/${SERVICE_NAME}/${CONTAINER_ID}/cli-messages/${deviceName}.log</file>
                 <encoder>
                     <pattern>%d{HH:mm:ss.SSS} %level %logger - %msg%n</pattern>
                 </encoder>
                 <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
                     <maxIndex>20</maxIndex>
-                    <FileNamePattern>log/${CONTAINER_ID}/cli-messages/${deviceName}.log.%i</FileNamePattern>
+                    <FileNamePattern>log/${SERVICE_NAME}/${CONTAINER_ID}/cli-messages/${deviceName}.log.%i</FileNamePattern>
                 </rollingPolicy>
                 <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
                     <MaxFileSize>16MB</MaxFileSize>
@@ -125,13 +125,27 @@
     </appender>
 
     <appender name="gnmi" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>log/${CONTAINER_ID}/gnmi.log</File>
+        <File>log/${SERVICE_NAME}/${CONTAINER_ID}/gnmi.log</File>
         <encoder>
             <pattern>%d{HH:mm:ss} %level %logger - %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <maxIndex>20</maxIndex>
-            <FileNamePattern>log/${CONTAINER_ID}/gnmi.log.%i</FileNamePattern>
+            <FileNamePattern>log/${SERVICE_NAME}/${CONTAINER_ID}/gnmi.log.%i</FileNamePattern>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>16MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <appender name="metrics" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>log/${SERVICE_NAME}/${CONTAINER_ID}/metrics.log</File>
+        <encoder>
+            <pattern> uniconfig,zone=${SERVICE_NAME},instance=${CONTAINER_ID} %replace(%replace(%msg){'=','="'}){', ','",'}"%n </pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <maxIndex>20</maxIndex>
+            <FileNamePattern>log/${SERVICE_NAME}/${CONTAINER_ID}/metrics.log.%i</FileNamePattern>
         </rollingPolicy>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
             <MaxFileSize>16MB</MaxFileSize>
@@ -182,6 +196,11 @@
 
     <!-- Kafka -->
     <logger name="org.apache.kafka.clients.NetworkClient" level="INFO"/>
+
+    <!-- Metrics -->
+    <logger name="io.frinx.uniconfig.metrics" level="INFO" additivity="false">
+        <appender-ref ref="metrics"/>
+    </logger>
 
     <!-- PostgreSQL driver -->
     <logger name="org.postgresql" level="INFO"/>

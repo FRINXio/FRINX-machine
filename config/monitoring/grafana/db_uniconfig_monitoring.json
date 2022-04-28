@@ -1,0 +1,209 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 8,
+  "iteration": 1651145209611,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "P951FEA4DE68E13C5"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right"
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      },
+      "pluginVersion": "8.3.0",
+      "repeat": "name",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "P951FEA4DE68E13C5"
+          },
+          "query": "name = from(bucket: \"frinx\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uniconfig\")\n  |> filter(fn: (r) => r[\"zone\"] == \"${zone}\")\n  |> filter(fn: (r) => r[\"instance\"] == \"${instance}\")\n  |> filter(fn: (r) => r[\"_field\"] == \"name\")\n  |> filter(fn: (r) => r[\"_value\"] == \"${name}\")\n  |> keep(columns: [\"_time\", \"_value\"])\n\nrate = from(bucket: \"frinx\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uniconfig\")\n  |> filter(fn: (r) => r[\"_field\"] == \"m15_rate\" or r[\"_field\"] == \"m1_rate\" or r[\"_field\"] == \"m5_rate\" or r[\"_field\"] == \"mean_rate\" or r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"zone\"] == \"${zone}\")\n  |> filter(fn: (r) => r[\"instance\"] == \"${instance}\")\n  |> map(fn:(r) => ({ r with _value: float(v: r._value) }))\n  |> drop(columns: [\"path\"])\n\njoin(\n    tables: {name:name, rate:rate},\n    on: [\"_time\"],\n    method: \"inner\"\n )\n\n\n\n\n",
+          "refId": "A"
+        }
+      ],
+      "title": "${name}",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.*field=\")",
+            "renamePattern": ""
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "\\\", _start=.*$",
+            "renamePattern": ""
+          }
+        }
+      ],
+      "type": "timeseries"
+    }
+  ],
+  "refresh": false,
+  "schemaVersion": 33,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "P951FEA4DE68E13C5"
+        },
+        "definition": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: \"frinx\",\n    tag: \"zone\",\n    predicate: (r) => true,\n    start: -1d\n)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Zone",
+        "multi": false,
+        "name": "zone",
+        "options": [],
+        "query": "import \"influxdata/influxdb/v1\"\nv1.tagValues(\n    bucket: \"frinx\",\n    tag: \"zone\",\n    predicate: (r) => true,\n    start: -1d\n)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "P951FEA4DE68E13C5"
+        },
+        "definition": "import \"influxdata/influxdb/schema\"\nfrom(bucket: \"frinx\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uniconfig\")\n  |> filter(fn: (r) => r[\"zone\"] == \"${zone}\")\n  |> group()\n  |> keep(columns: [\"instance\"])\n  |> distinct(column: \"instance\" )",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Instance",
+        "multi": false,
+        "name": "instance",
+        "options": [],
+        "query": "import \"influxdata/influxdb/schema\"\nfrom(bucket: \"frinx\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uniconfig\")\n  |> filter(fn: (r) => r[\"zone\"] == \"${zone}\")\n  |> group()\n  |> keep(columns: [\"instance\"])\n  |> distinct(column: \"instance\" )",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "datasource": {
+          "type": "influxdb",
+          "uid": "P951FEA4DE68E13C5"
+        },
+        "definition": "import \"influxdata/influxdb/schema\"\nfrom(bucket: \"frinx\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uniconfig\")\n  |> filter(fn: (r) => r[\"zone\"] == \"fm_uniconfig-controller\")\n  |> filter(fn: (r) => r[\"instance\"] == \"1\")\n  |> filter(fn: (r) => r[\"_field\"] == \"name\")\n  |> group()\n  |> keep(columns: [\"_value\"])\n  |> distinct(column: \"_value\" )",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Name",
+        "multi": true,
+        "name": "name",
+        "options": [],
+        "query": "import \"influxdata/influxdb/schema\"\nfrom(bucket: \"frinx\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"uniconfig\")\n  |> filter(fn: (r) => r[\"zone\"] == \"fm_uniconfig-controller\")\n  |> filter(fn: (r) => r[\"instance\"] == \"1\")\n  |> filter(fn: (r) => r[\"_field\"] == \"name\")\n  |> group()\n  |> keep(columns: [\"_value\"])\n  |> distinct(column: \"_value\" )",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Uniconfig-controller monitoring",
+  "uid": "QjwvW8wnz",
+  "version": 8,
+  "weekStart": ""
+}
