@@ -458,7 +458,7 @@ function setProxyEnv {
 
 
 function setManagerIpAddrEnv {
-  MANAGER_IP_ADDR=$(docker node inspect --format '{{.ManagerStatus.Addr}}' self | cut -d ' ' -f 1)
+  MANAGER_IP_ADDR=$(hostname -I | cut -d ' ' -f 1)
   export MANAGER_IP_ADDR
 }
 

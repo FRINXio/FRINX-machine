@@ -16,7 +16,7 @@
                 "github.com/devopsfaith/krakend-lua/router": {
                     "sources": ["scripts/unistore_rbac.lua"],
                     "allow_open_libs": true,
-                    "pre": "local r = ctx.load(); user_group_auth(r, os.getenv('UNISTORE_CONTROLLER_ADMIN_GROUP'))",
+                    "pre": "local r = ctx.load(); user_group_auth(r)",
                     "live": true
                 }
             {{ else if eq $jwt_production "false" }}
@@ -60,7 +60,7 @@
                         "github.com/devopsfaith/krakend-lua/router": {
                             "sources": ["scripts/uniconfig_query_escape.lua", "scripts/unistore_rbac.lua"],
                             "allow_open_libs": true,
-                            "pre": "local r = ctx.load(); r:url(urlencode(r)); user_group_auth(r, os.getenv('UNISTORE_CONTROLLER_ADMIN_GROUP'))",
+                            "pre": "local r = ctx.load(); r:url(urlencode(r)); user_group_auth(r)",
                             "live": true
                         }
                     {{ else if eq $jwt_production "false" }}

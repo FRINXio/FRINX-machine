@@ -38,7 +38,7 @@ services:
       - PROXY_ENABLED=${PROXY_ENABLED:-false}
       - HTTP_PROXY=${HTTP_PROXY}
       - HTTPS_PROXY=${HTTPS_PROXY}
-      - NO_PROXY=workflow-proxy,frinx-frontend,inventory,${UNICONFIG_ZONES_LIST},unistore,uniresource
+      - NO_PROXY=workflow-proxy,frinx-frontend,inventory,krakend,unistore,uniresource,${UNICONFIG_ZONES_LIST},${NO_PROXY}
       - UNICONFIG_ZONES_LIST=${UNICONFIG_ZONES_LIST}
     volumes:
       - ${UF_CONFIG_PATH}/krakend:/etc/krakend:ro
@@ -392,6 +392,7 @@ services:
       - traefik.enable=false
     entrypoint: ["/set_env_secrets.sh", "./run.sh"]
     secrets:
+      - frinx_auth
       - frinx_uniflow
     configs:
       - source: set_env_secrets
@@ -432,7 +433,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:1.2.1
+    image: frinx/frinx-inventory-server:latest
     logging: *logging_loki
     labels:
       - traefik.enable=false
