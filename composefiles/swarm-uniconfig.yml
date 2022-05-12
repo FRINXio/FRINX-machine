@@ -218,16 +218,20 @@ services:
           memory: ${UP_RES_LIMIT_MEM}
 
 configs:
+  traefik_dynamic_conf:
+    name: traefik_dynamic_conf-${DEPLOY_SETTINGS_TIMESTAMP}.yml
+    file: ${UF_CONFIG_PATH}/traefik/traefik_dynamic.yml
   uniconfig_startup:
+    name: uniconfig_startup-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/uniconfig/run_uniconfig.sh
   uniconfig_lighty:
+    name: uniconfig_lighty-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/uniconfig/frinx/uniconfig/config/lighty-uniconfig-config.json
   uniconfig_logback:
+    name: uniconfig_logback-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/uniconfig/frinx/uniconfig/config/logback.xml
   set_env_secrets:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
-  traefik_dynamic_conf:
-    file: ${UF_CONFIG_PATH}/traefik/traefik_dynamic.yml
 
 secrets:
   frinx_uniconfig_tls_cert.pem:

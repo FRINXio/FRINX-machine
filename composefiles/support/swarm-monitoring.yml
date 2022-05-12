@@ -195,7 +195,7 @@ services:
       - source: set_env_secrets
         target: /set_env_secrets.sh
         mode: 0777
-      - source: frinx-telegraf-config
+      - source: frinx_telegraf_config
         target: /etc/telegraf/telegraf.conf
         mode: 0755
     healthcheck:
@@ -235,7 +235,8 @@ secrets:
     external: true
 
 configs:
-  frinx-telegraf-config:
+  frinx_telegraf_config:
+    name: frinx_telegraf_config-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/monitoring/telegraf/telegraf.conf
   set_env_secrets:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
