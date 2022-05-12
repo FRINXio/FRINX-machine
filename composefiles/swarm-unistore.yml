@@ -154,8 +154,10 @@ volumes:
 
 configs:
   unistore_startup:
+    name: unistore_startup-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/uniconfig/run_uniconfig.sh
   unistore_lighty:
+    name: unistore_lighty-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/unistore/lighty-unistore-config.json
   set_env_secrets:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh

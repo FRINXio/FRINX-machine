@@ -560,6 +560,7 @@ startupType="full"
 nodeID=$(docker node ls --filter role=manager --format {{.Hostname}})
 export UC_CONFIG_PATH="${FM_DIR}/config/uniconfig/frinx/uniconfig"
 export UF_CONFIG_PATH="${FM_DIR}/config"
+export DEPLOY_SETTINGS_TIMESTAMP=$(date +%s)
 
 # =======================================
 # FM starting
