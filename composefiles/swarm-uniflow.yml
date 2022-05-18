@@ -291,7 +291,7 @@ services:
           memory: ${PG_RES_LIMIT_MEM}
 
   schellar:
-    image: frinx/uniflow-schellar:1.9.3
+    image: frinx/uniflow-schellar:latest
     logging: *logging_loki
     labels:
       - traefik.enable=false  
@@ -356,7 +356,7 @@ services:
       - OAUTH2=${AUTH_ENABLED}
       - UNICONFIG_ZONES_LIST=${UNICONFIG_ZONES_LIST}
     healthcheck:
-      test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8088/probe/readiness' && curl -I -XGET http://conductor-server:8080/health || exit 1
+      test: wget --spider -q 'http://127.0.0.1:8088/probe/readiness' && wget --spider -q 'http://conductor-server:8080/health' || exit 1
       interval: 10s
       timeout: 5s
       retries: 5
