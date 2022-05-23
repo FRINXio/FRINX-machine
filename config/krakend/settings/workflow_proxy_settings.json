@@ -94,7 +94,10 @@
         {
             "endpoint": "/api/uniflow/id/{workflowId}",
             "method": "GET",
-            "url_pattern": "/id/{workflowId}"
+            "url_pattern": "/id/{workflowId}",
+            "querystring_params": [
+                "includeTasks"
+              ]
         },
         {
             "endpoint": "/api/uniflow/schedule",
