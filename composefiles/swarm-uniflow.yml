@@ -245,7 +245,7 @@ services:
           memory: ${FF_RES_LIMIT_MEM}
 
   postgresql:
-    image: postgres:12.2
+    image: postgres:12.10
     user: postgres
     logging: *logging_loki
     labels:
@@ -483,7 +483,7 @@ services:
           memory: ${IV_RES_LIMIT_MEM}
 
   inventory-postgres:
-    image: postgres:12.2
+    image: postgres:12.10
     user: postgres
     logging: *logging_loki
     labels:
