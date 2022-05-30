@@ -98,7 +98,7 @@ services:
           memory: ${US_RES_LIMIT_MEM}
 
   unistore-postgres:
-    image: postgres:12.2
+    image: postgres:12.10
     user: postgres
     logging: *logging_loki
     labels:

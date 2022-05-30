@@ -167,7 +167,7 @@ services:
           memory: ${UC_RES_LIMIT_MEM}
 
   uniconfig-postgres:
-    image: postgres:12.2
+    image: postgres:12.10
     user: postgres
     logging: *logging_loki
     networks:
