@@ -24,7 +24,7 @@
             "endpoint": "/api/uniflow/metadata/taskdefs/{name}",
             "method": "DELETE",
             "url_pattern": "/metadata/taskdefs/{name}",
-            "querystring_params": [
+            "input_query_strings": [
                 "archiveWorkflow"
               ]
         },
@@ -47,7 +47,7 @@
             "endpoint": "/api/uniflow/metadata/workflow/{name}",
             "method": "GET",
             "url_pattern": "/metadata/workflow/{name}",
-            "querystring_params": [
+            "input_query_strings": [
                 "version"
               ]
         },
@@ -95,7 +95,7 @@
             "endpoint": "/api/uniflow/id/{workflowId}",
             "method": "GET",
             "url_pattern": "/id/{workflowId}",
-            "querystring_params": [
+            "input_query_strings": [
                 "includeTasks"
               ]
         },
@@ -170,7 +170,7 @@
             "endpoint": "/api/uniflow/hierarchical",
             "method": "GET",
             "url_pattern": "/hierarchical",
-            "querystring_params": [
+            "input_query_strings": [
                 "start",
                 "size",
                 "status",
@@ -182,7 +182,7 @@
             "endpoint": "/api/uniflow/executions",
             "method": "GET",
             "url_pattern": "/executions?q=&h=",
-            "querystring_params": [
+            "input_query_strings": [
                 "start",
                 "size",
                 "status",

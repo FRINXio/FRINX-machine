@@ -1,4 +1,5 @@
 {{ $zones := env "UNICONFIG_ZONES_LIST" }}
+{{ $protocol := env "KRAKEND_TLS_PROTOCOL" }}
 {{ $zone_list := splitList "," $zones }}
 
 {{range $host_index, $host := $zone_list}}
@@ -13,7 +14,7 @@
         {{ $jwt_production := env "AUTH_ENABLED" }}
         {{ if eq $jwt_production "true" }}
             {{ include "jwt_config.tmpl" }},
-            "github.com/devopsfaith/krakend-lua/router": {
+            "modifier/lua-endpoint": {
                 "sources": ["scripts/uniconfig_rbac.lua"],
                 "allow_open_libs": true,
                 "pre": "local r = ctx.load(); user_group_auth(r, os.getenv('UNICONFIG_CONTROLLER_ADMIN_GROUP'));",
@@ -51,14 +52,14 @@
         {{ $jwt_production := env "AUTH_ENABLED" }}
         {{ if eq $jwt_production "true" }}
             {{ include "jwt_config.tmpl" }},
-            "github.com/devopsfaith/krakend-lua/router": {
+            "modifier/lua-endpoint": {
                 "sources": ["scripts/uniconfig_query_escape.lua", "scripts/uniconfig_rbac.lua"],
                 "allow_open_libs": true,
                 "pre": "local r = ctx.load(); r:url(urlencode(r)); user_group_auth(r, os.getenv('UNICONFIG_CONTROLLER_ADMIN_GROUP'))",
                 "live": true
             }                    
         {{ else if eq $jwt_production "false" }}
-            "github.com/devopsfaith/krakend-lua/router": {
+            "modifier/lua-endpoint": {
                 "@comment": "Fixing escape queries with multiple fields separated by semicolon",
                 "sources": ["scripts/uniconfig_query_escape.lua", "scripts/fake_frinx_token.lua"],
                 "allow_open_libs": true,
@@ -88,9 +89,18 @@
 
     "endpoint": "/static/list/uniconfig",
     "method": "GET",
-    "backend": [{ }],
+    "backend": [
+        {
+            "url_pattern": "/__health",
+            "host": [ "{{$protocol}}://krakend:8080/" ],
+            "allow": [
+                "instances"
+            ]
+        }
+    ],
+   
     "extra_config": {
-        "github.com/devopsfaith/krakend/proxy": {
+        "proxy": {
             "static": {
                 "strategy": "always",
                 "data": {

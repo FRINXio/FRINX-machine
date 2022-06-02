@@ -2,7 +2,7 @@
     "endpoint": "/api/inventory",
     "method": "POST",
     "output_encoding": "no-op",
-    "headers_to_pass": ["*"],
+    "input_headers": ["*"],
 
     "extra_config": {
         {{ $jwt_production := env "AUTH_ENABLED" }}
@@ -20,7 +20,7 @@
             "sd": "static",
             "disable_host_sanitize": false,
             "extra_config": {
-                "github.com/devopsfaith/krakend-martian": {
+                "modifier/martian": {
                     "fifo.Group": {
                         "scope": ["request", "response"],
                         "aggregateErrors": true,
@@ -46,7 +46,7 @@
     "endpoint": "/api/inventory",
     "method": "GET",
     "output_encoding": "no-op",
-    "headers_to_pass": ["*"],
+    "input_headers": ["*"],
 
     "backend": [
         {
@@ -55,7 +55,7 @@
             "sd": "static",
             "disable_host_sanitize": false,
             "extra_config": {
-                "github.com/devopsfaith/krakend-martian": {
+                "modifier/martian": {
                     "fifo.Group": {
                         "scope": ["request", "response"],
                         "aggregateErrors": true,

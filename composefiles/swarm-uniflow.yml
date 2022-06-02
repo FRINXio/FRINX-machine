@@ -28,13 +28,12 @@ services:
       - FC_TEMPLATES=/etc/krakend/templates
       # HTTPS SETTINGS
       - TLS_DISABLED=${TLS_DISABLED}
+      - KRAKEND_TLS_PROTOCOL=${KRAKEND_TLS_PROTOCOL}
       # AUTHORIZATION AND AUTHENTICATION SETTINGS
       # IF false, THEN Fake-Frinx-Token Used
       # IF true,  THEN Azure AD Token Required 
       - AUTH_ENABLED=${AUTH_ENABLED}
       # - FC_OUT=/etc/krakend/output.json
-      # Ignore x509 certificate errors
-      - GODEBUG="x509ignoreCN=0"
       - PROXY_ENABLED=${PROXY_ENABLED:-false}
       - HTTP_PROXY=${HTTP_PROXY}
       - HTTPS_PROXY=${HTTPS_PROXY}
@@ -46,9 +45,9 @@ services:
       - frinx_auth
       - frinx_rbac
       - source: frinx_krakend_tls_cert.pem
-        target: /home/krakend/frinx_krakend_tls_cert.pem
+        target: /usr/local/share/ca-certificates/frinx_krakend_tls_cert.pem
       - source: frinx_krakend_tls_key.pem
-        target: /home/krakend/frinx_krakend_tls_key.pem
+        target: /usr/local/share/ca-certificates/frinx_krakend_tls_key.pem
       - source: frinx_uniconfig_tls_cert.pem
         target: /usr/local/share/ca-certificates/frinx_uniconfig_tls_cert.crt
     configs:

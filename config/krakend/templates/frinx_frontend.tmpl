@@ -5,7 +5,7 @@
     "endpoint": "/{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if lt $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
     "method": "GET",
     "output_encoding": "no-op",
-    "headers_to_pass": ["*"],
+    "input_headers": ["*"],
 
     "backend": [
     {
