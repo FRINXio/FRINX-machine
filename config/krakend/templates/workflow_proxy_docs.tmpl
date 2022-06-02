@@ -4,11 +4,11 @@
     "endpoint": "{{ .endpoint }}",
     "method": "{{ .method }}",
     "output_encoding": "no-op",
-    "headers_to_pass": ["*"],
+    "input_headers": ["*"],
 
-    {{ if .querystring_params }}
-    "querystring_params": [ 
-        {{range $query_enabled, $query := .querystring_params}} {{if gt $query_enabled 0}},{{end}} "{{$query}}" {{ end }} 
+    {{ if .input_query_strings }}
+    "input_query_strings": [ 
+        {{range $query_enabled, $query := .input_query_strings}} {{if gt $query_enabled 0}},{{end}} "{{$query}}" {{ end }} 
         ],
     {{end}}
 
@@ -23,7 +23,7 @@
         "sd": "static",
         "disable_host_sanitize": false,
         "extra_config": {
-            "github.com/devopsfaith/krakend-martian": {
+            "modifier/martian": {
                 "fifo.Group": {
                     "scope": ["request", "response"],
                     "aggregateErrors": true,

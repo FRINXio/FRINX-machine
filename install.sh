@@ -135,7 +135,6 @@ function installPrerequisities {
   fi
 }
 
-
 function generateUniconfigTLSCerts {
 
   if ([[ $(docker secret ls --filter name=${UNICONFIG_SSL_KEY} --format {{.Name}}) == '' ]] || [[ $(docker secret ls --filter name=${UNICONFIG_SSL_CERT} --format {{.Name}}) == '' ]]) || [ "${__UPDATE_SECRETS}" == "true" ]; then
@@ -144,7 +143,7 @@ function generateUniconfigTLSCerts {
       echo -e "${INFO} Generating SSL key/cert used for uniconfig-zone TLS communication"
       openssl genrsa --out ${dockerCertSettings}/${UNICONFIG_SSL_KEY} &>/dev/null
       openssl req -new -x509 -key ${dockerCertSettings}/${UNICONFIG_SSL_KEY} -out ${dockerCertSettings}/${UNICONFIG_SSL_CERT} -days 365 \
-            -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io'
+            -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io' -addext "subjectAltName = DNS:*"
     fi
       echo -e "${INFO} Updating SSL key/cert used for uniconfig-zone TLS communication"
       docker secret create "${UNICONFIG_SSL_KEY}" "${dockerCertSettings}/${UNICONFIG_SSL_KEY}" > /dev/null || echo -e "${ERROR} Docker secret ${UNICONFIG_SSL_KEY} not imported" | exit 1
@@ -175,7 +174,7 @@ function generateKrakenDTLSCerts {
       echo -e "${INFO} Generating SSL key/cert used for KrakenD TLS communication"
       openssl genrsa --out ${dockerCertSettings}/${KRAKEND_SSL_KEY} &>/dev/null
       openssl req -new -x509 -key ${dockerCertSettings}/${KRAKEND_SSL_KEY} -out ${dockerCertSettings}/${KRAKEND_SSL_CERT} -days 365 \
-            -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io'
+            -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io' -addext "subjectAltName = DNS:*"
     fi
     echo -e "${INFO} Updating SSL key/cert used for KrakenD TLS communication"
     docker secret create "${KRAKEND_SSL_KEY}" "${dockerCertSettings}/${KRAKEND_SSL_KEY}" > /dev/null || echo -e "${ERROR} Docker secret ${KRAKEND_SSL_KEY} not imported" | exit 1

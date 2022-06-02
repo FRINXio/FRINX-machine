@@ -1,11 +1,11 @@
 {
-  "version": 2,
+  "version": 3,
   "name": "krakend for FM",
   "port": 8080,
   "cache_ttl": "3600s",
   "tls": {
-    "public_key": "/home/krakend/frinx_krakend_tls_cert.pem",
-    "private_key": "/home/krakend/frinx_krakend_tls_key.pem",
+    "public_key": "/usr/local/share/ca-certificates/frinx_krakend_tls_cert.pem",
+    "private_key": "/usr/local/share/ca-certificates/frinx_krakend_tls_key.pem",
     "disabled": {{ env "TLS_DISABLED" }}
   },
   "timeout": "2m",
@@ -14,10 +14,16 @@
     "folder": "/usr/local/lib/krakend/"
   },
   "extra_config": {
-    "github_com/devopsfaith/krakend/transport/http/server/handler": {
+    "router":{
+      "disable_path_decoding" : true,
+      "logger_skip_paths":[
+        "/__health"
+      ]
+    },
+    "plugin/http-server": {
       "name": "krakend-azure-plugin"
     }, 
-    "github_com/devopsfaith/krakend-cors": {
+    "security/cors": {
       "allow_origins": [
         "*"
       ],
@@ -30,27 +36,11 @@
       ],
       "allow_credentials": true
     },
-    "github_com/devopsfaith/krakend-gologging": {
+    "telemetry/logging": {
       "level": "INFO",
       "prefix": "[KRAKEND]",
       "syslog": false,
       "stdout": true
-    },
-    "github_com/ifaisalalam/krakend-gin-logger": {
-      "enabled": true,
-      "skip_paths": ["/__health"]
-    },
-    "github_com/devopsfaith/krakend-opencensus": {
-      "exporters": {
-        "prometheus": {
-          "port": 9091,
-          "namespace": "krakend",
-          "tag_host": true,
-          "tag_path": true,
-          "tag_method": true,
-          "tag_statuscode": true
-        }
-      }
     }
   },
   "endpoints": [
