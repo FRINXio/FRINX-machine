@@ -1,3 +1,11 @@
+local hex_to_char = function(x)
+    return string.char(tonumber(x, 16))
+end
+
+local unescape = function(url)
+    return url:gsub("%%(%x%x)", hex_to_char)
+end
+
 function getenv(key, fallback)
     value = os.getenv(key)
     if value == nil then
@@ -10,7 +18,7 @@ function user_group_auth(request)
 
     -- set variables from request
     local method = request:method()
-    local url = request:url()
+    local url = unescape(request:url())
 
     local headers_group = request:headers('X-Auth-User-Groups')
     local headers_role = request:headers('X-Auth-User-Roles')
