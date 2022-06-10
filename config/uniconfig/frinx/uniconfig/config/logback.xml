@@ -175,6 +175,9 @@
     <!-- CLI part -->
     <logger name="io.frinx.cli" level="INFO"/>
 
+    <!-- SSH part (used by CLI and NETCONF) -->
+    <logger name="org.apache.sshd" level="INFO"/>
+
     <!-- translation unit framework part -->
     <logger name="io.frinx.translate.unit.commons" level="INFO"/>
     <logger name="io.fd.honeycomb" level="INFO"/>
