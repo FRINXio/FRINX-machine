@@ -109,11 +109,13 @@ Settings for azure-ad plugin and jwt validation
 >   * AZURE_KRAKEND_PLUGIN_JWT_VALUE_PREFIX=Bearer
 >   * AZURE_KRAKEND_PLUGIN_GROUP_DISABLE=false
 
-## RBAC configuration
+AZURE_KRAKEND_PLUGIN_GROUP_DISABLE : set true, when only Role based access is used
+
+# RBAC configuration
 
 All default settings are defined in **config/secrets/frinx_rbac** and are stored to docker secrets during execution of ./install.sh
 
-### Uniflow
+## Uniflow RBAC
 
 RBAC proxy adds 2 features on top of tenant proxy:
 * Ensures user authorization to access certain endpoints
@@ -144,21 +146,113 @@ Example: added User.ReadWrite, Role.ReadWrite, Group.ReadWrite labels to workflo
   ......
 ```
 
-### Uniconfig
+Admin role is configured via 'frinx_rbac' secret:
 
-Super-users (based on their role and user groups) can use all REST APIs. 
+```sh
+ADMIN_ACCESS_ROLE=All.ReadWrite
+```
+<br>
+
+## Inventory RBAC
+
+RBAC support simply distinguishes 2 user types: an admin and everyone else. <br>
+An admin has full access to inventory API while ordinary user can only read from inventory
+
+Configure admin role in 'frinx_rbac' secret file via:
+
+```sh
+INVENTORY_ADMIN_GROUP
+```
+
+|user/request        | READ (query)  | WRITE (mutation) |
+| :---               |    :----:     |  :---:           |
+|Admin (Super user)  | **TRUE**      |**TRUE**          |
+|Regular user        | **TRUE**      | false            |
+
+<br>
+
+## Uniresource RBAC
+
+A simple RBAC model is implemented where only admin (based on their role and user groups) can manipulate resource types, resource pools and labels. <br> Regular users will only be able to read the above entities, allocate and free resources.
+
+Configure admin role in 'frinx_rbac' secret file via:
+
+```sh
+# UNIRESOURCE RBAC SETTINGS
+# VALUES MUST BE IN QUOTATION MARKS
+RM_ADMIN_GROUPS="network-admin"
+RM_ADMIN_ROLES="network-admin"
+```
+
+|user/request        | READ          | WRITE  |
+| :---               |    :----:     |  :---: |
+|Admin (Super user)  | **TRUE**      |**TRUE**|
+|Regular user        | **TRUE**      | false  |
+
+<br>
+
+## Uniconfig RBAC
+
+Admin (based on their role and user groups) can use all REST APIs. <br>
 Regular users will only be able to use GET REST API requests.
 
-|                    | READ (GET REQUEST)   | WRITE (ALL REQUEST)  |
+Configure admin role in 'frinx_rbac' secret file via:
+
+```sh
+UNICONFIG_CONTROLLER_ADMIN_GROUP
+```
+
+|user/request        | READ (GET REQUEST)   | WRITE (ALL REQUEST)  |
 | :---               |    :----:            |  :---:               |
-|Admin (Super user)  | true                 | true                 |
-|Regular user        | true                 | false                |
+|Admin (Super user)  | **TRUE**             | **TRUE**         |
+|Regular user        | **TRUE**             | false            |
 
-### Uniresource
+<br>
 
-A simple RBAC model is implemented where only super-users (based on their role and user groups) can manipulate resource types, resource pools and labels. Regular users will only be able to read the above entities, allocate and free resources.
+## Unistore RBAC
 
-|                    | READ          | WRITE  |
-| :---               |    :----:     |  :---: |
-|Admin (Super user)  | true          | true   |
-|Regular user        | true          | false  |
+User types:
+- Super admin : full access to unistore
+- Bearer admin : all read, access to bearer node
+- Service admin : all read, access to service node
+- Network admin : all read, access to network node
+
+Configure node names in 'frinx_rbac' secret file via:
+
+```sh
+# DEFAULT NODE NAMES
+UNISTORE_BEARER_NODE=bearer
+UNISTORE_SERVICE_NODE=service
+UNISTORE_NETWORK_NODE=network
+```
+
+Assign admin roles to nodes in 'frinx_rbac' secret file via:
+
+```sh
+# CONFIGURE ROLES via VARIABLES, EXAMPLE:
+UNISTORE_CONTROLLER_ADMIN_GROUP # super admin roles, grant all permissions
+UNISTORE_OTHER_PERMITTED_ROLES  # all requests allowed except requests with`node=...` denied 
+UNISTORE_NETWORK_ROLE           # all requests allowed but only requests with`node=${UNISTORE_NETWORK_NODE}` allowed 
+UNISTORE_SERVICE_ROLE           # all requests allowed but only requests with`node=${UNISTORE_SERVICE_NODE}` allowed 
+UNISTORE_BEARER_ROLE            # all requests allowed but only requests with`node=${UNISTORE_BEARER_NODE}` allowed
+
+#example
+UNISTORE_SERVICE_ROLE=Service1.ReadWrite,Service2.ReadWrite
+```
+
+**Example** of request to unistore with defined `node=service`. <br> 
+
+```sh
+/api/unistore/data/network-topology:network-topology/topology=unistore/node=service/...
+```
+Only `super-admin` and users with roles `UNISTORE_SERVICE_ROLE=Service1.ReadWrite,Service2.ReadWrite` have access permissions. <br>
+<br>
+**Table of permissions:**
+
+|node / user roles               | READ-ONLY (GET request) | without NODE | UNISTORE_NETWORK_NODE | UNISTORE_SERVICE_NODE | UNISTORE_BEARER_NODE |
+| :---                           |        :----:           |  :---:       |    :---:     |     :---:    |    :---:    |
+|UNISTORE_CONTROLLER_ADMIN_GROUP |       **TRUE**          | **TRUE**     |   **TRUE**   |   **TRUE**   |  **TRUE**   |
+|UNISTORE_OTHER_PERMITTED_ROLES  |       **TRUE**          | **TRUE**     |     false    |     false    |    false    |
+|UNISTORE_NETWORK_ROLE           |       **TRUE**          | **TRUE**     |   **TRUE**   |     false    |    false    |
+|UNISTORE_SERVICE_ROLE           |       **TRUE**          | **TRUE**     |     false    |   **TRUE**   |    false    |
+|UNISTORE_BEARER_ROLE            |       **TRUE**          | **TRUE**     |     false    |     false    |  **TRUE**   |

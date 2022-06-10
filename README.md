@@ -7,18 +7,6 @@ https://github.com/FRINXio/FRINX-machine/releases
 
 </br>
 
-## Known Issues
-### Problem with loading device configuration via device inventory UI
-- White screen on page `/frinxui/inventory/config/<id>`
-
-- Reason
-<t> - Expired uniconfig transaction for dedicated configuration <br>
-
-- How to fix it (workarounds) <br>
-<t> - clean `TX_ID_INVENTORY` from browser local storage <br>
-<t> - or use incognito mode <br>
-<t> - or load different device config (will replace expired TX_ID_INVENTORY in local storage) <br>
-
 ## Requirements
 Minimal hardware requirements (See [resource limitation](#resource-limitation))
 
@@ -79,6 +67,28 @@ NOTE: As FM is designed to run as non-root user, you need the user to be in `doc
 See: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user
 
 </br>
+
+### Elasticsearch max_map_count configuration
+You may need to increase the max_map_count kernel parameter to avoid running out of map areas for the Vector Server process. <br>
+
+map_count should be around 1 per 128 KB of system memory. For example: vm.max_map_count=2097152 on a 256 GB system. <br>
+
+**IMPORTANT** Minimal value must be at least **262144** ([ELK docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#_set_vm_max_map_count_to_at_least_262144))
+
+
+```sh
+#Temporary configuration:
+sysctl -w vm.max_map_count=262144
+
+#Permament configuration:
+echo "vm.max_map_count=262144" >> /etc/sysctl.conf
+sysctl -p
+
+#Validation:
+cat /proc/sys/vm/max_map_count
+
+```
+<br>
 
 ### Enable Azure AD authorization
 
@@ -348,17 +358,6 @@ These values in the dev_settings and prod_settings txt files can be changed base
 
 ## Maintaining
 
-### Migration from Frinx Machine 1.6
-
-- Remove old docker volumes : 
-
-```sh
-$ ./teardown -v
-# or 
-$ docker volume prune -f
-``` 
-</br>
-
 ### Checking
 You can check the status of the swarm cluster by running:
 ```sh
@@ -396,12 +395,14 @@ $ ./config/docker-security/bench_security.sh
 Frinx Machine is collecting logs and metrics/statistics from services.
 * Metrics: InfluxDB
 * Logs: Loki
-* Node monitoring: Telegrad
+* Node monitoring: Telegraf
 * Swarm monitoring: Telegraf
-* Visualization: Grafana (url 127.0.0.1:3000, user: admin, password: admin)
+* Visualization: Grafana (url 127.0.0.1:3000, user: frinx, password: frinx123!)
 
 NOTE: Be aware, that the monitoring system is space consuming. For longer monitoring is good to have enough free space on the disc. 
 Optimal is 30Gb and more.
+
+Default grafana credentials can be changed in `config/secrets/frinx_grafana`
 
 </br>
 
@@ -492,6 +493,28 @@ $ openssl req -new -x509 -days 365
 ```
 
 </br>
+
+### Configuring max storage usage per service
+
+**Conductor** external storage persitence can be configured via parameters in `config/conductor/config.properties`.
+
+```sh
+# default values
+conductor.external-payload-storage.postgres.max-data-rows=1000
+conductor.external-payload-storage.postgres.max-data-days=0
+conductor.external-payload-storage.postgres.max-data-months=1
+conductor.external-payload-storage.postgres.max-data-years=0
+```
+
+**InfluxDB** max retention period via variable in `composefiles/support/swarm-monitoring.yml`
+
+```yml
+# default value for frinx bucket
+      - DOCKER_INFLUXDB_INIT_RETENTION=2d
+```
+
+**Loki** max retention period can be configured in `config/monitoring/loki/loki-config.yaml`.
+
 
 ## For developers
 If you need to modify and rebuild modules, you can use `pullmodules.sh` script to download up-to-date modules from FRINX's public GitHub repositories. Then you can use standard docker utilities to build and distribute them, e.g.:
