@@ -55,6 +55,9 @@
         "inetAddress": "0.0.0.0",
         // common URL prefix under which all resources and operations are registered
         "restconfServletContextPath": "/rests",
+        // delimiter used for escaping of list keys in URI (for example, '%22')
+        // if it is set to 'null' (default), keys cannot be escaped and must be directly encoded according to RFC-8040
+        "keyDelimiter": null,
         // Settings related to filtering of data in CRUD operations.
         "schemaFilters": {
             // List of extension definitions that can be used to filter out data during PUT/POST/PATCH operation.
@@ -278,6 +281,11 @@
                     "brokerListeningPort": 9092
                 }
             ],
+            // Kafka producer settings
+            "kafkaProducer": {
+                // Specifies the number of messages that the Kafka handler processes as a batch
+                "batchSize": 16384
+            },
             // Flag that determines whether netconf notifications are enabled
             "netconfNotificationsEnabled": true,
             // Flag that determines whether audit logs are enabled

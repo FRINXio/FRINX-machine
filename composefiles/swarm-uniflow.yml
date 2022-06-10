@@ -89,7 +89,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/uniflow-conductor-server:latest
+    image: frinx/uniflow-conductor-server:1.0.7
     # user: guest
     logging: *logging_loki
     labels:
@@ -293,7 +293,7 @@ services:
           memory: ${PG_RES_LIMIT_MEM}
 
   schellar:
-    image: frinx/uniflow-schellar:latest
+    image: frinx/uniflow-schellar:1.9.4
     logging: *logging_loki
     labels:
       - traefik.enable=false  
@@ -388,7 +388,7 @@ services:
           memory: ${WP_RES_LIMIT_MEM}
 
   uniresource:
-    image: frinx/resource-manager:latest
+    image: frinx/resource-manager:1.0.4
     logging: *logging_loki
     labels:
       - traefik.enable=false

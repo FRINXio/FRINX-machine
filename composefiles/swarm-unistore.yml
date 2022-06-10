@@ -28,7 +28,7 @@ x-tcp_keepalive: &tcp_keepalive
 
 services:
   unistore:
-    image: frinx/uniconfig:5.0.6
+    image: frinx/uniconfig:5.0.9
     logging: *logging_loki
     labels:
       - traefik.enable=false  
