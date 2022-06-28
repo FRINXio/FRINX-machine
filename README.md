@@ -500,10 +500,10 @@ $ openssl req -new -x509 -days 365
 
 ```sh
 # default values
-conductor.external-payload-storage.postgres.max-data-rows=1000
+conductor.external-payload-storage.postgres.max-data-rows=1000000
 conductor.external-payload-storage.postgres.max-data-days=0
-conductor.external-payload-storage.postgres.max-data-months=1
-conductor.external-payload-storage.postgres.max-data-years=0
+conductor.external-payload-storage.postgres.max-data-months=0
+conductor.external-payload-storage.postgres.max-data-years=1
 ```
 
 **InfluxDB** max retention period via variable in `composefiles/support/swarm-monitoring.yml`
