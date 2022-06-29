@@ -8,6 +8,7 @@
 {
     "endpoint": "/api/{{$host}}/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
     "method": "POST",
+    "input_headers": [ {{ include "allowed_headers.tmpl" }}, "Accept", "cookie" ],
     {{ include "uniconfig_partial_1.tmpl" }}
 
     "extra_config": {
@@ -46,6 +47,7 @@
 {
     "endpoint": "/api/{{$host}}/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
     "method": "{{$method}}",
+    "input_headers": [ {{ include "allowed_headers.tmpl" }}, "Accept", "cookie" ],
     {{ include "uniconfig_partial_1.tmpl" }}
 
     "extra_config": {

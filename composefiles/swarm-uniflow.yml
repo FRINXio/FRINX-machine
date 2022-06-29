@@ -53,7 +53,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     healthcheck:
       test: curl --silent --write-out 'HTTPSTATUS:%{http_code}' -X GET 'http://127.0.0.1:8080/__health' || exit 1
       interval: 10s
@@ -107,7 +107,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     healthcheck:
       test: curl -I -XGET http://localhost:8080/health
       interval: 10s
@@ -200,7 +200,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     environment:
       - AUTH_REDIRECT_SCHEME=${KRAKEND_TLS_PROTOCOL}
       - AUTH_ENABLED=${AUTH_ENABLED}
@@ -261,7 +261,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     healthcheck:
       test: pg_isready -U postgres
       interval: 10s
@@ -309,7 +309,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     healthcheck:
       test: wget --spider -q conductor-server:8080/health && wget --spider -q 127.0.0.1:3000/liveness && nc -z postgresql:5432
       interval: 10s
@@ -353,7 +353,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     environment:
       - OAUTH2=${AUTH_ENABLED}
       - UNICONFIG_ZONES_LIST=${UNICONFIG_ZONES_LIST}
@@ -399,7 +399,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     environment:
       - RM_LOG_PATH=/var/log/rm.log
       - RM_LOG_LEVEL=warn
@@ -446,7 +446,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     environment:
       - UNICONFIG_API_PROTOCOL=https
       - UNICONFIG_API_PORT=8181
@@ -498,7 +498,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     healthcheck:
       test: pg_isready -U postgres
       interval: 10s

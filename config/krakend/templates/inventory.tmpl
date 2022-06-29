@@ -1,8 +1,7 @@
 {
     "endpoint": "/api/inventory",
     "method": "POST",
-    "output_encoding": "no-op",
-    "input_headers": ["*"],
+    "input_headers": [ {{ include "allowed_headers.tmpl" }}, "referer", ":path", "cookie"],
 
     "extra_config": {
         {{ $jwt_production := env "AUTH_ENABLED" }}
@@ -16,7 +15,6 @@
     "backend": [
         {
             "url_pattern": "/graphql",
-            "encoding": "no-op",
             "sd": "static",
             "disable_host_sanitize": false,
             "extra_config": {

@@ -51,7 +51,7 @@ services:
     configs:
       - source: traefik_dynamic_conf
         target: /etc/traefik/traefik_dynamic.yml
-        mode: 0777
+        mode: 0555
     healthcheck:
       test: traefik healthcheck
       interval: 10s
@@ -117,16 +117,16 @@ services:
     configs:
       - source: uniconfig_startup
         target: /opt/uniconfig-frinx/run_uniconfig.sh
-        mode: 0777
+        mode: 0555
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
       - source: uniconfig_lighty
         target: /opt/uniconfig-frinx/config/lighty-uniconfig-config.json
-        mode: 0777
+        mode: 0555
       - source: uniconfig_logback
         target: /opt/uniconfig-frinx/config/logback.xml
-        mode: 0777
+        mode: 0555
     healthcheck:
     # remove password from 
       test: | 
@@ -183,7 +183,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s

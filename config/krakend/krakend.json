@@ -6,6 +6,8 @@
   "tls": {
     "public_key": "/usr/local/share/ca-certificates/frinx_krakend_tls_cert.pem",
     "private_key": "/usr/local/share/ca-certificates/frinx_krakend_tls_key.pem",
+    "min_version": "TLS11",
+    "prefer_server_cipher_suites": true, 
     "disabled": {{ env "TLS_DISABLED" }}
   },
   "timeout": "2m",
@@ -20,9 +22,13 @@
         "/__health"
       ]
     },
+    {{ $jwt_production := env "AUTH_ENABLED" }}
+    {{ if eq $jwt_production "true" }}
     "plugin/http-server": {
       "name": "krakend-azure-plugin"
     }, 
+    {{end}}
+    "security/http": {},
     "security/cors": {
       "allow_origins": [
         "*"
@@ -32,9 +38,10 @@
         "HEAD",
         "POST",
         "PUT",
+        "PATCH",
         "DELETE"
       ],
-      "allow_credentials": true
+      "allow_credentials": false
     },
     "telemetry/logging": {
       "level": "INFO",
