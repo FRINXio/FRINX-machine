@@ -40,7 +40,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     healthcheck:
       test: ["CMD-SHELL", "wget --spider localhost:3000/api/health"]
       interval: 10s
@@ -130,7 +130,7 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_RETENTION=2d
@@ -195,10 +195,10 @@ services:
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0777
+        mode: 0555
       - source: frinx_telegraf_config
         target: /etc/telegraf/telegraf.conf
-        mode: 0755
+        mode: 0555
     healthcheck:
       test: ["CMD-SHELL", "curl -X GET localhost:8080 || exit 1"]
       interval: 10s

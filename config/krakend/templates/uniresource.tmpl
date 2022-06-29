@@ -3,8 +3,7 @@
 {
     "endpoint": "{{ .endpoint }}",
     "method": "{{ .method }}",
-    "output_encoding": "no-op",
-    "input_headers": ["*"],
+    "input_headers": [ {{ include "allowed_headers.tmpl" }} ],
 
     {{ if .input_query_strings }}
     "input_query_strings": [ 
@@ -24,7 +23,6 @@
     "backend": [
     {
         "url_pattern": "{{ .url_pattern }}",
-        "encoding": "no-op",
         "sd": "static",
         "disable_host_sanitize": false,
         "extra_config": {
