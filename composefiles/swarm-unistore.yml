@@ -33,6 +33,8 @@ services:
     labels:
       - traefik.enable=false  
     environment:
+      - CONTAINER_ID={{.Task.Slot}}
+      - SERVICE_NAME={{.Service.Name}}
       - JAVA_MAX_MEM=${US_XMX_LIMIT_MEM}
       # Enable G1GC and GC logging 
       - HTTP_PROXY=${HTTP_PROXY}
@@ -58,6 +60,9 @@ services:
         mode: 0555
       - source: unistore_lighty
         target: /opt/uniconfig-frinx/config/lighty-uniconfig-config.json
+        mode: 0555
+      - source: unistore_logback
+        target: /opt/uniconfig-frinx/config/logback.xml
         mode: 0555
     healthcheck:
       test: | 
@@ -159,6 +164,9 @@ configs:
   unistore_lighty:
     name: unistore_lighty-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/unistore/lighty-unistore-config.json
+  unistore_logback:
+    name: unistore_logback-${DEPLOY_SETTINGS_TIMESTAMP}.yml
+    file: ${UF_CONFIG_PATH}/unistore/logback.xml
   set_env_secrets:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
 
