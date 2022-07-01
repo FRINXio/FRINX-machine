@@ -96,9 +96,12 @@ services:
       - traefik.enable=false  
     environment:
       - CONFIG_PROP=config.properties
+      - LOG4J_PROP=/app/config/log4j.properties
       - _JAVA_OPTIONS="-Xmx${CS_RES_LIMIT_MEM}"
     volumes:
+      - frinx_conductor_metrics:/app/logs
       - ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties:ro
+      - ${UF_CONFIG_PATH}/conductor/log4j.properties:/app/config/log4j.properties:ro
     secrets:
       - frinx_uniflow
     configs:
@@ -547,6 +550,8 @@ configs:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
 
 volumes:
+  frinx_conductor_metrics:
+    name: frinx_conductor_metrics
   frinx_uniflow_elastic_data:
     name: frinx_uniflow_elastic_data
   frinx_uniflow_elastic_logs:
