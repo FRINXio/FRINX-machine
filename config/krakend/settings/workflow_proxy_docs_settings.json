@@ -59,7 +59,7 @@
             "url_pattern": "/docs/favicon-16x16.png"
         },
         {
-            "endpoint": "/oauth2-redirect.html",
+            "endpoint": "/api/uniflow/oauth2-redirect.html",
             "method": "GET",
             "url_pattern": "/docs/oauth2-redirect.html"
         }

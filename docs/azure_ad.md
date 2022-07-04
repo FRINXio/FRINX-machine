@@ -10,13 +10,13 @@ Register the application in your Azure AD and configure the following settings.
 
 Set platform redirect URIs on the Authentication page. The table below shows examples of configuration settings.
 
-| Syntax                | Platform configuration  | Redirect URI                                    |
-| :---                  |    :----:               |          :---                                   |
-| Frontend Login        | Single-page application | https://<**IP/DNS**>/ ,e.g. https://localhost/  |
-| Uniflow docs (swager) | Web                     | https://<**IP/DNS**>/oauth2-redirect.html       |
-| Cloud swagger         | Web                     | https://editor.swagger.io/oauth2-redirect.html  |
-| Local Postman         | Web                     | https://oauth.pstmn.io/v1/callback              |
-| Cloud Postman         | Web                     | https://getpostman.com/oauth2/callback          |
+| Syntax                | Platform configuration  | Redirect URI                                            |
+| :---                  |    :----:               |          :---                                           |
+| Frontend Login        | Single-page application | https://<**IP/DNS**>/ ,e.g. https://localhost/          |
+| Uniflow docs (swager) | Web                     | https://<**IP/DNS**>/api/uniflow/oauth2-redirect.html  |
+| Cloud swagger         | Web                     | https://editor.swagger.io/oauth2-redirect.html          |
+| Local Postman         | Web                     | https://oauth.pstmn.io/v1/callback                      |
+| Cloud Postman         | Web                     | https://getpostman.com/oauth2/callback                  |
 
 **Frontent login URI** is passed to the installation script `azure_ad.sh` via `--redirect_url` flag.
 
