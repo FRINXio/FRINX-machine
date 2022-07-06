@@ -7,9 +7,9 @@
     {
         "endpoint": "/api/{{$host}}/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
         "method": "POST",
+        "output_encoding": "no-op",
+        "input_query_strings": ["*"],
         "input_headers": [ {{ include "allowed_headers.tmpl" }}, "Accept", "cookie" ],
-        {{ include "uniconfig_partial_1.tmpl" }}
-
         "extra_config": {
             {{ $jwt_production := env "AUTH_ENABLED" }}
             {{ if eq $jwt_production "true" }}
@@ -28,7 +28,10 @@
         "backend": [
             {
                 "url_pattern": "/rests/operations{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
-                {{ include "uniconfig_partial_2.tmpl" }}
+                "extra_config": {
+                    {{ include "modifiers.tmpl" }}
+                },
+                "encoding": "no-op",
                 "host": [
                     "http://{{$host}}:8181"
                 ]
@@ -51,10 +54,9 @@
             {
                 "endpoint": "/api/{{$host}}/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
                 "method": "{{$method}}",
+                "output_encoding": "no-op",
+                "input_query_strings": ["*"],
                 "input_headers": [ {{ include "allowed_headers.tmpl" }}, "Accept", "cookie" ],
-                {{ include "uniconfig_partial_1.tmpl" }}
-
-
                 "extra_config": {
                     {{ $jwt_production := env "AUTH_ENABLED" }}
                     {{ if eq $jwt_production "true" }}
@@ -79,7 +81,10 @@
                 "backend": [
                     {
                         "url_pattern": "/rests/data{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if le $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
-                        {{ include "uniconfig_partial_2.tmpl" }}
+                        "extra_config": {
+                            {{ include "modifiers.tmpl" }}
+                        },
+                        "encoding": "no-op",
                         "host": [
                             "http://{{$host}}:8181"
                         ]
