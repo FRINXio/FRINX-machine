@@ -12,6 +12,7 @@ x-logging: &logging_loki
       max-file: "3"
       max-size: "10m"
       mode: non-blocking
+      keep-file: "true"
       loki-retries: "1"
       loki-batch-size: "1500"
       loki-relabel-config: |
@@ -28,7 +29,7 @@ x-tcp_keepalive: &tcp_keepalive
 
 services:
   unistore:
-    image: frinx/uniconfig:5.0.9
+    image: frinx/uniconfig:5.0.11
     logging: *logging_loki
     labels:
       - traefik.enable=false  

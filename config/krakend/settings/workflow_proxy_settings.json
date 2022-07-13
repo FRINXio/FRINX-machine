@@ -105,11 +105,6 @@
             "url_pattern": "/schedule"
         },
         {
-            "endpoint": "/api/uniflow/schedule",
-            "method": "POST",
-            "url_pattern": "/schedule"
-        },
-        {
             "endpoint": "/api/uniflow/schedule/{name}",
             "method": "GET",
             "url_pattern": "/schedule/{name}"
