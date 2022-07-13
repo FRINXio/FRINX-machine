@@ -58,6 +58,9 @@
         // delimiter used for escaping of list keys in URI (for example, '%22')
         // if it is set to 'null' (default), keys cannot be escaped and must be directly encoded according to RFC-8040
         "keyDelimiter": null,
+        // Flag that determines if the data node that is empty(means node contains only attribute tag) should be hidden
+        // during GET operation.
+        "hideEmptyDataNodes": false,
         // Settings related to filtering of data in CRUD operations.
         "schemaFilters": {
             // List of extension definitions that can be used to filter out data during PUT/POST/PATCH operation.
@@ -73,7 +76,14 @@
             "ignoreUnsupportedDefinitionsOnWrite": false,
             // Indicates if the definition with "DEPRECATED" status should be hidden during GET operation.
             "hideDeprecatedDefinitionsOnRead": false
-        }
+        },
+        // default value 0 makes the behavior as defined in RFC8040 (returns status code 404 [Not Found]),
+        // if changed to anything else, that status code will be returned
+        "statusCodeForEmptyGetResponse": 0,
+        // this flag removes namespaces from GET response (only if there are no duplicate localnames)
+        // (E.g. if there is: namespace1:test and namespace2:test  .. the namespace won't be removed because
+        // there would be two identical localnames)
+        "showNamespaceInJsonResponse": true
     },
     /*
     CLI shell settings via environment variables.

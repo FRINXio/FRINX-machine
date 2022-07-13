@@ -69,8 +69,8 @@ function unused_monitoring_volumes()
 
 function unused_fm_volumes()
 {
-    local __volumes=$(docker volume ls -q -f name=frinx_uniflow* -f name=uniconfig-controller_logs -f name=-postgresql_data -f name=frinx_unistore_* )
-    local __unused_volumes=$(docker volume ls -q -f name=frinx_uniflow* -f name=uniconfig-controller_logs -f name=-postgresql_data -f name=frinx_unistore_* -f dangling=true)
+    local __volumes=$(docker volume ls -q -f name=frinx_* )
+    local __unused_volumes=$(docker volume ls -q -f name=frinx_* -f dangling=true)
 
     if [ "${__volumes[@]}" != "" ]; then
         if [ "${__volumes[@]}" == "${__unused_volumes[@]}" ]; then
