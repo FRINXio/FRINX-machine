@@ -79,11 +79,7 @@
         },
         // default value 0 makes the behavior as defined in RFC8040 (returns status code 404 [Not Found]),
         // if changed to anything else, that status code will be returned
-        "statusCodeForEmptyGetResponse": 0,
-        // this flag removes namespaces from GET response (only if there are no duplicate localnames)
-        // (E.g. if there is: namespace1:test and namespace2:test  .. the namespace won't be removed because
-        // there would be two identical localnames)
-        "showNamespaceInJsonResponse": true
+        "statusCodeForEmptyGetResponse": 0
     },
     /*
     CLI shell settings via environment variables.
