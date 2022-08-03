@@ -27,6 +27,9 @@ x-placement: &placement
 x-tcp_keepalive: &tcp_keepalive
       net.ipv4.tcp_keepalive_time: 300
 
+x-traefik-label: &traefik_labels
+      - traefik.enable=false
+
 services:
   uniconfig:
     image: traefik:v2.7
@@ -49,6 +52,8 @@ services:
       - TRAEFIK_PROVIDERS_FILE_WATCH=true
       - TRAEFIK_ENTRYPOINTS_UNICONFIG=true
       - TRAEFIK_ENTRYPOINTS_UNICONFIG_ADDRESS=:8181
+      - TRAEFIK_PROVIDERS_DOCKER_SWARMMODE=true
+      - TRAEFIK_PROVIDERS_DOCKER_WATCH=true
     configs:
       - source: traefik_dynamic_conf
         target: /etc/traefik/traefik_dynamic.yml
@@ -88,15 +93,6 @@ services:
     logging: *logging_loki
     networks:
       - uniconfig-network
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.uniconfig.entrypoints=http,uniconfig
-      - traefik.http.routers.uniconfig.rule=PathPrefix(`/rests`)
-      - traefik.http.services.uniconfig.loadBalancer.sticky.cookie.name=uniconfig_server_id
-      - traefik.http.services.uniconfig.loadbalancer.server.port=8181
-      - traefik.http.services.uniconfig.loadbalancer.server.scheme=http
-      - traefik.http.services.uniconfig.loadbalancer.passhostheader=true
-      - traefik.http.routers.uniconfig.tls=true
     environment:
       - CONTAINER_ID={{.Task.Slot}}
       - SERVICE_NAME={{.Service.Name}}
@@ -155,6 +151,16 @@ services:
     sysctls:
       <<: *tcp_keepalive
     deploy: 
+      labels:
+        - traefik.enable=true
+        - traefik.port=5000
+        - traefik.http.routers.uniconfig.entrypoints=uniconfig
+        - traefik.http.routers.uniconfig.rule=PathPrefix(`/rests`)
+        - traefik.http.services.uniconfig.loadBalancer.sticky.cookie.name=uniconfig_server_id
+        - traefik.http.services.uniconfig.loadbalancer.server.port=8181
+        - traefik.http.services.uniconfig.loadbalancer.server.scheme=http
+        - traefik.http.services.uniconfig.loadbalancer.passhostheader=true
+        - traefik.http.routers.uniconfig.tls=true
       <<: *placement
       restart_policy:
         condition: any
@@ -206,6 +212,7 @@ services:
     sysctls:
       <<: *tcp_keepalive
     deploy: 
+      labels: *traefik_labels
       <<: *placement
       restart_policy:
         condition: any

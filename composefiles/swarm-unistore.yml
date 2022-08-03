@@ -27,6 +27,9 @@ x-placement: &placement
 x-tcp_keepalive: &tcp_keepalive
       net.ipv4.tcp_keepalive_time: 300
 
+x-traefik-label: &traefik_labels
+      - traefik.enable=false
+
 services:
   unistore:
     image: frinx/uniconfig:5.0.11
@@ -91,6 +94,7 @@ services:
     sysctls:
       <<: *tcp_keepalive
     deploy: 
+      labels: *traefik_labels
       <<: *placement
       restart_policy:
         condition: any
