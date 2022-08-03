@@ -174,8 +174,13 @@ function isNodeInSwarm {
   bold=$(tput bold)
   normal=$(tput sgr0) 
 
-  node_hostname=$(docker node ls -f ${TYPE}=${1} --format {{.Hostname}}) || 
-    { { echo -e "${ERROR} Bad node definition parameter ${bold}${TYPE}=${1}${normal}";} ;}
+  if [[ $TYPE == 'node.label' ]]; then
+    node_hostname=($(docker node ls -f ${TYPE}=zone --format {{.Hostname}})) || 
+      { { echo -e "${ERROR} Bad node definition parameter ${bold}${TYPE}=${1}${normal}";} ;}
+  else
+    node_hostname=($(docker node ls -f ${TYPE}=${1} --format {{.Hostname}})) || 
+      { { echo -e "${ERROR} Bad node definition parameter ${bold}${TYPE}=${1}${normal}";} ;}
+  fi
   
   if [[ $node_hostname != '' ]] || [[ $__FORCE_GENERATE == 'true' ]] ; then
 
@@ -187,21 +192,36 @@ function isNodeInSwarm {
         ;;
 
     'name')
-        node=$(docker node inspect ${node_hostname} --format {{.Description.Hostname}})
-        message="with hostname"
-        deployment="node.hostname == ${1}"
+        for i in "${node_hostname[@]}"; do
+          node=$(docker node inspect ${node_hostname} --format {{.Description.Hostname}})
+          message="with hostname"
+          deployment="node.hostname == ${1}"
+          if [[ $node != "" ]]; then
+            break 
+          fi 
+        done
         ;;
 
     'node.label')
-        node=$(docker node inspect ${node_hostname} --format {{.Spec.Labels.zone}})
-        message="with label zone ="
-        deployment="node.labels.zone == ${1}"
+        for i in "${node_hostname[@]}"; do
+          node=$(docker node inspect ${i} --format {{.Spec.Labels.zone}})
+          message="with label zone ="
+          deployment="node.labels.zone == ${1}"
+          if [[ $node != "" ]]; then
+            break 
+          fi 
+        done
         ;;
 
     'role')
-        node=$(docker node inspect ${node_hostname} --format {{.Spec.Role}})
-        message="with role"
-        deployment="node.role == ${1}"
+        for i in "${node_hostname[@]}"; do
+          node=$(docker node inspect ${node_hostname} --format {{.Spec.Role}})
+          message="with role"
+          deployment="node.role == ${1}"
+          if [[ $node != "" ]]; then
+            break 
+          fi 
+        done
         ;;
 
     *)
@@ -267,7 +287,7 @@ function generateUcCompose {
     sed -i 's|replicas: ${UC_CONTROLLER_REPLICAS:-1}|'"replicas: ${__UC_INSTANCES}|g" "${__COMPOSE_PATH}"
 
     # labels
-    sed -i 's|entrypoints=http,uniconfig|'"entrypoints=http,${__SERVICE_NAME}|g" "${__COMPOSE_PATH}"
+    sed -i 's|entrypoints=uniconfig|'"entrypoints=${__SERVICE_NAME}|g" "${__COMPOSE_PATH}"
     sed -i 's|\.uniconfig\.|'"\.${__SERVICE_NAME}\.|g" "${__COMPOSE_PATH}"
 
     # env

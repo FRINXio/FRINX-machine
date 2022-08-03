@@ -344,7 +344,7 @@ function checkUcSwarmMode {
 
     case $TYPE in
       'node.id')
-        __id=$(docker node ls -f id=${PLACEMENT_INPUT} --format {{.ID}})
+        __id=($(docker node ls -f id=${PLACEMENT_INPUT} --format {{.ID}}))
         if [[ "${__id}" == "${PLACEMENT_INPUT}" ]];then
           __name=$(docker node ls -f id=${PLACEMENT_INPUT} --format {{.Hostname}})
           __status=$(docker node inspect ${__name} --format {{.Status.State}}) 
@@ -354,7 +354,7 @@ function checkUcSwarmMode {
         fi;;
 
       'node.hostname')
-        __name=$(docker node ls -f name=${PLACEMENT_INPUT} --format {{.Hostname}})
+        __name=($(docker node ls -f name=${PLACEMENT_INPUT} --format {{.Hostname}}))
         if [[ "${__name}" == "${PLACEMENT_INPUT}" ]];then
           __status=$(docker node inspect ${__name} --format {{.Status.State}}) 
         else
@@ -363,16 +363,16 @@ function checkUcSwarmMode {
         fi;;
 
       'node.labels.zone')
-        __name=$(docker node ls -f node.label=${PLACEMENT_INPUT} --format {{.Hostname}}) || true
+        __name=($(docker node ls -f node.label=zone --format {{.Hostname}})) || true
         if [[ "${__name}" != '' ]];then
-          __status=$(docker node inspect ${__name} --format {{.Status.State}}) 
+          __status=$(docker node inspect ${__name} --format {{.Status.State}})
         else
           __name="node.label=${PLACEMENT_INPUT}"
           __status='not found' 
         fi;;
 
       'node.role')
-        __name=$(docker node ls -f role=${PLACEMENT_INPUT} --format {{.Hostname}}) || true
+        __name=($(docker node ls -f role=${PLACEMENT_INPUT} --format {{.Hostname}})) || true
         if [[ "${__name}" != '' ]];then
           __name=$(docker node ls -f role=${PLACEMENT_INPUT} --format {{.Hostname}})
           __status=$(docker node inspect ${__name} --format {{.Status.State}}) 
