@@ -14,12 +14,18 @@ x-logging: &logging_loki
         - action: labelmap
           regex: swarm_(service)
 
+x-placement: &placement
+      placement:
+        constraints:
+          - node.role == manager
+
+x-traefik-label: &traefik_labels
+      - traefik.enable=false
+
 services:
   grafana:
     image: grafana/grafana:8.3.0
     logging: *logging_loki
-    labels:
-      - traefik.enable=false 
     environment:
       - GF_PATHS_CONFIG=/etc/grafana/grafana.ini
     volumes: 
@@ -56,9 +62,8 @@ services:
         soft: ${MG_ULIMIT_NPROC_SOFT}
         hard: ${MG_ULIMIT_NPROC_HARD}
     deploy:
-      placement:
-        constraints:
-          - node.role == manager
+      labels: *traefik_labels
+      <<: *placement
       restart_policy:
         condition: any
         delay: 5s
@@ -80,8 +85,6 @@ services:
         mode: non-blocking
         max-file: "3"
         max-size: "10m"
-    labels:
-      - traefik.enable=false
     volumes:
       - frinx-monitoring-loki:/loki
       - ${UF_CONFIG_PATH}/monitoring/loki/loki-config.yaml:/etc/loki/loki-local-config.yaml
@@ -100,10 +103,9 @@ services:
         soft: ${ML_ULIMIT_NPROC_SOFT}
         hard: ${ML_ULIMIT_NPROC_HARD}
     deploy:
-      placement:
-        constraints:
-          - node.role == manager
-      labels:
+      <<: *placement
+      labels: 
+        &traefik_labels
         prometheus.enable: "true"
         prometheus.port: "9090"
         prometheus.path: "/metrics"
@@ -123,8 +125,6 @@ services:
   influxdb:
     image: influxdb:2.1
     logging: *logging_loki
-    labels:
-      - traefik.enable=false
     entrypoint: ["/set_env_secrets.sh", "/entrypoint.sh influxd"]
     secrets:
       - frinx_influxdb
@@ -153,9 +153,8 @@ services:
     # cap_drop:
     #   - all
     deploy:
-      placement:
-        constraints:
-          - node.role == manager
+      labels: *traefik_labels
+      <<: *placement
       restart_policy:
         condition: any
         delay: 5s
@@ -171,8 +170,6 @@ services:
     image: telegraf:1.20
     user: telegraf:${TELEGRAF_GROUP}
     logging: *logging_loki
-    labels:
-      - traefik.enable=false
     hostname: "{{.Node.Hostname}}"
     environment:
       - HOST_PROC=/rootfs/proc
@@ -216,6 +213,7 @@ services:
     # cap_drop:
     #   - all
     deploy:
+      labels: *traefik_labels
       restart_policy:
         condition: any
         delay: 5s
