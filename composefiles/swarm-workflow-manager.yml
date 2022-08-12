@@ -41,7 +41,7 @@ x-dt-enabled: &dt-enabled
 
 services:
   krakend:
-    image: frinx/krakend:1.0.5
+    image: frinx/krakend:latest
     # user: root
     logging: *logging_loki    
     environment:
@@ -62,6 +62,8 @@ services:
       - HTTPS_PROXY=${HTTPS_PROXY}
       - NO_PROXY=workflow-proxy,frinx-frontend,inventory,krakend,unistore,resource-manager,${UNICONFIG_ZONES_LIST},${NO_PROXY}
       - UNICONFIG_ZONES_LIST=${UNICONFIG_ZONES_LIST}
+      - UNICONFIG_SHELL_ENABLED=${UNICONFIG_SHELL_ENABLED:-false}
+      - UNICONFIG_SHELL_OAUTH_ENABLED=false
       - *wfm-enabled
       - *rsm-enabled
       - *inventory-enabled
@@ -92,7 +94,11 @@ services:
     ports:
       - target: 8080
         published: ${KRAKEND_PORT}
-        mode: host  
+        mode: host
+      # Configured with startup --shell 
+      # - target: 8001
+      #   published: 8001
+      #   mode: host  
     ulimits:
       nofile:
         soft: ${KD_ULIMIT_NOFILE_SOFT}
@@ -233,7 +239,7 @@ services:
       - INVENTORY_API_URL=/api/inventory
       - RESOURCE_MANAGER_API_URL=/api/resource
       - UNISTORE_API_URL=/api/unistore
-      - INVENTORY_WS_URL='ws://localhost:8001/graphql'
+      - INVENTORY_WS_URL=ws://localhost:8001/api/inventory
       - *wfm-enabled
       - *rsm-enabled
       - *inventory-enabled
@@ -463,6 +469,7 @@ services:
       - ARANGO_ENABLED=false
       - TOPOLOGY_ENABLED=false
       - SHELL_HOST=uniconfig
+      - SHELL_HOST_ENABLED=${UNICONFIG_SHELL_ENABLED:-false}
     volumes:
       - ${UF_CONFIG_PATH}/inventory/run_inventory.sh:/run_inventory.sh:ro
     healthcheck:

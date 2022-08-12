@@ -17,6 +17,28 @@
     "folder": "/usr/local/lib/krakend/"
   },
   "extra_config": {
+    {{ $uc_shell := env "UNICONFIG_SHELL_ENABLED" }}
+    {{ if eq $uc_shell "true" }}
+    "contribute/websocketproxy": {
+      "port": "8001",
+      "websockets": [
+        {
+          {{ $uc_shell := env "UNICONFIG_SHELL_OAUTH_ENABLED" }}
+          {{ if eq $uc_shell "true" }}
+          {{ $uc_shell_oauth_url := env "OAUTH2_AUTH_URL" }}
+          {{ $uc_shell_bearer := env "AZURE_KRAKEND_PLUGIN_JWT_VALUE_PREFIX" }}
+          {{ $uc_shell_rbac := env "UNICONFIG_CONTROLLER_ADMIN_GROUP" }}
+          "@comment": "uncomment and replace '",
+          "@comment": "jwk_url':' {{ $uc_shell_oauth_url }}",
+          "@comment": "rbac_roles':' {{ $uc_shell_rbac }}",
+          "@comment": "jwk_url ':' {{ $uc_shell_oauth_url }}",
+          {{end}}
+          "backend": "ws://inventory:8000/graphql",
+          "endpoint": "/api/inventory"
+        }
+      ]
+    },
+    {{end}}
     "router":{
       "disable_path_decoding" : true,
       "disable_redirect_fixed_path": true,
@@ -48,7 +70,6 @@
       "referrer_policy": "same-origin",
       "content_type_nosniff": true,
       "browser_xss_filter": true,
-      "content_security_policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; connect-src *;",
       "is_development": false
     },
     "security/cors": {
@@ -83,6 +104,7 @@
       "syslog": false,
       "stdout": true
     }
+
   },
   "endpoints": [
 

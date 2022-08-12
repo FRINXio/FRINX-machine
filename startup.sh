@@ -32,7 +32,9 @@ OPTIONS:
                   - KrakenD with certificates
                   - https://localhost
   
-   --auth        Deploy Frinx-Machine with authorization 
+   --auth        Deploy Frinx-Machine with authorization
+
+   --shell       Deploy Frinx-Machine with UC shell
 
    --prod|--dev|--high  
                   Deploy Frinx-Machine in production or development mode
@@ -102,6 +104,9 @@ function argumentsCheck {
 
         --auth)
             export AUTH_ENABLED="true";;
+
+        --shell)
+            export UNICONFIG_SHELL_ENABLED="true";;
 
         --proxy)
             export PROXY_ENABLED="true"
@@ -418,6 +423,14 @@ function validateAzureAD {
   fi
 }
 
+function enableUcShell {
+  if [[ ${UNICONFIG_SHELL_ENABLED} == "true" ]]; then
+    echo -e "${WARNING} Exposing websocket proxy on port 8001"
+    docker service update --publish-add mode=host,target=8001,published=8001 fm_krakend
+  fi
+}
+
+
 function setUniconfigZoneEnv {
 
   if [[ ${__multinode} == "true" ]]; then
@@ -528,6 +541,9 @@ export KRAKEND_PORT=80
 ## Default Auth settings
 export AUTH_ENABLED=false
 
+## Default UC SHELL settings
+export UNICONFIG_SHELL_ENABLED=false
+
 # DEFAULT PERFORM SETTINGS
 devPerformSettingFile='./config/dev_settings.txt'
 productPerformSettingFile='./config/prod_settings.txt'
@@ -555,5 +571,6 @@ setVariableFile "${performSettings}"  # load performance settings
 validateAzureAD
 
 startContainers
+enableUcShell
 show_last_info
 popd > /dev/null

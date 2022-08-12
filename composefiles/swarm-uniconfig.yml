@@ -61,6 +61,8 @@ services:
       - TRAEFIK_PROVIDERS_FILE_WATCH=true
       - TRAEFIK_ENTRYPOINTS_UNICONFIG=true
       - TRAEFIK_ENTRYPOINTS_UNICONFIG_ADDRESS=:8181
+      - TRAEFIK_ENTRYPOINTS_CLISHELL=true
+      - TRAEFIK_ENTRYPOINTS_CLISHELL_ADDRESS=:2022
       - TRAEFIK_PROVIDERS_DOCKER_SWARMMODE=true
       - TRAEFIK_PROVIDERS_DOCKER_WATCH=true
       - TRAEFIK_SERVERSTRANSPORT_ROOTCAS=/run/secrets/frinx_uniconfig_tls_cert.pem
@@ -125,7 +127,7 @@ services:
       - DBPERSISTENCE_CONNECTION_TLSCLIENTKEY=config/frinx_uniconfig_tls_key.der
       - DBPERSISTENCE_CONNECTION_TLSCACERT=config/frinx_uniconfig_tls_cert.pem
       # CLI SHELL CONFIGURATION, CREDENTIALS STORED IN SECRETS
-      - CLISHELL_SSHSERVER_ENABLED=true
+      - CLISHELL_SSHSERVER_ENABLED=${UNICONFIG_SHELL_ENABLED}
       - CLISHELL_SSHSERVER_INETADDRESS=0.0.0.0
       - CLISHELL_SSHSERVER_USERNAMEPASSWORDAUTH_PASSWORD=admin
       # UNICONFIG TRANSACTIONS CONFIGURATION
@@ -194,6 +196,10 @@ services:
         - traefik.http.services.uniconfig.loadbalancer.server.scheme=https
         - traefik.http.services.uniconfig.loadbalancer.passhostheader=true
         - traefik.http.routers.uniconfig.tls=true
+        - traefik.tcp.routers.clishell.entrypoints=clishell
+        - traefik.tcp.routers.clishell.rule=HostSNI(`*`)
+        - traefik.tcp.routers.clishell.service=cli-shell-svc
+        - traefik.tcp.services.cli-shell-svc.loadbalancer.server.port=2022
       <<: *placement-controller
       restart_policy:
         condition: any
