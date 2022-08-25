@@ -104,11 +104,7 @@ services:
         hard: ${ML_ULIMIT_NPROC_HARD}
     deploy:
       <<: *placement
-      labels: 
-        &traefik_labels
-        prometheus.enable: "true"
-        prometheus.port: "9090"
-        prometheus.path: "/metrics"
+      labels: *traefik_labels
       restart_policy:
         condition: any
         delay: 5s
