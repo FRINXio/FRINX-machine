@@ -89,7 +89,7 @@ services:
           memory: ${TF_RES_LIMIT_MEM}
 
   uniconfig-controller:
-    image: frinx/uniconfig:5.0.11
+    image: frinx/uniconfig:5.0.10
     logging: *logging_loki
     networks:
       - uniconfig-network

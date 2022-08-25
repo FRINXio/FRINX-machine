@@ -95,7 +95,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/uniflow-conductor-server:1.0.8
+    image: frinx/uniflow-conductor-server:latest
     # user: guest
     logging: *logging_loki 
     environment:
@@ -189,7 +189,7 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:1.0.10
+    image: frinx/frinx-frontend:latest
     user: node
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
@@ -214,6 +214,7 @@ services:
       - UNIRESOURCE_API_URL=/api/uniresource
       - UNISTORE_API_URL=/api/unistore
       - GAMMA_ENABLED=${GM_UI_ENABLED:-false}
+      - DEVICE_TOPOLOGY_ENABLED=false
     healthcheck:
       test: wget --spider -q '0.0.0.0:8888'
       interval: 10s
@@ -420,7 +421,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:1.3.0
+    image: frinx/frinx-inventory-server:latest
     logging: *logging_loki
     entrypoint: ["/run_inventory.sh"]
     secrets:
