@@ -23,4 +23,11 @@ do
     done
   fi
 done
-${1}
+
+#create one command from multiple arguments
+for arg in $@
+do
+ cmd="$cmd $arg"
+done
+#execute command
+$cmd

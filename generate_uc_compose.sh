@@ -175,8 +175,17 @@ function isNodeInSwarm {
   normal=$(tput sgr0) 
 
   if [[ $TYPE == 'node.label' ]]; then
-    node_hostname=($(docker node ls -f ${TYPE}=zone --format {{.Hostname}})) || 
+    node_hostname=($(docker node ls -f ${TYPE}=zone=${1} --format {{.Hostname}})) || 
       { { echo -e "${ERROR} Bad node definition parameter ${bold}${TYPE}=${1}${normal}";} ;}
+    db_node_hostname=$(docker node ls -f ${TYPE}=db=${1} --format {{.Hostname}})
+    if [[ ${db_node_hostname} == '' ]] || [[ $( echo ${db_node_hostname} | tr -cd ' ' | wc -c) -ne 0 ]]; then
+      echo -e "${SWARM_STATUS} Only one node can have ${TYPE}=db=${1}"
+      if [[ $__FORCE_GENERATE == 'false' ]]; then
+        echo -e "${SWARM_STATUS} Composefiles was not generated"
+        exit 1
+      fi
+      echo -e "${SWARM_STATUS} Composefiles will be force-generated with wrong placement settings for db"
+    fi
   else
     node_hostname=($(docker node ls -f ${TYPE}=${1} --format {{.Hostname}})) || 
       { { echo -e "${ERROR} Bad node definition parameter ${bold}${TYPE}=${1}${normal}";} ;}
@@ -189,6 +198,7 @@ function isNodeInSwarm {
         node=$(docker node inspect ${node_hostname} --format {{.ID}})
         message="with ID"
         deployment="node.id == ${1}"
+        deployment_psql="node.id == ${1}"
         ;;
 
     'name')
@@ -196,6 +206,7 @@ function isNodeInSwarm {
           node=$(docker node inspect ${node_hostname} --format {{.Description.Hostname}})
           message="with hostname"
           deployment="node.hostname == ${1}"
+          deployment_psql="node.hostname == ${1}"
           if [[ $node != "" ]]; then
             break 
           fi 
@@ -207,6 +218,7 @@ function isNodeInSwarm {
           node=$(docker node inspect ${i} --format {{.Spec.Labels.zone}})
           message="with label zone ="
           deployment="node.labels.zone == ${1}"
+          deployment_psql="node.labels.db == ${1}"
           if [[ $node != "" ]]; then
             break 
           fi 
@@ -218,6 +230,7 @@ function isNodeInSwarm {
           node=$(docker node inspect ${node_hostname} --format {{.Spec.Role}})
           message="with role"
           deployment="node.role == ${1}"
+          deployment_psql="node.role == ${1}"
           if [[ $node != "" ]]; then
             break 
           fi 
@@ -275,7 +288,10 @@ function generateUcCompose {
     sed -i "s/  uniconfig-postgres:/  ${__SERVICE_NAME}-postgres:/g" "${__COMPOSE_PATH}"
 
     # swarm node deployment
-    sed -i "s/node.role == manager/${deployment}/g" "${__COMPOSE_PATH}"
+    sed -i '/&placement-controller$/{n;n;n; s/node.role == manager/uc_deployment/}' ${__COMPOSE_PATH}
+    sed -i '/&placement-postgres$/{n;n;n; s/node.role == manager/ucp_deployment/}' ${__COMPOSE_PATH}
+    sed -i "s/uc_deployment/${deployment}/g" "${__COMPOSE_PATH}"
+    sed -i "s/ucp_deployment/${deployment_psql}/g" "${__COMPOSE_PATH}"
 
     # swarm config paths
     sed -i 's|${UC_CONFIG_PATH}|'"/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}|g" "${__COMPOSE_PATH}"
