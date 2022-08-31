@@ -19,7 +19,17 @@ x-logging: &logging_loki
         - action: labelmap
           regex: swarm_(service)
 
-x-placement: &placement
+x-placement: &placement-traefik
+      placement:
+        constraints:
+          - node.role == manager
+
+x-placement-controller: &placement-controller
+      placement:
+        constraints:
+          - node.role == manager
+
+x-placement-postgres: &placement-postgres
       placement:
         constraints:
           - node.role == manager
@@ -46,7 +56,6 @@ services:
       - TRAEFIK_PING=true
       - TRAEFIK_LOG=true
       - TRAEFIK_LOG_LEVEL=DEBUG
-      - TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY=true
       - TRAEFIK_PROVIDERS_DOCKER=true
       - TRAEFIK_PROVIDERS_FILE_FILENAME=/etc/traefik/traefik_dynamic.yml
       - TRAEFIK_PROVIDERS_FILE_WATCH=true
@@ -54,6 +63,8 @@ services:
       - TRAEFIK_ENTRYPOINTS_UNICONFIG_ADDRESS=:8181
       - TRAEFIK_PROVIDERS_DOCKER_SWARMMODE=true
       - TRAEFIK_PROVIDERS_DOCKER_WATCH=true
+      - TRAEFIK_SERVERSTRANSPORT_ROOTCAS=/run/secrets/frinx_uniconfig_tls_cert.pem
+      - TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY=true
     configs:
       - source: traefik_dynamic_conf
         target: /etc/traefik/traefik_dynamic.yml
@@ -76,7 +87,7 @@ services:
     sysctls:
       <<: *tcp_keepalive
     deploy: 
-      <<: *placement
+      <<: *placement-traefik
       restart_policy:
         condition: any
         delay: 5s
@@ -89,7 +100,7 @@ services:
           memory: ${TF_RES_LIMIT_MEM}
 
   uniconfig-controller:
-    image: frinx/uniconfig:5.0.10
+    image: frinx/uniconfig:latest
     logging: *logging_loki
     networks:
       - uniconfig-network
@@ -106,11 +117,23 @@ services:
       - dbPersistence_enabled=true
       - dbPersistence_connection_databaseLocations_host=uniconfig-postgres
       - dbPersistence_connection_databaseLocations_port=5432
+      - dbPersistence_connection_enabledTls=true
+      - dbPersistence_connection_tlsClientKey=config/frinx_uniconfig_tls_key.der
+      - dbPersistence_connection_tlsCaCert=config/frinx_uniconfig_tls_cert.pem
+      - dbPersistence_connection_tlsClientCert=config/frinx_uniconfig_tls_cert.pem
     volumes:
       - frinx_uniconfig-controller_logs:/opt/uniconfig-frinx/log
       - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache:rw
     secrets:
       - frinx_uniconfig_db
+      - source: frinx_uniconfig_tls_key.der
+        target: /opt/uniconfig-frinx/config/frinx_uniconfig_tls_key.der
+        mode: 0555
+      - source: frinx_uniconfig_tls_cert.pem
+        target: /opt/uniconfig-frinx/config/frinx_uniconfig_tls_cert.pem
+        mode: 0555
+      - source: frinx_uniconfig_tls_key.p12
+        target: /opt/uniconfig-frinx/config/frinx_uniconfig_tls_key.p12
     configs:
       - source: uniconfig_startup
         target: /opt/uniconfig-frinx/run_uniconfig.sh
@@ -125,11 +148,10 @@ services:
         target: /opt/uniconfig-frinx/config/logback.xml
         mode: 0555
     healthcheck:
-    # remove password from 
       test: | 
         curl -o /dev/null --silent --write-out "%{http_code}" \
-        -X POST 'http://127.0.0.1:8181/rests/operations/uniconfig-manager:health' \
-        -H "Content-Type:application/json" | grep 200 || exit 1
+        -X POST 'https://127.0.0.1:8181/rests/operations/uniconfig-manager:health' \
+        -H "Content-Type:application/json" --insecure | grep 200 || exit 1
       interval: 10s
       timeout: 35s
       retries: 5
@@ -158,10 +180,10 @@ services:
         - traefik.http.routers.uniconfig.rule=PathPrefix(`/rests`)
         - traefik.http.services.uniconfig.loadBalancer.sticky.cookie.name=uniconfig_server_id
         - traefik.http.services.uniconfig.loadbalancer.server.port=8181
-        - traefik.http.services.uniconfig.loadbalancer.server.scheme=http
+        - traefik.http.services.uniconfig.loadbalancer.server.scheme=https
         - traefik.http.services.uniconfig.loadbalancer.passhostheader=true
         - traefik.http.routers.uniconfig.tls=true
-      <<: *placement
+      <<: *placement-controller
       restart_policy:
         condition: any
         delay: 5s
@@ -185,8 +207,24 @@ services:
       - frinx_uniconfig-postgresql_data:/var/lib/postgresql/data
     secrets:
       - frinx_uniconfig_db
-    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh postgres"]
-    command: postgres -N 300
+      - source: frinx_uniconfig_tls_cert.pem
+        target: /var/lib/postgresql/frinx_uniconfig_tls_cert.pem
+        mode: 0544
+        uid: "999"
+        gid: "999"
+      - source: frinx_uniconfig_tls_key.pem
+        target: /var/lib/postgresql/frinx_uniconfig_tls_key.pem
+        mode: 0600
+        uid: "999"
+        gid: "999"
+    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh"]
+    command: 
+      - postgres
+      - -c max_connections=300 
+      - -c ssl=on 
+      - -c ssl_cert_file=/var/lib/postgresql/frinx_uniconfig_tls_cert.pem 
+      - -c ssl_key_file=/var/lib/postgresql/frinx_uniconfig_tls_key.pem 
+      - -c ssl_ca_file=/var/lib/postgresql/frinx_uniconfig_tls_cert.pem
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
@@ -213,7 +251,7 @@ services:
       <<: *tcp_keepalive
     deploy: 
       labels: *traefik_labels
-      <<: *placement
+      <<: *placement-postgres
       restart_policy:
         condition: any
         delay: 5s
@@ -245,6 +283,10 @@ secrets:
   frinx_uniconfig_tls_cert.pem:
     external: true
   frinx_uniconfig_tls_key.pem:
+    external: true
+  frinx_uniconfig_tls_key.der:
+    external: true
+  frinx_uniconfig_tls_key.p12:
     external: true
   frinx_uniconfig_db:
     external: true

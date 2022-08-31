@@ -138,16 +138,23 @@ function installPrerequisities {
 function generateUniconfigTLSCerts {
 
   if ([[ $(docker secret ls --filter name=${UNICONFIG_SSL_KEY} --format {{.Name}}) == '' ]] || [[ $(docker secret ls --filter name=${UNICONFIG_SSL_CERT} --format {{.Name}}) == '' ]]) || [ "${__UPDATE_SECRETS}" == "true" ]; then
-    docker secret rm $( docker secret ls -q -f name=${UNICONFIG_SSL_KEY} -f name=${UNICONFIG_SSL_CERT}) &>/dev/null || true
-    if ([[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_KEY}" ]] || [[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_CERT}" ]]); then
+    docker secret rm $( docker secret ls -q -f name=${UNICONFIG_SSL_KEY} -f name=${UNICONFIG_SSL_CERT} -f name=${UNICONFIG_SSL_PCKS8} -f name=${UNICONFIG_SSL_PCKS12}) &>/dev/null || true
+    if ([[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_KEY}" ]] || [[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_CERT}" ]] || [[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_PCKS8}" ]] || [[ ! -f "${dockerCertSettings}/${UNICONFIG_SSL_PCKS12}" ]]); then
       echo -e "${INFO} Generating SSL key/cert used for uniconfig-zone TLS communication"
       openssl genrsa --out ${dockerCertSettings}/${UNICONFIG_SSL_KEY} &>/dev/null
       openssl req -new -x509 -key ${dockerCertSettings}/${UNICONFIG_SSL_KEY} -out ${dockerCertSettings}/${UNICONFIG_SSL_CERT} -days 365 \
             -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io' -addext "subjectAltName = DNS:*"
+      openssl pkcs8 -in ${dockerCertSettings}/${UNICONFIG_SSL_KEY} -topk8 -nocrypt -outform DER -out ${dockerCertSettings}/${UNICONFIG_SSL_PCKS8}
+      # READ PASSWORD FOR UNICONFIG TLS FROM SECRET FOLDER
+      UNICONFIG_SSL_PCKS12_PASS=$(cat ${dockerEnvSettings}/frinx_uniconfig_db | grep dbPersistence_connection_sslPassword | cut -d '=' -f 2)
+      openssl pkcs12 -export -name uniconfig -passout pass:${UNICONFIG_SSL_PCKS12_PASS} -out ${dockerCertSettings}/${UNICONFIG_SSL_PCKS12} \
+            -inkey ${dockerCertSettings}/${UNICONFIG_SSL_KEY} -in ${dockerCertSettings}/${UNICONFIG_SSL_CERT} -certfile ${dockerCertSettings}/${UNICONFIG_SSL_CERT}
     fi
       echo -e "${INFO} Updating SSL key/cert used for uniconfig-zone TLS communication"
       docker secret create "${UNICONFIG_SSL_KEY}" "${dockerCertSettings}/${UNICONFIG_SSL_KEY}" > /dev/null || echo -e "${ERROR} Docker secret ${UNICONFIG_SSL_KEY} not imported" | exit 1
       docker secret create "${UNICONFIG_SSL_CERT}" "${dockerCertSettings}/${UNICONFIG_SSL_CERT}" > /dev/null || echo -e "${ERROR} Docker secret ${UNICONFIG_SSL_CERT} not imported" | exit 1
+      docker secret create "${UNICONFIG_SSL_PCKS8}" "${dockerCertSettings}/${UNICONFIG_SSL_PCKS8}" > /dev/null || echo -e "${ERROR} Docker secret ${UNICONFIG_SSL_PCKS8} not imported" | exit 1
+      docker secret create "${UNICONFIG_SSL_PCKS12}" "${dockerCertSettings}/${UNICONFIG_SSL_PCKS12}" > /dev/null || echo -e "${ERROR} Docker secret ${UNICONFIG_SSL_PCKS12} not imported" | exit 1
   fi
 }
 
@@ -370,6 +377,8 @@ dockerEnvSettings="${FM_DIR}/config/secrets"
 
 UNICONFIG_SSL_KEY="frinx_uniconfig_tls_key.pem"
 UNICONFIG_SSL_CERT="frinx_uniconfig_tls_cert.pem"
+UNICONFIG_SSL_PCKS8="frinx_uniconfig_tls_key.der"
+UNICONFIG_SSL_PCKS12="frinx_uniconfig_tls_key.p12"
 KRAKEND_SSL_KEY="frinx_krakend_tls_key.pem"
 KRAKEND_SSL_CERT="frinx_krakend_tls_cert.pem"
 

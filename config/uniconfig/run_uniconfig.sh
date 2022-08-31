@@ -56,6 +56,14 @@ delete_debug_argument() {
   done
 }
 
+create_tls_keystore() {
+keystorePass=$(cat ${CONFIG} | grep "keystorePassword" | sed 's| ||g;s|"||g' | cut -d ':' -f 2 )
+keystorePath=$(cat ${CONFIG} | grep "keystorePath" | sed 's| ||g;s|"||g' | cut -d ':' -f 2 | sed 's/.$//' )
+
+keytool -importkeystore -deststorepass ${keystorePass} -destkeypass ${keystorePass} -srcstorepass ${dbPersistence_connection_sslPassword} \
+    -destkeystore ${keystorePath} -srckeystore config/frinx_uniconfig_tls_key.p12 -srcstoretype PKCS12 -alias uniconfig
+}
+
 for i in "$@"
 do
 case $i in
@@ -82,6 +90,8 @@ mkdir -m 700 -p data
 
 # wait for postgresql container
 sleep 5
+
+create_tls_keystore
 
 is_enabled_debugging "$@"; enabled_debugging=$?
 if [ $enabled_debugging -eq 1 ]; then
