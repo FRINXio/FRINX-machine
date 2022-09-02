@@ -239,7 +239,7 @@ $ docker node ls
 
 ### Generate configuration files for multi-node deployment
 
-Frinx Machine supports Uniconfig deployment in multi-zone mode (multiple uniconfig zones). 
+Frinx Machine supports Uniconfig deployment in multi-zone mode (multiple uniconfig zones).
 Before the Frinx Machine is start, is necessary to generate unique configuration files per each zone separatelly.
 For generating these files use `generate_uc_compose.sh`.  
 
@@ -268,9 +268,11 @@ li5msj11609ss58n7mafa9cbt     frinx-worker2   Ready     Active                  
 
 # Check settings of nodes in cluster
 docker node inspect <HOSTNAME> --format "{{.Description.Hostname}} {{.ID}} {{.Spec.Labels.zone}} {{.Spec.Role}}"
-
-  <Hostname>             <ID>               <Label>   <Role>
-frinx-manager   m4lyotjrwc059u76dkdksyfsp   uniflow   manager
+docker node inspect --format '{{.Description.Hostname}} {{.ID}} {{.Spec.Labels.zone}} {{.Spec.Labels.db}} {{.Spec.Role}}' $(docker node ls -q)
+  <Hostname>             <ID>             <Zone Label>  <Zone DB Label>   <Role>
+frinx-manager   m4lyotjrwc059u76dkdksyfsp   uniflow        <no value>     worker
+frinx-worker1   vrybz35tsmtp23gd9byoimq1z  uniconfig        uniconfig     worker
+frinx-worker2   9l6k8qg6rl6wn3tv8o7s29464  uniconfig       <no value>     worker
 
 # Check
 $ ./generate_uc_compose.sh -s <service_name> -f <path_to_folder> -i <instances> --hostname <Hostname>
@@ -279,12 +281,18 @@ $ ./generate_uc_compose.sh -s <service_name> -f <path_to_folder> -i <instances> 
 $ ./generate_uc_compose.sh -s <service_name> -f <path_to_folder> -i <instances> --role <Role>
 
 # Label swarm node with zone label
-docker node update <NODE_HOSTNAME> --label-add zone=<UNIQUE_LABEL>
+docker node update <NODE_HOSTNAME> --label-add zone=<UNIQUE_ZONE_LABEL>
+
+# One 
+docker node update <NODE_HOSTNAME> --label-add db=<UNIQUE_ZONE_LABEL>
 
 # Force generating of composefiles, e.g.
 $ ./generate_uc_compose.sh -s <service_name> -f <path_to_folder> -i <instances> --role <Role> --force
 ```
 
+For enhanced FM architecture deployment is recomended to use label base placement, where nodes are splited to zone groups by node label zone=<UNIQUE_ZONE_LABEL>. In each group must be only one node with label db=<UNIQUE_ZONE_LABEL>. 
+
+To see diagram visit [Frinx Machine Architecture](docs/fm_architecture.md).
 
 <br>
 
