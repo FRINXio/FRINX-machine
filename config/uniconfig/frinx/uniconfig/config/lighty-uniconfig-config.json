@@ -173,8 +173,12 @@
             "password": "unipass",
             // initial size of the connection pool (pre-initialized connections)
             "initialDbPoolSize": 5,
+            // maximum size of connections for internal usage
+            "maxInternalDbConnections" : 2,
             // maximum size of the connection pool, before creation of next connections are blocked
-            "maxDbPoolSize": 300,
+            // It includes 'maxInternalDbConnections'. Subtraction of 'maxInternalDbConnections' from 'maxDbPoolSize'
+            // is maximum of open user transactions
+            "maxDbPoolSize": 20,
             // maximum number of idle connections before next idle connections are cleaned
             "maxIdleConnections": 5,
             /*
@@ -194,9 +198,9 @@
             // path to UniConfig client certificate key (relative path from UniConfig main folder)
             "tlsClientKey": "./client.key",
             // path to certificate of DB certificate authority - used for authentication of DB against UniConfig
-            // "tlsCaCert": "./ca.pks",
+            "tlsCaCert": "./ca.pks",
             // password to tlsClientKey if it is encrypted
-            // "sslPassword": "",
+            "sslPassword": "",
             /*
             List of network locations at which target database resides. The first entry is always tried in the first
             attempt during creation of database connection. If there are multiple entries specified, then other

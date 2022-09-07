@@ -58,9 +58,6 @@
         // delimiter used for escaping of list keys in URI (for example, '%22')
         // if it is set to 'null' (default), keys cannot be escaped and must be directly encoded according to RFC-8040
         "keyDelimiter": null,
-        // Flag that determines if the data node that is empty(means node contains only attribute tag) should be hidden
-        // during GET operation.
-        "hideEmptyDataNodes": false,
         // Settings related to filtering of data in CRUD operations.
         "schemaFilters": {
             // List of extension definitions that can be used to filter out data during PUT/POST/PATCH operation.
@@ -146,6 +143,7 @@
     dbPersistence_connection_tlsClientCert=./client.pks
     dbPersistence_connection_tlsClientKey=./client.key
     dbPersistence_connection_tlsCaCert=./ca.pks
+    dbPersistence_connection_sslPassword=
     dbPersistence_connection_databaseLocations_host=127.0.0.1
     dbPersistence_connection_databaseLocations_port=26257
     dbPersistence_uniconfigInstance_instanceName=uc-0
@@ -175,8 +173,12 @@
             "password": "unipass",
             // initial size of the connection pool (pre-initialized connections)
             "initialDbPoolSize": 5,
+            // maximum size of connections for internal usage
+            "maxInternalDbConnections" : 2,
             // maximum size of the connection pool, before creation of next connections are blocked
-            "maxDbPoolSize": 300,
+            // It includes 'maxInternalDbConnections'. Subtraction of 'maxInternalDbConnections' from 'maxDbPoolSize'
+            // is maximum of open user transactions
+            "maxDbPoolSize": 20,
             // maximum number of idle connections before next idle connections are cleaned
             "maxIdleConnections": 5,
             /*
@@ -197,6 +199,8 @@
             "tlsClientKey": "./client.key",
             // path to certificate of DB certificate authority - used for authentication of DB against UniConfig
             "tlsCaCert": "./ca.pks",
+            // password to tlsClientKey if it is encrypted
+            "sslPassword": "",
             /*
             List of network locations at which target database resides. The first entry is always tried in the first
             attempt during creation of database connection. If there are multiple entries specified, then other
@@ -306,6 +310,8 @@
             "dataChangeEventsEnabled": true,
             // Enabled collection and propagation of connection notifications into Kafka.
             "connectionNotificationsEnabled": true,
+            // Enabled collection and propagation of shell notifications into Kafka.
+            "shellNotificationsEnabled": true,
             // Unique identifier of topic that is used for storing netconf notifications.
             "netconfNotificationsTopicName": "netconf-notifications",
             // Unique identifier of topic that is used for storing audit logs.
@@ -318,6 +324,8 @@
             "connectionNotificationsTopicName": "connection-notifications",
             // If only connection notifications for NETCONF stream are enabled.
             "connectionNotificationsNetconfStreamOnly": true,
+            // Unique identifier of the Kafka topic used for distribution of shell notifications.
+            "shellNotificationsTopicName": "shell-notifications",
             // Configuration of how long the send() method and the creation of connection for
             // reading of metadata methods will block. (in ms)
             "blockingTimeout": 60000,
@@ -451,5 +459,17 @@
         // 18:16:20.887 INFO io.frinx.uniconfig.metrics.impl.ReporterImpl - type=METER, name=org.opendaylight.controller.uniconfig.transaction.manager.impl.UniconfigTransactionManagerImpl.transaction_invoke, count=0, m1_rate=0.0, m5_rate=0.0, m15_rate=0.0, mean_rate=0.0, rate_unit=events/second
         // 18:16:20.887 INFO io.frinx.uniconfig.metrics.impl.ReporterImpl - type=METER, name=org.opendaylight.yangtools.yang.common.RpcResult.rpc_invoke, count=3, m1_rate=0.3080502714195554, m5_rate=0.5251039914257685, m15_rate=0.5739172434618175, mean_rate=0.06565517632771098, rate_unit=events/second
 
+    },
+    "callbacks": {
+        // flag that determines whether callbacks will work
+        "enabled": false,
+        // remote server settings
+        "remoteServer": {
+            // remote server uri
+            "serverUri": "",
+            // basic authentication that will be used in http requests
+            "username": "admin",
+            "password": "admin"
+        }
     }
 }
