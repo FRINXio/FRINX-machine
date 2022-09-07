@@ -256,12 +256,12 @@ function startContainers {
       ;;
 
       uniconfig)
-        echo -e "${INFO} Deploying UniConfig only"
+        echo -e "${INFO} Deploying Uniconfig only"
         startUniconfig
       ;;
 
       unistore)
-        echo -e "${INFO} Deploying UniConfig only"
+        echo -e "${INFO} Deploying Unistore only"
         startUnistore
       ;;
 

@@ -32,7 +32,7 @@ x-traefik-label: &traefik_labels
 
 services:
   unistore:
-    image: frinx/uniconfig:5.0.11
+    image: frinx/uniconfig:5.0.14
     logging: *logging_loki
     labels:
       - traefik.enable=false  
@@ -50,6 +50,7 @@ services:
       - dbPersistence_connection_dbName=unistore
       - dbPersistence_connection_databaseLocations_host=unistore-postgres
       - dbPersistence_connection_databaseLocations_port=5432
+      - dbPersistence_connection_maxDbPoolSize=300
     volumes:
       - frinx_unistore-controller_logs:/opt/uniconfig-frinx/log
       - ${UF_CONFIG_PATH}/unistore/cache:/opt/uniconfig-frinx/cache:rw
@@ -117,8 +118,10 @@ services:
       - frinx_unistore-postgresql_data:/var/lib/postgresql/data
     secrets:
       - frinx_unistore_db
-    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh postgres"]
-    command: postgres -N 300
+    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh"]
+    command: 
+      - postgres
+      - -c max_connections=300 
     configs:
       - source: set_env_secrets
         target: /set_env_secrets.sh
