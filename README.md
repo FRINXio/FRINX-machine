@@ -53,7 +53,6 @@ $ ./install.sh  --custom-ssl-cert path/to/cert.pem --custom-ssl-key path/to/key.
 
 Automatically installed software:
 - curl
-- docker-compose 1.22.0
 - docker-ce 18.09 / 20.10
 - loki-docker-driver
 - openssl
