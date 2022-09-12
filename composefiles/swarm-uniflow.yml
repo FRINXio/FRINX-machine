@@ -95,7 +95,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/uniflow-conductor-server:latest
+    image: frinx/uniflow-conductor-server:1.0.9
     # user: guest
     logging: *logging_loki 
     environment:
@@ -189,7 +189,7 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:latest
+    image: frinx/frinx-frontend:1.0.18
     user: node
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
@@ -333,7 +333,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:1.0.9
+    image: frinx/workflow-proxy:1.0.10
     user: node
     logging: *logging_loki    
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
@@ -421,7 +421,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:latest
+    image: frinx/frinx-inventory-server:1.5.1
     logging: *logging_loki
     entrypoint: ["/run_inventory.sh"]
     secrets:
