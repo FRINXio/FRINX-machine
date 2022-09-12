@@ -29,6 +29,8 @@ DESCRIPTION:
           - frinx_krakend_tls_key.pem
           - frinx_uniconfig_tls_cert.pem
           - frinx_uniconfig_tls_key.pem
+          - frinx_uniconfig_tls_key.der
+          - frinx_uniconfig_tls_key.p12
 
     --custom-ssl-key
           Select custom frinx_krakend_tls_key.pem
