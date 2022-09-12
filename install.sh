@@ -103,7 +103,7 @@ function checkInstallPrerequisities {
 
 
 function installPrerequisities {
-  echo -e "${INFO} Configuring docker-ce and docker-compose"
+  echo -e "${INFO} Configuring docker-ce"
   echo -e "${INFO} Checking curl"
   apt-get update > /dev/null
   apt-get install curl openssl -y
@@ -123,15 +123,6 @@ function installPrerequisities {
       echo -e "${INFO} Initializing docker in swarm mode"
       docker swarm init
     fi
-  fi
-
-  if test -f /usr/local/bin/docker-compose; then
-    dockerComposeVersion=$(/usr/local/bin/docker-compose --version)
-    echo -e "${INFO} $dockerComposeVersion already installed, skipping..."
-  else
-    echo -e "${INFO} Installing docker-compose"
-    curl -sS -L https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
   fi
 }
 
@@ -223,14 +214,15 @@ function pullImages {
   export KRAKEND_PORT=443
 
   echo -e "${INFO} Pulling Monitoring images"
-  docker-compose --log-level ERROR -f $dockerComposeFileMonitor pull || true
+  docker compose -f $dockerComposeFileMonitor --env-file $dockerPerformSettings pull --ignore-pull-failures || true
   echo -e "${INFO} Pulling Uniflow images"
-  docker-compose --log-level ERROR -f $dockerComposeFileUniflow pull || true
-  echo -e "${INFO} Pulling Uniconfig images"
-  docker-compose --log-level ERROR -f $dockerComposeFileUniconfig pull || true
-  echo -e "${INFO} Pulling Unistore images"
-  docker-compose --log-level ERROR -f $dockerComposeFileUnistore pull || true
+  docker compose -f $dockerComposeFileUniflow --env-file $dockerPerformSettings pull --ignore-pull-failures || true
 
+  echo -e "${INFO} Pulling Uniconfig images"
+  docker compose -f $dockerComposeFileUniconfig --env-file $dockerPerformSettings pull --ignore-pull-failures || true
+
+  echo -e "${INFO} Pulling Unistore images"
+  docker compose -f $dockerComposeFileUnistore --env-file $dockerPerformSettings pull --ignore-pull-failures || true
 }
 
 
