@@ -294,15 +294,6 @@ function selectDockerVersion {
 }
 
 
-function createEnvFile {
-  if [[ ! -f ${stackEnvFile} ]]; then
-    cp "${FM_DIR}/env.template" ${stackEnvFile}
-  else
-    echo -e "${WARNING} Used ${stackEnvFile} from previous installation!"
-  fi
-}
-
-
 function addEnvToFile {
   unset __old_env_var
   unset __new_env_var
@@ -355,7 +346,6 @@ selectDockerVersion
 
 scriptName="$(basename "${0}")"
 FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-stackEnvFile="${FM_DIR}/.env"
 
 dockerComposeFileUniconfig="${FM_DIR}/composefiles/swarm-uniconfig.yml"
 dockerComposeFileUniflow="${FM_DIR}/composefiles/swarm-uniflow.yml"
@@ -387,7 +377,6 @@ INFO='\033[0;96m[INFO]:\033[0;0m'
 pushd ${FM_DIR} > /dev/null
 
   argumentsCheck "$@"
-  createEnvFile
   setVariableFile "${stackEnvFile}"
   checkInstallPrerequisities
   installLokiPlugin

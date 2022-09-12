@@ -521,7 +521,6 @@ function unsetVariableEnvFile {
 scriptName="$(basename "${0}")"
 
 FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-stackEnvFile="${FM_DIR}/.env"
 stackProxyFile="${FM_DIR}/.proxy"
 
 ERROR="\033[0;31m[ERROR]:\033[0;0m"
@@ -575,7 +574,6 @@ checkSwarmMode
 echo -e "${INFO} Selected resource configuration: ${performSettings}"
 
 setVariableFile "${performSettings}"  # load performance settings
-setVariableFile "${stackEnvFile}"     # load .env settings
 validateAzureAD
 
 startContainers
