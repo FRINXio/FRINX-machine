@@ -469,10 +469,21 @@ Api-Gateway (KrakenD) TLS:
 * frinx_krakend_tls_cert.pem 
 * frinx_krakend_tls_key.pem
 
-Traefik certificates: Establish HTTPS connection between FM services and Uniconfig zone (multizone support)
+Traefik certificates/keys: Establish HTTPS connection between FM services and Uniconfig zone (multizone support)
 
 * frinx_uniconfig_tls_cert.pem 
 * frinx_uniconfig_tls_key.pem
+
+Uniconfig-postgres certificates/keys: Establish TLS connection for all uniconfig-postgres instances (multi-zone support)
+
+* frinx_uniconfig_tls_cert.pem 
+* frinx_uniconfig_tls_key.pem
+
+Uniconfig-controller keys: Used for establishing secured communication with uniconfig-postgres (multi-zone support)
+
+* frinx_uniconfig_tls_key.pem
+* frinx_uniconfig_tls_key.der
+* frinx_uniconfig_tls_key.p12
 
 </br>
 
@@ -483,7 +494,7 @@ Traefik certificates: Establish HTTPS connection between FM services and Uniconf
 $ openssl genrsa --out FRINX-Machine/config/certificates/frinx_krakend_tls_key.pem 
 # Example, generate selfsigned x509 cert
 # used wildcard Common Name (CN) *
-$ openssl req -new -x509 -days 365
+$ openssl req -new -x509 -days 365 -addext 'subjectAltName = DNS:*'
             -key FRINX-Machine/config/certificates/frinx_krakend_tls_key.pem \
             -out FRINX-Machine/config/certificates/frinx_krakend_tls_cert.pem \
             -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io'
