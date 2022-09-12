@@ -15,7 +15,6 @@ OPTIONS:
     -m|--monitoring     delete FM monitoring volumes
     -v|--volumes        delete all FM persistant volumes (FM, Monitoring)
     -c|--cache          delete content of ./config/uniconfig/frinx/uniconfig/cache folder
-    -e|--env            delete .env file with custom settings
     -a|--all            delete all volumes and files (except secrets)
 
     -S|--secrets        delete all docker secrets with prefix frinx_
@@ -134,9 +133,6 @@ do
         -c|--cache)
             __CLEAN_CACHE="true";;
 
-        -e|--env)
-            __CLEAN_ENV="true";;
-
         -a|--all)
             __CLEAN_VOLUMES="true"
             __CLEAN_MONITORING="true"
@@ -196,11 +192,6 @@ if [ -n "${__CLEAN_MONITORING}" ]; then
         echo "Removing was not successful"
         exit 1
     fi
-fi
-
-if [ -n "${__CLEAN_ENV}" ]; then
-    echo "###### Removing .env file ######"
-    rm -rfv "${__ENV_PATH}"
 fi
 
 if [ -n "${__CLEAN_CACHE}" ]; then

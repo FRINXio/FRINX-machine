@@ -34,7 +34,6 @@ You can deploy the FM either locally with all services running on a single node,
 * [Installation](#installation)
 * [Single-node deployment](#single-node-deployment)
 * [Multi-node deployment](#multi-node-deployment)
-* [Preparing Environment](#preparing-environment)
 * [Resource limitation](#resource-limitation) 
 * [Maintaining](#maintaining)
 * [TLS in Frinx Machine](#tls-in-frinx-machine) 
@@ -343,14 +342,6 @@ NO_PROXY='ip:port,ip:port'
 ```
 and start FM with --proxy switch.
 
-## Preparing Environment
-The FRINX-Machine repository contains a **env.template** (used for creating .env) and **.env** file in which the default FM configuration settings are stored. In .env file, the settings are divided to these groups:
-* **Common settings**
-
-* **Temporary settings** - Created by FM scripts, **do not change them**
-
-</br>
-
 ## Resource limitations
 
 Default resource limitations are configured for production and can be changed for development.
@@ -444,7 +435,6 @@ $ ./teardown.sh -f # remove Frinx Machine uniflow/uniconfig data
 $ ./teardown.sh -m # remove Monitoring data
 $ ./teardown.sh -v # remove all Frinx docker volumes
 $ ./teardown.sh -c # delete content of ./config/uniconfig/frinx/uniconfig/cache folder
-$ ./teardown.sh -e # delete .env file with custom settings
 $ ./teardown.sh -a # delete all volumes and files
 ```
 For see more options run:
