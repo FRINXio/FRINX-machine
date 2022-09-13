@@ -56,6 +56,9 @@ Automatically installed software:
 - loki-docker-driver
 - openssl
 
+NOTE: For migration from older version of docker to newer see https://docs.docker.com/engine/install/ubuntu/. <br>
+To configure permission, follow https://docs.docker.com/engine/install/linux-postinstall/.
+
 NOTE: It may happen that swarm initialization will fail during install. Most likely due to multiple network interfaces present. 
 In that case run `docker swarm init --advertise-addr <ip-addr>` command to tell swarm which ip address to use for inter-manager communication and overlay networking
 

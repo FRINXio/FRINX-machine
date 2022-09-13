@@ -119,7 +119,7 @@ function installPrerequisities {
     apt-get install software-properties-common
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
     apt-get update -qq
-    apt-get install -qq -y $dockerInstallVersion
+    apt-get install -qq -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
     if [[ "${__NO_SWARM}" == "false" ]]; then
       echo -e "${INFO} Initializing docker in swarm mode"
@@ -287,15 +287,6 @@ function checkDockerGroup {
 }
 
 
-function selectDockerVersion {
-  dockerInstallVersion="docker-ce=5:18.09.9~3-0~ubuntu-bionic"
-  ubuntuVersion=$(grep "VERSION_ID" /etc/os-release | cut -d '=' -f2 | sed  's\"\\g')
-  if [[ "${ubuntuVersion}" == "20."* ]]; then
-    dockerInstallVersion="docker-ce=5:20.10.5~3-0~ubuntu-focal"
-  fi
-}
-
-
 function addEnvToFile {
   unset __old_env_var
   unset __new_env_var
@@ -344,7 +335,6 @@ function unsetVariableFile {
 # =======================================
 # Program starts here
 # =======================================
-selectDockerVersion
 
 scriptName="$(basename "${0}")"
 FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
