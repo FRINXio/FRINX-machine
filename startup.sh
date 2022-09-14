@@ -463,13 +463,6 @@ function setManagerIpAddrEnv {
 }
 
 
-function createEnvFile {
-  if [[ ! -f ${stackEnvFile} ]]; then
-    cp "${FM_DIR}/env.template" ${stackEnvFile}
-  fi
-}
-
-
 function addEnvToFile {
   unset __old_env_var
   unset __new_env_var
@@ -567,7 +560,6 @@ export DEPLOY_SETTINGS_TIMESTAMP=$(date +%s)
 
 pushd ${FM_DIR} > /dev/null
 
-createEnvFile
 argumentsCheck "$@"
 
 checkSwarmMode

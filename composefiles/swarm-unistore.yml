@@ -32,7 +32,7 @@ x-traefik-label: &traefik_labels
 
 services:
   unistore:
-    image: frinx/uniconfig:5.0.14
+    image: frinx/uniconfig:5.0.15
     logging: *logging_loki
     labels:
       - traefik.enable=false  
