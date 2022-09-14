@@ -333,7 +333,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:1.0.10
+    image: frinx/workflow-proxy:1.0.11
     user: node
     logging: *logging_loki    
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
