@@ -267,6 +267,20 @@ function prepareConfigFiles {
 }
 
 
+function computeDbPools {
+  if [[ ${__UC_INSTANCES} -eq 1 ]]; then
+    DB_POOLS=300;
+    UC_POOLS=300;
+  elif [[ ${__UC_INSTANCES} -eq 2 ]]; then
+    DB_POOLS=300;
+    UC_POOLS=150;
+  else
+    DB_POOLS=$((${__UC_INSTANCES} * 100));
+    UC_POOLS=100;
+  fi
+}
+
+
 function generateUcCompose {
 
     if [[ "${__SERVICE_NAME}" == "uniconfig" ]]; then
@@ -313,6 +327,10 @@ function generateUcCompose {
     # networks
     sed -i 's|uniconfig-network|'"${__SERVICE_NAME}-network|g" "${__COMPOSE_PATH}"
 
+    # db pools
+    sed -i 's|maxDbPoolSize=300|'"maxDbPoolSize=${UC_POOLS}|g" "${__COMPOSE_PATH}"
+    sed -i 's|max_connections=300|'"max_connections=${DB_POOLS}|g" "${__COMPOSE_PATH}"
+
 }
 
 function prepareFolder {
@@ -350,4 +368,5 @@ __UNICONFIG_SERVICE_SUFIX="uniconfig-controller"
 argumentsCheck "$@"
 isNodeInSwarm ${__NODE_ID}
 prepareFolder
+computeDbPools
 generateUcCompose
