@@ -244,8 +244,6 @@ configs:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
 
 volumes:
-  frinx-monitoring-prometheus:
-      name: frinx-monitoring-prometheus
   frinx-monitoring-grafana:
       name: frinx-monitoring-grafana
   frinx-monitoring-loki:
