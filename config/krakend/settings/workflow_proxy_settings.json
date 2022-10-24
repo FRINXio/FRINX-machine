@@ -1,27 +1,27 @@
 {
     "endpoints": [
         {
-            "endpoint": "/api/uniflow/metadata/taskdefs",
+            "endpoint": "/api/workflow/metadata/taskdefs",
             "method": "GET",
             "url_pattern": "/metadata/taskdefs"
         },
         {
-            "endpoint": "/api/uniflow/metadata/taskdefs",
+            "endpoint": "/api/workflow/metadata/taskdefs",
             "method": "POST",
             "url_pattern": "/metadata/taskdefs"
         },
         {
-            "endpoint": "/api/uniflow/metadata/taskdefs",
+            "endpoint": "/api/workflow/metadata/taskdefs",
             "method": "PUT",
             "url_pattern": "/metadata/taskdefs"
         },
         {
-            "endpoint": "/api/uniflow/metadata/taskdefs/{name}",
+            "endpoint": "/api/workflow/metadata/taskdefs/{name}",
             "method": "GET",
             "url_pattern": "/metadata/taskdefs/{name}"
         },
         {
-            "endpoint": "/api/uniflow/metadata/taskdefs/{name}",
+            "endpoint": "/api/workflow/metadata/taskdefs/{name}",
             "method": "DELETE",
             "url_pattern": "/metadata/taskdefs/{name}",
             "input_query_strings": [
@@ -29,22 +29,22 @@
               ]
         },
         {
-            "endpoint": "/api/uniflow/metadata/workflow",
+            "endpoint": "/api/workflow/metadata/workflow",
             "method": "GET",
             "url_pattern": "/metadata/workflow"
         },
         {
-            "endpoint": "/api/uniflow/metadata/workflow",
+            "endpoint": "/api/workflow/metadata/workflow",
             "method": "PUT",
             "url_pattern": "/metadata/workflow"
         },
         {
-            "endpoint": "/api/uniflow/metadata/workflow",
+            "endpoint": "/api/workflow/metadata/workflow",
             "method": "POST",
             "url_pattern": "/metadata/workflow"
         },   
         {
-            "endpoint": "/api/uniflow/metadata/workflow/{name}",
+            "endpoint": "/api/workflow/metadata/workflow/{name}",
             "method": "GET",
             "url_pattern": "/metadata/workflow/{name}",
             "input_query_strings": [
@@ -52,47 +52,47 @@
               ]
         },
         {
-            "endpoint": "/api/uniflow/metadata/workflow/{name}/{version}",
+            "endpoint": "/api/workflow/metadata/workflow/{name}/{version}",
             "method": "DELETE",
             "url_pattern": "/metadata/workflow/{name}/{version}"
         },
         {
-            "endpoint": "/api/uniflow/workflow/{a}",
+            "endpoint": "/api/workflow/workflow/{a}",
             "method": "DELETE",
             "url_pattern": "/workflow/{a}"
         },
         {
-            "endpoint": "/api/uniflow/workflow/{a}/{b}",
+            "endpoint": "/api/workflow/workflow/{a}/{b}",
             "method": "DELETE",
             "url_pattern": "/workflow/{a}/{b}"
         },
         {
-            "endpoint": "/api/uniflow/workflow",
+            "endpoint": "/api/workflow/workflow",
             "method": "POST",
             "url_pattern": "/workflow"
         },
         {
-            "endpoint": "/api/uniflow/event",
+            "endpoint": "/api/workflow/event",
             "method": "GET",
             "url_pattern": "/event"
         },
         {
-            "endpoint": "/api/uniflow/event",
+            "endpoint": "/api/workflow/event",
             "method": "POST",
             "url_pattern": "/event"
         },
         {
-            "endpoint": "/api/uniflow/event/{name}",
+            "endpoint": "/api/workflow/event/{name}",
             "method": "DELETE",
             "url_pattern": "/event/{name}"
         },
         {
-            "endpoint": "/api/uniflow/event/{event}",
+            "endpoint": "/api/workflow/event/{event}",
             "method": "GET",
             "url_pattern": "/event/{event}"
         },
         {
-            "endpoint": "/api/uniflow/id/{workflowId}",
+            "endpoint": "/api/workflow/id/{workflowId}",
             "method": "GET",
             "url_pattern": "/id/{workflowId}",
             "input_query_strings": [
@@ -100,69 +100,69 @@
               ]
         },
         {
-            "endpoint": "/api/uniflow/schedule",
+            "endpoint": "/api/workflow/schedule",
             "method": "GET",
             "url_pattern": "/schedule"
         },
         {
-            "endpoint": "/api/uniflow/schedule/{name}",
+            "endpoint": "/api/workflow/schedule/{name}",
             "method": "GET",
             "url_pattern": "/schedule/{name}"
         },
         {
-            "endpoint": "/api/uniflow/schedule/{name}",
+            "endpoint": "/api/workflow/schedule/{name}",
             "method": "PUT",
             "url_pattern": "/schedule/{name}"
         },
         {
-            "endpoint": "/api/uniflow/schedule/{name}",
+            "endpoint": "/api/workflow/schedule/{name}",
             "method": "DELETE",
             "url_pattern": "/schedule/{name}"
         },
         {
-            "endpoint": "/api/uniflow/queue/data",
+            "endpoint": "/api/workflow/queue/data",
             "method": "GET",
             "url_pattern": "/queue/data"
         },
         {
-            "endpoint": "/api/uniflow/editableworkflows",
+            "endpoint": "/api/workflow/editableworkflows",
             "method": "GET",
             "url_pattern": "/editableworkflows"
         },
         {
-            "endpoint": "/api/uniflow/workflow/bulk/pause",
+            "endpoint": "/api/workflow/workflow/bulk/pause",
             "method": "PUT",
             "url_pattern": "/workflow/bulk/pause"
         },
         {
-            "endpoint": "/api/uniflow/workflow/bulk/resume",
+            "endpoint": "/api/workflow/workflow/bulk/resume",
             "method": "PUT",
             "url_pattern": "/workflow/bulk/resume"
         },
         {
-            "endpoint": "/api/uniflow/workflow/bulk/retry",
+            "endpoint": "/api/workflow/workflow/bulk/retry",
             "method": "POST",
             "url_pattern": "/workflow/bulk/retry"
         },
         {
-            "endpoint": "/api/uniflow/workflow/bulk/restart",
+            "endpoint": "/api/workflow/workflow/bulk/restart",
             "method": "POST",
             "url_pattern": "/workflow/bulk/restart"
         },
         {
-            "endpoint": "/api/uniflow/workflow/bulk/terminate",
+            "endpoint": "/api/workflow/workflow/bulk/terminate",
             "method": "POST",
             "url_pattern": "/workflow/bulk/terminate"
         },
         {
             "@comment": "Deprecated",
-            "endpoint": "/api/uniflow/workflow/bulk/terminate",
+            "endpoint": "/api/workflow/workflow/bulk/terminate",
             "method": "DELETE",
             "backend_method": "POST",
             "url_pattern": "/workflow/bulk/terminate"
         },
         {
-            "endpoint": "/api/uniflow/hierarchical",
+            "endpoint": "/api/workflow/hierarchical",
             "method": "GET",
             "url_pattern": "/hierarchical",
             "input_query_strings": [
@@ -174,7 +174,7 @@
               ]
         },
         {
-            "endpoint": "/api/uniflow/executions",
+            "endpoint": "/api/workflow/executions",
             "method": "GET",
             "url_pattern": "/executions?q=&h=",
             "input_query_strings": [
@@ -186,7 +186,7 @@
               ]
         },
         {
-            "endpoint": "/api/uniflow/external/postgres/{dataId}",
+            "endpoint": "/api/workflow/external/postgres/{dataId}",
             "method": "GET",
             "url_pattern": "/external/postgres/{dataId}"
         }

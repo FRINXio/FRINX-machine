@@ -56,7 +56,7 @@
     {{ template "inventory.tmpl" }},
     {{ template "uniconfig.tmpl" .uniconfig_settings }},
     {{ template "unistore.tmpl" .unistore_settings }},
-    {{ template "uniresource.tmpl" .uniresource_settings.endpoints }},
+    {{ template "resource.tmpl" .resource_settings.endpoints }},
     {{ template "frinx_frontend.tmpl" .frinx_frontend_settings}}
   ]
 }
