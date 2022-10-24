@@ -28,7 +28,7 @@ To deploy an FM swarm cluster you need at least one machine with Ubuntu 18.04/20
 Architecture overview [here](docs/fm_architecture.md).
 
 # How to install and run FRINX Machine
-You can deploy the FM either locally with all services running on a single node, or you can distribute UniFlow and UniConfig instances across multiple nodes. UniFlow is always running on the docker swarm manager node.
+You can deploy the FM either locally with all services running on a single node, or you can distribute Workflow-Manager and UniConfig instances across multiple nodes. Workflow-Manager is always running on the docker swarm manager node.
 
 
 * [Installation](#installation)
@@ -145,7 +145,7 @@ During installation, docker secrets are created and are used for establishing HT
 
 These certificates can be replaced by custom certificates (use the same name) before execution of installation script or re-execution with the `--update-secrets` flag. </br></br>
 ## Single-node deployment
-Install and run UniFlow and UniConfig on the same machine.
+Install and run Workflow-Manager and UniConfig on the same machine.
 To deploy all components except unistore on a single node, run `startup.sh`:
 ```sh
 $ ./startup.sh
@@ -156,8 +156,8 @@ $ ./startup.sh --dev
 # To deploy all services including unistore, use:
 $ ./startup.sh --with-unistore
 
-# To deploy uniflow only, use:
-$ ./startup.sh --uniflow 
+# To deploy workflow-manager only, use:
+$ ./startup.sh --workflow-manager 
 
 # To deploy uniconfig only, use:
 $ ./startup.sh --uniconfig 
@@ -199,7 +199,7 @@ Once all services are started, please clone https://github.com/FRINXio/fm-workfl
 </br>
 
 ## Multi-node deployment
-UniFlow services are deployed on swarm manager node and UniConifig services are deployed on swarm worker nodes.
+Workflow-Manager services are deployed on swarm manager node and UniConifig services are deployed on swarm worker nodes.
 
 ### Preparing worker nodes for UniConfig services
 
@@ -271,7 +271,7 @@ li5msj11609ss58n7mafa9cbt     frinx-worker2   Ready     Active                  
 docker node inspect <HOSTNAME> --format "{{.Description.Hostname}} {{.ID}} {{.Spec.Labels.zone}} {{.Spec.Role}}"
 docker node inspect --format '{{.Description.Hostname}} {{.ID}} {{.Spec.Labels.zone}} {{.Spec.Labels.db}} {{.Spec.Role}}' $(docker node ls -q)
   <Hostname>             <ID>             <Zone Label>  <Zone DB Label>   <Role>
-frinx-manager   m4lyotjrwc059u76dkdksyfsp   uniflow        <no value>     worker
+frinx-manager   m4lyotjrwc059u76dkdksyfsp   workflow-manager        <no value>     worker
 frinx-worker1   vrybz35tsmtp23gd9byoimq1z  uniconfig        uniconfig     worker
 frinx-worker2   9l6k8qg6rl6wn3tv8o7s29464  uniconfig       <no value>     worker
 
@@ -322,7 +322,7 @@ $ ./startup.sh --multinode
 $ ./startup.sh --multinode 'path/to/your/folder'
 # Can be aslo combined with another options 
 $ ./startup.sh --multinode 'path/to/your/folder' --uniconfig --dev
-$ ./startup.sh --multinode 'path/to/your/folder' --uniflow --dev
+$ ./startup.sh --multinode 'path/to/your/folder' --workflow-manager --dev
 ```
 
 NOTE: The deployment might take a while as the worker node needs to download all necessary images first.
@@ -434,7 +434,7 @@ $ ./teardown.sh
 
 To remove all persistent data, purge the volumes (ATTENTION!!! ALL USER DATA WILL BE LOST):
 ```sh
-$ ./teardown.sh -f # remove Frinx Machine uniflow/uniconfig data
+$ ./teardown.sh -f # remove Frinx Machine workflow-manager/uniconfig data
 $ ./teardown.sh -m # remove Monitoring data
 $ ./teardown.sh -v # remove all Frinx docker volumes
 $ ./teardown.sh -c # delete content of ./config/uniconfig/frinx/uniconfig/cache folder

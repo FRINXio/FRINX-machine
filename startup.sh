@@ -8,7 +8,7 @@ cat << EOF
 DESCRIPTION:
  This script can be used for starting Frinx-Machine (FM) in specific modes.
   
-  - If no options are specified, starts UniFlow and UniConfig services on local single node 
+  - If no options are specified, starts Workflow-Manager and UniConfig services on local single node 
     with development resources allocation and http protocol.
 
   - For starting FM in multi-node is need to generate uniconfig compose files with script:
@@ -42,13 +42,13 @@ OPTIONS:
                   - different allocation of resources
                   - default: production
 
-   --uniflow        Deploy UniFlow services
+   --workflow-manager        Deploy Workflow-Manager services
    --uniconfig      Deploy UniConfig services
    --unistore       Deploy Unistore services (not started by default)
    --with-unistore  Deploy Full FM with Unistore services
 
    --monitoring     Deploy Monitoring services
-   --no-monitoring  Deploy UniFlow and UniConfig services
+   --no-monitoring  Deploy Workflow-Manager and UniConfig services
 
 
 
@@ -57,7 +57,7 @@ OPTIONS:
    --multinode    <PATH>   Deploy FM in multinode mode
                             - Set path to folder witg Uniconfig compose files
                             - Default ${uniconfigServiceFilesPath}
-                            - Uniflow on manager node
+                            - Workflow-Manager on manager node
                             - Uniconfig on worker nodes
                    
    For more info about multi-node deployment see README
@@ -129,11 +129,11 @@ function argumentsCheck {
                 exit 1
             fi;;
 
-        --uniflow|--uniconfig|--monitoring|--no-monitoring|--unistore|--with-unistore)
+        --workflow-manager|--uniconfig|--monitoring|--no-monitoring|--unistore|--with-unistore)
             if [ -z ${__only_one_config} ]; then
-              if [ ${1} == "--uniflow" ]; then
+              if [ ${1} == "--workflow-manager" ]; then
                 __only_one_config="true"
-                startupType="uniflow"
+                startupType="workflow-manager"
               elif [ ${1} == "--uniconfig" ]; then
                 __only_one_config="true"
                 startupType="uniconfig"
@@ -151,7 +151,7 @@ function argumentsCheck {
                 startupType="withunistore"
               fi
             else 
-                echo -e "Conflict parameters: --uniflow|--uniconfig|--monitoring !!! Just one can be selected !!!"
+                echo -e "Conflict parameters: --workflow-manager|--uniconfig|--monitoring !!! Just one can be selected !!!"
                 echo -e "Use '${scriptName} --help' for more details"
                 exit 1
             fi;;
@@ -187,19 +187,19 @@ function startMonitoring {
   docker stack deploy --compose-file composefiles/$dockerSwarmMetrics $stackName
 }
 
-function startUniflow {
+function startWorkflowManager {
 
-  echo -e "${INFO} Uniflow swarm worker node id: ${UF_SWARM_NODE_ID}"
+  echo -e "${INFO} Workflow-Manager swarm worker node id: ${UF_SWARM_NODE_ID}"
   if [[ "$(docker service ls --format {{.Name}} | grep fm_unistore)" != "" ]]; then
     echo -e "${INFO} Update Frinx-Frontent: enable L3VPN automation"
     export GM_UI_ENABLED=true
   fi
 
-  docker stack deploy --compose-file composefiles/$dockerSwarmUniflow $stackName
+  docker stack deploy --compose-file composefiles/$dockerSwarmWorkflowManager $stackName
   status=$?
   if [[ $status -ne 0 ]]; then
-    echo -e "${ERROR} Problem with starting Uniflow."
-    echo -e "${ERROR} If 'network frinx-machine not found!', wait a while and start Uniflow again."
+    echo -e "${ERROR} Problem with starting Workflow-Manager."
+    echo -e "${ERROR} If 'network frinx-machine not found!', wait a while and start Workflow-Manager again."
     exit 1
   fi
 }
@@ -250,9 +250,9 @@ function startContainers {
   setManagerIpAddrEnv
   
   case $startupType in
-      uniflow)
-        echo -e "${INFO} Deploying Uniflow only"
-        startUniflow
+      workflow-manager)
+        echo -e "${INFO} Deploying Workflow-Manager only"
+        startWorkflowManager
       ;;
 
       uniconfig)
@@ -271,23 +271,23 @@ function startContainers {
       ;;
 
       nomonitoring)
-        echo -e "${INFO} Deploying Uniflow and Uniconfig services only"
-        startUniflow
+        echo -e "${INFO} Deploying Workflow-Manager and Uniconfig services only"
+        startWorkflowManager
         startUniconfig
       ;;
 
       withunistore)
-        echo -e "${INFO} Deploying Uniflow, Uniconfig, Unistore and Monitoring services"
+        echo -e "${INFO} Deploying Workflow-Manager, Uniconfig, Unistore and Monitoring services"
         startMonitoring
-        startUniflow
+        startWorkflowManager
         startUniconfig
         startUnistore
       ;;
 
       full)
-        echo -e "${INFO} Deploying Uniflow, Uniconfig and Monitoring services"
+        echo -e "${INFO} Deploying Workflow-Manager, Uniconfig and Monitoring services"
         startMonitoring
-        startUniflow
+        startWorkflowManager
         startUniconfig
       ;;
 
@@ -525,7 +525,7 @@ OK="\033[0;92m[OK]:\033[0;0m"
 stackName="fm"
 licenseKeyFile="${FM_DIR}/config/uniconfig/uniconfig_license.txt"
 
-dockerSwarmUniflow='swarm-uniflow.yml'
+dockerSwarmWorkflowManager='swarm-workflow-manager.yml'
 dockerSwarmUniconfig='swarm-uniconfig.yml'
 dockerSwarmUnistore='swarm-unistore.yml'
 

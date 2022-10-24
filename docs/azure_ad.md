@@ -13,7 +13,7 @@ Set platform redirect URIs on the Authentication page. The table below shows exa
 | Syntax                | Platform configuration  | Redirect URI                                            |
 | :---                  |    :----:               |          :---                                           |
 | Frontend Login        | Single-page application | https://<**IP/DNS**>/ ,e.g. https://localhost/          |
-| Uniflow docs (swager) | Web                     | https://<**IP/DNS**>/api/uniflow/oauth2-redirect.html  |
+| Workflow-Manager docs (swager) | Web                     | https://<**IP/DNS**>/api/workflow/oauth2-redirect.html  |
 | Cloud swagger         | Web                     | https://editor.swagger.io/oauth2-redirect.html          |
 | Local Postman         | Web                     | https://oauth.pstmn.io/v1/callback                      |
 | Cloud Postman         | Web                     | https://getpostman.com/oauth2/callback                  |
@@ -92,10 +92,10 @@ Settings for devices owner installed in uniconfig-zones via inventory.
 
 # workflow-proxy
 
-Settings for uniconfig/uniflow swagger docs.
+Settings for uniconfig/workflow-manager swagger docs.
 
 >   * OAUTH2_AUTH_URL=https://login.microsoftonline.com/common/oauth2/v2.0/authorize
->   * OAUTH2_TOKEN_URL=/api/uniflow/docs/token
+>   * OAUTH2_TOKEN_URL=/api/workflow/docs/token
 
 ### KrakenD AZURE AD PLUGIN SETTINGS
 
@@ -115,7 +115,7 @@ AZURE_KRAKEND_PLUGIN_GROUP_DISABLE : set true, when only Role based access is us
 
 All default settings are defined in **config/secrets/frinx_rbac** and are stored to docker secrets during execution of ./install.sh
 
-## Uniflow RBAC
+## Workflow-Manager RBAC
 
 RBAC proxy adds 2 features on top of tenant proxy:
 * Ensures user authorization to access certain endpoints
@@ -171,14 +171,14 @@ INVENTORY_ADMIN_GROUP
 
 <br>
 
-## Uniresource RBAC
+## Resource-Manager RBAC
 
 A simple RBAC model is implemented where only admin (based on their role and user groups) can manipulate resource types, resource pools and labels. <br> Regular users will only be able to read the above entities, allocate and free resources.
 
 Configure admin role in 'frinx_rbac' secret file via:
 
 ```sh
-# UNIRESOURCE RBAC SETTINGS
+# RESOURCE-MANAGER RBAC SETTINGS
 # VALUES MUST BE IN QUOTATION MARKS
 RM_ADMIN_GROUPS="network-admin"
 RM_ADMIN_ROLES="network-admin"

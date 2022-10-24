@@ -11,7 +11,7 @@ DESCRIPTION:
 
 OPTIONS:
     -s|--stack-name     set FM stack name (default fm)
-    -f|--frinx          delete FM Uniconfig/Uniflow volumes
+    -f|--frinx          delete FM Uniconfig/Workflow-Manager volumes
     -m|--monitoring     delete FM monitoring volumes
     -v|--volumes        delete all FM persistant volumes (FM, Monitoring)
     -c|--cache          delete content of ./config/uniconfig/frinx/uniconfig/cache folder
@@ -173,7 +173,7 @@ if [ -n "${__CLEAN_VOLUMES}" ]; then
         sleep 1
     done
     if [[ ${__CURRENT_LOOP} -eq ${__WAIT_TIME} ]] &&  \
-        [[ "$(docker volume ls -q -f name=uniflow* -f name=uniconfig*)" != "" ]]; then
+        [[ "$(docker volume ls -q -f name=workflow-manager* -f name=uniconfig*)" != "" ]]; then
         echo "Removing was not successful"
         exit 1
     fi
@@ -188,7 +188,7 @@ if [ -n "${__CLEAN_MONITORING}" ]; then
         sleep 1
     done
     if [[ ${__CURRENT_LOOP} -eq ${__WAIT_TIME} ]] &&  \
-        [[ "$(docker volume ls -q -f name=uniflow* -f name=uniconfig*)" != "" ]]; then
+        [[ "$(docker volume ls -q -f name=workflow-manager* -f name=uniconfig*)" != "" ]]; then
         echo "Removing was not successful"
         exit 1
     fi

@@ -1,22 +1,22 @@
 {
     "endpoints": [
         {
-            "endpoint": "/api/uniflow/docs",
+            "endpoint": "/api/workflow/docs",
             "method": "GET",
             "url_pattern": "/docs"
         },
         {
-            "endpoint": "/api/uniflow/docs-uniconfig",
+            "endpoint": "/api/workflow/docs-uniconfig",
             "method": "GET",
             "url_pattern": "/docs-uniconfig"
         },
         {
-            "endpoint": "/api/uniflow/swagger-ui.css",
+            "endpoint": "/api/workflow/swagger-ui.css",
             "method": "GET",
             "url_pattern": "/docs/swagger-ui.css"
         },
         {
-            "endpoint": "/api/uniflow/swagger-ui-bundle.js",
+            "endpoint": "/api/workflow/swagger-ui-bundle.js",
             "method": "GET",
             "url_pattern": "/docs/swagger-ui-bundle.js",
             "extra_config": {
@@ -29,37 +29,37 @@
             }
         },
         {
-            "endpoint": "/api/uniflow/swagger-ui.css.map",
+            "endpoint": "/api/workflow/swagger-ui.css.map",
             "method": "GET",
             "url_pattern": "/docs/swagger-ui.css.map"
         },
         {
-            "endpoint": "/api/uniflow/swagger-ui-standalone-preset.js",
+            "endpoint": "/api/workflow/swagger-ui-standalone-preset.js",
             "method": "GET",
             "url_pattern": "/docs/swagger-ui-standalone-preset.js"
         },
         {
-            "endpoint": "/api/uniflow/swagger-ui-standalone-preset.js.map",
+            "endpoint": "/api/workflow/swagger-ui-standalone-preset.js.map",
             "method": "GET",
             "url_pattern": "/docs/swagger-ui-standalone-preset.js.map"
         },
         {
-            "endpoint": "/api/uniflow/swagger-ui-init.js",
+            "endpoint": "/api/workflow/swagger-ui-init.js",
             "method": "GET",
             "url_pattern": "/docs/swagger-ui-init.js"
         },
         {
-            "endpoint": "/api/uniflow/favicon-32x32.png",
+            "endpoint": "/api/workflow/favicon-32x32.png",
             "method": "GET",
             "url_pattern": "/docs/favicon-32x32.png"
         },
         {
-            "endpoint": "/api/uniflow/favicon-16x16.png",
+            "endpoint": "/api/workflow/favicon-16x16.png",
             "method": "GET",
             "url_pattern": "/docs/favicon-16x16.png"
         },
         {
-            "endpoint": "/api/uniflow/oauth2-redirect.html",
+            "endpoint": "/api/workflow/oauth2-redirect.html",
             "method": "GET",
             "url_pattern": "/docs/oauth2-redirect.html"
         }

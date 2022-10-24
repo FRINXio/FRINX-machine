@@ -12,7 +12,7 @@ DESCRIPTION:
 
   USAGE: ${scriptName} [OPTIONS]
   
-  Prepares the environment for UniFlow and UniConfig deployment.
+  Prepares the environment for Workflow-Manager and UniConfig deployment.
 
   INSTALL CONFIGURATION
 
@@ -217,8 +217,8 @@ function pullImages {
 
   echo -e "${INFO} Pulling Monitoring images"
   docker compose -f $dockerComposeFileMonitor --env-file $dockerPerformSettings pull --ignore-pull-failures || true
-  echo -e "${INFO} Pulling Uniflow images"
-  docker compose -f $dockerComposeFileUniflow --env-file $dockerPerformSettings pull --ignore-pull-failures || true
+  echo -e "${INFO} Pulling Workflow-Manager images"
+  docker compose -f $dockerComposeFileWorkflowManager --env-file $dockerPerformSettings pull --ignore-pull-failures || true
 
   echo -e "${INFO} Pulling Uniconfig images"
   docker compose -f $dockerComposeFileUniconfig --env-file $dockerPerformSettings pull --ignore-pull-failures || true
@@ -340,7 +340,7 @@ scriptName="$(basename "${0}")"
 FM_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 dockerComposeFileUniconfig="${FM_DIR}/composefiles/swarm-uniconfig.yml"
-dockerComposeFileUniflow="${FM_DIR}/composefiles/swarm-uniflow.yml"
+dockerComposeFileWorkflowManager="${FM_DIR}/composefiles/swarm-workflow-manager.yml"
 dockerComposeFileUnistore="${FM_DIR}/composefiles/swarm-unistore.yml"
 
 dockerComposeFileMonitor="${FM_DIR}/composefiles/support/swarm-monitoring.yml"

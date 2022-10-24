@@ -1,7 +1,7 @@
 {
     "endpoints": [
         {
-            "endpoint": "/api/uniresource",
+            "endpoint": "/api/resource",
             "method": "POST",
             "url_pattern": "/query"
         }
