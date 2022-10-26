@@ -23,8 +23,8 @@
   "editable": true,
   "gnetId": 12019,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1629884309874,
+  "id": 3,
+  "iteration": 1664365469970,
   "links": [],
   "panels": [
     {
@@ -211,6 +211,29 @@
           "text": "",
           "value": ""
         },
+        "datasource": "Loki",
+        "definition": "label_values({service=\"${service}\"},  container_name)",
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "service_container",
+        "options": [],
+        "query": "label_values({service=\"${service}\"},  container_name)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "",
+          "value": ""
+        },
         "description": null,
         "error": null,
         "hide": 0,
@@ -250,5 +273,5 @@
   "timezone": "",
   "title": "Frinx Machine logs viewer",
   "uid": "Y5yS_R4nz",
-  "version": 1
+  "version": 2
 }
