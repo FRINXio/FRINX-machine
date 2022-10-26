@@ -95,7 +95,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/uniflow-conductor-server:1.0.9
+    image: frinx/conductor-server:latest
     # user: guest
     logging: *logging_loki 
     environment:
@@ -288,7 +288,7 @@ services:
           memory: ${PG_RES_LIMIT_MEM}
 
   schellar:
-    image: frinx/uniflow-schellar:1.9.4
+    image: frinx/schellar:latest
     logging: *logging_loki 
     environment:
       - LOG_LEVEL=debug
@@ -333,7 +333,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:1.0.11
+    image: frinx/workflow-proxy:latest
     user: node
     logging: *logging_loki    
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
@@ -377,7 +377,7 @@ services:
           memory: ${WP_RES_LIMIT_MEM}
 
   resource-manager:
-    image: frinx/resource-manager:1.0.5
+    image: frinx/resource-manager:latest
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "./run.sh"]
     secrets:
@@ -421,7 +421,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:1.5.1
+    image: frinx/frinx-inventory-server:latest
     logging: *logging_loki
     entrypoint: ["/run_inventory.sh"]
     secrets:
@@ -435,6 +435,7 @@ services:
       - UNICONFIG_API_PROTOCOL=https
       - UNICONFIG_API_PORT=8181
       - UNICONFIG_LIST_URL=${KRAKEND_TLS_PROTOCOL}://krakend:8080/static/list/uniconfig
+      - ARANGO_ENABLED=false
     volumes:
       - ${UF_CONFIG_PATH}/inventory/run_inventory.sh:/run_inventory.sh:ro
     healthcheck:
