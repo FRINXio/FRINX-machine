@@ -448,7 +448,7 @@ function setUniconfigZoneEnv {
 function setProxyEnv {
   export HTTP_PROXY="${http_proxy:-$HTTP_PROXY}"
   export HTTPS_PROXY="${https_proxy:-$HTTPS_PROXY}"
-  export NO_PROXY="${no_proxy:-$NO_PROXY}"
+  export NO_PROXY="$(echo ${no_proxy:-$NO_PROXY} | sed 's\ \\g')"
 
   # load .proxy settings
   setVariableFile "${stackProxyFile}"
