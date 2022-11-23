@@ -6,7 +6,8 @@
   "tls": {
     "public_key": "/usr/local/share/ca-certificates/frinx_krakend_tls_cert.pem",
     "private_key": "/usr/local/share/ca-certificates/frinx_krakend_tls_key.pem",
-    "min_version": "TLS11",
+    "min_version": "TLS12",
+    "max_version": "TLS13",
     "prefer_server_cipher_suites": true, 
     "disabled": {{ env "TLS_DISABLED" }}
   },
@@ -28,11 +29,42 @@
       "name": "krakend-azure-plugin"
     }, 
     {{end}}
-    "security/http": {},
+    "security/http": {
+      {{ $allowed_hosts := env "ALLOWED_HOSTS" }}
+      "@comment": "https://www.krakend.io/docs/service-settings/security/",
+      {{ if ne $allowed_hosts ""}}
+      {{ $allowed_lists := splitList "," $allowed_hosts }}
+      "allowed_hosts": [
+        {{range $index, $host := $allowed_lists}}
+        {{if $index}},{{end}}
+        "{{ $host }}"
+        {{end}}
+      ],
+      {{end}}
+
+      "frame_deny": true,
+      "referrer_policy": "same-origin",
+      "content_type_nosniff": true,
+      "browser_xss_filter": true,
+      "content_security_policy": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:;",
+      "is_development": false
+    },
     "security/cors": {
+      {{ $allowed_origins := env "ALLOWED_ORIGINS" }}
+      "@comment": "https://www.krakend.io/docs/service-settings/cors/",
+      {{ if ne $allowed_origins ""}}
+      {{ $allowed_lists := splitList "," $allowed_origins }}
+      "allow_origins": [
+        {{range $index, $origin := $allowed_lists}}
+        {{if $index}},{{end}}
+        "{{ $origin }}"
+        {{end}}
+      ],
+      {{else}}
       "allow_origins": [
         "*"
       ],
+      {{end}}
       "allow_methods": [
         "GET",
         "HEAD",
@@ -51,12 +83,33 @@
     }
   },
   "endpoints": [
+
+    {{ $wfm_enabled := env "WORKFLOW_MANAGER_ENABLED" }}
+    {{ if eq $wfm_enabled "true"}}
     {{ template "workflow_proxy.tmpl" .workflow_proxy_settings.endpoints }},
     {{ template "workflow_proxy_docs.tmpl" .workflow_proxy_docs_settings.endpoints }},
-    {{ template "inventory.tmpl" }},
+    {{end}}
+
+    {{ $uniconfig_enabled := env "UNICONFIG_ENABLED" }}
+    {{ if eq $uniconfig_enabled "true"}}
     {{ template "uniconfig.tmpl" .uniconfig_settings }},
+    {{end}}
+
+    {{ $l3vpn_enabled := env "L3VPN_ENABLED" }}
+    {{ if eq $l3vpn_enabled "true"}}
     {{ template "unistore.tmpl" .unistore_settings }},
+    {{end}}
+
+    {{ $inventory_enabled := env "INVENTORY_ENABLED" }}
+    {{ if eq $inventory_enabled "true"}}
+    {{ template "inventory.tmpl" }},
+    {{end}}
+
+    {{ $rm_enabled := env "RESOURCE_MANAGER_ENABLED" }}
+    {{ if eq $rm_enabled "true"}}
     {{ template "resource.tmpl" .resource_settings.endpoints }},
+    {{end}}
+
     {{ template "frinx_frontend.tmpl" .frinx_frontend_settings}}
   ]
 }
