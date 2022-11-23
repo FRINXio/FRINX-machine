@@ -23,6 +23,19 @@ x-placement: &placement
 x-traefik-label: &traefik_labels
       - traefik.enable=false
 
+x-wfm-enabled: &wfm-enabled
+    WORKFLOW_MANAGER_ENABLED=true
+x-uniconfig-enabled: &uniconfig-enabled
+    UNICONFIG_ENABLED=true
+x-inventory-enabled: &inventory-enabled
+    INVENTORY_ENABLED=true
+x-rsm-enabled: &rsm-enabled
+    RESOURCE_MANAGER_ENABLED=true
+x-l3vpn-enabled: &l3vpn-enabled
+    L3VPN_ENABLED=${GM_UI_ENABLED:-false}
+x-dt-enabled: &dt-enabled
+    DEVICE_TOPOLOGY_ENABLED=false
+
 services:
   krakend:
     image: frinx/krakend:1.0.4
@@ -46,6 +59,13 @@ services:
       - HTTPS_PROXY=${HTTPS_PROXY}
       - NO_PROXY=workflow-proxy,frinx-frontend,inventory,krakend,unistore,resource-manager,${UNICONFIG_ZONES_LIST},${NO_PROXY}
       - UNICONFIG_ZONES_LIST=${UNICONFIG_ZONES_LIST}
+      - *wfm-enabled
+      - *rsm-enabled
+      - *inventory-enabled
+      - *uniconfig-enabled
+      - *l3vpn-enabled
+      - *dt-enabled
+
     volumes:
       - ${UF_CONFIG_PATH}/krakend:/etc/krakend:ro
     secrets:
@@ -203,18 +223,18 @@ services:
       - AUTH_REDIRECT_SCHEME=${KRAKEND_TLS_PROTOCOL}
       - AUTH_ENABLED=${AUTH_ENABLED}
       - URL_BASENAME=/frinxui
-      - WORKFLOW_MANAGER_ENABLED=true
       - WORKFLOW_MANAGER_API_URL=/api/workflow
       - WORKFLOW_MANAGER_API_DOCS_URL=/api/workflow/docs
-      - UNICONFIG_ENABLED=true
       - UNICONFIG_API_DOCS_URL=/api/workflow/docs-uniconfig
-      - INVENTORY_ENABLED=true
       - INVENTORY_API_URL=/api/inventory
-      - RESOURCE_MANAGER_ENABLED=true
       - RESOURCE_MANAGER_API_URL=/api/resource
       - UNISTORE_API_URL=/api/unistore
-      - GAMMA_ENABLED=${GM_UI_ENABLED:-false}
-      - DEVICE_TOPOLOGY_ENABLED=false
+      - *wfm-enabled
+      - *rsm-enabled
+      - *inventory-enabled
+      - *uniconfig-enabled
+      - *l3vpn-enabled
+      - *dt-enabled
     healthcheck:
       test: wget --spider -q '0.0.0.0:8888'
       interval: 10s
