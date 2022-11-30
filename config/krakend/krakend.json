@@ -19,6 +19,8 @@
   "extra_config": {
     "router":{
       "disable_path_decoding" : true,
+      "disable_redirect_fixed_path": true,
+      "disable_redirect_trailing_slash": true,
       "logger_skip_paths":[
         "/__health"
       ]
