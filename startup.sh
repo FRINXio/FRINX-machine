@@ -191,7 +191,7 @@ function startWorkflowManager {
 
   echo -e "${INFO} Workflow-Manager swarm worker node id: ${UF_SWARM_NODE_ID}"
   if [[ "$(docker service ls --format {{.Name}} | grep fm_unistore)" != "" ]]; then
-    echo -e "${INFO} Update Frinx-Frontent: enable L3VPN automation"
+    echo -e "${INFO} Update Frinx-Frontend: enable L3VPN automation"
     export GM_UI_ENABLED=true
   fi
 
@@ -206,7 +206,7 @@ function startWorkflowManager {
 
 function startUnistore {
   export LICENSE=$(cat $licenseKeyFile)
-  echo -e "${INFO} Update Frinx-Frontent: enable L3VPN automation"
+  echo -e "${INFO} Update Frinx-Frontend: enable L3VPN automation"
   docker service update --env-add GAMMA_ENABLED=true fm_frinx-frontend  > /dev/null 2>&1
   export GM_UI_ENABLED=true
 
