@@ -2,7 +2,7 @@
 {{range $index_in_range, $not_used_element := $.range}}
 {{if gt $index_in_range 0}},{{end}}
 {
-    "endpoint": "/{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if lt $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+    "endpoint": "{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if lt $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
     "method": "GET",
     "output_encoding": "no-op",
     "input_headers": ["*"],
@@ -19,4 +19,24 @@
     }
 ]
 }
+{{if ne $index_in_range 0}}
+,{
+    "endpoint": "{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if lt $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}/",
+    "method": "GET",
+    "output_encoding": "no-op",
+    "input_headers": ["*"],
+
+    "backend": [
+    {
+        "url_pattern": "{{range $index_for_uri, $not_used_element2 := $.range -}} {{- if lt $index_for_uri $index_in_range -}} /{{"{"}}n_{{$index_for_uri}}{{"}" -}} {{end}}{{end}}",
+        "encoding": "no-op",
+        "sd": "static",
+        "disable_host_sanitize": false,
+        "host": [
+            "frinx-frontend:8888"
+        ]
+    }
+]
+}
+{{end}}
 {{end}}
