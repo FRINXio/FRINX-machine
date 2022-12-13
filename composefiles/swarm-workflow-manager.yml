@@ -115,7 +115,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/conductor-server:latest
+    image: frinx/conductor-server:stable-1.0.X
     # user: guest
     logging: *logging_loki 
     environment:
@@ -456,6 +456,7 @@ services:
       - UNICONFIG_API_PORT=8181
       - UNICONFIG_LIST_URL=${KRAKEND_TLS_PROTOCOL}://krakend:8080/static/list/uniconfig
       - ARANGO_ENABLED=false
+      - TOPOLOGY_ENABLED=false
     volumes:
       - ${UF_CONFIG_PATH}/inventory/run_inventory.sh:/run_inventory.sh:ro
     healthcheck:
