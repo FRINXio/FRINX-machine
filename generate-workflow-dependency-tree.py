@@ -73,7 +73,7 @@ def main():
         task_name = task["name"]
         tasks.append(task_name)
 
-    print("Copy text bellow to http://www.webgraphviz.com/")
+    print("Copy text below to http://www.webgraphviz.com/")
     print("digraph dependencies {")
     print("ratio = fill")
     print("node [style=filled]")
