@@ -37,7 +37,7 @@ function argumentsCheck {
       ;;
 
       *)
-      echo -e "Uknown argument, see --help for more info \nExiting... \n"
+      echo -e "Unknown argument, see --help for more info \nExiting... \n"
       exit
       ;;
     esac

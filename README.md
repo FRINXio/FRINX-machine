@@ -417,7 +417,7 @@ curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_all/_setti
 </br>
 
 ### List of deployed uniconfig services
-KrakenD provice API, which return list of deployed uniconfig services:
+KrakenD provide API, which return list of deployed uniconfig services:
 
 ```sh
 $ curl -X GET 127.0.0.1/static/list/uniconfig

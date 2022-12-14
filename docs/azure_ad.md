@@ -1,6 +1,6 @@
 # Frinx Machine with Azure AD 
 
-Frinx Machine supports authentification and authorization via Azure AD. The following sections describe how to set up Azure AD for Frinx Machine.
+Frinx Machine supports authentication and authorization via Azure AD. The following sections describe how to set up Azure AD for Frinx Machine.
 ## Client configuration
 Register the application in your Azure AD and configure the following settings.
 
@@ -18,7 +18,7 @@ Set platform redirect URIs on the Authentication page. The table below shows exa
 | Local Postman         | Web                     | https://oauth.pstmn.io/v1/callback                      |
 | Cloud Postman         | Web                     | https://getpostman.com/oauth2/callback                  |
 
-**Frontent login URI** is passed to the installation script `azure_ad.sh` via `--redirect_url` flag.
+**Frontend login URI** is passed to the installation script `azure_ad.sh` via `--redirect_url` flag.
 
 <br>
 
