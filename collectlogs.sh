@@ -8,7 +8,7 @@ function example {
 
 function usage {
   echo -e "usage: $scriptName [OPTIONS]\n"
-  echo -e "Collect and archive all logs neccessary for troubleshooting."
+  echo -e "Collect and archive all logs necessary for troubleshooting."
   echo -e ""
 }
 

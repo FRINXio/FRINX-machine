@@ -35,7 +35,7 @@ Azure AD environment configuration
                             - e.g. 79A4Q~RL5pELYji-KU58UfSeGoRVGco8f20~K
 
       -r|--redirect_url    Single-page application redirect URI
-                            - IP which is accesed
+                            - IP which is accessed
                             - e.g. localhost, 10.15.0.7, yourdomain.com
 
       -k|--keep_config     Save configuration file to ${authSecretsTmpFile}
@@ -200,7 +200,7 @@ function configure {
             set -x;;
 
         *) 
-            echo -e "${ERROR} Unknow option: ${1}. See help!"
+            echo -e "${ERROR} Unknown option: ${1}. See help!"
             exit 1;;
     esac
     shift

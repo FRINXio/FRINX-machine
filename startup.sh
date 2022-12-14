@@ -172,7 +172,7 @@ function argumentsCheck {
             set -x;;
 
         *) 
-            echo -e "${ERROR} Unknow option: ${1}. See help!"
+            echo -e "${ERROR} Unknown option: ${1}. See help!"
             exit 1;;
     esac
     shift
@@ -292,7 +292,7 @@ function startContainers {
       ;;
 
       *)
-        echo -e "${ERROR} Unknow option: ${startupType}. See help!"
+        echo -e "${ERROR} Unknown option: ${startupType}. See help!"
         exit 1
       ;;
   esac
@@ -418,9 +418,9 @@ function setNodeIdLocalDeploy {
 
 function validateAzureAD {
   if [[ ${AUTH_ENABLED} == "false" ]]; then
-    echo -e "${WARNING} For Autorization is used Frinx Fake Token"
+    echo -e "${WARNING} For Authorization is used Frinx Fake Token"
   elif [[ ${AUTH_ENABLED} == "true" ]]; then
-    echo -e "${WARNING} For Autorization is used Azure Active Directory"
+    echo -e "${WARNING} For Authorization is used Azure Active Directory"
   fi
 }
 
