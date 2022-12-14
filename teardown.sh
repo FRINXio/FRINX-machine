@@ -13,7 +13,7 @@ OPTIONS:
     -s|--stack-name     set FM stack name (default fm)
     -f|--frinx          delete FM Uniconfig/Workflow-Manager volumes
     -m|--monitoring     delete FM monitoring volumes
-    -v|--volumes        delete all FM persistant volumes (FM, Monitoring)
+    -v|--volumes        delete all FM persistent volumes (FM, Monitoring)
     -c|--cache          delete content of ./config/uniconfig/frinx/uniconfig/cache folder
     -a|--all            delete all volumes and files (except secrets)
 
@@ -153,7 +153,7 @@ do
             set -x;;
 
         *) 
-            echo "Unknow option: ${1}"
+            echo "Unknown option: ${1}"
             show_help
             exit 1;;
     esac
