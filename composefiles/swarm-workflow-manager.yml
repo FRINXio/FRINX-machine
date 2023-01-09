@@ -117,7 +117,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/conductor-server:2.0.2
+    image: frinx/conductor-server:latest
     # user: guest
     logging: *logging_loki 
     environment:
@@ -164,53 +164,6 @@ services:
         limits:
           cpus: ${CS_RES_LIMIT_CPUS}
           memory: ${CS_RES_LIMIT_MEM}
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.7.1
-    user: elasticsearch
-    logging: *logging_loki    
-    environment:
-      - "discovery.type=single-node"
-      - "bootstrap.memory_lock=true"
-      - "ES_JAVA_OPTS=-Xms${ES_JAVA_OPTS_M} -Xmx${ES_JAVA_OPTS_M}"
-    volumes:
-      - frinx_workflow-manager_elastic_data:/usr/share/elasticsearch/data
-      - frinx_workflow-manager_elastic_logs:/usr/share/elasticsearch/logs
-      - ${UF_CONFIG_PATH}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-      - ${UF_CONFIG_PATH}/elasticsearch/backup.sh:/usr/share/elasticsearch/backup.sh:ro
-    healthcheck:
-      test: curl -X GET 'localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s'
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
-    ulimits:
-      nofile:
-        soft: ${ES_ULIMIT_NOFILE_SOFT}
-        hard: ${ES_ULIMIT_NOFILE_HARD}
-      nproc:
-        soft: ${ES_ULIMIT_NPROC_SOFT}
-        hard: ${ES_ULIMIT_NPROC_HARD}
-      memlock:
-        soft: -1
-        hard: -1
-    cap_drop:
-      - all
-    sysctls:
-      <<: *tcp_keepalive
-    deploy:
-      labels: *traefik_labels
-      <<: *placement
-      restart_policy:
-        condition: any
-        delay: 5s
-        window: 10s
-      mode: replicated
-      replicas: 1
-      resources:
-        limits:
-          cpus: ${ES_RES_LIMIT_CPUS}
-          memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
     image: frinx/frinx-frontend:latest
@@ -358,7 +311,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:2.0.0
+    image: frinx/workflow-proxy:2.1.1
     user: node
     logging: *logging_loki    
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
@@ -559,10 +512,6 @@ configs:
 volumes:
   frinx_conductor_metrics:
     name: frinx_conductor_metrics
-  frinx_workflow-manager_elastic_data:
-    name: frinx_workflow-manager_elastic_data
-  frinx_workflow-manager_elastic_logs:
-    name: frinx_workflow-manager_elastic_logs
   frinx_workflow-manager_postgresql_data:
     name: frinx_workflow-manager_postgresql_data
   frinx_workflow-manager_inventory_postgresql_data:

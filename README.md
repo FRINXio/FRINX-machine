@@ -69,28 +69,6 @@ See: https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-
 
 </br>
 
-### Elasticsearch max_map_count configuration
-You may need to increase the max_map_count kernel parameter to avoid running out of map areas for the Vector Server process. <br>
-
-map_count should be around 1 per 128 KB of system memory. For example: vm.max_map_count=2097152 on a 256 GB system. <br>
-
-**IMPORTANT** Minimal value must be at least **262144** ([ELK docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#_set_vm_max_map_count_to_at_least_262144))
-
-
-```sh
-#Temporary configuration:
-sysctl -w vm.max_map_count=262144
-
-#Permanent configuration:
-echo "vm.max_map_count=262144" >> /etc/sysctl.conf
-sysctl -p
-
-#Validation:
-cat /proc/sys/vm/max_map_count
-
-```
-<br>
-
 ### Enable Azure AD authorization
 
 Frinx Machine supports authentication and authorization via Azure AD.
@@ -404,15 +382,6 @@ NOTE: Be aware, that the monitoring system is space consuming. For longer monito
 Optimal is 30Gb and more.
 
 Default grafana credentials can be changed in `config/secrets/frinx_grafana`
-
-</br>
-
-### ElasticSearch disk flood stage prevention 
-ElasticSearch changes the disk permissions to read-only if the disk free space drops below 512Mb.. This setting is a last resort to prevent nodes from running out of disk space. The index block must be released manually when the disk utilization falls below the high watermark.
-```sh
-# from fm_elasticsearch container
-curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index.blocks.read_only_allow_delete": null}'
-```
 
 </br>
 
