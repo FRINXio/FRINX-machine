@@ -1,3 +1,4 @@
+{{ $protocol := env "KRAKEND_TLS_PROTOCOL" }}
 
 {{range $index_in_range, $not_used_element := $.range}}
 {{if gt $index_in_range 0}},{{end}}
@@ -40,3 +41,43 @@
 }
 {{end}}
 {{end}}
+,
+{
+    "@comment": "Return dict of services with enable status",
+
+    "endpoint": "/static/services/enabled",
+    "method": "GET",
+    "backend": [
+        {
+            "url_pattern": "/__health",
+            "extra_config": {
+                {{ include "modifiers.tmpl" }}
+            },
+            "host": [ "{{$protocol}}://krakend:8080/" ],
+            "allow": [
+                "workflow-manager",
+                "uniconfig",
+                "inventory",
+                "resource-manager",
+                "l3vpn",
+                "device-topology"
+            ]
+        }
+    ],
+   
+    "extra_config": {
+        "proxy": {
+            "static": {
+                "strategy": "always",
+                "data": {
+                    "workflow-manager": "{{ env "WORKFLOW_MANAGER_ENABLED" }}",
+                    "uniconfig": "{{ env "UNICONFIG_ENABLED" }}",
+                    "inventory": "{{ env "INVENTORY_ENABLED" }}",
+                    "resource-manager": "{{ env "RESOURCE_MANAGER_ENABLED" }}",
+                    "l3vpn": "{{ env "L3VPN_ENABLED" }}",
+                    "device-topology": "{{env "DEVICE_TOPOLOGY_ENABLED" }}"
+                }
+            }
+        }
+    }
+}
