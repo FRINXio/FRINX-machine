@@ -38,7 +38,7 @@ x-dt-enabled: &dt-enabled
 
 services:
   krakend:
-    image: frinx/krakend:1.0.4
+    image: frinx/krakend:latest
     # user: root
     logging: *logging_loki    
     environment:
@@ -458,6 +458,7 @@ services:
       - UNICONFIG_LIST_URL=${KRAKEND_TLS_PROTOCOL}://krakend:8080/static/list/uniconfig
       - ARANGO_ENABLED=false
       - TOPOLOGY_ENABLED=false
+      - SHELL_HOST=uniconfig
     volumes:
       - ${UF_CONFIG_PATH}/inventory/run_inventory.sh:/run_inventory.sh:ro
     healthcheck:
