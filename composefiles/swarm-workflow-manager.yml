@@ -229,6 +229,7 @@ services:
       - INVENTORY_API_URL=/api/inventory
       - RESOURCE_MANAGER_API_URL=/api/resource
       - UNISTORE_API_URL=/api/unistore
+      - INVENTORY_WS_URL='ws://localhost:8001/graphql'
       - *wfm-enabled
       - *rsm-enabled
       - *inventory-enabled
