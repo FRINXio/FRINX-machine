@@ -177,6 +177,7 @@
 
     <!-- SSH part (used by CLI and NETCONF) -->
     <logger name="org.apache.sshd" level="INFO"/>
+    <logger name="org.apache.sshd.client.session.ClientConnectionService" level="ERROR"/>
 
     <!-- translation unit framework part -->
     <logger name="io.frinx.translate.unit.commons" level="INFO"/>
@@ -197,6 +198,9 @@
     <logger name="org.opendaylight.controller" level="INFO"/>
     <logger name="org.opendaylight.yangtools" level="INFO"/>
 
+    <!-- DOM mountpoint service -->
+    <logger name="org.opendaylight.controller.md.sal.dom.broker.impl.mount" level="INFO"/>
+
     <!-- Kafka -->
     <logger name="org.apache.kafka.clients.NetworkClient" level="INFO"/>
 
@@ -204,6 +208,9 @@
     <logger name="io.frinx.uniconfig.metrics" level="INFO" additivity="false">
         <appender-ref ref="metrics"/>
     </logger>
+
+    <!-- CLI shell -->
+    <logger name="io.frinx.uniconfig.shell" level="INFO"/>
 
     <!-- PostgreSQL driver -->
     <logger name="org.postgresql" level="INFO"/>
