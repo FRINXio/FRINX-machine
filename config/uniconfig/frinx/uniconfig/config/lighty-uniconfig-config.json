@@ -22,7 +22,11 @@
             // path to the root cache directory that holds custom schemas
             "rootCacheDirectory": "cache",
             // path to the directory to which system YANG schemas are loaded
-            "systemSchemasDirectory": "schemas"
+            "systemSchemasDirectory": "schemas",
+            // defines in percentages how many invalid files YANG schema repositories can
+            // contain. It is defined by percentages with 1 decimal place with rounding up.
+            // Default value is 100 that means that validation is disabled.
+            "invalidFilesLimit": 100
         },
         // Settings related to configuration datastore and associated data-change events
         "configurationDatastoreConfig": {
@@ -45,6 +49,25 @@
             "maxDataChangeListenerQueueSize": 1000,
             // maximum queue size for the data store executor
             "maxDataStoreExecutorQueueSize": 5000
+        },
+        // Settings related to mount-point service.
+        "mountPointServiceConfig": {
+            // The number of threads to keep in the pool used for mount-point notifications, even if they are idle.
+            // Setting -1 configures core pool size based on number of CPUs: CPU_CORES * 2.
+            "notificationPoolCoreSize": -1,
+            // The maximum number of threads to allow in the pool used for mount-point notifications.
+            // Setting -1 configures max pool size based on number of CPUs: CPU_CORES * 5.
+            "notificationPoolMaxSize": -1,
+            // When the number of threads is greater than the core, this is the maximum time that excess idle threads
+            // will wait for new tasks before terminating [seconds].
+            "notificationPoolKeepAliveTime": 120,
+            // The maximum capacity of queue used for storing mount-point notifications that are waiting for available
+            // thread in the notification thread pool.
+            // Setting -1 configures queue capacity based on number of CPUs: CPU_CORES * 1024.
+            "notificationQueueCapacity": -1,
+            // Interval that defines how often tree that contains mount-point listener registrations is cleaned
+            // - unused nodes are removed preventing memory leak [seconds].
+            "mountpointTreePruningInterval": 60
         }
     },
     // RESTCONF and web server settings
@@ -69,7 +92,8 @@
             //    "tailf:hidden deprecated",
             //    "tailf:hidden debug"
             //],
-            // Indicates if the data for non-existing schema nodes will be ignored during PUT/POST/PATCH operation.
+            // Indicates if the data for non-existing schema nodes will be ignored during PUT/POST/PATCH operation
+            // or during GET operation in the 'fields' query parameter value.
             "ignoreUnsupportedDefinitionsOnWrite": false,
             // Indicates if the definition with "DEPRECATED" status should be hidden during GET operation.
             "hideDeprecatedDefinitionsOnRead": false
@@ -80,7 +104,10 @@
         // this flag removes namespaces from GET response (only if there are no duplicate localnames)
         // (E.g. if there is: namespace1:test and namespace2:test  .. the namespace won't be removed because
         // there would be two identical localnames)
-        "showNamespaceInJsonResponse": true
+        "showNamespaceInJsonResponse": true,
+        // Trying to parse input body and URI using the latest schema if parsing using another context failed.
+        // If parsing using the latest schema is successful, then error returned to user is adjusted.
+        "formatErrorWithLatestSchema": false
     },
     /*
     CLI shell settings via environment variables.
@@ -247,9 +274,8 @@
         // Enabled auto-upgrading of templates that are using old YANG repository to templates with same name
         // and latest YANG repositories (applying version-drop). Before templates are upgraded, they are also backed up.
         "enabledTemplatesUpgrading": false,
-        // Maximum age of backup template [days]. After that age, template will be removed from database permanently.
-        // Negative value will cause removing of such template immediately at the next UniConfig booting process.
-        "maxBackupTemplateAge": -1
+        // Maximum number of backup templates before older templates are removed during rotation.
+        "backupTemplatesLimit": 7
     },
     // Grouped settings that are related to Uniconfig transactions.
     "transactions": {
@@ -299,6 +325,13 @@
             "kafkaProducer": {
                 // Specifies the number of messages that the Kafka handler processes as a batch
                 "batchSize": 16384
+            },
+            // Kafka subscriber settings
+            "kafkaSubscriber": {
+                // The maximum time to block during receiving of next NETCONF notifications in milliseconds.
+                "netconfNotificationsPollTimeout": 100,
+                //The maximum time to block during receiving of next data-change-events in milliseconds.
+                "dataChangeEventsPollTimeout": 100
             },
             // Flag that determines whether netconf notifications are enabled
             "netconfNotificationsEnabled": true,
@@ -352,7 +385,7 @@
                 // Directory to which embedded Kafka is downloaded and extracted.
                 "installDir": "/tmp/embedded-kafka",
                 // URL that is used for download of Kafka, if it hasn't been downloaded yet.
-                "archiveUrl": "https://dlcdn.apache.org/kafka/3.1.0/kafka_2.13-3.1.0.tgz",
+                "archiveUrl": "https://dlcdn.apache.org/kafka/3.2.3/kafka_2.13-3.2.3.tgz",
                 // Directory containing Kafka data files - persisted topics.
                 "dataDir": "./data/embedded-kafka",
                 // Clean data from previous run before starting of Kafka (= disabled persistence).
@@ -432,7 +465,7 @@
     // cryptographic settings
     "crypto": {
         // identifier of YANG extension that is responsible for marking of leaves/leaf-lists that must be encrypted
-        // "encryptExtensionId": "frinx-encrypt:encrypt",
+         "encryptExtensionId": "frinx-encrypt:encrypt"
         // name of YANG module from which the correct revision of 'netconfEncryptedPathsModuleName' is chosen
         // "netconfReferenceModuleName": "system",
         // name of YANG module which contains deviations to leaves/leaf-lists that must be encrypted
@@ -465,12 +498,15 @@
         "enabled": false,
         // remote server settings
         "remoteServer": {
-            // remote server uri
-            "serverUri": "",
-            // basic authentication that will be used in http requests
-            "username": "admin",
-            "password": "admin"
+            // remote server hostname / IP address
+            "host": null,
+            // port on which remote server listens
+            "port": null
         }
+    },
+    "connection-manager": {
+        // How many installs / uninstalls can run in parallel
+        "amountOfMaxParallelInstalls": 20
     },
     "tls": {
         "enabledTls": true,
