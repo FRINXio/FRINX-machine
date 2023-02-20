@@ -23,6 +23,9 @@ x-placement: &placement
 x-traefik-label: &traefik_labels
       - traefik.enable=false
 
+x-tcp_keepalive: &tcp_keepalive
+      net.ipv4.tcp_keepalive_time: 300
+
 x-wfm-enabled: &wfm-enabled
     WORKFLOW_MANAGER_ENABLED=true
 x-uniconfig-enabled: &uniconfig-enabled
@@ -38,7 +41,7 @@ x-dt-enabled: &dt-enabled
 
 services:
   krakend:
-    image: frinx/krakend:latest
+    image: frinx/krakend:1.0.5
     # user: root
     logging: *logging_loki    
     environment:
@@ -65,7 +68,6 @@ services:
       - *uniconfig-enabled
       - *l3vpn-enabled
       - *dt-enabled
-
     volumes:
       - ${UF_CONFIG_PATH}/krakend:/etc/krakend:ro
     secrets:
@@ -115,7 +117,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/conductor-server:stable-1.0.X
+    image: frinx/conductor-server:2.0.1
     # user: guest
     logging: *logging_loki 
     environment:
@@ -148,7 +150,7 @@ services:
     cap_drop:
       - all
     sysctls:
-      net.ipv4.tcp_keepalive_time: 300
+      <<: *tcp_keepalive
     deploy:
       labels: *traefik_labels
       <<: *placement
@@ -194,6 +196,8 @@ services:
         hard: -1
     cap_drop:
       - all
+    sysctls:
+      <<: *tcp_keepalive
     deploy:
       labels: *traefik_labels
       <<: *placement
