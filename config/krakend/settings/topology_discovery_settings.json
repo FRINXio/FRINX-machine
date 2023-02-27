@@ -1,0 +1,109 @@
+{
+    "endpoints": [
+        {
+            "endpoint": "/api/topology/health",
+            "method": "GET",
+            "url_pattern": "/api/health"
+        },
+        {
+            "endpoint": "/api/topology/data/topology",
+            "method": "GET",
+            "url_pattern": "/api/data/topology"
+        },
+        {
+            "endpoint": "/api/topology/data/has-and-interfaces",
+            "method": "GET",
+            "url_pattern": "/api/data/has-and-interfaces"
+        },
+        {
+            "endpoint": "/api/topology/data/links-and-devices",
+            "method": "GET",
+            "url_pattern": "/api/data/links-and-devices"
+        },
+        {
+            "endpoint": "/api/topology/data/common-nodes",
+            "method": "POST",
+            "url_pattern": "/api/data/common-nodes"
+        },
+        {
+            "endpoint": "/api/topology/data/change-status",
+            "method": "PATCH",
+            "url_pattern": "/api/data/change-status"
+        },
+        {
+            "endpoint": "/api/topology/data/coordinates",
+            "method": "PATCH",
+            "url_pattern": "/api/data/coordinates"
+        },
+        {
+            "endpoint": "/api/topology/data/diff",
+            "method": "POST",
+            "url_pattern": "/api/data/diff"
+        },
+        {
+            "endpoint": "/api/topology/data/backup",
+            "method": "POST",
+            "url_pattern": "/api/data/backup"
+        },
+        {
+            "endpoint": "/api/topology/data/backup",
+            "method": "GET",
+            "url_pattern": "/api/data/backup"
+        },
+        {
+            "endpoint": "/api/topology/data/backup",
+            "method": "DELETE",
+            "url_pattern": "/api/data/backup"
+        },
+        {
+            "endpoint": "/api/topology/providers",
+            "method": "GET",
+            "url_pattern": "/api/providers"
+        },
+        {
+            "endpoint": "/api/topology/providers/{provider}",
+            "method": "GET",
+            "url_pattern": "/api/providers/{provider}"
+        },
+        {
+            "endpoint": "/api/topology/providers/{provider}/sync",
+            "method": "POST",
+            "url_pattern": "/api/providers/{provider}/sync"
+        },
+        {
+            "endpoint": "/api/topology/bgp-ls/neighbor/{neighbor_id}",
+            "method": "POST",
+            "url_pattern": "/api/bgp-ls/neighbor/{neighbor_id}"
+        },
+        {
+            "endpoint": "/api/topology/bgp-ls/neighbor/{neighbor_id}",
+            "method": "DELETE",
+            "url_pattern": "/api/bgp-ls/neighbor/{neighbor_id}"
+        },
+        {
+            "endpoint": "/api/topology/bgp-ls/restart",
+            "method": "POST",
+            "url_pattern": "/api/bgp-ls/restart"
+        },
+        {
+            "endpoint": "/api/topology/bgp-ls/neighbor",
+            "method": "GET",
+            "url_pattern": "/api/bgp-ls/neighbor"
+        },
+        {
+            "endpoint": "/api/topology/bgp-ls/neighbor/{neighbor_id}",
+            "method": "GET",
+            "url_pattern": "/api/bgp-ls/neighbor/{neighbor_id}"
+        },
+        {
+            "endpoint": "/api/topology/bgp-ls/summary",
+            "method": "GET",
+            "url_pattern": "/api/bgp-ls/summary"
+        },
+        {
+            "endpoint": "/api/topology/bgp-ls/summary/{neighbor_id}",
+            "method": "GET",
+            "url_pattern": "/api/bgp-ls/summary/{neighbor_id}"
+        }
+    ]
+}

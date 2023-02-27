@@ -1,0 +1,44 @@
+{{range $index, $element := .}}
+{{if gt $index 0}},{{end}}
+{
+    "endpoint": "{{ .endpoint }}",
+    "method": "{{ .method }}",
+    "output_encoding": "no-op",
+    "input_headers": [ {{ include "allowed_headers.tmpl" }} ],
+
+    {{ if .input_query_strings }}
+    "input_query_strings": [ 
+        {{range $query_enabled, $query := .input_query_strings}} {{if gt $query_enabled 0}},{{end}} "{{$query}}" {{ end }} 
+        ],
+    {{end}}
+
+    "extra_config": {
+        {{ $jwt_production := env "AUTH_ENABLED" }}
+        {{ if eq $jwt_production "true" }}
+            {{ include "jwt_config.tmpl" }}
+        {{ else if eq $jwt_production "false" }}
+            {{ include "jwt_fake_config.tmpl" }}
+        {{ end }}
+    },
+
+    "backend": [
+    {
+        "url_pattern": "{{ .url_pattern }}",
+        "encoding": "no-op",
+        "sd": "static",
+
+        {{ if .backend_method }}
+            "method": "{{.backend_method}}",
+        {{end}}
+        
+        "disable_host_sanitize": false,
+        "extra_config": {
+            {{ include "modifiers.tmpl" }}
+        },
+        "host": [
+            "topology-discovery:5000"
+        ]
+    }
+]
+}
+{{end}}
