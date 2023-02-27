@@ -112,6 +112,11 @@
     {{ template "resource.tmpl" .resource_settings.endpoints }},
     {{end}}
 
+    {{ $dt_enabled := env "DEVICE_TOPOLOGY_ENABLED" }}
+    {{ if eq $dt_enabled "true"}}
+    {{ template "topology_discovery.tmpl" .topology_discovery_settings.endpoints }},
+    {{end}}
+
     {{ template "frinx_frontend.tmpl" .frinx_frontend_settings}}
   ]
 }

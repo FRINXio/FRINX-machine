@@ -37,7 +37,7 @@ x-rsm-enabled: &rsm-enabled
 x-l3vpn-enabled: &l3vpn-enabled
     L3VPN_ENABLED=${L3VPN_ENABLED:-false}
 x-dt-enabled: &dt-enabled
-    DEVICE_TOPOLOGY_ENABLED=false
+    DEVICE_TOPOLOGY_ENABLED=true
 
 services:
   krakend:
@@ -460,9 +460,17 @@ services:
       - UNICONFIG_API_PROTOCOL=https
       - UNICONFIG_API_PORT=8181
       - UNICONFIG_LIST_URL=${KRAKEND_TLS_PROTOCOL}://krakend:8080/static/list/uniconfig
-      - ARANGO_ENABLED=false
-      - TOPOLOGY_ENABLED=false
       - SHELL_HOST=uniconfig
+      - TOPOLOGY_ENABLED=true
+      - DEVICE_DISCOVERY_SEED=false
+      - POSTGRES_HOSTNAME=frinx-postgresql
+      - ARANGO_ENABLED=true
+      - ARANGO_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmFuZ29kYiIsInNlcnZlcl9pZCI6ImZvbyJ9.OxGlpYQYzOysECGkonaEP8d64UH1wQeo_XxeIqK8Vgg"
+      - ARANGO_DB=topology-discovery
+      - ARANGO_URL=http://arangodb:8529
+      - ARANGO_PASSWORD=frinx
+      - TOPOLOGY_DISCOVERY_API_URL=http://topology-discovery:5000/api/data
+
     volumes:
       - ${UF_CONFIG_PATH}/inventory/run_inventory.sh:/run_inventory.sh:ro
     healthcheck:
