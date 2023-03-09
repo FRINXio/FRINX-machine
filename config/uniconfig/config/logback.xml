@@ -27,7 +27,7 @@
         </triggeringPolicy>
     </appender>
     <appender name="netconf-notifications" class="ch.qos.logback.classic.sift.SiftingAppender">
-        <discriminator class="io.lighty.discriminator.MarkerBasedDiscriminator">
+        <discriminator class="io.frinx.uniconfig.discriminator.MarkerBasedDiscriminator">
             <key>deviceName</key>
             <defaultValue>unknown</defaultValue>
         </discriminator>
@@ -48,7 +48,7 @@
         </sift>
     </appender>
     <appender name="netconf-messages" class="ch.qos.logback.classic.sift.SiftingAppender">
-        <discriminator class="io.lighty.discriminator.MarkerBasedDiscriminator">
+        <discriminator class="io.frinx.uniconfig.discriminator.MarkerBasedDiscriminator">
             <key>deviceName</key>
             <defaultValue>unknown</defaultValue>
         </discriminator>
@@ -69,7 +69,7 @@
         </sift>
     </appender>
     <appender name="netconf-events" class="ch.qos.logback.classic.sift.SiftingAppender">
-        <discriminator class="io.lighty.discriminator.MarkerBasedDiscriminator">
+        <discriminator class="io.frinx.uniconfig.discriminator.MarkerBasedDiscriminator">
             <key>deviceName</key>
             <defaultValue>unknown</defaultValue>
         </discriminator>
@@ -103,7 +103,7 @@
         </triggeringPolicy>
     </appender>
     <appender name="cli-messages" class="ch.qos.logback.classic.sift.SiftingAppender">
-        <discriminator class="io.lighty.discriminator.MarkerBasedDiscriminator">
+        <discriminator class="io.frinx.uniconfig.discriminator.MarkerBasedDiscriminator">
             <key>deviceName</key>
             <defaultValue>unknown</defaultValue>
         </discriminator>

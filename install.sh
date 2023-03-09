@@ -139,7 +139,7 @@ function generateUniconfigTLSCerts {
             -subj '/C=SK/ST=Slovakia/L=Bratislava/O=Frinx/OU=Frinx Machine/CN=*/emailAddress=frinx@frinx.io' -addext "subjectAltName = DNS:*"
       openssl pkcs8 -in ${dockerCertSettings}/${UNICONFIG_SSL_KEY} -topk8 -nocrypt -outform DER -out ${dockerCertSettings}/${UNICONFIG_SSL_PCKS8}
       # READ PASSWORD FOR UNICONFIG TLS FROM SECRET FOLDER
-      UNICONFIG_SSL_PCKS12_PASS=$(cat ${dockerEnvSettings}/frinx_uniconfig_db | grep dbPersistence_connection_sslPassword | cut -d '=' -f 2)
+      UNICONFIG_SSL_PCKS12_PASS=$(cat ${dockerEnvSettings}/frinx_uniconfig_db | grep DBPERSISTENCE_CONNECTION_SSLPASSWORD | cut -d '=' -f 2)
       openssl pkcs12 -export -name uniconfig -passout pass:${UNICONFIG_SSL_PCKS12_PASS} -out ${dockerCertSettings}/${UNICONFIG_SSL_PCKS12} \
             -inkey ${dockerCertSettings}/${UNICONFIG_SSL_KEY} -in ${dockerCertSettings}/${UNICONFIG_SSL_CERT} -certfile ${dockerCertSettings}/${UNICONFIG_SSL_CERT}
     fi

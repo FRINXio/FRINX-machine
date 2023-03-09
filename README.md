@@ -7,6 +7,10 @@ https://github.com/FRINXio/FRINX-machine/releases
 
 </br>
 
+## Uniconfig license
+**Uniconfig docker image has been moved to a private repository** <br>
+**For access, contact info@frinx.io**
+
 ## Requirements
 Minimal hardware requirements (See [resource limitation](#resource-limitation))
 
@@ -291,7 +295,7 @@ docker node update <NODE_HOSTNAME> --label-add db=<UNIQUE_ZONE_LABEL>
 $ ./generate_uc_compose.sh -s <service_name> -f <path_to_folder> -i <instances> --role <Role> --force
 ```
 
-For enhanced FM architecture deployment is recommended to use label base placement, where nodes are splited to zone groups by node label zone=<UNIQUE_ZONE_LABEL>. In each group must be only one node with label db=<UNIQUE_ZONE_LABEL>. 
+For enhanced FM architecture deployment is recommended to use label base placement, where nodes are split into zone groups by node label zone=<UNIQUE_ZONE_LABEL>. In each group must be only one node with label db=<UNIQUE_ZONE_LABEL>. 
 
 To see diagram visit [Frinx Machine Architecture](docs/fm_architecture.md).
 
@@ -570,5 +574,3 @@ $ docker service update --image domain/imagename:version
 
 NOTE: If the service has any healthchecks, make sure they also work in the new version of the image, otherwise the service will appear as unhealthy and refuse to start. In such case you will need to remove or modify the healthcheck.
 
-## License
-A 30-day trial license of UniConfig is included, if you would like to change the license, replace the license string in file `config/uniconfig/uniconfig_license.txt` with your own.

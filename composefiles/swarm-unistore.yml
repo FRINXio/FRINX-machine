@@ -32,7 +32,7 @@ x-traefik-label: &traefik_labels
 
 services:
   unistore:
-    image: frinx/uniconfig:5.0.22
+    image: frinx/uniconfig:latest
     logging: *logging_loki
     labels:
       - traefik.enable=false  
@@ -46,11 +46,14 @@ services:
       - NO_PROXY=${NO_PROXY}
       - PROXY_ENABLED=${PROXY_ENABLED:-false}
       - _JAVA_OPTIONS=-Xmx${US_XMX_LIMIT_MEM} -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xlog:gc:/opt/uniconfig-frinx/log/gc.log:tags,time,uptime,level:filecount=10,filesize=5M -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1
-      - dbPersistence_enabled=true
-      - dbPersistence_connection_dbName=unistore
-      - dbPersistence_connection_databaseLocations_host=unistore-postgres
-      - dbPersistence_connection_databaseLocations_port=5432
-      - dbPersistence_connection_maxDbPoolSize=300
+      # DBPERSISTANCE CONNECTION PARAMETERS, CREDENTIALS STORED IN SECRETS
+      - DBPERSISTENCE_EMBEDDEDDATABASE_ENABLED=false
+      - DBPERSISTENCE_CONNECTION_DATABASELOCATIONS_0_HOST=unistore-postgres
+      - DBPERSISTENCE_CONNECTION_DATABASELOCATIONS_0_PORT=5432
+      - DBPERSISTENCE_CONNECTION_MAXDBPOOLSIZE=300
+      # UNISTORE TRANSACTIONS CONFIGURATION
+      - TRANSACTIONS_TRANSACTIONIDLETIMEOUT=3600
+      - TRANSACTIONS_MAXTRANSACTIONAGE=7200
     volumes:
       - frinx_unistore-controller_logs:/opt/uniconfig-frinx/log
       - ${UF_CONFIG_PATH}/unistore/cache:/opt/uniconfig-frinx/cache:rw
@@ -62,9 +65,6 @@ services:
         mode: 0555
       - source: set_env_secrets
         target: /set_env_secrets.sh
-        mode: 0555
-      - source: unistore_lighty
-        target: /opt/uniconfig-frinx/config/lighty-uniconfig-config.json
         mode: 0555
       - source: unistore_logback
         target: /opt/uniconfig-frinx/config/logback.xml
@@ -79,7 +79,6 @@ services:
       retries: 5
       start_period: ${US_HEALTH_START_TIME}
     entrypoint: ['/opt/uniconfig-frinx/run_uniconfig.sh']
-    command: -l ${LICENSE} 
     ulimits:
       nofile:
         soft: ${US_ULIMIT_NOFILE_SOFT}
@@ -169,9 +168,6 @@ configs:
   unistore_startup:
     name: unistore_startup-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/uniconfig/run_uniconfig.sh
-  unistore_lighty:
-    name: unistore_lighty-${DEPLOY_SETTINGS_TIMESTAMP}.yml
-    file: ${UF_CONFIG_PATH}/unistore/lighty-unistore-config.json
   unistore_logback:
     name: unistore_logback-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/unistore/logback.xml

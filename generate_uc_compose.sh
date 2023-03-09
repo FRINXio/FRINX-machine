@@ -259,7 +259,7 @@ function isNodeInSwarm {
 function prepareConfigFiles {
 
     local __CONFIG_PATH="${__DEF_CONFIG_PATH}/${__SERVICE_NAME}"
-    local __DEF_UC_CONFIG_MIDDLE_PATH="config/uniconfig/frinx/uniconfig"
+    local __DEF_UC_CONFIG_MIDDLE_PATH="config"
 
     # prepare uniconfig cache folder and files
     mkdir -p "${__FOLDER_PATH}/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}/cache"
@@ -308,7 +308,7 @@ function generateUcCompose {
     sed -i "s/ucp_deployment/${deployment_psql}/g" "${__COMPOSE_PATH}"
 
     # swarm config paths
-    sed -i 's|${UC_CONFIG_PATH}|'"/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}|g" "${__COMPOSE_PATH}"
+    sed -i 's|${UF_CONFIG_PATH}/uniconfig/cache|'"/${__CONFIG_PATH}/${__UNICONFIG_SERVICE_SUFIX}/cache|g" "${__COMPOSE_PATH}"
 
     # swarm persistent volume paths
     sed -i "s/uniconfig-postgresql_data/${__SERVICE_NAME}-postgresql_data/g" "${__COMPOSE_PATH}"
@@ -321,14 +321,14 @@ function generateUcCompose {
     sed -i 's|\.uniconfig\.|'"\.${__SERVICE_NAME}\.|g" "${__COMPOSE_PATH}"
 
     # env
-    sed -i 's|_host=uniconfig-postgres|'"_host=${__SERVICE_NAME}-postgres|g" "${__COMPOSE_PATH}"
+    sed -i 's|_0_HOST=uniconfig-postgres|'"_0_HOST=${__SERVICE_NAME}-postgres|g" "${__COMPOSE_PATH}"
     sed -i 's|TRAEFIK_ENTRYPOINTS_UNICONFIG|'"TRAEFIK_ENTRYPOINTS_${__SERVICE_NAME/_/-}|g" "${__COMPOSE_PATH}"
 
     # networks
     sed -i 's|uniconfig-network|'"${__SERVICE_NAME}-network|g" "${__COMPOSE_PATH}"
 
     # db pools
-    sed -i 's|maxDbPoolSize=300|'"maxDbPoolSize=${UC_POOLS}|g" "${__COMPOSE_PATH}"
+    sed -i 's|DBPERSISTENCE_CONNECTION_MAXDBPOOLSIZE=300|'"DBPERSISTENCE_CONNECTION_MAXDBPOOLSIZE=${UC_POOLS}|g" "${__COMPOSE_PATH}"
     sed -i 's|max_connections=300|'"max_connections=${DB_POOLS}|g" "${__COMPOSE_PATH}"
 
 }
