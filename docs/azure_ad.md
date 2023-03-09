@@ -36,7 +36,7 @@ Enabled implicit flow is optional based on specific requirements.
 
 ### API permissions
 
-![clinet api permissions](assets/azure_api_permissions.png)
+![client api permissions](assets/azure_api_permissions.png)
 
 <br>
 

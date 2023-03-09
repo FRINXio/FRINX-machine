@@ -1,7 +1,7 @@
 # THIS FILE IS USED AS A TEMPLATE FOR UNICONFIG SERVICES
 # DO NOT DEPLOY SERVICES USING THIS FILE
 # USE ./startup.sh SCRIPT TO DO IT FOR YOU
-# ${UC_CONFIG_PATH} and ${LICENSE} ARE SET BY THE ./startup.sh SCRIPT
+# ${UC_CONFIG_PATH} IS SET BY THE ./startup.sh SCRIPT
 
 version: "3.7"
 
@@ -100,7 +100,7 @@ services:
           memory: ${TF_RES_LIMIT_MEM}
 
   uniconfig-controller:
-    image: frinx/uniconfig:5.0.22
+    image: frinx/uniconfig:latest
     logging: *logging_loki
     networks:
       - uniconfig-network
@@ -114,17 +114,31 @@ services:
       - PROXY_ENABLED=${PROXY_ENABLED:-false}
       # Enable G1GC and GC logging 
       - _JAVA_OPTIONS=-Xmx${UC_XMX_LIMIT_MEM} -XX:+AlwaysPreTouch -Djna.nosys=true -XX:+CrashOnOutOfMemoryError -XX:MaxGCPauseMillis=200 -Xlog:gc:/opt/uniconfig-frinx/log/{{.Service.Name}}/{{.Task.Slot}}/gc.log:tags,time,uptime,level:filecount=10,filesize=5M -XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockExperimentalVMOptions -XX:G1NewSizePercent=20 -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1
-      - dbPersistence_enabled=true
-      - dbPersistence_connection_databaseLocations_host=uniconfig-postgres
-      - dbPersistence_connection_databaseLocations_port=5432
-      - dbPersistence_connection_maxDbPoolSize=300
-      - dbPersistence_connection_enabledTls=true
-      - dbPersistence_connection_tlsClientKey=config/frinx_uniconfig_tls_key.der
-      - dbPersistence_connection_tlsCaCert=config/frinx_uniconfig_tls_cert.pem
-      - dbPersistence_connection_tlsClientCert=config/frinx_uniconfig_tls_cert.pem
+      # DBPERSISTANCE CONNECTION PARAMETERS, CREDENTIALS STORED IN SECRETS
+      - DBPERSISTENCE_EMBEDDEDDATABASE_ENABLED=false
+      - DBPERSISTENCE_CONNECTION_DATABASELOCATIONS_0_HOST=uniconfig-postgres
+      - DBPERSISTENCE_CONNECTION_DATABASELOCATIONS_0_PORT=5432
+      - DBPERSISTENCE_CONNECTION_MAXDBPOOLSIZE=300
+      #  POSTGRES TLS CONNECTION, DISABLED, PSQL NOT RUNNING IS SSL MODE?, CREDENTIALS STORED IN SECRETS
+      - DBPERSISTENCE_CONNECTION_ENABLEDTLS=true
+      - DBPERSISTENCE_CONNECTION_TLSCLIENTCERT=config/frinx_uniconfig_tls_cert.pem
+      - DBPERSISTENCE_CONNECTION_TLSCLIENTKEY=config/frinx_uniconfig_tls_key.der
+      - DBPERSISTENCE_CONNECTION_TLSCACERT=config/frinx_uniconfig_tls_cert.pem
+      # CLI SHELL CONFIGURATION, CREDENTIALS STORED IN SECRETS
+      - CLISHELL_SSHSERVER_ENABLED=true
+      - CLISHELL_SSHSERVER_INETADDRESS=0.0.0.0
+      - CLISHELL_SSHSERVER_USERNAMEPASSWORDAUTH_PASSWORD=admin
+      # UNICONFIG TRANSACTIONS CONFIGURATION
+      - TRANSACTIONS_TRANSACTIONIDLETIMEOUT=3600
+      - TRANSACTIONS_MAXTRANSACTIONAGE=7200
+      - TRANSACTIONS_MAXSTOREDTRANSACTIONS=100
+      # HTTPS SERVER, CREDENTIALS STORED IN SECRETS
+      - TLS_ENABLEDTLS=true
+      - TLS_ENABLEDCLIENTAUTHENTICATION=false
+      - TLS_KEYSTOREPATH=.keystore
     volumes:
       - frinx_uniconfig-controller_logs:/opt/uniconfig-frinx/log
-      - ${UC_CONFIG_PATH}/cache:/opt/uniconfig-frinx/cache:rw
+      - ${UF_CONFIG_PATH}/uniconfig/cache:/opt/uniconfig-frinx/cache:rw
     secrets:
       - frinx_uniconfig_db
       - source: frinx_uniconfig_tls_key.der
@@ -142,9 +156,6 @@ services:
       - source: set_env_secrets
         target: /set_env_secrets.sh
         mode: 0555
-      - source: uniconfig_lighty
-        target: /opt/uniconfig-frinx/config/lighty-uniconfig-config.json
-        mode: 0555
       - source: uniconfig_logback
         target: /opt/uniconfig-frinx/config/logback.xml
         mode: 0555
@@ -158,7 +169,6 @@ services:
       retries: 5
       start_period: ${UC_HEALTH_START_TIME}
     entrypoint: ['/opt/uniconfig-frinx/run_uniconfig.sh']
-    command: -l ${LICENSE} 
     ulimits:
       nofile:
         soft: ${UC_ULIMIT_NOFILE_SOFT}
@@ -271,12 +281,9 @@ configs:
   uniconfig_startup:
     name: uniconfig_startup-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/uniconfig/run_uniconfig.sh
-  uniconfig_lighty:
-    name: uniconfig_lighty-${DEPLOY_SETTINGS_TIMESTAMP}.yml
-    file: ${UF_CONFIG_PATH}/uniconfig/frinx/uniconfig/config/lighty-uniconfig-config.json
   uniconfig_logback:
     name: uniconfig_logback-${DEPLOY_SETTINGS_TIMESTAMP}.yml
-    file: ${UF_CONFIG_PATH}/uniconfig/frinx/uniconfig/config/logback.xml
+    file: ${UF_CONFIG_PATH}/uniconfig/config/logback.xml
   set_env_secrets:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
 

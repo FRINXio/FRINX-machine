@@ -1,23 +1,22 @@
 #!/bin/bash
+set -x
 
-CONFIG="config/lighty-uniconfig-config.json"
+CONFIG="config/application.properties"
 JAR_DIRS="./*:./libs/*:./config"
-MAIN_CLASS="io.frinx.lighty_uniconfig.Main"
+MAIN_CLASS="io.frinx.uniconfig.Main"
 JAVA_MAX_MEM=${JAVA_MAX_MEM:="4G"}
 DEBUG_PARAMETER="--debug"
 UNICONFIG_ID=${CONTAINER_ID:=1}
 PROXY_ENABLED=${PROXY_ENABLED:="false"}
 
-# set sensitive env variables from docker secrets
+set sensitive env variables from docker secrets
 if [[ -f "/set_env_secrets.sh" ]]; then
   . /set_env_secrets.sh ''
 fi
 
 display_usage() {
-    echo -e "Usage: $(basename "$0") [-f] [-l LICENSE_TOKEN] [--debug]"
+    echo -e "Usage: $(basename "$0") [--debug]"
     echo -e "where: "
-    echo -e "   -l LICENSE_TOKEN : license token for running Frinx Uniconfig"
-    echo -e "   -f               : new license token is forced (overwrites old license)"
     echo -e "   --debug          : enabled java debugging on port 5005"
 }
 
@@ -57,11 +56,14 @@ delete_debug_argument() {
 }
 
 create_tls_keystore() {
-keystorePass=$(cat ${CONFIG} | grep "keystorePassword" | sed 's| ||g;s|"||g' | cut -d ':' -f 2 )
-keystorePath=$(cat ${CONFIG} | grep "keystorePath" | sed 's| ||g;s|"||g' | cut -d ':' -f 2 | sed 's/.$//' )
 
-keytool -importkeystore -deststorepass ${keystorePass} -destkeypass ${keystorePass} -srcstorepass ${dbPersistence_connection_sslPassword} \
-    -destkeystore ${keystorePath} -srckeystore config/frinx_uniconfig_tls_key.p12 -srcstoretype PKCS12 -alias uniconfig
+keytool -importkeystore \
+  -deststorepass ${TLS_KEYSTOREPASSWORD} \
+  -destkeypass ${TLS_KEYSTOREPASSWORD} \
+  -srcstorepass ${DBPERSISTENCE_CONNECTION_SSLPASSWORD} \
+  -destkeystore ${TLS_KEYSTOREPATH} \
+  -srckeystore config/frinx_uniconfig_tls_key.p12 \
+  -srcstoretype PKCS12 -alias uniconfig
 }
 
 for i in "$@"
@@ -96,9 +98,9 @@ create_tls_keystore
 is_enabled_debugging "$@"; enabled_debugging=$?
 if [ $enabled_debugging -eq 1 ]; then
   delete_debug_argument "$@"
-  java "-Xmx${JAVA_MAX_MEM}" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -cp "${JAR_DIRS}" \
-    "${MAIN_CLASS}" -c "${CONFIG}" "${filtered_args[@]}"; unset filtered_args
+  java "--add-opens" "java.base/java.lang=ALL-UNNAMED" "-Xmx${JAVA_MAX_MEM}" -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -cp "${JAR_DIRS}" \
+    "${MAIN_CLASS}" "${filtered_args[@]}" "--spring.config.location=${CONFIG}"; unset filtered_args
 else
-  java "-Xmx${JAVA_MAX_MEM}" -cp "${JAR_DIRS}" "${MAIN_CLASS}" -c "${CONFIG}" "$@"
+  java "--add-opens" "java.base/java.lang=ALL-UNNAMED" "-Xmx${JAVA_MAX_MEM}" -cp "${JAR_DIRS}" "${MAIN_CLASS}" "--spring.config.location=${CONFIG}" "$@"
 fi
 unset enabled_debugging

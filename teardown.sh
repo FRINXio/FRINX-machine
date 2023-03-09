@@ -98,7 +98,7 @@ __SCRIPT_NAME="$(basename "${0}")"
 __SCRIPT_PATH="$(dirname "$(readlink -f "$0")")"
 
 __ENV_PATH="${__SCRIPT_PATH}/.env"
-__CACHE_PATH="${__SCRIPT_PATH}/config/uniconfig/frinx/uniconfig/cache"
+__CACHE_PATH="${__SCRIPT_PATH}/config/uniconfig/cache"
 
 __STACK_NAME="fm"
 __WAIT_TIME=30

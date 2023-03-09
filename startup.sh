@@ -16,9 +16,6 @@ DESCRIPTION:
     Then you can use ./startup.sh --multinode for start 
     For more info see './generate_uc_compose.sh -h' or README
                           
-  - If you do not wish to use the default UniConfig 30 day trial license, change
-    the license key in ${licenseKeyFile} before running this script.
-
   - To use FM with production resource allocation settings, you can use own settings
     stored in ${productPerformSettingFile} or use predefined. 
     For enabling use --prod option. 
@@ -205,7 +202,6 @@ function startWorkflowManager {
 }
 
 function startUnistore {
-  export LICENSE=$(cat $licenseKeyFile)
   echo -e "${INFO} Update Frinx-Frontend and KrakenD: enable L3VPN automation"
   export L3VPN_ENABLED=true
   docker service update --env-add L3VPN_ENABLED=${L3VPN_ENABLED} fm_frinx-frontend  > /dev/null 2>&1
@@ -222,8 +218,6 @@ function startUnistore {
 }
 
 function startUniconfig {
-  export LICENSE=$(cat $licenseKeyFile)
-  echo -e "${INFO} UniConfig license: ${LICENSE}"
 
   if [[ ${__multinode} == "true" ]]; then
     echo -e "${INFO} Multi-node deployment - compose files are stored on this path: ${uniconfigServiceFilesPath}"
@@ -239,7 +233,7 @@ function startUniconfig {
   else
     echo -e "${INFO} Single-node deployment - composefiles/${dockerSwarmUniconfig}"
     echo -e "${INFO} Uniconfig swarm worker node hostname: ${UC_SWARM_NODE_ID}"
-    chmod -R 777  ${UC_CONFIG_PATH}/cache
+    chmod -R 777  ${UF_CONFIG_PATH}/uniconfig/cache
     docker stack deploy --compose-file "composefiles/${dockerSwarmUniconfig}" $stackName
   fi
 }
@@ -524,7 +518,6 @@ OK="\033[0;92m[OK]:\033[0;0m"
 
 # DEFAULT COMPOSE SETTINGS
 stackName="fm"
-licenseKeyFile="${FM_DIR}/config/uniconfig/uniconfig_license.txt"
 
 dockerSwarmWorkflowManager='swarm-workflow-manager.yml'
 dockerSwarmUniconfig='swarm-uniconfig.yml'
@@ -551,7 +544,6 @@ performSettings="${productPerformSettingFile}"
 # DEFAULT FM START SETTINGS
 startupType="full"
 nodeID=$(docker node ls --filter role=manager --format {{.Hostname}})
-export UC_CONFIG_PATH="${FM_DIR}/config/uniconfig/frinx/uniconfig"
 export UF_CONFIG_PATH="${FM_DIR}/config"
 export DEPLOY_SETTINGS_TIMESTAMP=$(date +%s)
 
