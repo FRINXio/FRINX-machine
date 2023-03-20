@@ -91,6 +91,14 @@
             "method": "GET",
             "url_pattern": "/event/{event}"
         },
+	    {
+	        "endpoint": "/api/workflow/running/{workflowType}",
+            "method": "GET",
+            "url_pattern": "/workflow/running/{workflowType}",
+                "input_query_strings": [
+                "version", "startTime", "endTime"
+            ]
+	    },
         {
             "endpoint": "/api/workflow/id/{workflowId}",
             "method": "GET",
