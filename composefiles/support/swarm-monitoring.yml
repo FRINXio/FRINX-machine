@@ -3,7 +3,7 @@ version: "3.7"
 x-logging: &logging_loki
     driver: loki
     options:
-      loki-url: "http://${MANAGER_IP_ADDR}:3100/loki/api/v1/push"
+      loki-url: "http://127.0.0.1:3100/loki/api/v1/push"
       max-file: "3"
       max-size: "10m"
       mode: non-blocking
@@ -75,7 +75,9 @@ services:
           cpus: ${MG_RES_LIMIT_CPUS}
           memory: ${MG_RES_LIMIT_MEM}
     ports:
-    - 3000:3000
+      - target: 3000
+        published: 3000
+        mode: host
 
   loki:
     image: grafana/loki:2.2.1
@@ -119,8 +121,9 @@ services:
           cpus: ${ML_RES_LIMIT_CPUS}
           memory: ${ML_RES_LIMIT_MEM}
     ports:
-    - 3100:3100
-
+      - target: 3100
+        published: 3100
+        
   influxdb:
     image: influxdb:2.1
     logging: *logging_loki
@@ -258,3 +261,4 @@ volumes:
 networks:
     default:
       name: frinx-machine
+      driver: overlay

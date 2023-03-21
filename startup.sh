@@ -242,7 +242,6 @@ function startContainers {
 
   setUniconfigZoneEnv
   setNodeIdLocalDeploy
-  setManagerIpAddrEnv
   
   case $startupType in
       workflow-manager)
@@ -449,12 +448,6 @@ function setProxyEnv {
   setVariableFile "${stackProxyFile}"
   echo -e "${INFO} Proxy settings enabled!"
   echo -e "${INFO} http: ${HTTP_PROXY:-${WARNING}NaN}, https: ${HTTPS_PROXY:-${WARNING}NaN}, no: ${NO_PROXY:-${WARNING}NaN}"
-}
-
-
-function setManagerIpAddrEnv {
-  MANAGER_IP_ADDR=$(hostname -I | cut -d ' ' -f 1)
-  export MANAGER_IP_ADDR
 }
 
 
