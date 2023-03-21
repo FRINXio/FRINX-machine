@@ -8,7 +8,7 @@ version: "3.7"
 x-logging: &logging_loki
     driver: loki
     options:
-      loki-url: "http://${MANAGER_IP_ADDR}:3100/loki/api/v1/push"
+      loki-url: "http://127.0.0.1:3100/loki/api/v1/push"
       max-file: "3"
       max-size: "10m"
       mode: non-blocking
@@ -308,6 +308,7 @@ volumes:
 networks:
   default:
     name: frinx-machine
+    driver: overlay
 
   uniconfig-network:
     name: uniconfig-network
