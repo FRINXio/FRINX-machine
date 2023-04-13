@@ -91,6 +91,27 @@
             "method": "GET",
             "url_pattern": "/event/{event}"
         },
+	    {
+	        "endpoint": "/api/workflow/running/{workflowType}",
+            "method": "GET",
+            "url_pattern": "/workflow/running/{workflowType}",
+                "input_query_strings": [
+                "version", "startTime", "endTime"
+            ]
+	    },
+	{
+            "endpoint": "/api/workflow/path/{workflowId}",
+            "method": "GET",
+            "url_pattern": "/workflow/path/{workflowId}"
+	},
+	{
+            "endpoint": "/api/workflow/family/{workflowId}",
+            "method": "GET",
+            "url_pattern": "/workflow/family/{workflowId}",
+	    "input_query_strings": [
+                "summaryOnly"
+            ]
+	},
         {
             "endpoint": "/api/workflow/id/{workflowId}",
             "method": "GET",

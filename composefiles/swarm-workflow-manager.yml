@@ -117,7 +117,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/conductor-server:latest
+    image: frinx/conductor-server:DEP465
     # user: guest
     logging: *logging_loki 
     environment:
@@ -311,7 +311,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:2.1.1
+    image: frinx/workflow-proxy:DEP465
     user: node
     logging: *logging_loki    
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
