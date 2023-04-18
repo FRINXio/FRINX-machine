@@ -43,6 +43,7 @@ services:
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_device_monitoring.json:/etc/grafana/provisioning/dashboards/db_device_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_cert_monitoring.json:/etc/grafana/provisioning/dashboards/db_cert_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_uniconfig_monitoring.json:/etc/grafana/provisioning/dashboards/db_uniconfig_monitoring.json
+      - ${UF_CONFIG_PATH}/monitoring/grafana/db_postgres_monitoring.json:/etc/grafana/provisioning/dashboards/db_postgres_monitoring.json
     entrypoint: ["/set_env_secrets.sh", "/run.sh"]
     secrets:
       - frinx_grafana
@@ -190,6 +191,7 @@ services:
     entrypoint: ["/set_env_secrets.sh", "/entrypoint.sh telegraf"]
     secrets:
       - frinx_influxdb
+      - frinx_workflow_manager
       - source: frinx_krakend_tls_cert.pem
         target: /usr/local/share/ca-certificates/frinx_krakend_tls_cert.pem
       - source: frinx_uniconfig_tls_cert.pem
@@ -230,6 +232,8 @@ services:
 
 secrets:
   frinx_influxdb:
+    external: true
+  frinx_workflow_manager:
     external: true
   frinx_grafana:
     external: true

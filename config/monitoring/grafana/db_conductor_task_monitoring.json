@@ -292,7 +292,7 @@
               "type": "influxdb",
               "uid": "P951FEA4DE68E13C5"
             },
-            "query": "diff_time = from(bucket: \"frinx\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"task_completed_seconds\")\n  |> filter(fn: (r) => r[\"_field\"] == \"count\")\n  |> filter(fn: (r) => r[\"taskType\"] == \"${task}\")\n  |> difference()\n\nby_status = diff_time\n  |> keep(columns: [\"table\", \"_value\", \"status\"])\n  |> sum()\n  \ntogether = diff_time\n  |> group()\n  |> sum(column: \"_value\")\n  |> set(key: \"status\", value: \"SUM\")\n\nunion(tables: [by_status,together])\n",
+            "query": "import \"experimental\"\n\n\na = from(bucket: \"frinx\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"task_completed_seconds\")\n  |> filter(fn: (r) => r[\"_field\"] == \"count\")\n  |> filter(fn: (r) => r[\"taskType\"] == \"${task}\")\n  |> aggregateWindow(every: 100s, fn: distinct, createEmpty: true)\n  |> experimental.fill(value: 0.0)\n\nb = a\n  |> first()\n\nc = a\n  |> last()\n\ndiff_tab = union(tables: [b,c])\n |> spread()\n\nby_status = diff_tab\n  |> keep(columns: [\"table\", \"_value\", \"status\"])\n  |> sum()\n  \ntogether = diff_tab\n  |> group()\n  |> sum(column: \"_value\")\n  |> set(key: \"status\", value: \"SUM\")\n\nunion(tables: [by_status,together])\n",
             "refId": "A"
           }
         ],
