@@ -37,7 +37,9 @@ services:
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_loki_search.json:/etc/grafana/provisioning/dashboards/db_loki_search.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_node_monitoring.json:/etc/grafana/provisioning/dashboards/db_node_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_swarm_monitoring.json:/etc/grafana/provisioning/dashboards/db_swarm_monitoring.json
-      - ${UF_CONFIG_PATH}/monitoring/grafana/db_wf_monitoring.json:/etc/grafana/provisioning/dashboards/db_wf_monitoring.json
+      - ${UF_CONFIG_PATH}/monitoring/grafana/db_conductor_wf_monitoring.json:/etc/grafana/provisioning/dashboards/db_conductor_wf_monitoring.json
+      - ${UF_CONFIG_PATH}/monitoring/grafana/db_conductor_task_monitoring.json:/etc/grafana/provisioning/dashboards/db_conductor_task_monitoring.json
+      - ${UF_CONFIG_PATH}/monitoring/grafana/db_conductor_system_monitoring.json:/etc/grafana/provisioning/dashboards/db_conductor_system_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_device_monitoring.json:/etc/grafana/provisioning/dashboards/db_device_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_cert_monitoring.json:/etc/grafana/provisioning/dashboards/db_cert_monitoring.json
       - ${UF_CONFIG_PATH}/monitoring/grafana/db_uniconfig_monitoring.json:/etc/grafana/provisioning/dashboards/db_uniconfig_monitoring.json
