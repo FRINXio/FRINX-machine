@@ -41,7 +41,7 @@ x-dt-enabled: &dt-enabled
 
 services:
   krakend:
-    image: frinx/krakend:latest
+    image: frinx/krakend:1.0.6
     # user: root
     logging: *logging_loki    
     environment:
@@ -123,7 +123,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/conductor-server:2.0.2
+    image: frinx/conductor-server:2.0.3
     # user: guest
     logging: *logging_loki 
     environment:
@@ -219,7 +219,7 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:latest
+    image: frinx/frinx-frontend:1.0.42
     user: node
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
@@ -319,7 +319,7 @@ services:
           memory: ${PG_RES_LIMIT_MEM}
 
   schellar:
-    image: frinx/schellar:latest
+    image: frinx/schellar:2.0.1
     logging: *logging_loki 
     environment:
       - LOG_LEVEL=debug
@@ -364,7 +364,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:2.0.0
+    image: frinx/workflow-proxy:2.0.1
     user: node
     logging: *logging_loki    
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
@@ -408,7 +408,7 @@ services:
           memory: ${WP_RES_LIMIT_MEM}
 
   resource-manager:
-    image: frinx/resource-manager:latest
+    image: frinx/resource-manager:1.0.9
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "./run.sh"]
     secrets:
@@ -452,7 +452,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:latest
+    image: frinx/frinx-inventory-server:1.9.1
     logging: *logging_loki
     entrypoint: ["/run_inventory.sh"]
     secrets:
