@@ -1,0 +1,18 @@
+{
+    "name": "conductor-connector",
+    "config": {
+        "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+        "database.history.kafka.bootstrap.servers": "kafka:9092",
+        "tasks.max": "1",
+        "database.hostname": "postgresql",
+        "database.port": "5432",
+        "database.user": "$POSTGRES_USER",
+        "database.password": "$POSTGRES_PASSWORD",
+        "database.dbname" : "conductor",
+        "slot.name": "conductor_slot",
+        "topic.prefix": "conductor",
+        "plugin.name": "pgoutput",
+        "tombstones.on.delete": "false",
+        "table.whitelist": "public.outbox_table"
+    }
+}
