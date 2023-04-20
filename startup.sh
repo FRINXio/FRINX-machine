@@ -41,14 +41,14 @@ OPTIONS:
                   - different allocation of resources
                   - default: production
 
-   --workflow-manager        Deploy Workflow-Manager services
-   --uniconfig      Deploy UniConfig services
-   --unistore       Deploy Unistore services (not started by default)
-   --with-unistore  Deploy Full FM with Unistore services
+   --workflow-manager  Deploy Workflow-Manager services
+   --uniconfig         Deploy UniConfig services
+   --unistore          Deploy Unistore services (not started by default)
+   --with-unistore     Deploy Full FM with Unistore services
+   --monitoring        Deploy Monitoring services
+   --no-monitoring     Deploy Workflow-Manager and UniConfig services
 
-   --monitoring     Deploy Monitoring services
-   --no-monitoring  Deploy Workflow-Manager and UniConfig services
-
+   --with-kafka        Deploy FM with Kafka and Debezium connector
 
 
   MULTI-NODE DEPLOYMENT
@@ -158,6 +158,10 @@ function argumentsCheck {
                 exit 1
             fi;;
         
+        --with-kafka)
+          __kafka_deploy="true"
+          export CONDUCTOR_OUTBOX_TABLE_ENABLED="true";;
+
         -m|--multinode)
             if [[ ${2} != '-'* ]] || [[ ${2} != '' ]]; then 
               if [[ -d ${2} ]]; then
@@ -199,6 +203,16 @@ function startWorkflowManager {
   fi
 
   docker stack deploy --compose-file composefiles/$dockerSwarmWorkflowManager $stackName
+  status=$?
+  if [[ $status -ne 0 ]]; then
+    echo -e "${ERROR} Problem with starting Workflow-Manager."
+    echo -e "${ERROR} If 'network frinx-machine not found!', wait a while and start Workflow-Manager again."
+    exit 1
+  fi
+
+  if [[ ${__kafka_deploy} == "true" ]]; then
+    docker stack deploy --compose-file composefiles/$dockerSwarmWorkflowManagerKafka $stackName
+  fi
   status=$?
   if [[ $status -ne 0 ]]; then
     echo -e "${ERROR} Problem with starting Workflow-Manager."
@@ -527,6 +541,7 @@ OK="\033[0;92m[OK]:\033[0;0m"
 stackName="fm"
 
 dockerSwarmWorkflowManager='swarm-workflow-manager.yml'
+dockerSwarmWorkflowManagerKafka='swarm-kafka-connector.yml'
 dockerSwarmUniconfig='swarm-uniconfig.yml'
 dockerSwarmUnistore='swarm-unistore.yml'
 

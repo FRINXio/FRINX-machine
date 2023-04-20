@@ -64,6 +64,7 @@ services:
       - UNICONFIG_ZONES_LIST=${UNICONFIG_ZONES_LIST}
       - UNICONFIG_SHELL_ENABLED=${UNICONFIG_SHELL_ENABLED:-false}
       - UNICONFIG_SHELL_OAUTH_ENABLED=false
+      - KAFKA_BROKERS=kafka:9092
       - *wfm-enabled
       - *rsm-enabled
       - *inventory-enabled
@@ -98,7 +99,7 @@ services:
       # Configured with startup --shell 
       # - target: 8001
       #   published: 8001
-      #   mode: host  
+      #   mode: host
     ulimits:
       nofile:
         soft: ${KD_ULIMIT_NOFILE_SOFT}
@@ -123,13 +124,14 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/conductor-server:latest
+    image: frinx/conductor-server:kafka1
     # user: guest
     logging: *logging_loki 
     environment:
       - CONFIG_PROP=config.properties
       - LOG4J_PROP=/app/config/log4j.properties
       - _JAVA_OPTIONS="-Xmx${CS_RES_LIMIT_MEM}"
+      - CONDUCTOR_OUTBOX_TABLE_ENABLED=${CONDUCTOR_OUTBOX_TABLE_ENABLED:-false}
     volumes:
       - ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties:ro
       - ${UF_CONFIG_PATH}/conductor/log4j.properties:/app/config/log4j.properties:ro
@@ -231,7 +233,10 @@ services:
     image: postgres:12.10
     user: postgres
     logging: *logging_loki 
-    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh postgres"]
+    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh"]
+    command: 
+      - postgres
+      - -c wal_level=logical
     volumes:
       - frinx_workflow-manager_postgresql_data:/var/lib/postgresql/data
       - ${UF_CONFIG_PATH}/workflow-manager-postgres:/docker-entrypoint-initdb.d:ro

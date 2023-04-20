@@ -1,0 +1,152 @@
+version: "3.7"
+
+x-logging: &logging_loki
+    driver: loki
+    options:
+      loki-url: "http://127.0.0.1:3100/loki/api/v1/push"
+      max-file: "3"
+      max-size: "10m"
+      mode: non-blocking
+      keep-file: "false"
+      loki-retries: "1"
+      loki-batch-size: "1500"
+      loki-relabel-config: |
+        - action: labelmap
+          regex: swarm_(service)
+
+x-placement: &placement
+      placement:
+        constraints:
+          - node.role == manager
+
+x-traefik-label: &traefik_labels
+      - traefik.enable=false
+
+services:
+  kafka:
+    image: confluentinc/cp-kafka:7.2.1
+    logging: *logging_loki
+    hostname: kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_GROUP_ID: 1
+      KAFKA_HEAP_OPTS: "-Xmx${CN_XMX_LIMIT_MEM} -Xms${CN_XMS_LIMIT_MEM}"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    volumes:
+      - frinx_workflow-manager_kafka_logs:/var/log/kafka
+      - frinx_workflow-manager_kafka_data:/var/lib/kafka
+    configs:
+      - source: run_kafka
+        target: /run_kafka.sh
+        mode: 0555
+    command: "bash -c '/run_kafka.sh && /etc/confluent/docker/run'"
+    healthcheck:
+      test: nc -z localhost 9092 || exit 1
+      start_period: 50s
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ulimits:
+      nofile:
+        soft: ${KF_ULIMIT_NOFILE_SOFT}
+        hard: ${KF_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${KF_ULIMIT_NPROC_SOFT}
+        hard: ${KF_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    deploy:
+      labels: *traefik_labels
+      <<: *placement
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${KF_RES_LIMIT_CPUS}
+          memory: ${KF_RES_LIMIT_MEM}
+
+  connect:
+    image: debezium/connect:2.3
+    logging: *logging_loki
+    environment:
+      KAFKA_HEAP_OPTS: "-Xmx${CN_XMX_LIMIT_MEM} -Xms${CN_XMS_LIMIT_MEM}"
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: frinx_connect_configs
+      OFFSET_STORAGE_TOPIC: frinx_connect_offsets
+      STATUS_STORAGE_TOPIC: frinx_connect_statuses
+      BOOTSTRAP_SERVERS: kafka:9092
+    volumes:
+      - frinx_workflow-manager_connect_logs:/kafka/logs
+      - frinx_workflow-manager_connect_data:/kafka/data
+      - ${UF_CONFIG_PATH}/connect/:/config
+    secrets:
+      - frinx_workflow_manager
+    configs:
+      - source: set_env_secrets
+        target: /set_env_secrets.sh
+        mode: 0555
+    entrypoint: [/config/startup.sh]
+    healthcheck:
+      test: curl localhost:8083 || exit 1
+      start_period: 30s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    ulimits:
+      nofile:
+        soft: ${CN_ULIMIT_NOFILE_SOFT}
+        hard: ${CN_ULIMIT_NOFILE_HARD}
+      nproc:
+        soft: ${CN_ULIMIT_NPROC_SOFT}
+        hard: ${CN_ULIMIT_NPROC_HARD}
+    cap_drop:
+      - all
+    deploy:
+      labels: *traefik_labels
+      <<: *placement
+      restart_policy:
+        condition: any
+        delay: 5s
+        window: 10s
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: ${CN_RES_LIMIT_CPUS}
+          memory: ${CN_RES_LIMIT_MEM}
+
+volumes:
+  frinx_workflow-manager_kafka_logs:
+    name: frinx_workflow-manager_kafka_logs
+  frinx_workflow-manager_kafka_data:
+    name: frinx_workflow-manager_kafka_data
+  frinx_workflow-manager_connect_logs:
+    name: frinx_workflow-manager_connect_logs
+  frinx_workflow-manager_connect_data:
+    name: frinx_workflow-manager_connect_data  
+
+configs:
+  run_kafka:
+    file: ${UF_CONFIG_PATH}/kafka/run_kafka.sh
+  set_env_secrets:
+    file: ${UF_CONFIG_PATH}/set_env_secrets.sh
+
+secrets:
+  frinx_workflow_manager:
+    external: true
+
+networks:
+    default:
+      name: frinx-machine
+      driver: overlay
