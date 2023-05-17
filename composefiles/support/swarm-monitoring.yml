@@ -177,6 +177,7 @@ services:
     logging: *logging_loki
     hostname: "{{.Node.Hostname}}"
     environment:
+      - MANAGER_HOSTNAME=${HOSTNAME}
       - HOST_PROC=/rootfs/proc
       - HOST_SYS=/rootfs/sys
       - HOST_ETC=/rootfs/etc
@@ -188,7 +189,7 @@ services:
       - /etc/hostname:/etc/hostname:ro
       - frinx_uniconfig-controller_logs:/tmp/uniconfig
       - frinx_conductor_metrics:/tmp/conductor
-    entrypoint: ["/set_env_secrets.sh", "/entrypoint.sh telegraf"]
+    entrypoint: ["/etc/telegraf/startup.sh"]
     secrets:
       - frinx_influxdb
       - frinx_workflow_manager
@@ -202,6 +203,9 @@ services:
         mode: 0555
       - source: frinx_telegraf_config
         target: /etc/telegraf/telegraf.conf
+        mode: 0555
+      - source: frinx_telegraf_startup
+        target: /etc/telegraf/startup.sh
         mode: 0555
     healthcheck:
       test: ["CMD-SHELL", "curl -X GET localhost:8080 || exit 1"]
@@ -246,6 +250,9 @@ configs:
   frinx_telegraf_config:
     name: frinx_telegraf_config-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/monitoring/telegraf/telegraf.conf
+  frinx_telegraf_startup:
+    name: frinx_telegraf_startup-${DEPLOY_SETTINGS_TIMESTAMP}.yml
+    file: ${UF_CONFIG_PATH}/monitoring/telegraf/startup.sh 
   frinx_loki_config:
     name: frinx_loki_config-${DEPLOY_SETTINGS_TIMESTAMP}.yml
     file: ${UF_CONFIG_PATH}/monitoring/loki/loki-config.yaml
