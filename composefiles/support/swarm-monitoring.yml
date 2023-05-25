@@ -188,7 +188,6 @@ services:
       - /etc:/rootfs/etc:ro
       - /etc/hostname:/etc/hostname:ro
       - frinx_uniconfig-controller_logs:/tmp/uniconfig
-      - frinx_conductor_metrics:/tmp/conductor
     entrypoint: ["/etc/telegraf/startup.sh"]
     secrets:
       - frinx_influxdb
@@ -268,8 +267,6 @@ volumes:
       name: frinx-monitoring-influxdb
   frinx_uniconfig-controller_logs:
     name: frinx_uniconfig-controller_logs
-  frinx_conductor_metrics:
-    name: frinx_conductor_metrics
 
 networks:
     default:

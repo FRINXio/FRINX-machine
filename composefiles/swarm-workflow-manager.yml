@@ -131,7 +131,6 @@ services:
       - LOG4J_PROP=/app/config/log4j.properties
       - _JAVA_OPTIONS="-Xmx${CS_RES_LIMIT_MEM}"
     volumes:
-      - frinx_conductor_metrics:/app/logs
       - ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties:ro
       - ${UF_CONFIG_PATH}/conductor/log4j.properties:/app/config/log4j.properties:ro
     secrets:
@@ -517,8 +516,6 @@ configs:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
 
 volumes:
-  frinx_conductor_metrics:
-    name: frinx_conductor_metrics
   frinx_workflow-manager_postgresql_data:
     name: frinx_workflow-manager_postgresql_data
   frinx_workflow-manager_inventory_postgresql_data:
