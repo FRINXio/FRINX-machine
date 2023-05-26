@@ -153,6 +153,9 @@ $ ./startup.sh --monitoring
 # To deploy FRINX Machine without monitoring services, use:
 $ ./startup.sh --no-monitoring 
 
+# To deploy FRINX Machine with kafka and debezium:
+$ ./startup.sh --with-kafka 
+
 ```
 The FRINX Machine services will be started.
 

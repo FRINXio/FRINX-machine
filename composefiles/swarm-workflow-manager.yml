@@ -124,7 +124,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/conductor-server:kafka1
+    image: frinx/conductor-server:latest
     # user: guest
     logging: *logging_loki 
     environment:
