@@ -18,6 +18,7 @@ datasources:
       httpMode: POST
       organization: frinx-machine
       version: Flux
+      timeout: 600
     secureJsonData:
       basicAuthPassword: frinx123!
       token: eyJrIjoiN09MSVpVZjlVRG1xNHlLNXpVbmZJOXFLWU1GOXFxNEIiLCJuIjoic3Nzc3MiLCJpZCI6MX0
