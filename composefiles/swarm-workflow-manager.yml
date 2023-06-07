@@ -276,7 +276,7 @@ services:
           memory: ${PG_RES_LIMIT_MEM}
 
   schellar:
-    image: frinx/schellar:latest
+    image: frinx/schellar:3.0.0
     logging: *logging_loki 
     environment:
       - LOG_LEVEL=debug
@@ -321,7 +321,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:2.1.1
+    image: frinx/workflow-proxy:2.1.5
     user: node
     logging: *logging_loki    
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
