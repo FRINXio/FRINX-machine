@@ -16,8 +16,9 @@ OPTIONS:
     -v|--volumes        delete all FM persistent volumes (FM, Monitoring)
     -c|--cache          delete content of ./config/uniconfig/frinx/uniconfig/cache folder
     -a|--all            delete all volumes and files (except secrets)
-
     -S|--secrets        delete all docker secrets with prefix frinx_
+
+    -k|--kafka          delete kafka & connector only, remove connector slot from postgresql
 
     -h|--help           print help
     -w|--wait           maximal waiting time for removing volumes (default 30s)
@@ -25,9 +26,28 @@ OPTIONS:
 EOF
 }
 
+remove_kafka_slot()
+{
+  echo "###### Cleaning kafka services and conductor slot from postgresql  ######"
+
+  kafka_services=$(docker service ls --filter label=kafka=frinx -q)
+  if [[ ${kafka_services} != '' ]]; then
+      docker service rm $(docker service ls --filter label=kafka=frinx -q)  || exit 1
+      sleep 10
+  fi
+  echo "Cleaning slots"
+  docker exec -it $(docker container ls --filter name=${__STACK_NAME}_postgresql --filter status=running -q) \
+      psql -c "SELECT pg_drop_replication_slot('conductor_slot');"
+  echo "Execute checkpoint on postgres database"
+  docker exec -it $(docker container ls --filter name=${__STACK_NAME}_postgresql --filter status=running -q) \
+      psql -c "CHECKPOINT;"
+}
+
 delete_stack()
 {
+  remove_kafka_slot
   echo "###### Cleaning stack ######" 
+
   docker stack rm ${__STACK_NAME}
   echo ""
 }
@@ -43,6 +63,7 @@ delete_stuck_containers()
   fi
   echo ""
 }
+
 
 function unused_monitoring_volumes()
 {
@@ -111,6 +132,9 @@ do
         -h|--help) show_help
             exit 0;;
         
+        -k|--kafka)
+            __CLEAN_KAFKA="true";;
+
         -s|--stack-name)
             if [[ ${2} == "-"* ]] || [[ -z ${2} ]]; then
                 echo "Problem with -s|--stack-name parameter. Missing input parameter."
@@ -161,6 +185,12 @@ do
 done
 
 #EXECUTION
+
+if [ -n "${__CLEAN_KAFKA}" ]; then
+    remove_kafka_slot
+    exit 0
+fi
+
 delete_stack
 delete_stuck_containers
 
