@@ -90,6 +90,7 @@ services:
       - frinx_workflow-manager_connect_logs:/kafka/logs
       - frinx_workflow-manager_connect_data:/kafka/data
       - ${UF_CONFIG_PATH}/connect/:/config
+      - ${UF_CONFIG_PATH}/connect/log4j.properties:/kafka/config/log4j.properties
     secrets:
       - frinx_workflow_manager
     configs:
