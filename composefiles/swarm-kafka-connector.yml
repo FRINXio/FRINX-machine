@@ -19,8 +19,9 @@ x-placement: &placement
         constraints:
           - node.role == manager
 
-x-traefik-label: &traefik_labels
+x-traefik-label: &traefik_kafka_labels
       - traefik.enable=false
+      - kafka=frinx
 
 services:
   kafka:
@@ -63,7 +64,7 @@ services:
     cap_drop:
       - all
     deploy:
-      labels: *traefik_labels
+      labels: *traefik_kafka_labels
       <<: *placement
       restart_policy:
         condition: any
@@ -114,7 +115,7 @@ services:
     cap_drop:
       - all
     deploy:
-      labels: *traefik_labels
+      labels: *traefik_kafka_labels
       <<: *placement
       restart_policy:
         condition: any
