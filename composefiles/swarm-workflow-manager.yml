@@ -276,7 +276,7 @@ services:
           memory: ${PG_RES_LIMIT_MEM}
 
   schellar:
-    image: frinx/schellar:3.0.0
+    image: frinx/schellar:latest
     logging: *logging_loki 
     environment:
       - LOG_LEVEL=debug
@@ -365,7 +365,7 @@ services:
           memory: ${WP_RES_LIMIT_MEM}
 
   resource-manager:
-    image: frinx/resource-manager:1.0.9
+    image: frinx/resource-manager:2.0.0
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "./run.sh"]
     secrets:
@@ -409,7 +409,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:1.9.1
+    image: frinx/frinx-inventory-server:2.0.0
     logging: *logging_loki
     entrypoint: ["/run_inventory.sh"]
     secrets:
@@ -423,6 +423,9 @@ services:
       - UNICONFIG_API_PROTOCOL=https
       - UNICONFIG_API_PORT=8181
       - UNICONFIG_LIST_URL=${KRAKEND_TLS_PROTOCOL}://krakend:8080/static/list/uniconfig
+      - CONDUCTOR_API_URL=http:/conductor-server:8080/api
+      - SCHEDULER_API_URL=http://schellar:3000/query
+      - RESOURCE_MANAGER_API_URL=http://resource-manager/query
       - ARANGO_ENABLED=false
       - TOPOLOGY_ENABLED=false
       - SHELL_HOST=uniconfig
