@@ -173,7 +173,7 @@ services:
           memory: ${CS_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:latest
+    image: frinx/frinx-frontend:1.0.46
     user: node
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
