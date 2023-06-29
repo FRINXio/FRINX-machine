@@ -25,7 +25,7 @@ x-traefik-label: &traefik_kafka_labels
 
 services:
   kafka:
-    image: confluentinc/cp-kafka:7.2.1
+    image: confluentinc/cp-kafka:7.4.0
     logging: *logging_loki
     hostname: kafka
     environment:
@@ -40,14 +40,10 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     volumes:
       - frinx_workflow-manager_kafka_logs:/var/log/kafka
       - frinx_workflow-manager_kafka_data:/var/lib/kafka
-    configs:
-      - source: run_kafka
-        target: /run_kafka.sh
-        mode: 0555
-    command: "bash -c '/run_kafka.sh && /etc/confluent/docker/run'"
     healthcheck:
       test: nc -z localhost 9092 || exit 1
       start_period: 50s
@@ -139,8 +135,6 @@ volumes:
     name: frinx_workflow-manager_connect_data  
 
 configs:
-  run_kafka:
-    file: ${UF_CONFIG_PATH}/kafka/run_kafka.sh
   set_env_secrets:
     file: ${UF_CONFIG_PATH}/set_env_secrets.sh
 
