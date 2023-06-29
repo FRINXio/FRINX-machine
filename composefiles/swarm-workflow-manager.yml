@@ -230,13 +230,15 @@ services:
           memory: ${FF_RES_LIMIT_MEM}
 
   postgresql:
-    image: postgres:12.10
+    image: frinx/postgres:12.10
     user: postgres
     logging: *logging_loki 
     entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh"]
     command: 
       - postgres
       - -c wal_level=logical
+      - -c shared_preload_libraries=pg_cron
+      - -c cron.database_name=postgres
     volumes:
       - frinx_workflow-manager_postgresql_data:/var/lib/postgresql/data
       - ${UF_CONFIG_PATH}/workflow-manager-postgres:/docker-entrypoint-initdb.d:ro
