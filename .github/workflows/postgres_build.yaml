@@ -1,0 +1,37 @@
+name: Publish custom Postgres image to dockerhub
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * 0' 
+
+env:
+  IMAGE_PREFIX: frinx
+  IMAGE_BASE_NAME: postgres
+  IMAGE_BASE_MAJOR_VERSION: 12
+  IMAGE_BASE_MINOR_VERSION: 10
+
+jobs:
+  publish:
+    name: Publish postgres
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      - name: Create Dockerfile_postgres
+        run: |
+          echo "FROM ${IMAGE_BASE_NAME}:${IMAGE_BASE_MAJOR_VERSION}.${IMAGE_BASE_MINOR_VERSION}" >> Dockerfile_postgres
+          echo "RUN apt-get update && apt-get install -y \ " >> Dockerfile_postgres
+          echo "    postgresql-${IMAGE_BASE_MAJOR_VERSION}-cron \ " >> Dockerfile_postgres
+          echo "    && rm -rf /var/lib/apt/lists/*" >> Dockerfile_postgres
+          cat Dockerfile_postgres
+      - name: Build image
+        run: |
+          docker build . \
+            --file Dockerfile_postgres \
+            --tag $IMAGE_PREFIX/$IMAGE_BASE_NAME:$IMAGE_BASE_MAJOR_VERSION.$IMAGE_BASE_MINOR_VERSION
+      - name: Log into docker hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+      - name: Publish image
+        run: docker push $IMAGE_PREFIX/$IMAGE_BASE_NAME:$IMAGE_BASE_MAJOR_VERSION.$IMAGE_BASE_MINOR_VERSION
