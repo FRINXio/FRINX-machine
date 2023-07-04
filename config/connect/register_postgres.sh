@@ -19,4 +19,6 @@ do
   fi
   sleep 1
 done
+echo "Create topic for conductor: outbox.event.workflow.status"
+/kafka/bin/kafka-topics.sh --bootstrap-server ${BOOTSTRAP_SERVERS} --topic outbox.event.workflow.status --create --if-not-exists || exit 1
 popd > /dev/null || exit 1
