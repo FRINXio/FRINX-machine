@@ -40,6 +40,7 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_LOG_RETENTION_HOURS: 48
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
     volumes:
       - frinx_workflow-manager_kafka_logs:/var/log/kafka
