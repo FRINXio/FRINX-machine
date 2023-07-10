@@ -239,6 +239,7 @@ services:
       - -c wal_level=logical
       - -c shared_preload_libraries=pg_cron
       - -c cron.database_name=postgres
+      - -c max_connections=300
     volumes:
       - frinx_workflow-manager_postgresql_data:/var/lib/postgresql/data
       - ${UF_CONFIG_PATH}/workflow-manager-postgres:/docker-entrypoint-initdb.d:ro
@@ -263,6 +264,8 @@ services:
         hard: ${PG_ULIMIT_NPROC_HARD}
     cap_drop:
       - all
+    sysctls:
+      <<: *tcp_keepalive
     deploy:
       labels: *traefik_labels
       <<: *placement
@@ -308,6 +311,8 @@ services:
         hard: ${SC_ULIMIT_NPROC_HARD}
     cap_drop:
       - all
+    sysctls:
+      <<: *tcp_keepalive
     deploy:
       labels: *traefik_labels
       <<: *placement
@@ -396,6 +401,8 @@ services:
         hard: ${UR_ULIMIT_NPROC_HARD}
     cap_drop:
       - all
+    sysctls:
+      <<: *tcp_keepalive
     deploy:
       labels: *traefik_labels
       <<: *placement
