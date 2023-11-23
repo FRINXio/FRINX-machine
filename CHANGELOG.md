@@ -118,7 +118,7 @@
 
 - Security improvements in plugin
 
-- Imroved security in configuration files
+- Improved security in configuration files
 
 ### Traefik
 
