@@ -130,7 +130,7 @@ services:
     environment:
       - CONFIG_PROP=config.properties
       - LOG4J_PROP=/app/config/log4j.properties
-      - _JAVA_OPTIONS="-Xmx${CS_RES_LIMIT_MEM}"
+      - _JAVA_OPTIONS="-Xmx${CS_XMX_RES_LIMIT_MEM}"
       - CONDUCTOR_OUTBOX_TABLE_ENABLED=${CONDUCTOR_OUTBOX_TABLE_ENABLED:-false}
     volumes:
       - ${UF_CONFIG_PATH}/conductor/config.properties:/app/config/config.properties:ro

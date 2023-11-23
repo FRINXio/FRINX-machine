@@ -483,7 +483,7 @@ $ openssl req -new -x509 -days 365 -addext 'subjectAltName = DNS:*'
 
 ### Configuring max storage usage per service
 
-**Conductor** external storage persitence can be configured via parameters in `config/conductor/config.properties`.
+**Conductor** external storage persistence can be configured via parameters in `config/conductor/config.properties`.
 
 ```sh
 # default values
