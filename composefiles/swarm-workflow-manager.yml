@@ -20,9 +20,6 @@ x-placement: &placement
         constraints:
           - node.role == manager
 
-x-traefik-label: &traefik_labels
-      - traefik.enable=false
-
 x-tcp_keepalive: &tcp_keepalive
       net.ipv4.tcp_keepalive_time: 300
 
@@ -110,7 +107,6 @@ services:
     cap_drop:
       - all
     deploy:
-      labels: *traefik_labels
       <<: *placement
       restart_policy:
         condition: any
@@ -159,7 +155,6 @@ services:
     sysctls:
       <<: *tcp_keepalive
     deploy:
-      labels: *traefik_labels
       <<: *placement
       restart_policy:
         condition: any
@@ -216,7 +211,6 @@ services:
     cap_drop:
       - all
     deploy:
-      labels: *traefik_labels
       <<: *placement
       restart_policy:
         condition: any
@@ -267,7 +261,6 @@ services:
     sysctls:
       <<: *tcp_keepalive
     deploy:
-      labels: *traefik_labels
       <<: *placement
       restart_policy:
         condition: any
@@ -314,7 +307,6 @@ services:
     sysctls:
       <<: *tcp_keepalive
     deploy:
-      labels: *traefik_labels
       <<: *placement
       restart_policy:
         condition: any
@@ -358,7 +350,6 @@ services:
     cap_drop:
       - all
     deploy:
-      labels: *traefik_labels
       <<: *placement
       restart_policy:
         condition: any
@@ -404,7 +395,6 @@ services:
     sysctls:
       <<: *tcp_keepalive
     deploy:
-      labels: *traefik_labels
       <<: *placement
       restart_policy:
         condition: any
@@ -454,7 +444,6 @@ services:
     cap_drop:
       - all
     deploy:
-      labels: *traefik_labels
       <<: *placement
       restart_policy:
         condition: any
@@ -496,7 +485,6 @@ services:
     cap_drop:
       - all
     deploy:
-      labels: *traefik_labels
       <<: *placement
       restart_policy:
         condition: any
