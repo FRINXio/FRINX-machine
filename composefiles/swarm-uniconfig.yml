@@ -37,9 +37,6 @@ x-placement-postgres: &placement-postgres
 x-tcp_keepalive: &tcp_keepalive
       net.ipv4.tcp_keepalive_time: 300
 
-x-traefik-label: &traefik_labels
-      - traefik.enable=false
-
 services:
   uniconfig:
     image: traefik:v2.7
@@ -64,6 +61,7 @@ services:
       - TRAEFIK_ENTRYPOINTS_CLISHELL=true
       - TRAEFIK_ENTRYPOINTS_CLISHELL_ADDRESS=:2022
       - TRAEFIK_PROVIDERS_DOCKER_SWARMMODE=true
+      - TRAEFIK_PROVIDERS_DOCKER_EXPOSEDBYDEFAULT=false
       - TRAEFIK_PROVIDERS_DOCKER_WATCH=true
       - TRAEFIK_SERVERSTRANSPORT_ROOTCAS=/run/secrets/frinx_uniconfig_tls_cert.pem
       - TRAEFIK_SERVERSTRANSPORT_INSECURESKIPVERIFY=true
@@ -217,8 +215,6 @@ services:
     logging: *logging_loki
     networks:
       - uniconfig-network
-    labels:
-      - traefik.enable=false  
     volumes:
       - frinx_uniconfig-postgresql_data:/var/lib/postgresql/data
     secrets:
@@ -266,7 +262,6 @@ services:
     sysctls:
       <<: *tcp_keepalive
     deploy: 
-      labels: *traefik_labels
       <<: *placement-postgres
       restart_policy:
         condition: any
