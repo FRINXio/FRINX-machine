@@ -120,7 +120,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/conductor-server:2.2.0
+    image: frinx/conductor-server:2.3.0
     # user: guest
     logging: *logging_loki 
     environment:
@@ -168,7 +168,7 @@ services:
           memory: ${CS_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:1.0.46
+    image: frinx/frinx-frontend:1.0.56
     user: node
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
@@ -363,7 +363,7 @@ services:
           memory: ${WP_RES_LIMIT_MEM}
 
   resource-manager:
-    image: frinx/resource-manager:1.0.9
+    image: frinx/resource-manager:1.0.10
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "./run.sh"]
     secrets:
@@ -408,7 +408,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:1.9.1
+    image: frinx/frinx-inventory-server:1.9.3
     logging: *logging_loki
     entrypoint: ["/run_inventory.sh"]
     secrets:
