@@ -100,7 +100,7 @@ services:
           memory: ${TF_RES_LIMIT_MEM}
 
   uniconfig-controller:
-    image: frinx/uniconfig:5.1.16
+    image: frinx/uniconfig:5.2.4
     logging: *logging_loki
     networks:
       - uniconfig-network
@@ -132,9 +132,16 @@ services:
       - TRANSACTIONS_MAXTRANSACTIONAGE=7200
       - TRANSACTIONS_MAXSTOREDTRANSACTIONS=100
       # HTTPS SERVER, CREDENTIALS STORED IN SECRETS
-      - TLS_ENABLEDTLS=true
-      - TLS_ENABLEDCLIENTAUTHENTICATION=false
-      - TLS_KEYSTOREPATH=.keystore
+      - SERVER_HTTP2_ENABLED=true
+      - SERVER_SSL_ENABLED=true
+      - SERVER_SSL_PROTOCOL=TLS
+      - SERVER_SSL_CLIENTAUTH=none
+      - SERVER_SSL_KEYSTORE=.keystore
+      - SERVER_SSL_ENABLEDPROTOCOLS=TLSv1.2,TLSv1.3
+      # KAFKA CLOUD CONFIG
+      - UNICONFIG_CLOUD_CONFIG_ENABLED=false
+      - SPRING_CLOUD_BUS_ENABLED=false
+      - SPRING_AUTOCONFIGURE_EXCLUDE=org.springframework.cloud.stream.function.FunctionConfiguration
     volumes:
       - frinx_uniconfig-controller_logs:/opt/uniconfig-frinx/log
       - ${UF_CONFIG_PATH}/uniconfig/cache:/opt/uniconfig-frinx/cache:rw
