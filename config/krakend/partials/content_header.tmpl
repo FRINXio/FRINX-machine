@@ -1,0 +1,7 @@
+"modifier/lua-endpoint": {
+      "@comment": "Add header Content-Type with value application/json if no Content-Type value present",
+      "sources": ["scripts/header_check.lua"],
+      "allow_open_libs": true,
+      "pre": "local r = ctx.load(); check_header(r)",
+      "live": true
+}
