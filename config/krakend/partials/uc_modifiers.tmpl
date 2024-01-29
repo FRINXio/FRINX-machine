@@ -1,0 +1,22 @@
+"modifier/martian": {
+    "fifo.Group": {
+        "scope": ["request", "response"],
+        "aggregateErrors": true,
+        "modifiers": [
+            {
+                "header.Modifier": {
+                    "scope": ["request"],
+                    "name": "Accept-Encoding",
+                    "value": "identity"
+                }
+            },
+            {
+                "header.Modifier": {
+                    "scope": ["response"],
+                    "name": "Content-Type",
+                    "value": "application/json; charset=utf-8"
+                }
+            }
+        ]
+    }
+}
