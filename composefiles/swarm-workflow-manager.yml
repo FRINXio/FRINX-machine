@@ -368,6 +368,7 @@ services:
     entrypoint: ["/set_env_secrets.sh", "./run.sh"]
     secrets:
       - frinx_auth
+      - frinx_rbac
       - frinx_workflow_manager
     configs:
       - source: set_env_secrets
