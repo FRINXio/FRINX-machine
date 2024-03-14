@@ -120,7 +120,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/conductor-server:2.3.0
+    image: frinx/conductor-server:2.3.1
     # user: guest
     logging: *logging_loki 
     environment:
@@ -363,7 +363,7 @@ services:
           memory: ${WP_RES_LIMIT_MEM}
 
   resource-manager:
-    image: frinx/resource-manager:1.0.10
+    image: frinx/resource-manager:6.0.0
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "./run.sh"]
     secrets:
@@ -408,7 +408,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:1.9.3
+    image: frinx/frinx-inventory-server:2.0.4
     logging: *logging_loki
     entrypoint: ["/run_inventory.sh"]
     secrets:
@@ -426,6 +426,9 @@ services:
       - TOPOLOGY_ENABLED=false
       - SHELL_HOST=uniconfig
       - SHELL_HOST_ENABLED=${UNICONFIG_SHELL_ENABLED:-false}
+      - CONDUCTOR_API_URL=http://conductor-server:8080/api/
+      - RESOURCE_MANAGER_API_URL=http://resource-manager:8884/query
+      - SCHEDULER_API_URL=http://schellar:3000
     volumes:
       - ${UF_CONFIG_PATH}/inventory/run_inventory.sh:/run_inventory.sh:ro
     healthcheck:

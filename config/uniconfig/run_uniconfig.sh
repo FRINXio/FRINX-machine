@@ -58,10 +58,10 @@ delete_debug_argument() {
 create_tls_keystore() {
 
 keytool -importkeystore \
-  -deststorepass ${TLS_KEYSTOREPASSWORD} \
-  -destkeypass ${TLS_KEYSTOREPASSWORD} \
+  -deststorepass ${SERVER_SSL_KEYSTOREPASSWORD} \
+  -destkeypass ${SERVER_SSL_KEYSTOREPASSWORD} \
   -srcstorepass ${DBPERSISTENCE_CONNECTION_SSLPASSWORD} \
-  -destkeystore ${TLS_KEYSTOREPATH} \
+  -destkeystore ${SERVER_SSL_KEYSTORE} \
   -srckeystore config/frinx_uniconfig_tls_key.p12 \
   -srcstoretype PKCS12 -alias uniconfig
 }
