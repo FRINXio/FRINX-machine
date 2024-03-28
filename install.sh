@@ -216,15 +216,15 @@ function pullImages {
   export KRAKEND_PORT=443
 
   echo -e "${INFO} Pulling Monitoring images"
-  docker compose -f $dockerComposeFileMonitor --env-file $dockerPerformSettings pull --ignore-pull-failures || true
+  docker-compose -f $dockerComposeFileMonitor pull || true
   echo -e "${INFO} Pulling Workflow-Manager images"
-  docker compose -f $dockerComposeFileWorkflowManager --env-file $dockerPerformSettings pull --ignore-pull-failures || true
+  docker-compose -f $dockerComposeFileWorkflowManager pull || true
 
   echo -e "${INFO} Pulling Uniconfig images"
-  docker compose -f $dockerComposeFileUniconfig --env-file $dockerPerformSettings pull --ignore-pull-failures || true
+  docker-compose -f $dockerComposeFileUniconfig pull || true
 
   echo -e "${INFO} Pulling Unistore images"
-  docker compose -f $dockerComposeFileUnistore --env-file $dockerPerformSettings pull --ignore-pull-failures || true
+  docker-compose -f $dockerComposeFileUnistore pull  || true
 }
 
 

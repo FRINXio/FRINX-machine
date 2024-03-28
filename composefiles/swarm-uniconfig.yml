@@ -100,7 +100,7 @@ services:
           memory: ${TF_RES_LIMIT_MEM}
 
   uniconfig-controller:
-    image: frinx/uniconfig:5.0.22
+    image: frinx/uniconfig:5.0.22_gamma
     logging: *logging_loki
     networks:
       - uniconfig-network
@@ -151,7 +151,7 @@ services:
     healthcheck:
       test: | 
         curl -o /dev/null --silent --write-out "%{http_code}" \
-        -X POST 'https://127.0.0.1:8181/rests/operations/uniconfig-manager:health' \
+        -X POST 'http://127.0.0.1:8181/rests/operations/uniconfig-manager:health' \
         -H "Content-Type:application/json" --insecure | grep 200 || exit 1
       interval: 10s
       timeout: 35s
@@ -181,7 +181,7 @@ services:
         - traefik.http.routers.uniconfig.rule=PathPrefix(`/rests`)
         - traefik.http.services.uniconfig.loadBalancer.sticky.cookie.name=uniconfig_server_id
         - traefik.http.services.uniconfig.loadbalancer.server.port=8181
-        - traefik.http.services.uniconfig.loadbalancer.server.scheme=https
+#       - traefik.http.services.uniconfig.loadbalancer.server.scheme=https
         - traefik.http.services.uniconfig.loadbalancer.passhostheader=true
         - traefik.http.routers.uniconfig.tls=true
       <<: *placement-controller

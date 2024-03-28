@@ -117,7 +117,7 @@ services:
           memory: ${KD_RES_LIMIT_MEM}
 
   conductor-server:
-    image: frinx/conductor-server:2.0.1
+    image: frinx/conductor-server:2.0.3
     # user: guest
     logging: *logging_loki 
     environment:
@@ -213,7 +213,7 @@ services:
           memory: ${ES_RES_LIMIT_MEM}
 
   frinx-frontend:
-    image: frinx/frinx-frontend:latest
+    image: frinx/frinx-frontend:1.0.58
     user: node
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
@@ -273,7 +273,10 @@ services:
     image: postgres:12.10
     user: postgres
     logging: *logging_loki 
-    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh postgres"]
+    entrypoint: ["/set_env_secrets.sh","docker-entrypoint.sh"]
+    command: 
+      - postgres
+      - -c max_connections=300
     volumes:
       - frinx_workflow-manager_postgresql_data:/var/lib/postgresql/data
       - ${UF_CONFIG_PATH}/workflow-manager-postgres:/docker-entrypoint-initdb.d:ro
@@ -313,7 +316,7 @@ services:
           memory: ${PG_RES_LIMIT_MEM}
 
   schellar:
-    image: frinx/schellar:latest
+    image: frinx/schellar:2.0.1
     logging: *logging_loki 
     environment:
       - LOG_LEVEL=debug
@@ -358,7 +361,7 @@ services:
           memory: ${SC_RES_LIMIT_MEM}
 
   workflow-proxy:
-    image: frinx/workflow-proxy:latest
+    image: frinx/workflow-proxy:2.0.0
     user: node
     logging: *logging_loki    
     entrypoint: ["/set_env_secrets.sh", "yarn start"]
@@ -402,7 +405,7 @@ services:
           memory: ${WP_RES_LIMIT_MEM}
 
   resource-manager:
-    image: frinx/resource-manager:latest
+    image: frinx/resource-manager:1.0.10
     logging: *logging_loki
     entrypoint: ["/set_env_secrets.sh", "./run.sh"]
     secrets:
@@ -446,7 +449,7 @@ services:
           memory: ${UR_RES_LIMIT_MEM}
 
   inventory:
-    image: frinx/frinx-inventory-server:latest
+    image: frinx/frinx-inventory-server:1.8.3
     logging: *logging_loki
     entrypoint: ["/run_inventory.sh"]
     secrets:
