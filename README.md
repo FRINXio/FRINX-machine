@@ -1,4 +1,13 @@
-# FRINX Machine latest release
+# FRINX Machine latest release 
+
+## Deprecation warning
+
+> [!CAUTION]
+> **Docker swarm deployment is deprecated**. <br> 
+> Please follow the Kubernetes installation https://artifacthub.io/packages/helm/frinx-helm-charts/frinx-machine
+
+## General
+
 Please deploy the latest release of FRINX Machine. Follow the link below and copy the zip or tar file to your host where you will run FRINX Machine. Unzip or untar and follow the installation instructions below.
 
 https://github.com/FRINXio/FRINX-machine/releases
